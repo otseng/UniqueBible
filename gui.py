@@ -18,7 +18,6 @@ from ToolsSqlite import BookData, IndexesSqlite
 from translations import translations
 from shutil import copyfile, rmtree
 from distutils.dir_util import copy_tree
-from themes import Themes
 
 # Optional Features
 # [Optional] Text-to-Speech feature
@@ -1629,6 +1628,7 @@ class MainWindow(QMainWindow):
                 nextIndex = 0
             self.mainView.setCurrentIndex(nextIndex)
         # check size of text content
+        # TODO:
         if sys.getsizeof(text) < 2097152:
             self.mainView.setHtml(text, baseUrl)
         else:
@@ -1810,7 +1810,7 @@ class MainWindow(QMainWindow):
             activeBCVsettings = "<script>var activeText = '{0}'; var activeB = {1}; var activeC = {2}; var activeV = {3};</script>".format(config.mainText, config.mainB, config.mainC, config.mainV)
         elif view == "study":
             activeBCVsettings = "<script>var activeText = '{0}'; var activeB = {1}; var activeC = {2}; var activeV = {3};</script>".format(config.studyText, config.studyB, config.studyC, config.studyV)
-        text = "<!DOCTYPE html><html><head><title>UniqueBible.app</title><style>body {2} font-size: {4}px; font-family:'{5}'; {3} zh {2} font-family:'{6}'; {3}</style><link rel='stylesheet' type='text/css' href='theText.css'><script src='theText.js'></script><script src='w3.js'></script>{0}<script>var versionList = []; var compareList = []; var parallelList = []; var diffList = []; var searchList = [];</script></head><body><span id='v0.0.0'></span>{1}</body></html>".format(activeBCVsettings, text, "{", "}", config.fontSize, config.font, config.fontChinese)
+        text = "<!DOCTYPE html><html><head><title>UniqueBible.app</title><style>body {2} font-size: {4}px; font-family:'{5}'; {3} zh {2} font-family:'{6}'; {3}</style><link rel='stylesheet' type='text/css' href='css/dark.css'><script src='theText.js'></script><script src='w3.js'></script>{0}<script>var versionList = []; var compareList = []; var parallelList = []; var diffList = []; var searchList = [];</script></head><body><span id='v0.0.0'></span>{1}</body></html>".format(activeBCVsettings, text, "{", "}", config.fontSize, config.font, config.fontChinese)
         return text
 
     def pasteFromClipboard(self):
@@ -2896,7 +2896,8 @@ class MainWindow(QMainWindow):
         timeDifference = int((now - self.now).total_seconds())
         if textCommand == "_stayOnSameTab:::":
             self.newTabException = True
-        elif timeDifference > 1 or (source == "main" and textCommand != self.lastMainTextCommand) or (source == "study" and textCommand != self.lastStudyTextCommand):
+        elif timeDifference > 1 or (source == "main" and textCommand != self.lastMainTextCommand) or \
+            (source == "study" and textCommand != self.lastStudyTextCommand):
             # handle exception for new tab features
             if re.search('^(_commentary:::|_menu:::)', textCommand.lower()):
                 self.newTabException = True
@@ -2904,7 +2905,7 @@ class MainWindow(QMainWindow):
             view, content = self.textCommandParser.parser(textCommand, source)
             # process content
             if content == "INVALID_COMMAND_ENTERED":
-                self.displayMessage(config.thisTranslation["message_invalid"])
+                self.displayMessage(config.thisTranslation["message_invalid"] + ":" + textCommand)
             elif view == "command":
                 self.textCommandLineEdit.setText(content)
                 self.textCommandLineEdit.setFocus()
@@ -2914,7 +2915,7 @@ class MainWindow(QMainWindow):
                     activeBCVsettings = "<script>var activeText = '{0}'; var activeB = {1}; var activeC = {2}; var activeV = {3};</script>".format(config.mainText, config.mainB, config.mainC, config.mainV)
                 elif view == "study":
                     activeBCVsettings = "<script>var activeText = '{0}'; var activeB = {1}; var activeC = {2}; var activeV = {3};</script>".format(config.studyText, config.studyB, config.studyC, config.studyV)
-                html = "<!DOCTYPE html><html><head><title>UniqueBible.app</title><style>body {2} font-size: {4}px; font-family:'{5}'; {3} zh {2} font-family:'{6}'; {3}</style><link rel='stylesheet' type='text/css' href='theText.css'><script src='theText.js'></script><script src='w3.js'></script>{0}<script>var versionList = []; var compareList = []; var parallelList = []; var diffList = []; var searchList = [];</script></head><body><span id='v0.0.0'></span>{1}</body></html>".format(activeBCVsettings, content, "{", "}", config.fontSize, config.font, config.fontChinese)
+                html = "<!DOCTYPE html><html><head><title>UniqueBible.app</title><style>body {2} font-size: {4}px; font-family:'{5}'; {3} zh {2} font-family:'{6}'; {3}</style><link rel='stylesheet' type='text/css' href='css/dark.css'><script src='theText.js'></script><script src='w3.js'></script>{0}<script>var versionList = []; var compareList = []; var parallelList = []; var diffList = []; var searchList = [];</script></head><body><span id='v0.0.0'></span>{1}</body></html>".format(activeBCVsettings, content, "{", "}", config.fontSize, config.font, config.fontChinese)
                 views = {
                     "main": self.mainView,
                     "study": self.studyView,
@@ -3085,22 +3086,16 @@ class CentralWidget(QWidget):
             self.parallelSplitter = QSplitter(Qt.Vertical)
 
         self.mainView = TabWidget(self, "main")
-        self.mainView.setPalette(Themes.dark())
         self.parent.mainView = self.mainView
         for i in range(config.numberOfTab):
-            tab = WebEngineView(self, "main")
-            tab.setStyleSheet
-            tab.setPalette(Themes.dark())
-            tab.setAutoFillBackground(True)
-            self.mainView.addTab(tab, "{1}{0}".format(i+1, config.thisTranslation["tabBible"]))
+            tabView = WebEngineView(self, "main")
+            self.mainView.addTab(tabView, "{1}{0}".format(i+1, config.thisTranslation["tabBible"]))
 
         self.studyView = TabWidget(self, "study")
         self.parent.studyView = self.studyView
         for i in range(config.numberOfTab):
-            tab = WebEngineView(self, "study")
-            tab.setPalette(Themes.dark())
-            tab.setAutoFillBackground(True)
-            self.studyView.addTab(tab, "{1}{0}".format(i+1, config.thisTranslation["tabStudy"]))
+            tabView = WebEngineView(self, "study")
+            self.studyView.addTab(tabView, "{1}{0}".format(i+1, config.thisTranslation["tabStudy"]))
 
         self.instantView = WebEngineView(self, "instant")
         self.instantView.setHtml("<p style='font-family:{0};'><u><b>Bottom Window</b></u><br>Display instant information on this window by hovering over verse numbers, tagged words or bible reference links.</p>".format(config.font), baseUrl)
@@ -3285,16 +3280,13 @@ class TabWidget(QTabWidget):
         elif self.name == "study":
             self.parent.parent.setStudyPage()
 
-
 class WebEngineView(QWebEngineView):
 
     def __init__(self, parent, name):
         super().__init__()
         self.parent = parent
         self.name = name
-        self.setPalette(Themes.dark())
-        self.setAutoFillBackground(True)
-
+       
         # add context menu (triggered by right-clicking)
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.selectionChanged.connect(self.updateContextMenu)
@@ -3728,7 +3720,7 @@ class WebEngineView(QWebEngineView):
             activeBCVsettings = "<script>var activeText = '{0}'; var activeB = {1}; var activeC = {2}; var activeV = {3};</script>".format(config.mainText, config.mainB, config.mainC, config.mainV)
         elif self.name == "study":
             activeBCVsettings = "<script>var activeText = '{0}'; var activeB = {1}; var activeC = {2}; var activeV = {3};</script>".format(config.studyText, config.studyB, config.studyC, config.studyV)
-        html = "<!DOCTYPE html><html><head><title>UniqueBible.app</title><style>body {1} font-size: {3}px; font-family:'{4}'; {2} zh {1} font-family:'{5}'; {2}</style><link rel='stylesheet' type='text/css' href='theText.css'><script src='theText.js'></script><script src='w3.js'></script>{6}<script>var versionList = []; var compareList = []; var parallelList = []; var diffList = []; var searchList = [];</script></head><body><span id='v0.0.0'></span>{0}</body></html>".format(html, "{", "}", config.fontSize, config.font, config.fontChinese, activeBCVsettings)
+        html = "<!DOCTYPE html><html><head><title>UniqueBible.app</title><style>body {1} font-size: {3}px; font-family:'{4}'; {2} zh {1} font-family:'{5}'; {2}</style><link rel='stylesheet' type='text/css' href='css/dark.css'><script src='theText.js'></script><script src='w3.js'></script>{6}<script>var versionList = []; var compareList = []; var parallelList = []; var diffList = []; var searchList = [];</script></head><body><span id='v0.0.0'></span>{0}</body></html>".format(html, "{", "}", config.fontSize, config.font, config.fontChinese, activeBCVsettings)
         self.popoverView = WebEngineViewPopover(self, name, self.name)
         self.popoverView.setHtml(html, baseUrl)
         self.popoverView.show()
@@ -5360,8 +5352,6 @@ class MoreConfigOptions(QDialog):
         horizontalContainer.setLayout(horizontalContainerLayout)
         layout.addWidget(horizontalContainer)
         self.setLayout(layout)
-
-        leftContainer.setPalette(Themes.dark())
 
     def virtualKeyboardChanged(self):
         config.virtualKeyboard = not config.virtualKeyboard

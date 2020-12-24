@@ -5,6 +5,7 @@
 # For more information on this application, visit https://BibleTools.app or https://UniqueBible.app.
 
 import os
+from themes import Themes
 
 # File "config.py" is essential for running module "config"
 # Create file "config.py" if it is missing.
@@ -306,6 +307,9 @@ config.noteOpened = False
 # set show information to True
 if not hasattr(config, "showInformation"):
     config.showInformation = True
+# Theme (default, dark)
+if not hasattr(config, "theme"):
+    config.theme = "default"
 
 import sys, pprint, platform
 from PySide2.QtWidgets import QApplication
@@ -438,6 +442,7 @@ def saveDataOnExit():
         ("currentRecord", {'main': 0, 'study': 0}),
         ("history", config.history),
         ("installHistory", config.installHistory),
+        ("theme", config.theme)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:
@@ -465,35 +470,7 @@ if config.virtualKeyboard:
 app = QApplication(sys.argv)
 # Assign a function to save configurations when the app is closed
 app.aboutToQuit.connect(saveDataOnExit)
-
-print(app.aboutQt())
-
-# Theme
-# app.setStyle('Windows')
-# app.setStyle('Breeze')
-
-# ['Breeze', 'Oxygen', 'QtCurve', 'Windows', 'Fusion']
-
-# from PySide2.QtGui import QPalette, QColor
-# palette = QPalette()
-# palette.setColor(QPalette.Window, QColor(0, 0, 0))
-# palette.setColor(QPalette.WindowText, QColor(200, 200, 200))
-# palette.setColor(QPalette.Background, QColor(0, 0, 0))
-# palette.setColor(QPalette.Base, QColor(25, 25, 25))
-# palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-# palette.setColor(QPalette.ToolTipBase, QColor(0,0,0))
-# palette.setColor(QPalette.ToolTipText, QColor(200,200,200))
-# palette.setColor(QPalette.Text, QColor(200, 200, 200))
-# palette.setColor(QPalette.Button, QColor(53, 53, 53))
-# palette.setColor(QPalette.ButtonText, QColor(200, 200, 200))
-# palette.setColor(QPalette.BrightText, QColor(255,255,255))
-# palette.setColor(QPalette.Link, QColor(42, 130, 218))
-# palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-# palette.setColor(QPalette.HighlightedText, QColor(0,0,0))
-
-from themes import Themes
-app.setPalette(Themes.dark())
-# app.setPalette(Themes.default())
+app.setPalette(Themes.getPalette(config.theme))
 
 # Class "MainWindow" is located in file "gui.py"
 mainWindow = MainWindow()

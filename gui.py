@@ -18,6 +18,8 @@ from ToolsSqlite import BookData, IndexesSqlite
 from translations import translations
 from shutil import copyfile, rmtree
 from distutils.dir_util import copy_tree
+from themes import Themes
+
 # Optional Features
 # [Optional] Text-to-Speech feature
 try:
@@ -330,9 +332,10 @@ class MainWindow(QMainWindow):
     def checkModulesUpdate(self):
         for filename in self.updatedFiles:
             abb = filename[:-6]
-            if os.path.isfile(os.path.join(*self.bibleInfo[abb][0])):
-                if self.isNewerAvailable(filename):
-                    self.displayMessage("{1} {0}.  {2} '{3} > {4}'".format(filename, config.thisTranslation["message_newerFile"], config.thisTranslation["message_installFrom"], config.thisTranslation["menu8_resources"], config.thisTranslation["menu8_bibles"]))
+            # TODO: 
+            # if os.path.isfile(os.path.join(*self.bibleInfo[abb][0])):
+            #     if self.isNewerAvailable(filename):
+            #         self.displayMessage("{1} {0}.  {2} '{3} > {4}'".format(filename, config.thisTranslation["message_newerFile"], config.thisTranslation["message_installFrom"], config.thisTranslation["menu8_resources"], config.thisTranslation["menu8_bibles"]))
 
     def isNewerAvailable(self, filename):
         abb = filename[:-6]
@@ -3082,14 +3085,22 @@ class CentralWidget(QWidget):
             self.parallelSplitter = QSplitter(Qt.Vertical)
 
         self.mainView = TabWidget(self, "main")
+        self.mainView.setPalette(Themes.dark())
         self.parent.mainView = self.mainView
         for i in range(config.numberOfTab):
-            self.mainView.addTab(WebEngineView(self, "main"), "{1}{0}".format(i+1, config.thisTranslation["tabBible"]))
+            tab = WebEngineView(self, "main")
+            tab.setStyleSheet
+            tab.setPalette(Themes.dark())
+            tab.setAutoFillBackground(True)
+            self.mainView.addTab(tab, "{1}{0}".format(i+1, config.thisTranslation["tabBible"]))
 
         self.studyView = TabWidget(self, "study")
         self.parent.studyView = self.studyView
         for i in range(config.numberOfTab):
-            self.studyView.addTab(WebEngineView(self, "study"), "{1}{0}".format(i+1, config.thisTranslation["tabStudy"]))
+            tab = WebEngineView(self, "study")
+            tab.setPalette(Themes.dark())
+            tab.setAutoFillBackground(True)
+            self.studyView.addTab(tab, "{1}{0}".format(i+1, config.thisTranslation["tabStudy"]))
 
         self.instantView = WebEngineView(self, "instant")
         self.instantView.setHtml("<p style='font-family:{0};'><u><b>Bottom Window</b></u><br>Display instant information on this window by hovering over verse numbers, tagged words or bible reference links.</p>".format(config.font), baseUrl)
@@ -3281,6 +3292,8 @@ class WebEngineView(QWebEngineView):
         super().__init__()
         self.parent = parent
         self.name = name
+        self.setPalette(Themes.dark())
+        self.setAutoFillBackground(True)
 
         # add context menu (triggered by right-clicking)
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -5347,6 +5360,8 @@ class MoreConfigOptions(QDialog):
         horizontalContainer.setLayout(horizontalContainerLayout)
         layout.addWidget(horizontalContainer)
         self.setLayout(layout)
+
+        leftContainer.setPalette(Themes.dark())
 
     def virtualKeyboardChanged(self):
         config.virtualKeyboard = not config.virtualKeyboard

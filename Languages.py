@@ -132,7 +132,7 @@ class Languages:
         "menu1_toogleInterface": "Program Interface: English / My Translation",
         "menu1_wikiPages": "Wiki Pages",
         "menu1_update": "Update",
-        "menu1_theme": "Theme",
+        "menu1_selectTheme": "Select Theme",
         "menu1_default_theme": "Default theme",
         "menu1_dark_theme": "Dark theme",
         "menu1_exit": "Exit",

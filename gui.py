@@ -62,9 +62,13 @@ if config.testing:
 
 class MainWindow(QMainWindow):
 
-    def __init__(self):
+    app = None
+
+    def __init__(self, app):
         super().__init__()
 
+        self.app = app
+        
         # Repository
         # Read about downloading a raw github file: https://unix.stackexchange.com/questions/228412/how-to-wget-a-github-file
         self.repository = "https://raw.githubusercontent.com/eliranwong/UniqueBible/master/"
@@ -456,7 +460,9 @@ class MainWindow(QMainWindow):
         menu1.addAction(QAction(config.thisTranslation["menu1_tabNo"], self, triggered=self.setTabNumberDialog))
         menu1.addAction(QAction(config.thisTranslation["menu1_setMyFavouriteBible"], self, triggered=self.openFavouriteBibleDialog))
         menu1.addAction(QAction(config.thisTranslation["menu1_setMyLanguage"], self, triggered=self.openMyLanguageDialog))
-        menu1.addAction(QAction(config.thisTranslation["menu1_theme"], self, triggered=self.openMyLanguageDialog))
+        themeMenu = menu1.addMenu(config.thisTranslation["menu1_selectTheme"])
+        themeMenu.addAction(QAction(config.thisTranslation["menu1_default_theme"], self, triggered=self.setDefaultTheme))
+        themeMenu.addAction(QAction(config.thisTranslation["menu1_dark_theme"], self, triggered=self.setDarkTheme))
         menu1.addAction(QAction(config.thisTranslation["menu1_moreConfig"], self, triggered=self.moreConfigOptionsDialog))
         menu1.addSeparator()
         if (not self.isMyTranslationAvailable() and not self.isOfficialTranslationAvailable()) or (self.isMyTranslationAvailable() and not myTranslation.translationLanguage == config.userLanguage) or (self.isOfficialTranslationAvailable() and not config.translationLanguage == config.userLanguage):
@@ -1649,6 +1655,16 @@ class MainWindow(QMainWindow):
             reference = "{0}-{1}".format(self.textCommandParser.lastKeyword, reference2)
         self.mainView.setTabText(self.mainView.currentIndex(), reference)
         self.mainView.setTabToolTip(self.mainView.currentIndex(), reference)
+            
+    def setDefaultTheme(self):
+        config.theme = "default"
+        self.app.setPalette(Themes.getPalette(config.theme))
+        self.reloadCurrentRecord()
+
+    def setDarkTheme(self):
+        config.theme = "dark"
+        self.app.setPalette(Themes.getPalette(config.theme))
+        self.reloadCurrentRecord()
 
     def exportAllImages(self, htmlText):
         self.exportImageNumber = 0
@@ -5506,3 +5522,4 @@ class Downloader(QDialog):
         else:
             if interactWithParent:
                 self.parent.moduleInstalledFailed(self.databaseInfo)
+

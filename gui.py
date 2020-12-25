@@ -336,10 +336,9 @@ class MainWindow(QMainWindow):
     def checkModulesUpdate(self):
         for filename in self.updatedFiles:
             abb = filename[:-6]
-            # TODO: 
-            # if os.path.isfile(os.path.join(*self.bibleInfo[abb][0])):
-            #     if self.isNewerAvailable(filename):
-            #         self.displayMessage("{1} {0}.  {2} '{3} > {4}'".format(filename, config.thisTranslation["message_newerFile"], config.thisTranslation["message_installFrom"], config.thisTranslation["menu8_resources"], config.thisTranslation["menu8_bibles"]))
+            if os.path.isfile(os.path.join(*self.bibleInfo[abb][0])):
+                if self.isNewerAvailable(filename):
+                    self.displayMessage("{1} {0}.  {2} '{3} > {4}'".format(filename, config.thisTranslation["message_newerFile"], config.thisTranslation["message_installFrom"], config.thisTranslation["menu8_resources"], config.thisTranslation["menu8_bibles"]))
 
     def isNewerAvailable(self, filename):
         abb = filename[:-6]
@@ -1636,8 +1635,7 @@ class MainWindow(QMainWindow):
                 nextIndex = 0
             self.mainView.setCurrentIndex(nextIndex)
         # check size of text content
-        # TODO:
-        if sys.getsizeof(text) < 0: # < 2097152:
+        if sys.getsizeof(text) < 2097152:
             self.mainView.setHtml(text, baseUrl)
         else:
             # save html in a separate file if text is larger than 2MB

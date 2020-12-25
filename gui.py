@@ -135,7 +135,8 @@ class MainWindow(QMainWindow):
             self.studyView.setCurrentIndex(config.numberOfTab - 1)
         self.setStudyPage()
         self.instantPage = self.instantView.page()
-        self.instantPage.setBackgroundColor(Qt.transparent)
+        if config.theme == "dark":
+            self.instantPage.setBackgroundColor(Qt.transparent)
         self.instantPage.titleChanged.connect(self.instantTextCommandChanged)
         # position views as the last-opened layout
         self.resizeCentral()
@@ -3119,7 +3120,7 @@ class CentralWidget(QWidget):
             self.studyView.addTab(tabView, "{1}{0}".format(i+1, config.thisTranslation["tabStudy"]))
 
         self.instantView = WebEngineView(self, "instant")
-        self.instantView.setHtml("<link rel='stylesheet' type='text/css' href='css/dark.css'><p style='font-family:{0};'><u><b>Bottom Window</b></u><br>Display instant information on this window by hovering over verse numbers, tagged words or bible reference links.</p>".format(config.font), baseUrl)
+        self.instantView.setHtml("<link rel='stylesheet' type='text/css' href='css/" + config.theme + ".css'><p style='font-family:{0};'><u><b>Bottom Window</b></u><br>Display instant information on this window by hovering over verse numbers, tagged words or bible reference links.</p>".format(config.font), baseUrl)
 
         self.parallelSplitter.addWidget(self.mainView)
         self.parallelSplitter.addWidget(self.studyView)

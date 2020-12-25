@@ -62,13 +62,9 @@ if config.testing:
 
 class MainWindow(QMainWindow):
 
-    app = None
-
     def __init__(self, app):
         super().__init__()
 
-        self.app = app
-        
         # Repository
         # Read about downloading a raw github file: https://unix.stackexchange.com/questions/228412/how-to-wget-a-github-file
         self.repository = "https://raw.githubusercontent.com/eliranwong/UniqueBible/master/"

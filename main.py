@@ -473,7 +473,7 @@ app.aboutToQuit.connect(saveDataOnExit)
 app.setPalette(Themes.getPalette(config.theme))
 
 # Class "MainWindow" is located in file "gui.py"
-mainWindow = MainWindow(app)
+mainWindow = MainWindow()
 setupMainWindow()
 
 # Check if migration is needed for version >= 0.56

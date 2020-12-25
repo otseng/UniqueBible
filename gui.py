@@ -62,7 +62,7 @@ if config.testing:
 
 class MainWindow(QMainWindow):
 
-    def __init__(self, app):
+    def __init__(self):
         super().__init__()
 
         # Repository

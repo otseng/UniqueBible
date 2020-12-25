@@ -3105,14 +3105,12 @@ class CentralWidget(QWidget):
         self.parent.mainView = self.mainView
         for i in range(config.numberOfTab):
             tabView = WebEngineView(self, "main")
-            # tabView.setPalette(Themes.getPalette(config.theme))
             self.mainView.addTab(tabView, "{1}{0}".format(i+1, config.thisTranslation["tabBible"]))
 
         self.studyView = TabWidget(self, "study")
         self.parent.studyView = self.studyView
         for i in range(config.numberOfTab):
             tabView = WebEngineView(self, "study")
-            # tabView.setPalette(Themes.getPalette(config.theme))
             self.studyView.addTab(tabView, "{1}{0}".format(i+1, config.thisTranslation["tabStudy"]))
 
         self.instantView = WebEngineView(self, "instant")

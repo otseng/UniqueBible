@@ -135,6 +135,7 @@ class MainWindow(QMainWindow):
             self.studyView.setCurrentIndex(config.numberOfTab - 1)
         self.setStudyPage()
         self.instantPage = self.instantView.page()
+        self.instantPage.setBackgroundColor(Qt.transparent)
         self.instantPage.titleChanged.connect(self.instantTextCommandChanged)
         # position views as the last-opened layout
         self.resizeCentral()
@@ -296,6 +297,8 @@ class MainWindow(QMainWindow):
         # main page changes as tab is changed.
         #print(self.mainView.currentIndex())
         self.mainPage = self.mainView.currentWidget().page()
+        if config.theme == "dark":
+            self.mainPage.setBackgroundColor(Qt.transparent)
         self.mainPage.titleChanged.connect(self.mainTextCommandChanged)
         self.mainPage.loadFinished.connect(self.finishMainViewLoading)
         self.mainPage.pdfPrintingFinished.connect(self.pdfPrintingFinishedAction)
@@ -306,6 +309,8 @@ class MainWindow(QMainWindow):
         # study page changes as tab is changed.
         #print(self.studyView.currentIndex())
         self.studyPage = self.studyView.currentWidget().page()
+        if config.theme == "dark":
+            self.studyPage.setBackgroundColor(Qt.transparent)
         self.studyPage.titleChanged.connect(self.studyTextCommandChanged)
         self.studyPage.loadFinished.connect(self.finishStudyViewLoading)
         self.studyPage.pdfPrintingFinished.connect(self.pdfPrintingFinishedAction)
@@ -1656,13 +1661,11 @@ class MainWindow(QMainWindow):
             
     def setDefaultTheme(self):
         config.theme = "default"
-        self.app.setPalette(Themes.getPalette(config.theme))
-        self.reloadCurrentRecord()
+        self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
 
     def setDarkTheme(self):
         config.theme = "dark"
-        self.app.setPalette(Themes.getPalette(config.theme))
-        self.reloadCurrentRecord()
+        self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
 
     def exportAllImages(self, htmlText):
         self.exportImageNumber = 0
@@ -3116,7 +3119,7 @@ class CentralWidget(QWidget):
             self.studyView.addTab(tabView, "{1}{0}".format(i+1, config.thisTranslation["tabStudy"]))
 
         self.instantView = WebEngineView(self, "instant")
-        self.instantView.setHtml("<link rel='stylesheet' type='text/css' href='css/" + config.theme + ".css'><p style='font-family:{0};'><u><b>Bottom Window</b></u><br>Display instant information on this window by hovering over verse numbers, tagged words or bible reference links.</p>".format(config.font), baseUrl)
+        self.instantView.setHtml("<link rel='stylesheet' type='text/css' href='css/dark.css'><p style='font-family:{0};'><u><b>Bottom Window</b></u><br>Display instant information on this window by hovering over verse numbers, tagged words or bible reference links.</p>".format(config.font), baseUrl)
 
         self.parallelSplitter.addWidget(self.mainView)
         self.parallelSplitter.addWidget(self.studyView)

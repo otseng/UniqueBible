@@ -321,6 +321,7 @@ class Languages:
         "message_noSupportedFile": "No valid file.",
         "message_tagged": "Tagged file is prefixed with:",
         "message_willBeNoticed": "You will receive another message when the operation is done.",
+        "message_themeTakeEffectAfterRestart": "Theme will take effect after the next restart",
         "html_searchBible2": "Search Bible:",
         "html_searchBibles2": "Search Multiple Bibles:",
         "html_features": "Special Features:",

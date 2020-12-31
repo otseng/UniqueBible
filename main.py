@@ -317,8 +317,12 @@ if not hasattr(config, "theme"):
 # Disable modules update check
 if not hasattr(config, "disableModulesUpdateCheck"):
     config.disableModulesUpdateCheck = False
+# Enable Copy HTML in popup menu
 if not hasattr(config, "enableCopyHtmlCommand"):
     config.enableCopyHtmlCommand = False
+# Force generate main.html for all pages
+if not hasattr(config, "forceGenerateHtml"):
+    config.forceGenerateHtml = False
 
 # Optional Features
 # [Optional] Text-to-Speech feature
@@ -493,7 +497,8 @@ def saveDataOnExit():
         ("installHistory", config.installHistory),
         ("theme", config.theme),
         ("disableModulesUpdateCheck", config.disableModulesUpdateCheck),
-        ("enableCopyHtmlCommand", config.enableCopyHtmlCommand)
+        ("enableCopyHtmlCommand", config.enableCopyHtmlCommand),
+        ("forceGenerateHtml", config.forceGenerateHtml)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:

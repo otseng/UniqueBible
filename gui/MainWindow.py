@@ -1605,7 +1605,7 @@ class MainWindow(QMainWindow):
                 nextIndex = 0
             self.mainView.setCurrentIndex(nextIndex)
         # check size of text content
-        if sys.getsizeof(text) < 2097152:
+        if not config.forceGenerateHtml and sys.getsizeof(text) < 2097152:
             self.mainView.setHtml(text, baseUrl)
         else:
             # save html in a separate file if text is larger than 2MB

@@ -5,6 +5,7 @@
 # For more information on this application, visit https://BibleTools.app or https://UniqueBible.app.
 
 import os, platform, logging
+import logging.handlers as handlers
 from themes import Themes
 
 # File "config.py" is essential for running module "config"
@@ -12,7 +13,11 @@ from themes import Themes
 if not os.path.isfile("config.py"):
     open("config.py", "w", encoding="utf-8").close()
 
-logging.basicConfig(filename='uba.log', level=logging.DEBUG)
+# Setup logging
+logger = logging.getLogger('uba')
+logHandler = handlers.TimedRotatingFileHandler('uba.log', when='D', interval=1, backupCount=1)
+logHandler.setLevel(logging.DEBUG)
+logger.addHandler(logHandler)
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 

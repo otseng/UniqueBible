@@ -5,6 +5,8 @@ import os, sqlite3, config, re
 from NoteSqlite import NoteSqlite
 from BibleVerseParser import BibleVerseParser
 from BibleBooks import BibleBooks
+from themes import Themes
+
 try:
     from diff_match_patch import diff_match_patch
 except:
@@ -432,7 +434,7 @@ input.addEventListener('keyup', function(event) {0}
                 if row % 2 == 0:
                     chapter += "<tr>"
                 else:
-                    chapter += "<tr style='background-color: #f2f2f2;'>"
+                    chapter += "<tr style='background-color: {0};'>".format(Themes.getComparisonBackgroundColor())
                 if row == 1:
                     chapter += "<td style='vertical-align: text-top;'><vid>{0}{1}</ref></vid> ".format(self.formVerseTag(b, c, verse, text), verse)
                 else:

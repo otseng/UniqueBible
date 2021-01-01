@@ -20,7 +20,7 @@ class MoreConfigOptions(QDialog):
         layout.addWidget(readWiki)
 
         horizontalContainer = QWidget()
-        horizontalContainer.setPalette(Themes.getPalette(config.theme))
+        horizontalContainer.setPalette(Themes.getPalette())
         horizontalContainerLayout = QHBoxLayout()
 
         leftContainer = QWidget()

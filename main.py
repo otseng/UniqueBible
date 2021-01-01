@@ -531,7 +531,7 @@ if config.virtualKeyboard:
 app = QApplication(sys.argv)
 # Assign a function to save configurations when the app is closed
 app.aboutToQuit.connect(saveDataOnExit)
-app.setPalette(Themes.getPalette(config.theme))
+app.setPalette(Themes.getPalette())
 
 # Class "MainWindow" is located in file "gui.py"
 mainWindow = MainWindow()

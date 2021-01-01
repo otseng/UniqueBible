@@ -32,3 +32,10 @@ class Themes():
             return "#5f5f5f"
         else:
             return "#f2f2f2"
+
+    @staticmethod
+    def getComparisonAlternateBackgroundColor():
+        if config.theme == "dark":
+            return "#1f1f1f"
+        else:
+            return "#f2f2f2"

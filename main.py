@@ -15,6 +15,7 @@ if not os.path.isfile("config.py"):
 
 # Setup logging
 logger = logging.getLogger('uba')
+logger.setLevel(logging.DEBUG)
 logHandler = handlers.TimedRotatingFileHandler('uba.log', when='D', interval=1, backupCount=1)
 logHandler.setLevel(logging.DEBUG)
 logger.addHandler(logHandler)
@@ -328,6 +329,9 @@ if not hasattr(config, "enableCopyHtmlCommand"):
 # Force generate main.html for all pages
 if not hasattr(config, "forceGenerateHtml"):
     config.forceGenerateHtml = False
+# Log commands for debugging
+if not hasattr(config, "logCommands"):
+    config.logCommands = False
 
 # Optional Features
 # [Optional] Text-to-Speech feature
@@ -503,7 +507,8 @@ def saveDataOnExit():
         ("theme", config.theme),
         ("disableModulesUpdateCheck", config.disableModulesUpdateCheck),
         ("enableCopyHtmlCommand", config.enableCopyHtmlCommand),
-        ("forceGenerateHtml", config.forceGenerateHtml)
+        ("forceGenerateHtml", config.forceGenerateHtml),
+        ("logCommands", config.logCommands)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:

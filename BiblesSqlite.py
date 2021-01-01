@@ -434,7 +434,10 @@ input.addEventListener('keyup', function(event) {0}
                 if row % 2 == 0:
                     chapter += "<tr>"
                 else:
-                    chapter += "<tr style='background-color: {0};'>".format(Themes.getComparisonBackgroundColor())
+                    if row == 1:
+                        chapter += "<tr style='background-color: {0};'>".format(Themes.getComparisonBackgroundColor())
+                    else:
+                        chapter += "<tr style='background-color: {0};'>".format(Themes.getComparisonAlternateBackgroundColor())
                 if row == 1:
                     chapter += "<td style='vertical-align: text-top;'><vid>{0}{1}</ref></vid> ".format(self.formVerseTag(b, c, verse, text), verse)
                 else:

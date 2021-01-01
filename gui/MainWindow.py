@@ -1,4 +1,4 @@
-import os, sys, re, config, base64, webbrowser, platform, subprocess, zipfile, gdown, requests, update, myTranslation
+import os, sys, re, config, base64, webbrowser, platform, subprocess, zipfile, gdown, requests, update, myTranslation, logging
 from datetime import datetime
 from ast import literal_eval
 from PySide2.QtCore import QUrl, Qt, QEvent
@@ -2875,6 +2875,9 @@ class MainWindow(QMainWindow):
         self.runTextCommand(newTextCommand, True, source)
 
     def runTextCommand(self, textCommand, addRecord=True, source="main", forceExecute=False):
+        if config.logCommands:
+            logger = logging.getLogger('uba')
+            logger.debug(textCommand[:80])
         # reset document.title
         changeTitle = "document.title = 'UniqueBible.app';"
         self.mainPage.runJavaScript(changeTitle)

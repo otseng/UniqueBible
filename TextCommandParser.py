@@ -1,4 +1,4 @@
-import os, subprocess, re, config, webbrowser, platform, logging
+import os, subprocess, re, config, webbrowser, platform
 from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite, Bible, ClauseData, MorphologySqlite
 from ToolsSqlite import CrossReferenceSqlite, CollectionsSqlite, ImageSqlite, IndexesSqlite, EncyclopediaData, DictionaryData, ExlbData, SearchSqlite, Commentary, VerseData, WordData, BookData, Book, Lexicon
@@ -12,10 +12,6 @@ class TextCommandParser:
         self.lastKeyword = None
 
     def parser(self, textCommand, source="main"):
-        if config.logCommands:
-            logger = logging.getLogger('uba')
-            logger.debug(textCommand[:80])
-
         interpreters = {
             # [KEYWORD] BIBLE
             # Feature - Open a bible chapter or multiples verses on main or study view.

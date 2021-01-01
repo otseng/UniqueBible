@@ -13,15 +13,6 @@ from themes import Themes
 if not os.path.isfile("config.py"):
     open("config.py", "w", encoding="utf-8").close()
 
-# Setup logging
-logger = logging.getLogger('uba')
-logger.setLevel(logging.DEBUG)
-logHandler = handlers.TimedRotatingFileHandler('uba.log', when='D', interval=1, backupCount=1)
-logHandler.setLevel(logging.DEBUG)
-logger.addHandler(logHandler)
-logging.getLogger("requests").setLevel(logging.WARNING)
-logging.getLogger("urllib3").setLevel(logging.WARNING)
-
 import config
 
 # Check current version
@@ -332,6 +323,15 @@ if not hasattr(config, "forceGenerateHtml"):
 # Log commands for debugging
 if not hasattr(config, "logCommands"):
     config.logCommands = False
+
+# Setup logging
+logger = logging.getLogger('uba')
+logger.setLevel(logging.DEBUG)
+logHandler = handlers.TimedRotatingFileHandler('uba.log', when='D', interval=1, backupCount=1)
+logHandler.setLevel(logging.DEBUG)
+logger.addHandler(logHandler)
+logging.getLogger("requests").setLevel(logging.WARNING)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 # Optional Features
 # [Optional] Text-to-Speech feature

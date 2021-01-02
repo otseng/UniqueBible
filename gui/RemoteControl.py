@@ -1,3 +1,4 @@
+from re import search
 import config
 from PySide2.QtWidgets import (QVBoxLayout, QHBoxLayout, QGroupBox, QLineEdit, QPushButton, QWidget)
 from BibleVerseParser import BibleVerseParser
@@ -147,6 +148,11 @@ class RemoteControl(QWidget):
     # search field entered
     def searchLineEntered(self):
         searchString = self.searchLineEdit.text()
+        if ":" not in searchString:
+            if any(i.isdigit() for i in searchString):
+                searchString = searchString.strip() + ":1"
+            else:
+                searchString += " 1:1"
         self.parent.runTextCommand(searchString)
 
     # modify search field

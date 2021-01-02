@@ -233,6 +233,8 @@ class MainWindow(QMainWindow):
                 self.displayMessage("{0}  {1}".format(config.thisTranslation["message_migration"], config.thisTranslation["message_willBeNoticed"]))
                 biblesSqlite.proceedMigration(biblesWithBothVersions)
                 self.displayMessage(config.thisTranslation["message_done"])
+            if config.migrateDatabaseBibleNameToDetailsTable:
+                biblesSqlite.migrateDatabaseContent() 
             del biblesSqlite
 
     def displayMessage(self, message, title="UniqueBible"):

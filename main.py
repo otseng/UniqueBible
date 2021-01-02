@@ -323,6 +323,9 @@ if not hasattr(config, "forceGenerateHtml"):
 # Log commands for debugging
 if not hasattr(config, "logCommands"):
     config.logCommands = False
+# Migrate Bible name from Verses table to Details table
+if not hasattr(config, "migrateDatabaseBibleNameToDetailsTable"):
+    config.migrateDatabaseBibleNameToDetailsTable = True 
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -508,7 +511,8 @@ def saveDataOnExit():
         ("disableModulesUpdateCheck", config.disableModulesUpdateCheck),
         ("enableCopyHtmlCommand", config.enableCopyHtmlCommand),
         ("forceGenerateHtml", config.forceGenerateHtml),
-        ("logCommands", config.logCommands)
+        ("logCommands", config.logCommands),
+        ("migrateDatabaseBibleNameToDetailsTable", config.migrateDatabaseBibleNameToDetailsTable)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:

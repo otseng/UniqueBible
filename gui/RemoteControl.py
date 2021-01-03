@@ -5,6 +5,7 @@ from PySide2.QtWidgets import (QVBoxLayout, QHBoxLayout, QGroupBox, QLineEdit, Q
 from BibleVerseParser import BibleVerseParser
 from ToolsSqlite import Commentary, LexiconData
 from TextCommandParser import TextCommandParser
+from BiblesSqlite import BiblesSqlite
 
 class RemoteControl(QWidget):
 
@@ -84,6 +85,28 @@ class RemoteControl(QWidget):
         ntBooks.setLayout(ntLayout)
         mainLayout.addWidget(ntBooks)
 
+        bibles_box = QGroupBox("Bibles")
+        box_layout = QVBoxLayout()
+        box_layout.setMargin(0)
+        box_layout.setSpacing(0)
+        row_layout = self.newRowLayout()
+        bibleSqlite = BiblesSqlite()
+        bibles = bibleSqlite.getBibleList()
+        count = 0
+        for bible in bibles:
+            button = QPushButton(bible)
+            button.setToolTip(bibleSqlite.bibleInfo(bible))
+            button.clicked.connect(partial(self.bibleAction, bible))
+            row_layout.addWidget(button)
+            count += 1
+            if count > 6:
+                count = 0
+                box_layout.addLayout(row_layout)
+                row_layout = self.newRowLayout()
+        box_layout.addLayout(row_layout)
+        bibles_box.setLayout(box_layout)
+        mainLayout.addWidget(bibles_box)
+
         commentaries_box = QGroupBox("Commentaries")
         box_layout = QVBoxLayout()
         box_layout.setMargin(0)
@@ -93,6 +116,7 @@ class RemoteControl(QWidget):
         count = 0
         for commentary in commentaries:
             button = QPushButton(commentary)
+            # button.setToolTip(Commentary(commentary).commentaryInfo())
             button.clicked.connect(partial(self.commentaryAction, commentary))
             row_layout.addWidget(button)
             count += 1
@@ -141,8 +165,16 @@ class RemoteControl(QWidget):
         self.searchLineEdit.setText("{0} ".format(self.bookMap[book]))
         self.searchLineEdit.setFocus()
 
+    def bibleAction(self, bible):
+        command = "BIBLE:::{0}:::{1} ".format(bible, self.parent.verseReference("main")[1])
+        self.parent.runTextCommand(command)
+        command = "_bibleinfo:::{0}".format(bible)
+        self.parent.runTextCommand(command)
+
     def commentaryAction(self, commentary):
-        command = "COMMENTARY:::{0}:::{1} ".format(commentary, self.parent.verseReference("main")[1])
+        command = "COMMENTARY:::{0}:::{1}".format(commentary, self.parent.verseReference("main")[1])
+        self.parent.runTextCommand(command)
+        command = "_commentaryinfo:::{0}".format(commentary)
         self.parent.runTextCommand(command)
 
     def lexiconAction(self, lexicon):

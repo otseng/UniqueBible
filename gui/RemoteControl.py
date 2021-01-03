@@ -3,7 +3,8 @@ import config, re
 from functools import partial
 from PySide2.QtWidgets import (QVBoxLayout, QHBoxLayout, QGroupBox, QLineEdit, QPushButton, QWidget)
 from BibleVerseParser import BibleVerseParser
-from ToolsSqlite import Commentary
+from ToolsSqlite import Commentary, LexiconData
+from TextCommandParser import TextCommandParser
 
 class RemoteControl(QWidget):
 
@@ -55,9 +56,7 @@ class RemoteControl(QWidget):
         otLayout.setSpacing(0)
         for bookNumGp in bookNumGps[0:4]:
             gp = QWidget()
-            layout = QHBoxLayout()
-            layout.setSpacing(0)
-            layout.setMargin(0)
+            layout = self.newRowLayout()
             for bookNum in bookNumGp:
                 text = self.bookMap[bookNum]
                 button = QPushButton(text)
@@ -74,9 +73,7 @@ class RemoteControl(QWidget):
         ntLayout.setSpacing(0)
         for bookNumGp in bookNumGps[4:7]:
             gp = QWidget()
-            layout = QHBoxLayout()
-            layout.setSpacing(0)
-            layout.setMargin(0)
+            layout = self.newRowLayout()
             for bookNum in bookNumGp:
                 text = self.bookMap[bookNum]
                 button = QPushButton(text)
@@ -91,29 +88,53 @@ class RemoteControl(QWidget):
         box_layout = QVBoxLayout()
         box_layout.setMargin(0)
         box_layout.setSpacing(0)
-        row_layout = QHBoxLayout()
-        row_layout.setSpacing(0)
-        row_layout.setMargin(0)
+        row_layout = self.newRowLayout()
         commentaries = Commentary().getCommentaryList()
+        count = 0
         for commentary in commentaries:
             button = QPushButton(commentary)
             button.clicked.connect(partial(self.commentaryAction, commentary))
             row_layout.addWidget(button)
+            count += 1
+            if count > 6:
+                count = 0
+                box_layout.addLayout(row_layout)
+                row_layout = self.newRowLayout()
         box_layout.addLayout(row_layout)
         commentaries_box.setLayout(box_layout)
         mainLayout.addWidget(commentaries_box)
 
+        lexicons_box = QGroupBox("Lexicon")
+        box_layout = QVBoxLayout()
+        box_layout.setMargin(0)
+        box_layout.setSpacing(0)
+        row_layout = self.newRowLayout()
+        lexicons = LexiconData().lexiconList
+        count = 0
+        for lexicon in lexicons:
+            button = QPushButton(lexicon)
+            button.clicked.connect(partial(self.lexiconAction, lexicon))
+            row_layout.addWidget(button)
+            count += 1
+            if count > 6:
+                count = 0
+                box_layout.addLayout(row_layout)
+                row_layout = self.newRowLayout()
+        box_layout.addLayout(row_layout)
+        lexicons_box.setLayout(box_layout)
+        mainLayout.addWidget(lexicons_box)
+
         self.setLayout(mainLayout)
+
+    def newRowLayout(self):
+        row_layout = QHBoxLayout()
+        row_layout.setSpacing(0)
+        row_layout.setMargin(0)
+        return row_layout
 
     # search field entered
     def searchLineEntered(self):
         searchString = self.searchLineEdit.text()
-        searchString = searchString.strip()
-        if ":" not in searchString:
-            if re.search(".*\d+$", searchString):
-                searchString += ":1"
-            else:
-                searchString += " 1:1"
         self.parent.runTextCommand(searchString)
 
     def bibleBookAction(self, book):
@@ -122,4 +143,8 @@ class RemoteControl(QWidget):
 
     def commentaryAction(self, commentary):
         command = "COMMENTARY:::{0}:::{1} ".format(commentary, self.parent.verseReference("main")[1])
+        self.parent.runTextCommand(command)
+
+    def lexiconAction(self, lexicon):
+        command = "LEXICON:::{0}:::{1} ".format(lexicon, TextCommandParser.last_lexicon_entry)
         self.parent.runTextCommand(command)

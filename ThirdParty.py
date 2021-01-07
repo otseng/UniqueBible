@@ -286,14 +286,16 @@ class Converter:
         connection = sqlite3.connect(filename)
         cursor = connection.cursor()
 
-        query = "SELECT Title, Abbreviation FROM Details"
+        query = "SELECT Description, Abbreviation FROM Details"
         cursor.execute(query)
         description, abbreviation = cursor.fetchone()
         abbreviation = abbreviation.replace("-", "")
         abbreviation = abbreviation.replace("'", "")
         abbreviation = abbreviation.replace('"', "")
         abbreviation = abbreviation.replace("+", "x")
-        query = "SELECT * FROM Bible ORDER BY Book, Chapter, Verse"
+        # !!! just do matthew 1
+        query = "SELECT * FROM Bible where book=40 and chapter=1 ORDER BY Book, Chapter, Verse "
+        # query = "SELECT * FROM Bible ORDER BY Book, Chapter, Verse"
         cursor.execute(query)
         verses = cursor.fetchall()
 
@@ -321,7 +323,7 @@ class Converter:
         biblesSqlite.importBible(description, abbreviation, verses)
         del biblesSqlite
 
-    def eSwordBibleToRichFormat(self, description, abbreviation, verses, notes):
+    def eSwordBibleToRichFormat(self, description, abbreviation, verses, notes, extended=False):
         formattedBible = os.path.join(config.marvelData, "bibles", "{0}.bible".format(abbreviation))
         if os.path.isfile(formattedBible):
             os.remove(formattedBible)
@@ -341,6 +343,8 @@ class Converter:
         noteList = []
         formattedChapters = {}
         for book, chapter, verse, scripture in verses:
+            if extended:
+                scripture = self.convertSuperStrongs(scripture)
             scripture = self.convertESwordBibleTags(scripture)
 
             if scripture:
@@ -402,6 +406,7 @@ class Converter:
             ("</blu>", "</esblu>"),
             ("</ref><ref", "</ref>; <ref"),
             ("</ref></sup>[ ]*?<sup><ref", "</ref> <ref"),
+            ("{.*?super (.*?)}", r"<gloss onclick='lex({0}\1{0})'>\1</gloss>".format('"')),
         )
         for search, replace in searchReplace:
             text = re.sub(search, replace, text)

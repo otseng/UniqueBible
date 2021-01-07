@@ -416,7 +416,6 @@ def saveDataOnExit():
         ("testing", config.testing),
         ("myGoogleApiKey", config.myGoogleApiKey),
         ("alwaysDisplayStaticMaps", config.alwaysDisplayStaticMaps),
-        ("remoteControl", config.remoteControl),
         ("openWindows", config.openWindows),
         ("openMacos", config.openMacos),
         ("openLinux", config.openLinux),

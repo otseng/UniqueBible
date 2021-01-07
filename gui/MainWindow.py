@@ -107,11 +107,8 @@ class MainWindow(QMainWindow):
         self.checkApplicationUpdate()
         # check if newer versions of formatted bibles are available
         self.checkModulesUpdate()
-
-        # setup a remote controller
-        self.remoteControl = RemoteControl(self)
-        if config.remoteControl:
-            self.manageRemoteControl(True)
+        # Remote control
+        self.remoteControl = None
 
     def __del__(self):
         del self.textCommandParser
@@ -205,12 +202,14 @@ class MainWindow(QMainWindow):
         baseUrl = QUrl.fromLocalFile(absolutePath)
         config.baseUrl = baseUrl
 
-    def manageRemoteControl(self, open=False):
-        if open or not config.remoteControl:
+    def manageRemoteControl(self):
+        if not config.remoteControl:
+            self.remoteControl = RemoteControl(self)
             self.remoteControl.show()
             config.remoteControl = True
         else:
-            self.remoteControl.hide()
+            if self.remoteControl:
+                self.remoteControl.close()
             config.remoteControl = False
 
     def closeEvent(self, event):
@@ -1961,7 +1960,11 @@ class MainWindow(QMainWindow):
         fileName, filtr = QFileDialog.getOpenFileName(self,
                 config.thisTranslation["menu8_3rdParty"],
                 self.openFileNameLabel.text(),
-                "MySword Bibles (*.bbl.mybible);;MySword Commentaries (*.cmt.mybible);;MySword Books (*.bok.mybible);;MySword Dictionaries (*.dct.mybible);;e-Sword Bibles [Apple] (*.bbli);;e-Sword Commentaries [Apple] (*.cmti);;e-Sword Dictionaries [Apple] (*.dcti);;e-Sword Lexicons [Apple] (*.lexi);;e-Sword Books [Apple] (*.refi);;MyBible Bibles (*.SQLite3);;MyBible Commentaries (*.commentaries.SQLite3);;MyBible Dictionaries (*.dictionary.SQLite3)", "", options)
+                    ("MySword Bibles (*.bbl.mybible);;MySword Commentaries (*.cmt.mybible);;MySword Books (*.bok.mybible);;"
+                     "MySword Dictionaries (*.dct.mybible);;e-Sword Bibles [Apple] (*.bbli);;"
+                     "e-Sword Bibles [Apple] (*.bblx);;e-Sword Commentaries [Apple] (*.cmti);;"
+                     "e-Sword Dictionaries [Apple] (*.dcti);;e-Sword Lexicons [Apple] (*.lexi);;e-Sword Books [Apple] (*.refi);;"
+                     "MyBible Bibles (*.SQLite3);;MyBible Commentaries (*.commentaries.SQLite3);;MyBible Dictionaries (*.dictionary.SQLite3)"), "", options)
         if fileName:
             if fileName.endswith(".dct.mybible") or fileName.endswith(".dcti") or fileName.endswith(".lexi") or fileName.endswith(".dictionary.SQLite3"):
                 self.importThirdPartyDictionary(fileName)
@@ -1972,6 +1975,8 @@ class MainWindow(QMainWindow):
             elif fileName.endswith(".bok.mybible"):
                 self.importMySwordBook(fileName)
             elif fileName.endswith(".bbli"):
+                self.importESwordBible(fileName)
+            elif fileName.endswith(".bblx"):
                 self.importESwordBible(fileName)
             elif fileName.endswith(".cmti"):
                 self.importESwordCommentary(fileName)

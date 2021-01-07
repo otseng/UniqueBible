@@ -284,6 +284,7 @@ class Converter:
         logger = logging.getLogger('uba')
         logger.info("Importing eSword Bible: " + filename)
         connection = sqlite3.connect(filename)
+        connection.text_factory = lambda b: b.decode(errors='ignore')
         cursor = connection.cursor()
 
         query = "SELECT Description, Abbreviation FROM Details"
@@ -293,9 +294,7 @@ class Converter:
         abbreviation = abbreviation.replace("'", "")
         abbreviation = abbreviation.replace('"', "")
         abbreviation = abbreviation.replace("+", "x")
-        # !!! just do matthew 1
-        query = "SELECT * FROM Bible where book=40 and chapter=1 ORDER BY Book, Chapter, Verse "
-        # query = "SELECT * FROM Bible ORDER BY Book, Chapter, Verse"
+        query = "SELECT * FROM Bible ORDER BY Book, Chapter, Verse"
         cursor.execute(query)
         verses = cursor.fetchall()
 
@@ -389,6 +388,7 @@ class Converter:
             ("<p>|</p>|<h[0-9]+?>|</h[0-9]+?>|<sup>", " "),
             ("<not>.*?</not>|<[^\n<>]*?>", ""),
             (" [ ]+?([^ ])", r" \1"),
+            ("{.*?super (.*?)}", r"<gloss onclick='lex({0}\1{0})'>\1</gloss>".format('"')),
         )
         text = text.strip()
         for search, replace in searchReplace:

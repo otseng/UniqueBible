@@ -949,6 +949,17 @@ class Bible:
         else:
             return False
 
+    def checkColumnExists(self, table, column):
+        self.cursor.execute("SELECT * FROM pragma_table_info(?) WHERE name=?", (table, column))
+        if self.cursor.fetchone():
+            return True
+        else:
+            return False
+
+    def addColumnToTable(self, table, column, column_type):
+        sql = "ALTER TABLE " + table + " ADD COLUMN " + column + " " + column_type
+        self.cursor.execute(sql)
+
     def createDetailsTable(self):
         self.cursor.execute(Bible.CREATE_DETAILS_TABLE)
 
@@ -974,7 +985,10 @@ class Bible:
         return count
 
     def fixDatabase(self):
-        pass
+        if not self.checkTableExists("Details"):
+            self.createDetailsTable()
+        if not self.checkColumnExists("Details", "Language"):
+            self.addColumnToTable("Details", "Language", "NVARCHAR(10)")
 
 class ClauseData:
 

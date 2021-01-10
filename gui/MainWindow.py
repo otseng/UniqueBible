@@ -1606,6 +1606,7 @@ class MainWindow(QMainWindow):
         if ok and item:
             bible = Bible(item)
             bible.fixDatabase()
+            self.displayMessage(config.thisTranslation["message_done"])
 
     # convert bible references to string
     def bcvToVerseReference(self, b, c, v):

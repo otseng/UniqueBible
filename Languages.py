@@ -121,7 +121,7 @@ class Languages:
         "menu1_screenSize": "Screen Size",
         "menu1_fullScreen": "Full Screen",
         "menu1_topHalf": "Top Half",
-        "menu1_bottomHalf": "Bottem Half",
+        "menu1_bottomHalf": "Bottom Half",
         "menu1_leftHalf": "Left Half",
         "menu1_rightHalf": "Right Half",
         "menu1_smallSize": "Small Size",

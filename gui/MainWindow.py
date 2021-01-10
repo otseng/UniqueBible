@@ -1981,7 +1981,8 @@ class MainWindow(QMainWindow):
                                                        "MySword Dictionaries (*.dct.mybible);;e-Sword Bibles [Apple] (*.bbli);;"
                                                        "e-Sword Bibles [Apple] (*.bblx);;e-Sword Commentaries [Apple] (*.cmti);;"
                                                        "e-Sword Dictionaries [Apple] (*.dcti);;e-Sword Lexicons [Apple] (*.lexi);;e-Sword Books [Apple] (*.refi);;"
-                                                       "MyBible Bibles (*.SQLite3);;MyBible Commentaries (*.commentaries.SQLite3);;MyBible Dictionaries (*.dictionary.SQLite3)"), "", options)
+                                                       "MyBible Bibles (*.SQLite3);;MyBible Commentaries (*.commentaries.SQLite3);;MyBible Dictionaries (*.dictionary.SQLite3);;"
+                                                       "Zefania XML (*.xml)"), "", options)
         if fileName:
             if fileName.endswith(".dct.mybible") or fileName.endswith(".dcti") or fileName.endswith(".lexi") or fileName.endswith(".dictionary.SQLite3"):
                 self.importThirdPartyDictionary(fileName)
@@ -2003,6 +2004,8 @@ class MainWindow(QMainWindow):
                 self.importMyBibleCommentary(fileName)
             elif fileName.endswith(".SQLite3"):
                 self.importMyBibleBible(fileName)
+            elif fileName.endswith(".xml"):
+                self.importXMLBible(fileName)
 
     def importModulesInFolder(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
@@ -2087,6 +2090,10 @@ class MainWindow(QMainWindow):
 
     def importMyBibleBible(self, fileName):
         Converter().importMyBibleBible(fileName)
+        self.completeImport()
+
+    def importXMLBible(self, fileName):
+        Converter().importXMLBible(fileName)
         self.completeImport()
 
     def completeImport(self):

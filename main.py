@@ -572,6 +572,7 @@ setCurrentRecord()
 
 def global_excepthook(type, value, traceback):
     logger.error("Uncaught exception", exc_info=(type, value, traceback))
+    print(traceback.format_exc())
 
 sys.excepthook = global_excepthook
 

@@ -3,6 +3,7 @@ from shutil import copyfile
 from BiblesSqlite import BiblesSqlite
 from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import Bible
+from xml.dom import minidom
 
 class Converter:
 
@@ -17,7 +18,7 @@ class Converter:
             # create two tables: "Details" & "Commentary"
             statements = (
                 Bible.CREATE_DETAILS_TABLE,
-                "CREATE TABLE Commentary (Book INT, Chapter INT, Scripture TEXT)",
+                Bible.CREATE_COMMENTARY_TABLE
             )
             for create in statements:
                 cursor.execute(create)
@@ -330,8 +331,8 @@ class Converter:
         cursor = connection.cursor()
 
         statements = (
-            "CREATE TABLE Bible (Book INT, Chapter INT, Scripture TEXT)",
-            "CREATE TABLE Notes (Book INT, Chapter INT, Verse INT, ID TEXT, Note TEXT)",
+            Bible.CREATE_BIBLE_TABLE,
+            Bible.CREATE_VERSES_TABLE,
             Bible.CREATE_DETAILS_TABLE
         )
         for create in statements:
@@ -668,8 +669,8 @@ class Converter:
         cursor = connection.cursor()
 
         statements = (
-            "CREATE TABLE Bible (Book INT, Chapter INT, Scripture TEXT)",
-            "CREATE TABLE Notes (Book INT, Chapter INT, Verse INT, ID TEXT, Note TEXT)",
+            Bible.CREATE_BIBLE_TABLE,
+            Bible.CREATE_NOTES_TABLE,
             Bible.CREATE_DETAILS_TABLE
         )
         for create in statements:
@@ -710,7 +711,7 @@ class Converter:
 
         connection.close()
 
-    def populateDetails(self, cursor, description, abbreviation):
+    def populateDetails(self, cursor, description, abbreviation, language = ""):
         cursor.execute("SELECT COUNT(DISTINCT(Book)) FROM Bible")
         count = cursor.fetchone()[0]
 
@@ -727,9 +728,9 @@ class Converter:
         elif count > 66:
             apocryphaFlag = 1
 
-        insert = "INSERT INTO Details VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        insert = "INSERT INTO Details VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
         cursor.execute(insert, (description[:100], abbreviation[:50], information, version, oldTestamentFlag,
-                                newTestamentFlag, apocryphaFlag, strongsFlag))
+                                newTestamentFlag, apocryphaFlag, strongsFlag, language))
         cursor.connection.commit()
 
     def stripMySwordBibleTags(self, text):
@@ -978,6 +979,38 @@ class Converter:
         if config.importRtlOT:
             config.rtlTexts.append(abbreviation)
 
+
+    # Import Zefania XML Bibles
+    # https://www.ph4.org/b4_mobi.php?q=zefania
+    # http://sourceforge.net/projects/zefania-sharp/files/
+    def importXMLBible(self, filename):
+        logger = logging.getLogger('uba')
+        logger.info("Importing Zefania XML Bible: " + filename)
+        doc = minidom.parse(filename)
+        translation = doc.getElementsByTagName("XMLBIBLE")[0]
+        biblename = translation.getAttribute("biblename")
+        if biblename[:7] == "ENGLISH":
+            biblename = biblename[7:]
+        abbreviation = biblename
+        description = biblename
+        books = doc.getElementsByTagName("BIBLEBOOK")
+        data = []
+        for book in books:
+            book_number = book.getAttribute("bnumber")
+            chapters = book.getElementsByTagName("CHAPTER")
+            book_number = book.getAttribute("bnumber")
+            for chapter in chapters:
+                chapter_number = chapter.getAttribute("cnumber")
+                verses = chapter.getElementsByTagName("VERS")
+                for verse in verses:
+                    verse_number = verse.getAttribute("vnumber")
+                    scripture = verse.firstChild.nodeValue.strip()
+                    row = [book_number, chapter_number, verse_number, scripture]
+                    data.append(row)
+        self.mySwordBibleToRichFormat(description, abbreviation, data)
+        self.mySwordBibleToPlainFormat(description, abbreviation, data)
+        logger.info("Import successful")
+
     def storiesToTitles(self, stories):
         titles = {}
         for story in stories:
@@ -1017,8 +1050,8 @@ class Converter:
         cursor = connection.cursor()
 
         statements = (
-            "CREATE TABLE Bible (Book INT, Chapter INT, Scripture TEXT)",
-            "CREATE TABLE Notes (Book INT, Chapter INT, Verse INT, ID TEXT, Note TEXT)"
+            Bible.CREATE_BIBLE_TABLE,
+            Bible.CREATE_NOTES_TABLE
         )
         for create in statements:
             cursor.execute(create)

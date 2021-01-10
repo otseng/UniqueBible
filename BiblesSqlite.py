@@ -802,7 +802,13 @@ class Bible:
                            Abbreviation NVARCHAR(50), Information TEXT, Version INT, OldTestament BOOL,
                            NewTestament BOOL, Apocrypha BOOL, Strongs BOOL, Language NVARCHAR(10))'''
 
+    CREATE_BIBLE_TABLE = "CREATE TABLE Bible (Book INT, Chapter INT, Scripture TEXT)"
+
     CREATE_VERSES_TABLE = "CREATE TABLE IF NOT EXISTS Verses (Book INT, Chapter INT, Verse INT, Scripture TEXT)"
+
+    CREATE_NOTES_TABLE = "CREATE TABLE Notes (Book INT, Chapter INT, Verse INT, ID TEXT, Note TEXT)"
+
+    CREATE_COMMENTARY_TABLE = "CREATE TABLE Commentary (Book INT, Chapter INT, Scripture TEXT)"
 
     def __init__(self, text):
         # connect [text].bible
@@ -873,13 +879,17 @@ class Bible:
         return textChapter
 
     def readTextVerse(self, b, c, v):
-        query = "SELECT * FROM Verses WHERE Book=? AND Chapter=? AND Verse=?"
-        self.cursor.execute(query, (b, c, v))
-        textVerse = self.cursor.fetchone()
-        if not textVerse:
+        if self.checkTableExists("Verses"):
+            query = "SELECT * FROM Verses WHERE Book=? AND Chapter=? AND Verse=?"
+            self.cursor.execute(query, (b, c, v))
+            textVerse = self.cursor.fetchone()
+            if not textVerse:
+                return (b, c, v, "")
+            # return a tuple
+            return textVerse
+        else:
+            print("Verse table does not exist")
             return (b, c, v, "")
-        # return a tuple
-        return textVerse
 
     def readFormattedChapter(self, verse):
         b, c, v, *_ = verse

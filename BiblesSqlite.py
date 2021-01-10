@@ -798,6 +798,12 @@ input.addEventListener('keyup', function(event) {0}
 
 class Bible:
 
+    CREATE_DETAILS_TABLE = '''CREATE TABLE IF NOT EXISTS Details (Title NVARCHAR(100), 
+                           Abbreviation NVARCHAR(50), Information TEXT, Version INT, OldTestament BOOL,
+                           NewTestament BOOL, Apocrypha BOOL, Strongs BOOL, Language NVARCHAR(10))'''
+
+    CREATE_VERSES_TABLE = "CREATE TABLE IF NOT EXISTS Verses (Book INT, Chapter INT, Verse INT, Scripture TEXT)"
+
     def __init__(self, text):
         # connect [text].bible
         self.text = text
@@ -850,7 +856,7 @@ class Bible:
             delete = "DELETE from Verses"
             self.cursor.execute(delete)
         else:
-            create = "CREATE TABLE Verses (Book INT, Chapter INT, Verse INT, Scripture TEXT)"
+            create = Bible.CREATE_VERSES_TABLE
             self.cursor.execute(create)
         self.connection.commit()
         insert = "INSERT INTO Verses (Book, Chapter, Verse, Scripture) VALUES (?, ?, ?, ?)"
@@ -944,13 +950,15 @@ class Bible:
             return False
 
     def createDetailsTable(self):
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS Details (Title NVARCHAR(100), 
-                               Abbreviation NVARCHAR(50), Information TEXT, Version INT, OldTestament BOOL,
-                               NewTestament BOOL, Apocrypha BOOL, Strongs BOOL)''')
+        self.cursor.execute(Bible.CREATE_DETAILS_TABLE)
 
-    def insertDetailsTable(self, bibleFullname, bibleAbbrev):
-        sql = "INSERT INTO Details VALUES (?, ?, '', 1, 1, 1, 0, 1)"
-        self.cursor.execute(sql, (bibleFullname, bibleAbbrev))
+    def createVersesTable(self):
+        self.cursor.execute(Bible.CREATE_VERSES_TABLE)
+
+    def insertDetailsTable(self, bibleFullname, bibleAbbrev, language=''):
+        sql = ("INSERT INTO Details (Title, Abbreviation, Information, Version, OldTestament, NewTestament,"
+               "Apocrypha, Strongs, Language) VALUES (?, ?, '', 1, 1, 1, 0, 0, ?)")
+        self.cursor.execute(sql, (bibleFullname, bibleAbbrev, language))
 
     def updateDetailsTable(self, bibleFullname, bibleAbbrev):
         sql = "UPDATE Details set Title = ?, Abbreviation = ?"
@@ -959,6 +967,14 @@ class Bible:
     def deleteOldBibleInfo(self):
         query = "DELETE FROM Verses WHERE Book=0 AND Chapter=0 AND Verse=0"
         self.cursor.execute(query)
+
+    def getGount(self, table):
+        self.cursor.execute('SELECT COUNT(*) from ' + table)
+        count = self.cursor.fetchone()[0]
+        return count
+
+    def fixDatabase(self):
+        pass
 
 class ClauseData:
 

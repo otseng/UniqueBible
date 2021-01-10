@@ -16,15 +16,15 @@ class Converter:
             cursor = connection.cursor()
             # create two tables: "Details" & "Commentary"
             statements = (
-                "CREATE TABLE Details (Title NVARCHAR(100), Abbreviation NVARCHAR(50), Information TEXT, Version INT, OldTestament BOOL, NewTestament BOOL, Apocrypha BOOL, Strongs BOOL)",
+                Bible.CREATE_DETAILS_TABLE,
                 "CREATE TABLE Commentary (Book INT, Chapter INT, Scripture TEXT)",
             )
             for create in statements:
                 cursor.execute(create)
                 connection.commit()
             # insert data to table "Details"
-            insert = "INSERT INTO Details (Title, Abbreviation, Information, Version, OldTestament, NewTestament, Apocrypha, Strongs) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-            cursor.execute(insert, (title, abbreviation, description, 1, 1, 1, 0, 0))
+            insert = "INSERT INTO Details (Title, Abbreviation, Information, Version, OldTestament, NewTestament, Apocrypha, Strongs, Language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            cursor.execute(insert, (title, abbreviation, description, 1, 1, 1, 0, 0, ''))
             connection.commit()
             # insert data to table "Commentary"
             if content:
@@ -332,8 +332,7 @@ class Converter:
         statements = (
             "CREATE TABLE Bible (Book INT, Chapter INT, Scripture TEXT)",
             "CREATE TABLE Notes (Book INT, Chapter INT, Verse INT, ID TEXT, Note TEXT)",
-            ("CREATE TABLE Details (Title NVARCHAR(100), Abbreviation NVARCHAR(50), Information TEXT,"
-             "Version INT, OldTestament BOOL, NewTestament BOOL, Apocrypha BOOL, Strongs BOOL)")
+            Bible.CREATE_DETAILS_TABLE
         )
         for create in statements:
             cursor.execute(create)
@@ -671,8 +670,7 @@ class Converter:
         statements = (
             "CREATE TABLE Bible (Book INT, Chapter INT, Scripture TEXT)",
             "CREATE TABLE Notes (Book INT, Chapter INT, Verse INT, ID TEXT, Note TEXT)",
-            ("CREATE TABLE Details (Title NVARCHAR(100), Abbreviation NVARCHAR(50), Information TEXT,"
-                "Version INT, OldTestament BOOL, NewTestament BOOL, Apocrypha BOOL, Strongs BOOL)")
+            Bible.CREATE_DETAILS_TABLE
         )
         for create in statements:
             cursor.execute(create)

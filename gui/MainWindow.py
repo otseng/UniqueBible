@@ -466,7 +466,7 @@ class MainWindow(QMainWindow):
         menu2.addAction(QAction(config.thisTranslation["menu2_landscape"], self, shortcut="Ctrl+L", triggered=self.switchLandscapeMode))
         menu2.addSeparator()
         menu2.addAction(QAction(config.thisTranslation["menu2_study"], self, shortcut="Ctrl+W", triggered=self.parallel))
-        menu2.addAction(QAction(config.thisTranslation["menu2_bottom"], self, shortcut="Ctrl+T", triggered=self.instant))
+        menu2.addAction(QAction(config.thisTranslation["menu2_bottom"], self, shortcut="Ctrl+T", triggered=self.cycleInstant))
         menu2.addSeparator()
         menu2.addAction(QAction(config.thisTranslation["menu2_hover"], self, shortcut="Ctrl+=", triggered=self.enableInstantButtonClicked))
         menu2.addSeparator()
@@ -1195,7 +1195,7 @@ class MainWindow(QMainWindow):
         instantButton.setToolTip(config.thisTranslation["menu2_bottom"])
         instantButtonFile = os.path.join("htmlResources", "lightning.png")
         instantButton.setIcon(QIcon(instantButtonFile))
-        instantButton.clicked.connect(self.instant)
+        instantButton.clicked.connect(self.cycleInstant)
         self.rightToolBar.addWidget(instantButton)
 
         self.rightToolBar.addSeparator()
@@ -3020,11 +3020,10 @@ class MainWindow(QMainWindow):
         self.centralWidget.resizeMe()
 
     # Actions - hide / show / resize study & lightning views
-    def instant(self):
-        if config.instantMode == 2:
+    def cycleInstant(self):
+        config.instantMode += 1
+        if config.instantMode == len(CentralWidget.instantRatio):
             config.instantMode = 0
-        else:
-            config.instantMode += 1
         self.resizeCentral()
 
     def parallel(self):

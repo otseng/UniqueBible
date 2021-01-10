@@ -203,7 +203,10 @@ class MainWindow(QMainWindow):
         config.baseUrl = baseUrl
 
     def manageRemoteControl(self):
-        if not config.remoteControl:
+        if config.remoteControl and not self.remoteControl.isActiveWindow():
+            self.remoteControl.raise_()
+            self.remoteControl.activateWindow()
+        elif not config.remoteControl:
             self.remoteControl = RemoteControl(self)
             self.remoteControl.show()
             config.remoteControl = True

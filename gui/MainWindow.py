@@ -2891,7 +2891,8 @@ class MainWindow(QMainWindow):
 
     # change of unique bible commands
     def mainTextCommandChanged(self, newTextCommand):
-        self.textCommandChanged(newTextCommand, "main")
+        if not newTextCommand == "main.html":
+            self.textCommandChanged(newTextCommand, "main")
 
     def studyTextCommandChanged(self, newTextCommand):
         self.textCommandChanged(newTextCommand, "study")

@@ -1,7 +1,9 @@
+from PySide2.QtCore import Qt
+
 import config
 from functools import partial
 from PySide2.QtWidgets import (QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QWidget, QTabWidget,
-                               QApplication, QBoxLayout)
+                               QApplication, QBoxLayout, QDesktopWidget)
 
 if __name__ == "__main__":
    config.mainText = ""
@@ -12,7 +14,7 @@ if __name__ == "__main__":
    config.commentaryC = ""
 
 from BibleVerseParser import BibleVerseParser
-from ToolsSqlite import Commentary, LexiconData, Lexicon
+from ToolsSqlite import Commentary, LexiconData, Lexicon, IndexesSqlite
 from TextCommandParser import TextCommandParser
 
 from BiblesSqlite import BiblesSqlite
@@ -24,14 +26,20 @@ class RemoteControl(QWidget):
         self.setWindowTitle(config.thisTranslation["remote_control"])
         self.parent = parent
         # specify window size
-        self.resizeWindow(1 / 3, 1 / 3)
+        self.resizeWindow(1 / 2, 1 / 3)
+        self.resizeEvent = (lambda old_method: (lambda event: (self.onResized(event), old_method(event))[-1]))(
+            self.resizeEvent)
         # setup interface
         self.setupUI()
 
     # window appearance
     def resizeWindow(self, widthFactor, heightFactor):
         availableGeometry = qApp.desktop().availableGeometry()
+        self.setMinimumWidth(500)
         self.resize(availableGeometry.width() * widthFactor, availableGeometry.height() * heightFactor)
+
+    def onResized(self, event):
+        pass
 
     def closeEvent(self, event):
         config.remoteControl = False
@@ -40,32 +48,42 @@ class RemoteControl(QWidget):
     def setupUI(self):
         mainLayout = QVBoxLayout()
 
+        self.commandBox = QVBoxLayout()
+        self.commandBox.setSpacing(0)
+
         self.commandBar = QWidget()
-        self.commandLayout = QBoxLayout(QBoxLayout.LeftToRight)
-        self.commandLayout.setSpacing(3)
+        self.commandLayout1 = QBoxLayout(QBoxLayout.LeftToRight)
+        self.commandLayout1.setSpacing(5)
         self.searchLineEdit = QLineEdit()
         self.searchLineEdit.setToolTip(config.thisTranslation["enter_command_here"])
         self.searchLineEdit.returnPressed.connect(self.searchLineEntered)
         self.searchLineEdit.setFixedWidth(300)
-        self.commandLayout.addWidget(self.searchLineEdit)
+        self.commandLayout1.addWidget(self.searchLineEdit)
 
         self.enterButton = QPushButton(config.thisTranslation["enter"])
+        self.enterButton.setFixedWidth(100)
         self.enterButton.clicked.connect(self.searchLineEntered)
-        self.commandLayout.addWidget(self.enterButton)
+        self.commandLayout1.addWidget(self.enterButton)
+        self.commandLayout1.addStretch()
 
-        keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ':', '-', ' ', '<']
+        self.commandLayout2 = QBoxLayout(QBoxLayout.LeftToRight)
+        self.commandLayout2.setSpacing(5)
+
+        keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ':', '-', ' ', '<', 'X']
         for key in keys:
             button = QPushButton(key)
             button.setMaximumWidth(30)
             button.clicked.connect(partial(self.keyEntryAction, key))
-            self.commandLayout.addWidget(button)
+            self.commandLayout2.addWidget(button)
 
-        self.commandLayout.addStretch()
-        self.commandBar.setLayout(self.commandLayout)
+        self.commandLayout2.addStretch()
+
+        self.commandBox.addLayout(self.commandLayout1)
+        self.commandBox.addLayout(self.commandLayout2)
+        self.commandBar.setLayout(self.commandBox)
         mainLayout.addWidget(self.commandBar)
 
         tabs = QTabWidget()
-        tabs.currentChanged.connect(self.tabChanged)
         mainLayout.addWidget(tabs)
 
         parser = BibleVerseParser(config.parserStandarisation)
@@ -85,7 +103,7 @@ class RemoteControl(QWidget):
         bible_layout = QVBoxLayout()
         bible_layout.setMargin(0)
         bible_layout.setSpacing(0)
-        for bookNumGp in bookNumGps[0:4]:
+        for bookNumGp in bookNumGps[0:5]:
             gp = QWidget()
             layout = self.newRowLayout()
             for bookNum in bookNumGp:
@@ -96,7 +114,7 @@ class RemoteControl(QWidget):
             gp.setLayout(layout)
             bible_layout.addWidget(gp)
 
-        for bookNumGp in bookNumGps[4:7]:
+        for bookNumGp in bookNumGps[5:]:
             gp = QWidget()
             layout = self.newRowLayout()
             for bookNum in bookNumGp:
@@ -178,6 +196,28 @@ class RemoteControl(QWidget):
 
         tabs.addTab(lexicons_box, config.thisTranslation["lexicons"])
 
+        dictionaries_box = QWidget()
+        box_layout = QVBoxLayout()
+        box_layout.setMargin(0)
+        box_layout.setSpacing(0)
+        row_layout = self.newRowLayout()
+        dictionaries = IndexesSqlite().dictionaryList
+        count = 0
+        for dictionary in dictionaries:
+            button = QPushButton(dictionary[0])
+            button.setToolTip(dictionary[1])
+            button.clicked.connect(partial(self.dictionaryAction, dictionary[0]))
+            row_layout.addWidget(button)
+            count += 1
+            if count > 6:
+                count = 0
+                box_layout.addLayout(row_layout)
+                row_layout = self.newRowLayout()
+        box_layout.addLayout(row_layout)
+        box_layout.addStretch()
+        dictionaries_box.setLayout(box_layout)
+
+        tabs.addTab(dictionaries_box, config.thisTranslation["dictionaries"])
         self.setLayout(mainLayout)
 
     def newRowLayout(self):
@@ -185,15 +225,6 @@ class RemoteControl(QWidget):
         row_layout.setSpacing(0)
         row_layout.setMargin(0)
         return row_layout
-
-    def tabChanged(self, tab):
-        if tab == 0:
-            self.commandBar.setEnabled(True)
-            self.searchLineEdit.setEnabled(True)
-            self.searchLineEdit.setFocus()
-        else:
-            self.commandBar.setEnabled(False)
-            self.searchLineEdit.setEnabled(False)
 
     def searchLineEntered(self):
         searchString = self.searchLineEdit.text()
@@ -205,26 +236,36 @@ class RemoteControl(QWidget):
 
     def keyEntryAction(self, key):
         text = self.searchLineEdit.text()
-        if key == "<":
+        if key == "X":
+            text = ""
+        elif key == "<":
             text = text[:-1]
         else:
             text += key
         self.searchLineEdit.setText(text)
 
     def bibleAction(self, bible):
-        command = "BIBLE:::{0}:::{1} ".format(bible, self.parent.verseReference("main")[1])
+        command = "BIBLE:::{0}:::{1}".format(bible, self.parent.verseReference("main")[1])
+        self.searchLineEdit.setText(command)
         self.parent.runTextCommand(command)
         command = "_bibleinfo:::{0}".format(bible)
         self.parent.runTextCommand(command)
 
     def commentaryAction(self, commentary):
         command = "COMMENTARY:::{0}:::{1}".format(commentary, self.parent.verseReference("main")[1])
+        self.searchLineEdit.setText(command)
         self.parent.runTextCommand(command)
         command = "_commentaryinfo:::{0}".format(commentary)
         self.parent.runTextCommand(command)
 
     def lexiconAction(self, lexicon):
-        command = "LEXICON:::{0}:::{1} ".format(lexicon, TextCommandParser.last_lexicon_entry)
+        command = "LEXICON:::{0}:::{1}".format(lexicon, TextCommandParser.last_lexicon_entry)
+        self.searchLineEdit.setText(command)
+        self.parent.runTextCommand(command)
+
+    def dictionaryAction(self, dictionary):
+        command = "SEARCHTOOL:::{0}:::{1}".format(dictionary, TextCommandParser.last_text_search)
+        self.searchLineEdit.setText(command)
         self.parent.runTextCommand(command)
 
 ## Standalone development code
@@ -232,6 +273,9 @@ class RemoteControl(QWidget):
 class DummyParent():
     def runTextCommand(self, command):
         print(command)
+
+    def verseReference(self, command):
+        return ['', '']
 
 if __name__ == "__main__":
    import sys

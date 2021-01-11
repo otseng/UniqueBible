@@ -3,7 +3,7 @@ from PySide2.QtCore import Qt
 import config
 from functools import partial
 from PySide2.QtWidgets import (QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QWidget, QTabWidget,
-                               QApplication, QBoxLayout, QDesktopWidget)
+                               QApplication, QBoxLayout, QDesktopWidget, QGridLayout)
 
 if __name__ == "__main__":
    config.mainText = ""
@@ -46,45 +46,46 @@ class RemoteControl(QWidget):
 
     # setup ui
     def setupUI(self):
-        mainLayout = QVBoxLayout()
+        mainLayout = QGridLayout()
 
-        self.commandBox = QVBoxLayout()
-        self.commandBox.setSpacing(0)
+        commandBox = QVBoxLayout()
+        commandBox.setSpacing(0)
 
-        self.commandBar = QWidget()
-        self.commandLayout1 = QBoxLayout(QBoxLayout.LeftToRight)
-        self.commandLayout1.setSpacing(5)
+        commandBar = QWidget()
+        commandLayout1 = QBoxLayout(QBoxLayout.LeftToRight)
+        commandLayout1.setSpacing(5)
         self.searchLineEdit = QLineEdit()
         self.searchLineEdit.setToolTip(config.thisTranslation["enter_command_here"])
         self.searchLineEdit.returnPressed.connect(self.searchLineEntered)
         self.searchLineEdit.setFixedWidth(300)
-        self.commandLayout1.addWidget(self.searchLineEdit)
+        commandLayout1.addWidget(self.searchLineEdit)
 
-        self.enterButton = QPushButton(config.thisTranslation["enter"])
-        self.enterButton.setFixedWidth(100)
-        self.enterButton.clicked.connect(self.searchLineEntered)
-        self.commandLayout1.addWidget(self.enterButton)
-        self.commandLayout1.addStretch()
+        enterButton = QPushButton(config.thisTranslation["enter"])
+        enterButton.setFixedWidth(100)
+        enterButton.clicked.connect(self.searchLineEntered)
+        commandLayout1.addWidget(enterButton)
+        commandLayout1.addStretch()
 
-        self.commandLayout2 = QBoxLayout(QBoxLayout.LeftToRight)
-        self.commandLayout2.setSpacing(5)
+        commandLayout2 = QBoxLayout(QBoxLayout.LeftToRight)
+        commandLayout2.setSpacing(5)
 
         keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ':', '-', ' ', '<', 'X']
         for key in keys:
             button = QPushButton(key)
             button.setMaximumWidth(30)
             button.clicked.connect(partial(self.keyEntryAction, key))
-            self.commandLayout2.addWidget(button)
+            commandLayout2.addWidget(button)
 
-        self.commandLayout2.addStretch()
+        commandLayout2.addStretch()
 
-        self.commandBox.addLayout(self.commandLayout1)
-        self.commandBox.addLayout(self.commandLayout2)
-        self.commandBar.setLayout(self.commandBox)
-        mainLayout.addWidget(self.commandBar)
+        commandBox.addLayout(commandLayout1)
+        commandBox.addLayout(commandLayout2)
+        commandBar.setLayout(commandBox)
+        mainLayout.addWidget(commandBar, 0, 0, Qt.AlignCenter)
 
         tabs = QTabWidget()
-        mainLayout.addWidget(tabs)
+        tabs.currentChanged.connect(self.tabChanged)
+        mainLayout.addWidget(tabs, 1, 0, Qt.AlignCenter)
 
         parser = BibleVerseParser(config.parserStandarisation)
         self.bookMap = parser.standardAbbreviation
@@ -226,12 +227,18 @@ class RemoteControl(QWidget):
         row_layout.setMargin(0)
         return row_layout
 
+    def tabChanged(self):
+        self.searchLineEdit.setText("")
+
     def searchLineEntered(self):
         searchString = self.searchLineEdit.text()
         self.parent.runTextCommand(searchString)
+        self.searchLineEdit.setFocus()
 
     def bibleBookAction(self, book):
-        self.searchLineEdit.setText("{0} ".format(self.bookMap[book]))
+        command = "{0} ".format(self.bookMap[book])
+        self.searchLineEdit.setText(command)
+        self.parent.runTextCommand(command)
         self.searchLineEdit.setFocus()
 
     def keyEntryAction(self, key):

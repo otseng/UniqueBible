@@ -1,7 +1,7 @@
 from re import search
 import config, re
 from functools import partial
-from PySide2.QtWidgets import (QVBoxLayout, QHBoxLayout, QGroupBox, QLineEdit, QPushButton, QWidget)
+from PySide2.QtWidgets import (QVBoxLayout, QHBoxLayout, QGroupBox, QLineEdit, QPushButton, QWidget, QTabWidget)
 from BibleVerseParser import BibleVerseParser
 from ToolsSqlite import Commentary, LexiconData
 from TextCommandParser import TextCommandParser
@@ -35,6 +35,9 @@ class RemoteControl(QWidget):
         self.searchLineEdit.returnPressed.connect(self.searchLineEntered)
         mainLayout.addWidget(self.searchLineEdit)
 
+        tabs = QTabWidget()
+        mainLayout.addWidget(tabs)
+
         parser = BibleVerseParser(config.parserStandarisation)
         self.bookMap = parser.standardAbbreviation
         bookNums = list(self.bookMap.keys())
@@ -48,10 +51,10 @@ class RemoteControl(QWidget):
             bookNums[59:66],
         ]
 
-        otBooks = QGroupBox("Old Testament")
-        otLayout = QVBoxLayout()
-        otLayout.setMargin(0)
-        otLayout.setSpacing(0)
+        bible = QWidget()
+        bibleLayout = QVBoxLayout()
+        bibleLayout.setMargin(0)
+        bibleLayout.setSpacing(0)
         for bookNumGp in bookNumGps[0:4]:
             gp = QWidget()
             layout = self.newRowLayout()
@@ -61,14 +64,8 @@ class RemoteControl(QWidget):
                 button.clicked.connect(partial(self.bibleBookAction, bookNum))
                 layout.addWidget(button)
             gp.setLayout(layout)
-            otLayout.addWidget(gp)
-        otBooks.setLayout(otLayout)
-        mainLayout.addWidget(otBooks)
+            bibleLayout.addWidget(gp)
 
-        ntBooks = QGroupBox("New Testament")
-        ntLayout = QVBoxLayout()
-        ntLayout.setMargin(0)
-        ntLayout.setSpacing(0)
         for bookNumGp in bookNumGps[4:7]:
             gp = QWidget()
             layout = self.newRowLayout()
@@ -78,11 +75,12 @@ class RemoteControl(QWidget):
                 button.clicked.connect(partial(self.bibleBookAction, bookNum))
                 layout.addWidget(button)
             gp.setLayout(layout)
-            ntLayout.addWidget(gp)
-        ntBooks.setLayout(ntLayout)
-        mainLayout.addWidget(ntBooks)
+            bibleLayout.addWidget(gp)
 
-        bibles_box = QGroupBox("Bibles")
+        bible.setLayout(bibleLayout)
+        tabs.addTab(bible, config.thisTranslation["bible"])
+
+        bibles_box = QWidget()
         box_layout = QVBoxLayout()
         box_layout.setMargin(0)
         box_layout.setSpacing(0)
@@ -102,9 +100,10 @@ class RemoteControl(QWidget):
                 row_layout = self.newRowLayout()
         box_layout.addLayout(row_layout)
         bibles_box.setLayout(box_layout)
-        mainLayout.addWidget(bibles_box)
 
-        commentaries_box = QGroupBox("Commentaries")
+        tabs.addTab(bibles_box, config.thisTranslation["translations"])
+
+        commentaries_box = QWidget()
         box_layout = QVBoxLayout()
         box_layout.setMargin(0)
         box_layout.setSpacing(0)
@@ -123,9 +122,10 @@ class RemoteControl(QWidget):
                 row_layout = self.newRowLayout()
         box_layout.addLayout(row_layout)
         commentaries_box.setLayout(box_layout)
-        mainLayout.addWidget(commentaries_box)
 
-        lexicons_box = QGroupBox("Lexicon")
+        tabs.addTab(commentaries_box, config.thisTranslation["commentaries"])
+
+        lexicons_box = QWidget()
         box_layout = QVBoxLayout()
         box_layout.setMargin(0)
         box_layout.setSpacing(0)
@@ -143,7 +143,8 @@ class RemoteControl(QWidget):
                 row_layout = self.newRowLayout()
         box_layout.addLayout(row_layout)
         lexicons_box.setLayout(box_layout)
-        mainLayout.addWidget(lexicons_box)
+
+        tabs.addTab(lexicons_box, config.thisTranslation["lexicons"])
 
         self.setLayout(mainLayout)
 

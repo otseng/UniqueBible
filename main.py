@@ -327,6 +327,9 @@ if not hasattr(config, "logCommands"):
 # Migrate Bible name from Verses table to Details table
 if not hasattr(config, "migrateDatabaseBibleNameToDetailsTable"):
     config.migrateDatabaseBibleNameToDetailsTable = True 
+# Verse highlighting
+if not hasattr(config, "enableVerseHighlighting"):
+    config.enableVerseHighlighting = True
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -512,7 +515,8 @@ def saveDataOnExit():
         ("enableCopyHtmlCommand", config.enableCopyHtmlCommand),
         ("forceGenerateHtml", config.forceGenerateHtml),
         ("logCommands", config.logCommands),
-        ("migrateDatabaseBibleNameToDetailsTable", config.migrateDatabaseBibleNameToDetailsTable)
+        ("migrateDatabaseBibleNameToDetailsTable", config.migrateDatabaseBibleNameToDetailsTable),
+        ("enableVerseHighlighting", config.enableVerseHighlighting)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:

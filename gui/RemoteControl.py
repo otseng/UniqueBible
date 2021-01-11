@@ -3,7 +3,7 @@ from PySide2.QtCore import Qt
 import config
 from functools import partial
 from PySide2.QtWidgets import (QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QWidget, QTabWidget,
-                               QApplication, QBoxLayout, QDesktopWidget, QGridLayout)
+                               QApplication, QBoxLayout, QGridLayout)
 
 if __name__ == "__main__":
    config.mainText = ""
@@ -14,7 +14,7 @@ if __name__ == "__main__":
    config.commentaryC = ""
 
 from BibleVerseParser import BibleVerseParser
-from ToolsSqlite import Commentary, LexiconData, Lexicon, IndexesSqlite
+from ToolsSqlite import Commentary, LexiconData, IndexesSqlite
 from TextCommandParser import TextCommandParser
 
 from BiblesSqlite import BiblesSqlite
@@ -26,7 +26,7 @@ class RemoteControl(QWidget):
         self.setWindowTitle(config.thisTranslation["remote_control"])
         self.parent = parent
         # specify window size
-        self.resizeWindow(1 / 2, 1 / 3)
+        self.resizeWindow(2 / 5, 1 / 3)
         self.resizeEvent = (lambda old_method: (lambda event: (self.onResized(event), old_method(event))[-1]))(
             self.resizeEvent)
         # setup interface

@@ -1,10 +1,20 @@
-from re import search
-import config, re
+import config
 from functools import partial
-from PySide2.QtWidgets import (QVBoxLayout, QHBoxLayout, QGroupBox, QLineEdit, QPushButton, QWidget, QTabWidget)
+from PySide2.QtWidgets import (QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QWidget, QTabWidget,
+                               QApplication, QBoxLayout)
+
+if __name__ == "__main__":
+   config.mainText = ""
+   config.mainB = ""
+   config.mainC = ""
+   config.mainV = ""
+   config.commentaryB = ""
+   config.commentaryC = ""
+
 from BibleVerseParser import BibleVerseParser
 from ToolsSqlite import Commentary, LexiconData, Lexicon
 from TextCommandParser import TextCommandParser
+
 from BiblesSqlite import BiblesSqlite
 
 class RemoteControl(QWidget):
@@ -30,12 +40,32 @@ class RemoteControl(QWidget):
     def setupUI(self):
         mainLayout = QVBoxLayout()
 
+        self.commandBar = QWidget()
+        self.commandLayout = QBoxLayout(QBoxLayout.LeftToRight)
+        self.commandLayout.setSpacing(3)
         self.searchLineEdit = QLineEdit()
         self.searchLineEdit.setToolTip(config.thisTranslation["enter_command_here"])
         self.searchLineEdit.returnPressed.connect(self.searchLineEntered)
-        mainLayout.addWidget(self.searchLineEdit)
+        self.searchLineEdit.setFixedWidth(300)
+        self.commandLayout.addWidget(self.searchLineEdit)
+
+        self.enterButton = QPushButton(config.thisTranslation["enter"])
+        self.enterButton.clicked.connect(self.searchLineEntered)
+        self.commandLayout.addWidget(self.enterButton)
+
+        keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ':', '-', ' ', '<']
+        for key in keys:
+            button = QPushButton(key)
+            button.setMaximumWidth(30)
+            button.clicked.connect(partial(self.keyEntryAction, key))
+            self.commandLayout.addWidget(button)
+
+        self.commandLayout.addStretch()
+        self.commandBar.setLayout(self.commandLayout)
+        mainLayout.addWidget(self.commandBar)
 
         tabs = QTabWidget()
+        tabs.currentChanged.connect(self.tabChanged)
         mainLayout.addWidget(tabs)
 
         parser = BibleVerseParser(config.parserStandarisation)
@@ -156,7 +186,15 @@ class RemoteControl(QWidget):
         row_layout.setMargin(0)
         return row_layout
 
-    # search field entered
+    def tabChanged(self, tab):
+        if tab == 0:
+            self.commandBar.setEnabled(True)
+            self.searchLineEdit.setEnabled(True)
+            self.searchLineEdit.setFocus()
+        else:
+            self.commandBar.setEnabled(False)
+            self.searchLineEdit.setEnabled(False)
+
     def searchLineEntered(self):
         searchString = self.searchLineEdit.text()
         self.parent.runTextCommand(searchString)
@@ -164,6 +202,14 @@ class RemoteControl(QWidget):
     def bibleBookAction(self, book):
         self.searchLineEdit.setText("{0} ".format(self.bookMap[book]))
         self.searchLineEdit.setFocus()
+
+    def keyEntryAction(self, key):
+        text = self.searchLineEdit.text()
+        if key == "<":
+            text = text[:-1]
+        else:
+            text += key
+        self.searchLineEdit.setText(text)
 
     def bibleAction(self, bible):
         command = "BIBLE:::{0}:::{1} ".format(bible, self.parent.verseReference("main")[1])
@@ -180,3 +226,23 @@ class RemoteControl(QWidget):
     def lexiconAction(self, lexicon):
         command = "LEXICON:::{0}:::{1} ".format(lexicon, TextCommandParser.last_lexicon_entry)
         self.parent.runTextCommand(command)
+
+## Standalone development code
+
+class DummyParent():
+    def runTextCommand(self, command):
+        print(command)
+
+if __name__ == "__main__":
+   import sys
+   from Languages import Languages
+
+   config.thisTranslation = Languages.translation
+   config.parserStandarisation = 'NO'
+   config.standardAbbreviation = 'ENG'
+   config.marvelData = "/Users/otseng/dev/UniqueBible/marvelData/"
+
+   app = QApplication(sys.argv)
+   ui = RemoteControl(DummyParent())
+   ui.show()
+   sys.exit(app.exec_())

@@ -404,6 +404,14 @@ class Languages:
         "bar2_studyWindowBibleSyncEnabled": "Study Window's Bible in Sync with Main Window",
         "bar2_studyWindowBibleSyncDisabled": "Study Window's Bible out of Sync with Main Window",
         "empty": "[empty]",
+        "remote_control": "Remote Control",
+        "bible": "Bible",
+        "translations": "Translations",
+        "commentaries": "Commentaries",
+        "lexicons": "Lexicons",
+        "dictionaries": "Dictionaries",
+        "enter": "Enter",
+        "enter_command_here": "Enter command here ...",
     }
 
     def translateInterface(self, language):

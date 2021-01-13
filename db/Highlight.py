@@ -26,15 +26,17 @@ class Highlight:
         else:
             return False
 
-    def highlightVerse(self, b, c, v, code):
+    def highlightVerse(self, b, c, v, code="h1"):
+        self.removeHighlight(b, c, v)
+        insert = "INSERT INTO Highlight (Book, Chapter, Verse, Code) VALUES (?, ?, ?, ?)"
+        self.cursor.execute(insert, (b, c, v, code))
+        self.connection.commit()
+
+    def removeHighlight(self, b, c, v):
         delete = "DELETE FROM Highlight WHERE Book=? AND Chapter=? AND Verse=?"
         self.cursor.execute(delete, (b, c, v))
         self.connection.commit()
-        if code:
-            insert = "INSERT INTO Highlight (Book, Chapter, Verse, Code) VALUES (?, ?, ?, ?)"
-            self.cursor.execute(insert, (b, c, v, code))
-            self.connection.commit()
-            
+
     def getVerseDict(self, b, c):
         query = "SELECT Verse, Code FROM Highlight WHERE Book=? AND Chapter=? ORDER BY Verse"
         self.cursor.execute(query, (b, c))

@@ -5,6 +5,7 @@ import os, sqlite3, config, re, logging
 from NoteSqlite import NoteSqlite
 from BibleVerseParser import BibleVerseParser
 from BibleBooks import BibleBooks
+from db.Highlight import Highlight
 from themes import Themes
 
 try:
@@ -723,20 +724,26 @@ input.addEventListener('keyup', function(event) {0}
         chapter = "<h2>{0}{1}</ref>".format(self.formChapterTag(b, c, text), self.bcvToVerseReference(b, c, v).split(":", 1)[0])
         # get a verse list of available notes
         noteVerseList = []
+        highlightDict = {}
         if config.showNoteIndicatorOnBibleChapter:
             noteSqlite = NoteSqlite()
             noteVerseList = noteSqlite.getChapterVerseList(b, c)
             if noteSqlite.isChapterNote(b, c):
                 chapter += ' <ref onclick="nC()">&#9997</ref>'.format(v)
             del noteSqlite
+        if config.showHighlights:
+            highlightDict = Highlight().getVerseDict(b, c)
         chapter += "</h2>"
         titleList = self.getVerseList(b, c, "title")
         verseList = self.readTextChapter(text, b, c)
         for verseTuple in verseList:
             b, c, v, verseText = verseTuple
-            divTag = "<div>"
+            hlClass = ''
+            if v in highlightDict.keys():
+                hlClass = " class='hl_" + highlightDict[v] + "'"
+            divTag = "<div{0}>".format(hlClass)
             if b < 40 and text in config.rtlTexts:
-                divTag = "<div style='direction: rtl;'>"
+                divTag = "<div style='direction: rtl;'{0}>".format(hlClass)
             if v in titleList and config.addTitleToPlainChapter:
                 if not v == 1:
                     chapter += "<br>"
@@ -745,7 +752,8 @@ input.addEventListener('keyup', function(event) {0}
             # add note indicator
             if v in noteVerseList:
                 chapter += '<ref onclick="nV({0})">&#9997</ref> '.format(v)
-            chapter += "{0}</div>".format(verseText)
+            chapter += "{0}".format(verseText)
+            chapter += "</div>"
         return chapter
 
     def migrateDatabaseContent(self):
@@ -912,7 +920,10 @@ class Bible:
             divTag = "<div>"
             if self.text in config.rtlTexts and b < 40:
                 divTag = "<div style='direction: rtl;'>"
-            return "{0}{1}</div>".format(divTag, chapter)
+            chapter = "{0}{1}</div>".format(divTag, chapter)
+            if config.showHighlights:
+                chapter = Highlight().highlightChapter(b, c, chapter)
+            return chapter
         else:
             return "<span style='color:gray;'>['{0}' does not contain this chapter.]</span>".format(self.text)
 

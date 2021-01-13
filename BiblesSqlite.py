@@ -748,7 +748,13 @@ input.addEventListener('keyup', function(event) {0}
                 if not v == 1:
                     chapter += "<br>"
                 chapter += "{0}<br>".format(self.readTextVerse("title", b, c, v)[3])
-            chapter += '{0}<vid id="v{1}.{2}.{3}" onclick="luV({3})" onmouseover="qV({3})" ondblclick="mV({3})">{3}</vid> '.format(divTag, b, c, v)
+            chapter += divTag
+            if config.enableVerseHighlighting:
+                if v in highlightDict.keys():
+                    chapter += '<ref onclick="hiV({0},{1},{2},\'{3}\')">&#9673;</ref>'.format(b, c, v, 'delete')
+                else:
+                    chapter += '<ref onclick="hiV({0},{1},{2},\'{3}\')">&#9678;</ref>'.format(b, c, v, 'h1')
+            chapter += '<vid id="v{0}.{1}.{2}" onclick="luV({2})" onmouseover="qV({2})" ondblclick="mV({2})">{2}</vid> '.format(b, c, v)
             # add note indicator
             if v in noteVerseList:
                 chapter += '<ref onclick="nV({0})">&#9997</ref> '.format(v)

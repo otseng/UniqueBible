@@ -794,3 +794,8 @@ function promise(tool, number) {
 function openMarvelFile(filename) {
     document.title = "_open:::"+filename;
 }
+
+function hiV(b,c,v,code) {
+    var verseReference = bcvToVerseRefence(b,c,v);
+    document.title = "HIGHLIGHT:::"+verseReference+":::"+code;
+}

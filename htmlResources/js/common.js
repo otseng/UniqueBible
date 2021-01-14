@@ -798,20 +798,15 @@ function openMarvelFile(filename) {
 function hiV(b,c,v,code) {
     spanId = "s" + b + "." + c + "." + v
     divEl = document.getElementById(spanId);
+    curClass = divEl.className;
     if (code === "delete") {
         divEl.className = "";
-    } else if (code === "toggle") {
-        if (divEl.className === "") {
-            divEl.className = "hl1";
-            code = "hl1";
-        } else {
-            divEl.className = "";
-            code = "delete";
-        }
-    } else if (code === "hl1") {
-        divEl.className = "hl1";
+    } else if (code === curClass) {
+        divEl.className = "";
+        code = "delete";
+    } else {
+        divEl.className = code;
     }
-
     verseReference = bcvToVerseRefence(b,c,v);
     document.title = "_HIGHLIGHT:::"+verseReference+":::"+code;
 }

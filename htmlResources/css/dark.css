@@ -725,7 +725,20 @@ mbn {
 .hl1 {
     background: rgb(100, 100, 0);
 }
-
 .ohl1 {
     color: rgb(100, 100, 0);
+}
+
+.hl2 {
+    background: rgb(6, 1, 102);
+}
+.ohl2 {
+    color: rgb(6, 1, 102);
+}
+
+.ul1 {
+    text-decoration: underline;
+}
+.oul1 {
+    color: gray;
 }

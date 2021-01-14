@@ -747,7 +747,9 @@ input.addEventListener('keyup', function(event) {0}
                 chapter += "{0}<br>".format(self.readTextVerse("title", b, c, v)[3])
             chapter += divTag
             if config.enableVerseHighlighting:
-                chapter += '<ref onclick="hiV({0},{1},{2},\'{3}\')" class="ohl1">&#9678;</ref>'.format(b, c, v, 'toggle')
+                chapter += '<ref onclick="hiV({0},{1},{2},\'hl1\')" class="ohl1">&#9678;</ref>'.format(b, c, v)
+                chapter += '<ref onclick="hiV({0},{1},{2},\'hl2\')" class="ohl2">&#9678;</ref>'.format(b, c, v)
+                chapter += '<ref onclick="hiV({0},{1},{2},\'ul1\')" class="oul1">&#9683;</ref>'.format(b, c, v)
             chapter += '<vid id="v{0}.{1}.{2}" onclick="luV({2})" onmouseover="qV({2})" ondblclick="mV({2})">{2}</vid> '.format(b, c, v)
             # add note indicator
             if v in noteVerseList:

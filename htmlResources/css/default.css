@@ -723,3 +723,17 @@ testColor{
 .ohl1 {
     color: rgb(232, 232, 9);
 }
+
+.hl2 {
+    background: rgb(79, 247, 250);
+}
+.ohl2 {
+    color: rgb(79, 247, 250);
+}
+
+.ul1 {
+    text-decoration: underline;
+}
+.oul1 {
+    color: gray;
+}

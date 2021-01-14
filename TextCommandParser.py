@@ -6,9 +6,7 @@ from ThirdParty import ThirdPartyDictionary
 from NoteSqlite import NoteSqlite
 from Languages import Languages
 from PySide2.QtWidgets import QApplication
-
 from db.Highlight import Highlight
-
 
 class TextCommandParser:
 
@@ -431,13 +429,13 @@ class TextCommandParser:
             # [KEYWORD] _paste
             # e.g. _paste:::
             "_paste": self.pasteFromClipboard,
-            # [KEYWORD] highlight
+            # [KEYWORD] _highlight
             # Feature - Highlight a verse
-            # Usage - HIGHLIGHT:::[BIBLE_REFERENCE(S)]:::[code]
+            # Usage - _HIGHLIGHT:::[BIBLE_REFERENCE(S)]:::[code]
             # Examples:
-            # e.g. HIGHLIGHT:::John 3:16
-            # e.g. HIGHLIGHT:::John 3:16:::h1
-            "highlight": self.highlightVerse,
+            # e.g. _HIGHLIGHT:::John 3:16
+            # e.g. _HIGHLIGHT:::John 3:16:::h1
+            "_highlight": self.highlightVerse,
         }
         commandList = self.splitCommand(textCommand)
         updateViewConfig, viewText, *_ = self.getViewConfig(source)
@@ -1874,7 +1872,7 @@ class TextCommandParser:
             del thirdPartyDictionary
             return ("study", content)
 
-    # HIGHLIGHT:::
+    # _HIGHLIGHT:::
     def highlightVerse(self, command, source):
         hl = Highlight()
         if command.count(":::") == 0:
@@ -1887,5 +1885,5 @@ class TextCommandParser:
                 hl.removeHighlight(b, c, v)
             else:
                 hl.highlightVerse(b, c, v, code)
-        return("", "")
+        return ("", "")
 

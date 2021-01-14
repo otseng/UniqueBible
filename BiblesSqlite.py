@@ -738,27 +738,26 @@ input.addEventListener('keyup', function(event) {0}
         verseList = self.readTextChapter(text, b, c)
         for verseTuple in verseList:
             b, c, v, verseText = verseTuple
-            hlClass = ''
-            if v in highlightDict.keys():
-                hlClass = " class='hl_" + highlightDict[v] + "'"
-            divTag = "<div{0}>".format(hlClass)
+            divTag = "<div>"
             if b < 40 and text in config.rtlTexts:
-                divTag = "<div style='direction: rtl;'{0}>".format(hlClass)
+                divTag = "<div style='direction: rtl;'>"
             if v in titleList and config.addTitleToPlainChapter:
                 if not v == 1:
                     chapter += "<br>"
                 chapter += "{0}<br>".format(self.readTextVerse("title", b, c, v)[3])
             chapter += divTag
             if config.enableVerseHighlighting:
-                if v in highlightDict.keys():
-                    chapter += '<ref onclick="hiV({0},{1},{2},\'{3}\')">&#9673;</ref>'.format(b, c, v, 'delete')
-                else:
-                    chapter += '<ref onclick="hiV({0},{1},{2},\'{3}\')">&#9678;</ref>'.format(b, c, v, 'h1')
+                chapter += '<ref onclick="hiV({0},{1},{2},\'{3}\')" class="ohl1">&#9678;</ref>'.format(b, c, v, 'toggle')
             chapter += '<vid id="v{0}.{1}.{2}" onclick="luV({2})" onmouseover="qV({2})" ondblclick="mV({2})">{2}</vid> '.format(b, c, v)
             # add note indicator
             if v in noteVerseList:
                 chapter += '<ref onclick="nV({0})">&#9997</ref> '.format(v)
+            hlClass = ''
+            if v in highlightDict.keys():
+                hlClass = " class='" + highlightDict[v] + "'"
+            chapter += "<span id='s{0}.{1}.{2}'{3}>".format(b, c, v, hlClass)
             chapter += "{0}".format(verseText)
+            chapter += "</span>"
             chapter += "</div>"
         return chapter
 

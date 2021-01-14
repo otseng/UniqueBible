@@ -716,6 +716,10 @@ testColor{
     color: #4f4c4c;
 }
 
-.hl_h1 {
+.hl1 {
     background: rgb(232, 232, 9);
+}
+
+.ohl1 {
+    color: rgb(232, 232, 9);
 }

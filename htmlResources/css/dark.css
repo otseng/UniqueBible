@@ -722,6 +722,10 @@ mbn {
     color: gray;
 }
 
-.hl_h1 {
+.hl1 {
     background: rgb(100, 100, 0);
+}
+
+.ohl1 {
+    color: rgb(100, 100, 0);
 }

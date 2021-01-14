@@ -796,6 +796,22 @@ function openMarvelFile(filename) {
 }
 
 function hiV(b,c,v,code) {
-    var verseReference = bcvToVerseRefence(b,c,v);
-    document.title = "HIGHLIGHT:::"+verseReference+":::"+code;
+    spanId = "s" + b + "." + c + "." + v
+    divEl = document.getElementById(spanId);
+    if (code === "delete") {
+        divEl.className = "";
+    } else if (code === "toggle") {
+        if (divEl.className === "") {
+            divEl.className = "hl1";
+            code = "hl1";
+        } else {
+            divEl.className = "";
+            code = "delete";
+        }
+    } else if (code === "hl1") {
+        divEl.className = "hl1";
+    }
+
+    verseReference = bcvToVerseRefence(b,c,v);
+    document.title = "_HIGHLIGHT:::"+verseReference+":::"+code;
 }

@@ -433,8 +433,10 @@ class TextCommandParser:
             # Feature - Highlight a verse
             # Usage - _HIGHLIGHT:::[BIBLE_REFERENCE(S)]:::[code]
             # Examples:
-            # e.g. _HIGHLIGHT:::John 3:16
-            # e.g. _HIGHLIGHT:::John 3:16:::h1
+            # e.g. _HIGHLIGHT:::John 3:16:::hl1
+            # e.g. _HIGHLIGHT:::John 3:16:::hl2
+            # e.g. _HIGHLIGHT:::John 3:16:::ul1
+            # e.g. _HIGHLIGHT:::John 3:16:::delete
             "_highlight": self.highlightVerse,
         }
         commandList = self.splitCommand(textCommand)

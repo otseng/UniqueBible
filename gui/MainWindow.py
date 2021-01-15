@@ -478,6 +478,9 @@ class MainWindow(QMainWindow):
         menu2.addSeparator()
         menu2.addAction(QAction(config.thisTranslation["menu2_format"], self, shortcut="Ctrl+P", triggered=self.enableParagraphButtonClicked))
         menu2.addAction(QAction(config.thisTranslation["menu2_subHeadings"], self, triggered=self.enableSubheadingButtonClicked))
+        if config.enableVerseHighlighting:
+            menu2.addSeparator()
+            menu2.addAction(QAction(config.thisTranslation["menu2_toggleHighlightMarkers"], self, triggered=self.toggleHighlightMarker))
 
         menu3 = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu3_history"]))
         menu3.addAction(QAction(config.thisTranslation["menu3_main"], self, shortcut="Ctrl+'", triggered=self.mainHistoryButtonClicked))
@@ -2663,6 +2666,10 @@ class MainWindow(QMainWindow):
     def largerFont(self):
         config.fontSize = config.fontSize + 1
         self.defaultFontButton.setText("{0} {1}".format(config.font, config.fontSize))
+        self.reloadCurrentRecord(forceExecute=True)
+
+    def toggleHighlightMarker(self):
+        config.showHighlightMarkers = not config.showHighlightMarkers
         self.reloadCurrentRecord(forceExecute=True)
 
     def reloadCurrentRecord(self, forceExecute=False):

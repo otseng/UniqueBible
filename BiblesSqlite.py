@@ -731,7 +731,7 @@ input.addEventListener('keyup', function(event) {0}
             if noteSqlite.isChapterNote(b, c):
                 chapter += ' <ref onclick="nC()">&#9997</ref>'.format(v)
             del noteSqlite
-        if config.showHighlights:
+        if config.enableVerseHighlighting:
             highlightDict = Highlight().getVerseDict(b, c)
         chapter += "</h2>"
         titleList = self.getVerseList(b, c, "title")
@@ -746,7 +746,7 @@ input.addEventListener('keyup', function(event) {0}
                     chapter += "<br>"
                 chapter += "{0}<br>".format(self.readTextVerse("title", b, c, v)[3])
             chapter += divTag
-            if config.enableVerseHighlighting:
+            if config.enableVerseHighlighting and config.showHighlightMarkers:
                 chapter += '<ref onclick="hiV({0},{1},{2},\'hl1\')" class="ohl1">&#9678;</ref>'.format(b, c, v)
                 chapter += '<ref onclick="hiV({0},{1},{2},\'hl2\')" class="ohl2">&#9678;</ref>'.format(b, c, v)
                 chapter += '<ref onclick="hiV({0},{1},{2},\'ul1\')" class="oul1">&#9683;</ref>'.format(b, c, v)
@@ -928,7 +928,7 @@ class Bible:
             if self.text in config.rtlTexts and b < 40:
                 divTag = "<div style='direction: rtl;'>"
             chapter = "{0}{1}</div>".format(divTag, chapter)
-            if config.showHighlights:
+            if config.enableVerseHighlighting:
                 chapter = Highlight().highlightChapter(b, c, chapter)
             return chapter
         else:

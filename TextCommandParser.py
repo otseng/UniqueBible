@@ -1885,5 +1885,5 @@ class TextCommandParser:
                 hl.removeHighlight(b, c, v)
             else:
                 hl.highlightVerse(b, c, v, code)
-        return ("", "")
+        return ("command", "")
 

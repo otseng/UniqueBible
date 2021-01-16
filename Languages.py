@@ -278,6 +278,11 @@ class Languages:
         "menu_annotate": "Annotate",
         "menu_highlight": "Highlight",
         "menu_display": "Display",
+        "menu_main_page_down": "Main Page Scroll Down",
+        "menu_main_page_up": "Main Page Page Up",
+        "menu_study_page_down": "Study Page Scroll Down",
+        "menu_study_page_up": "Study Page Page Up",
+        "menu_scroll": "Scroll",
 
         "context1_copy": "Copy",
         "context1_copy_html": "Copy HTML",

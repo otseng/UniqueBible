@@ -2102,3 +2102,18 @@ class MainWindow(QMainWindow):
             config.fontChinese, *_ = font.key().split(",")
             self.reloadCurrentRecord()
 
+    def mainPageScrollPageDown(self):
+        js = "window.scrollTo(0, window.scrollY + window.innerHeight * .95);"
+        self.mainPage.runJavaScript(js)
+
+    def mainPageScrollPageUp(self):
+        js = "window.scrollTo(0, window.scrollY - window.innerHeight * .95);"
+        self.mainPage.runJavaScript(js)
+
+    def studyPageScrollPageDown(self):
+        js = "window.scrollTo(0, window.scrollY + window.innerHeight * .95);"
+        self.studyPage.runJavaScript(js)
+
+    def studyPageScrollPageUp(self):
+        js = "window.scrollTo(0, window.scrollY - window.innerHeight * .95);"
+        self.studyPage.runJavaScript(js)

@@ -48,7 +48,7 @@ class Highlight:
     def highlightChapter(self, b, c, text):
         highlightDict = self.getVerseDict(b, c)
         for v in highlightDict.keys():
-            find = '<verse>((<br>)*<vid id="v' + str(b) + '\.' + str(c) + '\.' + str(v) + '".*?)</verse>'
+            find = '<verse>(.*<vid id="v' + str(b) + '\.' + str(c) + '\.' + str(v) + '".*?)</verse>'
             text = re.sub(find, "<verse class=\"{0}\">\\1</verse>".format(highlightDict[v]), text)
         return text
 

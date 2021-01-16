@@ -44,9 +44,9 @@ class AlephMainWindow(MainWindow):
                                           triggered=self.mainPageScrollPageDown))
         scroll_menu.addAction(QAction(config.thisTranslation["menu_main_page_up"], self, shortcut='Ctrl+K',
                                           triggered=self.mainPageScrollPageUp))
-        scroll_menu.addAction(QAction(config.thisTranslation["menu_study_page_down"], self, shortcut='Ctrl+I',
+        scroll_menu.addAction(QAction(config.thisTranslation["menu_study_page_down"], self, shortcut='Ctrl+9',
                                       triggered=self.studyPageScrollPageDown))
-        scroll_menu.addAction(QAction(config.thisTranslation["menu_study_page_up"], self, shortcut='Ctrl+O',
+        scroll_menu.addAction(QAction(config.thisTranslation["menu_study_page_up"], self, shortcut='Ctrl+0',
                                       triggered=self.studyPageScrollPageUp))
 
         navigation_menu.addSeparator()
@@ -58,28 +58,28 @@ class AlephMainWindow(MainWindow):
         history_menu.addAction(QAction(config.thisTranslation["menu3_studyBack"], self, shortcut="Ctrl+H, 3", triggered=self.studyBack))
         history_menu.addAction(QAction(config.thisTranslation["menu3_studyForward"], self, shortcut="Ctrl+H, 4", triggered=self.studyForward))
         navigation_menu.addSeparator()
-        navigation_menu.addAction(QAction(config.thisTranslation["menu1_remoteControl"], self, shortcut="Ctrl+R", triggered=self.manageRemoteControl))
+        navigation_menu.addAction(QAction(config.thisTranslation["menu1_remoteControl"], self, shortcut="Ctrl+O", triggered=self.manageRemoteControl))
 
         search_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_search"]))
         search_menu.addAction(QAction(config.thisTranslation["menu4_compareAll"], self, shortcut="Ctrl+S, C", triggered=self.runCOMPARE))
         search_menu.addAction(QAction(config.thisTranslation["menu5_main"], self, shortcut="Ctrl+S, 1", triggered=self.displaySearchBibleCommand))
         search_menu.addAction(QAction(config.thisTranslation["menu5_study"], self, shortcut="Ctrl+S, 2", triggered=self.displaySearchStudyBibleCommand))
         search_menu.addAction(QAction(config.thisTranslation["menu5_bible"], self, triggered=self.displaySearchBibleMenu))
-        search_menu.addAction(QAction(config.thisTranslation["menu5_dictionary"], self, shortcut="Ctrl+3", triggered=self.searchCommandBibleDictionary))
+        search_menu.addAction(QAction(config.thisTranslation["menu5_dictionary"], self, triggered=self.searchCommandBibleDictionary))
         search_menu.addAction(QAction(config.thisTranslation["context1_dict"], self, triggered=self.searchDictionaryDialog))
-        search_menu.addAction(QAction(config.thisTranslation["menu5_encyclopedia"], self, shortcut="Ctrl+4", triggered=self.searchCommandBibleEncyclopedia))
+        search_menu.addAction(QAction(config.thisTranslation["menu5_encyclopedia"], self, triggered=self.searchCommandBibleEncyclopedia))
         search_menu.addAction(QAction(config.thisTranslation["context1_encyclopedia"], self, triggered=self.searchEncyclopediaDialog))
-        search_menu.addAction(QAction(config.thisTranslation["menu5_book"], self, shortcut="Ctrl+5", triggered=self.displaySearchBookCommand))
+        search_menu.addAction(QAction(config.thisTranslation["menu5_book"], self, triggered=self.displaySearchBookCommand))
         search_menu.addAction(QAction(config.thisTranslation["menu5_selectBook"], self, triggered=self.searchBookDialog))
         search_menu.addAction(QAction(config.thisTranslation["menu5_favouriteBook"], self, triggered=self.displaySearchFavBookCommand))
         search_menu.addAction(QAction(config.thisTranslation["menu5_allBook"], self, triggered=self.displaySearchAllBookCommand))
-        search_menu.addAction(QAction(config.thisTranslation["menu5_lastTopics"], self, shortcut="Ctrl+6", triggered=self.searchCommandBibleTopic))
+        search_menu.addAction(QAction(config.thisTranslation["menu5_lastTopics"], self, triggered=self.searchCommandBibleTopic))
         search_menu.addAction(QAction(config.thisTranslation["menu5_topics"], self, triggered=self.searchTopicDialog))
         search_menu.addAction(QAction(config.thisTranslation["menu5_allTopics"], self, triggered=self.searchCommandAllBibleTopic))
-        search_menu.addAction(QAction(config.thisTranslation["menu5_characters"], self, shortcut="Ctrl+7", triggered=self.searchCommandBibleCharacter))
-        search_menu.addAction(QAction(config.thisTranslation["menu5_names"], self, shortcut="Ctrl+8", triggered=self.searchCommandBibleName))
-        search_menu.addAction(QAction(config.thisTranslation["menu5_locations"], self, shortcut="Ctrl+9", triggered=self.searchCommandBibleLocation))
-        search_menu.addAction(QAction(config.thisTranslation["menu5_lexicon"], self, shortcut="Ctrl+0", triggered=self.searchCommandLexicon))
+        search_menu.addAction(QAction(config.thisTranslation["menu5_characters"], self, triggered=self.searchCommandBibleCharacter))
+        search_menu.addAction(QAction(config.thisTranslation["menu5_names"], self, triggered=self.searchCommandBibleName))
+        search_menu.addAction(QAction(config.thisTranslation["menu5_locations"], self, triggered=self.searchCommandBibleLocation))
+        search_menu.addAction(QAction(config.thisTranslation["menu5_lexicon"], self, triggered=self.searchCommandLexicon))
         search_menu.addAction(QAction(config.thisTranslation["menu5_last3rdDict"], self, triggered=self.searchCommandThirdPartyDictionary))
         search_menu.addAction(QAction(config.thisTranslation["menu5_3rdDict"], self, triggered=self.search3rdDictionaryDialog))
 

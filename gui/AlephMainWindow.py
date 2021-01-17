@@ -22,13 +22,15 @@ class AlephMainWindow(MainWindow):
         lexiconMenu = menu1_defaults.addMenu(config.thisTranslation["menu_lexicon"])
         lexiconMenu.addAction(QAction(config.thisTranslation["menu1_StrongsHebrew"], self, triggered=self.openSelectDefaultStrongsHebrewLexiconDialog))
         lexiconMenu.addAction(QAction(config.thisTranslation["menu1_StrongsGreek"], self, triggered=self.openSelectDefaultStrongsGreekLexiconDialog))
+        menu1_defaults.addAction(
+            QAction(config.thisTranslation["menu_favouriteBible"], self, triggered=self.openFavouriteBibleDialog))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_abbreviations"], self, triggered=self.setBibleAbbreviations))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_tabs"], self, triggered=self.setTabNumberDialog))
-        menu1_defaults.addAction(QAction(config.thisTranslation["menu_favouriteBible"], self, triggered=self.openFavouriteBibleDialog))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_language"], self, triggered=self.openMyLanguageDialog))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_font"], self, triggered=self.setDefaultFont))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_chineseFont"], self, triggered=self.setChineseFont))
-        menu1.addAction(QAction(config.thisTranslation["menu_config_flags"], self, triggered=self.moreConfigOptionsDialog))
+        menu1.addAction(
+            QAction(config.thisTranslation["menu_config_flags"], self, triggered=self.moreConfigOptionsDialog))
 
         navigation_menu = self.menuBar().addMenu(config.thisTranslation["menu_navigation"])
         prev_chap = QAction(config.thisTranslation["menu4_previous"], self, shortcut='Ctrl+<', triggered=self.previousMainChapter)
@@ -75,6 +77,12 @@ class AlephMainWindow(MainWindow):
         search_menu = self.menuBar().addMenu(config.thisTranslation["menu_search"])
         search_menu.addAction(QAction(config.thisTranslation["menu5_bible"], self, shortcut="Ctrl+S, B", triggered=self.displaySearchBibleMenu))
         search_menu.addAction(QAction(config.thisTranslation["menu_verse_all_versions"], self, shortcut="Ctrl+S, V", triggered=self.runCOMPARE))
+        search_command = search_menu.addMenu(config.thisTranslation["menu_command"])
+        search_command.addAction(QAction(config.thisTranslation["menu_bible"], self, triggered=self.displaySearchBibleCommand))
+        search_command.addAction(QAction(config.thisTranslation["menu_lexicon"], self, triggered=self.searchCommandLexicon))
+        search_command.addAction(
+            QAction(config.thisTranslation["menu_bible_chapter_notes"], self, triggered=self.searchCommandChapterNote))
+        search_command.addAction(QAction(config.thisTranslation["menu_bible_verse_notes"], self, triggered=self.searchCommandVerseNote))
         search_resources = search_menu.addMenu("&{0}".format(config.thisTranslation["menu_library"]))
         search_resources.addAction(QAction(config.thisTranslation["menu5_topics"], self, shortcut="Ctrl+S, T", triggered=self.searchTopicDialog))
         search_resources.addAction(QAction(config.thisTranslation["context1_encyclopedia"], self, shortcut="Ctrl+S, E", triggered=self.searchEncyclopediaDialog))
@@ -194,6 +202,13 @@ class AlephMainWindow(MainWindow):
         self.mainRefButton.clicked.connect(self.mainRefButtonClicked)
         self.firstToolBar.addWidget(self.mainRefButton)
 
+        searchBibleButton = QPushButton()
+        searchBibleButton.setToolTip(config.thisTranslation["bar1_searchBibles"])
+        searchBibleButtonFile = os.path.join("htmlResources", "search_plus.png")
+        searchBibleButton.setIcon(QIcon(searchBibleButtonFile))
+        searchBibleButton.clicked.connect(self.displaySearchBibleMenu)
+        self.firstToolBar.addWidget(searchBibleButton)
+
         openChapterNoteButton = QPushButton()
         #openChapterNoteButton.setFixedSize(40, 40)
         #openChapterNoteButton.setBaseSize(70, 70)
@@ -219,15 +234,6 @@ class AlephMainWindow(MainWindow):
         # searchBibleButton.setIcon(QIcon(searchBibleButtonFile))
         # searchBibleButton.clicked.connect(self.displaySearchBibleCommand)
         # self.firstToolBar.addWidget(searchBibleButton)
-
-        searchBibleButton = QPushButton()
-        searchBibleButton.setToolTip(config.thisTranslation["bar1_searchBibles"])
-        searchBibleButtonFile = os.path.join("htmlResources", "search_plus.png")
-        searchBibleButton.setIcon(QIcon(searchBibleButtonFile))
-        searchBibleButton.clicked.connect(self.displaySearchBibleMenu)
-        self.firstToolBar.addWidget(searchBibleButton)
-
-        self.firstToolBar.addSeparator()
 
         self.textCommandLineEdit = QLineEdit()
         self.textCommandLineEdit.setToolTip(config.thisTranslation["bar1_command"])

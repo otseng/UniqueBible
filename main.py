@@ -8,7 +8,7 @@ import os, platform, logging
 import logging.handlers as handlers
 
 from gui.AlephMainWindow import AlephMainWindow
-from gui.DefaultMainWindow import DefaultMainWindow
+from gui.ClassicMainWindow import ClassicMainWindow
 from themes import Themes
 
 # File "config.py" is essential for running module "config"
@@ -524,7 +524,8 @@ def saveDataOnExit():
         ("logCommands", config.logCommands),
         ("enableVerseHighlighting", config.enableVerseHighlighting),
         ("migrateDatabaseBibleNameToDetailsTable", config.migrateDatabaseBibleNameToDetailsTable),
-        ("menuLayout", config.menuLayout)
+        ("menuLayout", config.menuLayout),
+        ("showHighlightMarkers", config.showHighlightMarkers)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:
@@ -557,7 +558,7 @@ app.setPalette(Themes.getPalette())
 if config.menuLayout == "aleph":
     mainWindow = AlephMainWindow()
 else:
-    mainWindow = DefaultMainWindow()
+    mainWindow = ClassicMainWindow()
 
 setupMainWindow()
 

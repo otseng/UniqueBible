@@ -1851,6 +1851,9 @@ class MainWindow(QMainWindow):
     def runMTB(self):
         self.runFeature("BIBLE:::MTB")
 
+    def runTransliteralBible(self):
+        self.runFeature("BIBLE:::TRLIT")
+
     def runCOMPARE(self):
         self.runFeature("COMPARE")
 

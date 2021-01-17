@@ -9,7 +9,7 @@ class AlephMainWindow(MainWindow):
         super().__init__()
 
     def create_menu(self):
-        menu1 = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu1_app"]))
+        menu1 = self.menuBar().addMenu(config.thisTranslation["menu1_app"])
         menu1_defaults = menu1.addMenu(config.thisTranslation["menu_defaults"])
         themeMenu = menu1_defaults.addMenu(config.thisTranslation["menu_theme"])
         themeMenu.addAction(QAction(config.thisTranslation["menu_light_theme"], self, triggered=self.setDefaultTheme))
@@ -30,7 +30,7 @@ class AlephMainWindow(MainWindow):
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_chineseFont"], self, triggered=self.setChineseFont))
         menu1.addAction(QAction(config.thisTranslation["menu_config_flags"], self, triggered=self.moreConfigOptionsDialog))
 
-        navigation_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_navigation"]))
+        navigation_menu = self.menuBar().addMenu(config.thisTranslation["menu_navigation"])
         prev_chap = QAction(config.thisTranslation["menu4_previous"], self, shortcut='Ctrl+<', triggered=self.previousMainChapter)
         prev_chap.setShortcuts(["Ctrl+<", "Ctrl+,,"])
         next_chap = QAction(config.thisTranslation["menu4_next"], self, shortcut='Ctrl+>', triggered=self.nextMainChapter)
@@ -48,8 +48,16 @@ class AlephMainWindow(MainWindow):
                                       triggered=self.studyPageScrollPageDown))
         scroll_menu.addAction(QAction(config.thisTranslation["menu_study_page_up"], self, shortcut='Ctrl+0',
                                       triggered=self.studyPageScrollPageUp))
-
         navigation_menu.addSeparator()
+        marvel_bible_menu = navigation_menu.addMenu(config.thisTranslation["menu_bible"])
+        marvel_bible_menu.addAction(QAction("Marvel Original Bible", self, shortcut="Ctrl+B, 1", triggered=self.runMOB))
+        marvel_bible_menu.addAction(QAction("Marvel Interlinear Bible", self, shortcut="Ctrl+B, 2", triggered=self.runMIB))
+        marvel_bible_menu.addAction(QAction("Marvel Trilingual Bible", self, shortcut="Ctrl+B, 3", triggered=self.runMTB))
+        marvel_bible_menu.addAction(
+            QAction("Marvel Trilingual Bible", self, shortcut="Ctrl+B, 4", triggered=self.runMPB))
+        if os.path.isfile(os.path.join(config.marvelData, "bibles/TRLIT.bible")):
+            marvel_bible_menu.addAction(
+                QAction("Transliteral Bible", self, shortcut="Ctrl+B, T", triggered=self.runTransliteralBible))
         history_menu = navigation_menu.addMenu("&{0}".format(config.thisTranslation["menu_history"]))
         history_menu.addAction(QAction(config.thisTranslation["menu3_main"], self, shortcut="Ctrl+Y, M", triggered=self.mainHistoryButtonClicked))
         history_menu.addAction(QAction(config.thisTranslation["menu3_mainBack"], self, shortcut="Ctrl+Y, 1", triggered=self.back))
@@ -57,10 +65,9 @@ class AlephMainWindow(MainWindow):
         history_menu.addAction(QAction(config.thisTranslation["menu3_study"], self, shortcut = 'Ctrl+Y, S', triggered=self.studyHistoryButtonClicked))
         history_menu.addAction(QAction(config.thisTranslation["menu3_studyBack"], self, shortcut="Ctrl+Y, 3", triggered=self.studyBack))
         history_menu.addAction(QAction(config.thisTranslation["menu3_studyForward"], self, shortcut="Ctrl+Y, 4", triggered=self.studyForward))
-        navigation_menu.addSeparator()
         navigation_menu.addAction(QAction(config.thisTranslation["menu1_remoteControl"], self, shortcut="Ctrl+O", triggered=self.manageRemoteControl))
 
-        search_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_search"]))
+        search_menu = self.menuBar().addMenu(config.thisTranslation["menu_search"])
         search_menu.addAction(QAction(config.thisTranslation["menu5_bible"], self, shortcut="Ctrl+S, B", triggered=self.displaySearchBibleMenu))
         search_menu.addAction(QAction(config.thisTranslation["menu_verse_all_versions"], self, shortcut="Ctrl+S, V", triggered=self.runCOMPARE))
         search_resources = search_menu.addMenu("&{0}".format(config.thisTranslation["menu_library"]))
@@ -70,12 +77,11 @@ class AlephMainWindow(MainWindow):
         search_resources.addAction(QAction(config.thisTranslation["context1_dict"], self, shortcut="Ctrl+S, D", triggered=self.searchDictionaryDialog))
         search_resources.addAction(QAction(config.thisTranslation["menu5_3rdDict"], self, shortcut="Ctrl+S, 3", triggered=self.search3rdDictionaryDialog))
 
-        annotate_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_annotate"]))
+        annotate_menu = self.menuBar().addMenu(config.thisTranslation["menu_annotate"])
         if config.enableVerseHighlighting:
             highlight = annotate_menu.addMenu(config.thisTranslation["menu_highlight"])
             highlight.addAction(
                 QAction(config.thisTranslation["menu2_toggleHighlightMarkers"], self, triggered=self.toggleHighlightMarker))
-
         bible_notes = annotate_menu.addMenu(config.thisTranslation["menu_bible_notes"])
         bible_notes.addAction(
             QAction(config.thisTranslation["menu_chapter"], self, shortcut="Ctrl+N, C", triggered=self.openStudyChapterNote))
@@ -86,7 +92,7 @@ class AlephMainWindow(MainWindow):
         external_notes.addAction(QAction(config.thisTranslation["menu_read_note"], self, shortcut="Ctrl+N, R", triggered=self.externalFileButtonClicked))
         external_notes.addAction(QAction(config.thisTranslation["menu_edit_note"], self, shortcut="Ctrl+N, E", triggered=self.editExternalFileButtonClicked))
 
-        library_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_library"]))
+        library_menu = self.menuBar().addMenu(config.thisTranslation["menu_library"])
         library_menu.addAction(QAction(config.thisTranslation["menu4_words"], self, shortcut="Ctrl+L, W", triggered=self.runWORDS))
         library_menu.addAction(QAction(config.thisTranslation["menu4_commentary"], self, shortcut="Ctrl+L, C", triggered=self.runCOMMENTARY))
         library_menu.addAction(QAction(config.thisTranslation["menu4_crossRef"], self, shortcut="Ctrl+L, X", triggered=self.runCROSSREFERENCE))
@@ -96,7 +102,7 @@ class AlephMainWindow(MainWindow):
         library_menu.addAction(QAction(config.thisTranslation["menu4_book"], self, shortcut="Ctrl+L, F", triggered=self.bookFeatures))
         library_menu.addAction(QAction(config.thisTranslation["menu4_chapter"], self, shortcut="Ctrl+L, H", triggered=self.chapterFeatures))
 
-        menu_data = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_data"]))
+        menu_data = self.menuBar().addMenu(config.thisTranslation["menu_data"])
         menu_data.addAction(QAction(config.thisTranslation["menu8_bibles"], self, triggered=self.installMarvelBibles))
         menu_data.addAction(QAction(config.thisTranslation["menu8_commentaries"], self, triggered=self.installMarvelCommentaries))
         menu_data.addAction(QAction(config.thisTranslation["menu8_datasets"], self, triggered=self.installMarvelDatasets))
@@ -110,7 +116,12 @@ class AlephMainWindow(MainWindow):
         menu_data.addSeparator()
         menu_data.addAction(QAction(config.thisTranslation["menu8_fixDatabase"], self, triggered=self.selectDatabaseToFix))
 
-        display_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_display"]))
+        display_menu = self.menuBar().addMenu(config.thisTranslation["menu_display"])
+        bible_format_menu = display_menu.addMenu(config.thisTranslation["menu_bible_format"])
+        bible_format_menu.addAction(QAction(config.thisTranslation["menu_simple_formatted"], self, shortcut="Ctrl+D, S",
+                                         triggered=self.enableParagraphButtonClicked))
+        bible_format_menu.addAction(QAction(config.thisTranslation["menu_subheadings"], self, shortcut="Ctrl+D, P",
+                                            triggered=self.enableSubheadingButtonClicked))
         screenSizeMenu = display_menu.addMenu(config.thisTranslation["menu1_screenSize"])
         screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_fullScreen"], self, shortcut="Ctrl+W,F",
                                          triggered=self.fullsizeWindow))
@@ -142,7 +153,7 @@ class AlephMainWindow(MainWindow):
         display_menu.addAction(
             QAction(config.thisTranslation["menu_reload"], self, shortcut="Ctrl+D, R", triggered=self.reloadCurrentRecord))
 
-        about_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_about"]))
+        about_menu = self.menuBar().addMenu(config.thisTranslation["menu_about"])
         about_menu.addAction(QAction(config.thisTranslation["menu_wiki"], self, triggered=self.openUbaWiki))
         apps = about_menu.addMenu(config.thisTranslation["menu_apps"])
         apps.addAction(QAction("BibleTools.app", self, triggered=self.openBibleTools))

@@ -610,7 +610,7 @@ class MainWindow(QMainWindow):
         self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
 
     def setDefaultMenuLayout(self):
-        config.menuLayout = "default"
+        config.menuLayout = "classic"
         self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
 
     def setAlephMenuLayout(self):

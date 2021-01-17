@@ -337,7 +337,7 @@ if not hasattr(config, "showHighlightMarkers"):
     config.showHighlightMarkers = True
 # Menu layout
 if not hasattr(config, "menuLayout"):
-    config.menuLayout = "default"
+    config.menuLayout = "classic"
 
 # Setup logging
 logger = logging.getLogger('uba')

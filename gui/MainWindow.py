@@ -1620,12 +1620,14 @@ class MainWindow(QMainWindow):
     def smallerFont(self):
         if not config.fontSize == 5:
             config.fontSize = config.fontSize - 1
-            self.defaultFontButton.setText("{0} {1}".format(config.font, config.fontSize))
+            if hasattr(self, 'defaultFontButton'):
+                self.defaultFontButton.setText("{0} {1}".format(config.font, config.fontSize))
             self.reloadCurrentRecord(forceExecute=True)
 
     def largerFont(self):
         config.fontSize = config.fontSize + 1
-        self.defaultFontButton.setText("{0} {1}".format(config.font, config.fontSize))
+        if hasattr(self, 'defaultFontButton'):
+            self.defaultFontButton.setText("{0} {1}".format(config.font, config.fontSize))
         self.reloadCurrentRecord(forceExecute=True)
 
     def toggleHighlightMarker(self):
@@ -2119,4 +2121,12 @@ class MainWindow(QMainWindow):
 
     def studyPageScrollPageUp(self):
         js = "window.scrollTo(0, window.scrollY - window.innerHeight * .95);"
+        self.studyPage.runJavaScript(js)
+
+    def mainPageScrollToTop(self):
+        js = "document.body.scrollTop = document.documentElement.scrollTop = 0;"
+        self.mainPage.runJavaScript(js)
+
+    def studyPageScrollToTop(self):
+        js = "document.body.scrollTop = document.documentElement.scrollTop = 0;"
         self.studyPage.runJavaScript(js)

@@ -40,14 +40,19 @@ class AlephMainWindow(MainWindow):
         navigation_menu.addAction(QAction(config.thisTranslation["menu_next_book"], self, shortcut='Ctrl+]', triggered=self.nextMainBook))
         navigation_menu.addAction(QAction(config.thisTranslation["menu_previous_book"], self, shortcut='Ctrl+[', triggered=self.previousMainBook))
         scroll_menu = navigation_menu.addMenu("&{0}".format(config.thisTranslation["menu_scroll"]))
+        scroll_menu.addAction(QAction(config.thisTranslation["menu_main_scroll_to_top"], self, shortcut='Ctrl+7',
+                                          triggered=self.mainPageScrollToTop))
         scroll_menu.addAction(QAction(config.thisTranslation["menu_main_page_down"], self, shortcut='Ctrl+J',
                                           triggered=self.mainPageScrollPageDown))
         scroll_menu.addAction(QAction(config.thisTranslation["menu_main_page_up"], self, shortcut='Ctrl+K',
                                           triggered=self.mainPageScrollPageUp))
+        scroll_menu.addAction(QAction(config.thisTranslation["menu_study_scroll_to_top"], self,
+                                      shortcut='Ctrl+8',triggered=self.studyPageScrollToTop))
         scroll_menu.addAction(QAction(config.thisTranslation["menu_study_page_down"], self, shortcut='Ctrl+9',
                                       triggered=self.studyPageScrollPageDown))
         scroll_menu.addAction(QAction(config.thisTranslation["menu_study_page_up"], self, shortcut='Ctrl+0',
                                       triggered=self.studyPageScrollPageUp))
+
         navigation_menu.addSeparator()
         marvel_bible_menu = navigation_menu.addMenu(config.thisTranslation["menu_bible"])
         marvel_bible_menu.addAction(QAction("Marvel Original Bible", self, shortcut="Ctrl+B, 1", triggered=self.runMOB))
@@ -208,12 +213,12 @@ class AlephMainWindow(MainWindow):
         openVerseNoteButton.clicked.connect(self.openMainVerseNote)
         self.firstToolBar.addWidget(openVerseNoteButton)
 
-        searchBibleButton = QPushButton()
-        searchBibleButton.setToolTip(config.thisTranslation["bar1_searchBible"])
-        searchBibleButtonFile = os.path.join("htmlResources", "search.png")
-        searchBibleButton.setIcon(QIcon(searchBibleButtonFile))
-        searchBibleButton.clicked.connect(self.displaySearchBibleCommand)
-        self.firstToolBar.addWidget(searchBibleButton)
+        # searchBibleButton = QPushButton()
+        # searchBibleButton.setToolTip(config.thisTranslation["bar1_searchBible"])
+        # searchBibleButtonFile = os.path.join("htmlResources", "search.png")
+        # searchBibleButton.setIcon(QIcon(searchBibleButtonFile))
+        # searchBibleButton.clicked.connect(self.displaySearchBibleCommand)
+        # self.firstToolBar.addWidget(searchBibleButton)
 
         searchBibleButton = QPushButton()
         searchBibleButton.setToolTip(config.thisTranslation["bar1_searchBibles"])
@@ -258,26 +263,26 @@ class AlephMainWindow(MainWindow):
         self.studyRefButton.clicked.connect(self.studyRefButtonClicked)
         self.studyBibleToolBar.addWidget(self.studyRefButton)
 
-        openStudyChapterNoteButton = QPushButton()
-        openStudyChapterNoteButton.setToolTip(config.thisTranslation["bar2_chapterNotes"])
-        openStudyChapterNoteButtonFile = os.path.join("htmlResources", "noteChapter.png")
-        openStudyChapterNoteButton.setIcon(QIcon(openStudyChapterNoteButtonFile))
-        openStudyChapterNoteButton.clicked.connect(self.openStudyChapterNote)
-        self.studyBibleToolBar.addWidget(openStudyChapterNoteButton)
+        # openStudyChapterNoteButton = QPushButton()
+        # openStudyChapterNoteButton.setToolTip(config.thisTranslation["bar2_chapterNotes"])
+        # openStudyChapterNoteButtonFile = os.path.join("htmlResources", "noteChapter.png")
+        # openStudyChapterNoteButton.setIcon(QIcon(openStudyChapterNoteButtonFile))
+        # openStudyChapterNoteButton.clicked.connect(self.openStudyChapterNote)
+        # self.studyBibleToolBar.addWidget(openStudyChapterNoteButton)
 
-        openStudyVerseNoteButton = QPushButton()
-        openStudyVerseNoteButton.setToolTip(config.thisTranslation["bar2_verseNotes"])
-        openStudyVerseNoteButtonFile = os.path.join("htmlResources", "noteVerse.png")
-        openStudyVerseNoteButton.setIcon(QIcon(openStudyVerseNoteButtonFile))
-        openStudyVerseNoteButton.clicked.connect(self.openStudyVerseNote)
-        self.studyBibleToolBar.addWidget(openStudyVerseNoteButton)
+        # openStudyVerseNoteButton = QPushButton()
+        # openStudyVerseNoteButton.setToolTip(config.thisTranslation["bar2_verseNotes"])
+        # openStudyVerseNoteButtonFile = os.path.join("htmlResources", "noteVerse.png")
+        # openStudyVerseNoteButton.setIcon(QIcon(openStudyVerseNoteButtonFile))
+        # openStudyVerseNoteButton.clicked.connect(self.openStudyVerseNote)
+        # self.studyBibleToolBar.addWidget(openStudyVerseNoteButton)
 
-        searchStudyBibleButton = QPushButton()
-        searchStudyBibleButton.setToolTip(config.thisTranslation["bar2_searchBible"])
-        searchStudyBibleButtonFile = os.path.join("htmlResources", "search.png")
-        searchStudyBibleButton.setIcon(QIcon(searchStudyBibleButtonFile))
-        searchStudyBibleButton.clicked.connect(self.displaySearchStudyBibleCommand)
-        self.studyBibleToolBar.addWidget(searchStudyBibleButton)
+        # searchStudyBibleButton = QPushButton()
+        # searchStudyBibleButton.setToolTip(config.thisTranslation["bar2_searchBible"])
+        # searchStudyBibleButtonFile = os.path.join("htmlResources", "search.png")
+        # searchStudyBibleButton.setIcon(QIcon(searchStudyBibleButtonFile))
+        # searchStudyBibleButton.clicked.connect(self.displaySearchStudyBibleCommand)
+        # self.studyBibleToolBar.addWidget(searchStudyBibleButton)
 
         searchStudyBibleButton = QPushButton()
         searchStudyBibleButton.setToolTip(config.thisTranslation["bar2_searchBibles"])

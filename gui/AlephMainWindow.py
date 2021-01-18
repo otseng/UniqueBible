@@ -420,7 +420,7 @@ class AlephMainWindow(MainWindow):
         self.leftToolBar.addSeparator()
 
         actionButton = QPushButton()
-        actionButton.setToolTip(config.thisTranslation["bar3_pdf"])
+        actionButton.setToolTip(config.thisTranslation["tab_print"])
         actionButtonFile = os.path.join("htmlResources", "pdf.png")
         actionButton.setIcon(QIcon(actionButtonFile))
         actionButton.clicked.connect(self.printMainPage)
@@ -549,7 +549,7 @@ class AlephMainWindow(MainWindow):
         self.rightToolBar.addSeparator()
 
         actionButton = QPushButton()
-        actionButton.setToolTip(config.thisTranslation["bar3_pdf"])
+        actionButton.setToolTip(config.thisTranslation["tab_print"])
         actionButtonFile = os.path.join("htmlResources", "pdf.png")
         actionButton.setIcon(QIcon(actionButtonFile))
         actionButton.clicked.connect(self.printStudyPage)
@@ -824,7 +824,7 @@ class AlephMainWindow(MainWindow):
         self.leftToolBar.addSeparator()
 
         iconFile = os.path.join("htmlResources", "pdf.png")
-        self.leftToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar3_pdf"], self.printMainPage)
+        self.leftToolBar.addAction(QIcon(iconFile), config.thisTranslation["tab_print"], self.printMainPage)
 
         self.leftToolBar.addSeparator()
 
@@ -893,7 +893,7 @@ class AlephMainWindow(MainWindow):
         self.rightToolBar.addSeparator()
 
         iconFile = os.path.join("htmlResources", "pdf.png")
-        self.rightToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar3_pdf"], self.printStudyPage)
+        self.rightToolBar.addAction(QIcon(iconFile), config.thisTranslation["tab_print"], self.printStudyPage)
 
         self.rightToolBar.addSeparator()
 

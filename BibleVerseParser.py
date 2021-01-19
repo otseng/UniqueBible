@@ -263,6 +263,8 @@ class BibleVerseParser:
             return bible, int(res[1]), 1
         elif res[2] == '' and not res[3] == '':
             return bible, int(res[1]), 1, int(res[3]), 1
+        elif res[3] == '' and res[4] == '':
+            return bible, int(res[1]), int(res[2])
         elif res[4] == '':
             return bible, int(res[1]), int(res[2]), int(res[1]), int(res[3])
         else:

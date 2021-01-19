@@ -75,13 +75,13 @@ class BibleVerseParserTestCase(unittest.TestCase):
         self.assertEqual(expected, res)
 
     def test_1sam_verseReferenceToBCV(self):
-        input = "1Sam. 4:5-10:6"
+        input = "1Sam. 4:5-   10:6"
         expected = (9, 4, 5, 10, 6)
         res = self.parser.verseReferenceToBCV(input)
         self.assertEqual(expected, res)
 
     def test_2kings_verseReferenceToBCV(self):
-        input = "II Ki. 4:5-10:6"
+        input = "II Ki. 4:5 - 10:6"
         expected = (12, 4, 5, 10, 6)
         res = self.parser.verseReferenceToBCV(input)
         self.assertEqual(expected, res)
@@ -89,5 +89,12 @@ class BibleVerseParserTestCase(unittest.TestCase):
     def test_1sam_verseReferenceToBCV(self):
         input = "1 S.  4:5 - 10:9999"
         expected = (9, 4, 5, 10, 9999)
+        res = self.parser.verseReferenceToBCV(input)
+        self.assertEqual(expected, res)
+
+
+    def test_mark_verseReferenceToBCV(self):
+        input = "mar  3:2"
+        expected = (41, 3, 2)
         res = self.parser.verseReferenceToBCV(input)
         self.assertEqual(expected, res)

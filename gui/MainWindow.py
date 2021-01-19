@@ -1646,7 +1646,7 @@ class MainWindow(QMainWindow):
                 textCommand = config.history[view][config.currentRecord[view]]
                 for formattedBible, plainBible in mappedBibles:
                     textCommand = textCommand.replace(plainBible, formattedBible)
-                    self.runTextCommand(textCommand, False, view, forceExecute)
+                self.runTextCommand(textCommand, False, view, forceExecute)
         else:
             mappedBibles = (
                 ("MIB", "OHGBi"),
@@ -1661,7 +1661,7 @@ class MainWindow(QMainWindow):
                 textCommand = config.history[view][config.currentRecord[view]]
                 for formattedBible, plainBible in mappedBibles:
                     textCommand = textCommand.replace(formattedBible, plainBible)
-                    self.runTextCommand(textCommand, False, view, forceExecute)
+                self.runTextCommand(textCommand, False, view, forceExecute)
 
     # Actions - previous / next chapter
     def previousMainChapter(self):

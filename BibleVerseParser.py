@@ -239,7 +239,7 @@ class BibleVerseParser:
             if os.path.isfile(file):
                 self.parseFile(file)
 
-    def startParsing(self, inputName):
+    def extractAllReferencesstartParsing(self, inputName):
         # check if input is a file or a folder
         if os.path.isfile(inputName):
             # parse file
@@ -250,6 +250,26 @@ class BibleVerseParser:
         else:
             # input name is neither a file or a folder
             print("'{0}' is not found.".format(inputName))
+
+    def verseReferenceToBCV(self, reference):
+        res = re.search('([12A-Za-z\.]*)\s*(\d*):*(\d*)-*(\d*):*(\d*)', reference).groups()
+        name = res[0]
+        if name in BibleBooks.name2number.keys():
+            bible = int(BibleBooks.name2number[name])
+        elif (name + ".") in BibleBooks.name2number.keys():
+            bible = int(BibleBooks.name2number[(name + ".")])
+        else:
+            bible = 0
+        if res[1] == '':
+            return (bible, 1, 1)
+        elif res[2] == '' and res[3] == '':
+            return bible, int(res[1]), 1
+        elif res[2] == '' and not res[3] == '':
+            return bible, int(res[1]), 1, int(res[3]), 1
+        elif res[4] == '':
+            return bible, int(res[1]), int(res[2]), int(res[1]), int(res[3])
+        else:
+            return bible, int(res[1]), int(res[2]), int(res[3]), int(res[4])
 
 """
 END - class BibleVerseParser
@@ -276,3 +296,7 @@ if __name__ == '__main__':
 
     # delete object
     del parser
+
+    # parser = BibleVerseParser("NO")
+    # text = "John 1:1"
+    # print(parser.parseText(text))

@@ -98,3 +98,9 @@ class BibleVerseParserTestCase(unittest.TestCase):
         expected = (41, 3, 2)
         res = self.parser.verseReferenceToBCV(input)
         self.assertEqual(expected, res)
+
+    def test_2tim_verseReferenceToBCV(self):
+        input = " 2 Timothy  5 "
+        expected = (55, 5, 1)
+        res = self.parser.verseReferenceToBCV(input)
+        self.assertEqual(expected, res)

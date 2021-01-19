@@ -250,6 +250,7 @@ class BibleVerseParser:
             print("'{0}' is not found.".format(inputName))
 
     def verseReferenceToBCV(self, text):
+        text = text.strip()
         bible = 0
         for key in self.sortedNames:
             if text.startswith(key):

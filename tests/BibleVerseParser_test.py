@@ -86,8 +86,8 @@ class BibleVerseParserTestCase(unittest.TestCase):
         res = self.parser.verseReferenceToBCV(input)
         self.assertEqual(expected, res)
 
-    def test_2kings_verseReferenceToBCV(self):
-        input = "II Ki. 4:5-10:6"
-        expected = (12, 4, 5, 10, 6)
+    def test_1sam_verseReferenceToBCV(self):
+        input = "1 S.  4:5 - 10:9999"
+        expected = (9, 4, 5, 10, 9999)
         res = self.parser.verseReferenceToBCV(input)
         self.assertEqual(expected, res)

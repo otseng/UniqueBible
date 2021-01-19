@@ -256,7 +256,7 @@ class BibleVerseParser:
                 bible = int(BibleBooks.name2number[key])
                 break
         reference = text[len(key):]
-        res = re.search('(\s*)(\d*):*(\d*)-*(\d*):*(\d*)', reference).groups()
+        res = re.search('(\s*)(\d*):*(\d*) *-* *(\d*):*(\d*)', reference).groups()
         if res[1] == '':
             return (bible, 1, 1)
         elif res[2] == '' and res[3] == '':

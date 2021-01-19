@@ -1363,6 +1363,10 @@ class MainWindow(QMainWindow):
     def displaySearchBibleMenu(self):
         self.runTextCommand("_menu:::", False, "main")
 
+    def displaySearchHighlightCommand(self):
+        self.textCommandLineEdit.setText("SEARCHHIGHLIGHT:::")
+        self.textCommandLineEdit.setFocus()
+
     # Action - other search commands
     def searchCommandChapterNote(self):
         self.textCommandLineEdit.setText("SEARCHCHAPTERNOTE:::")

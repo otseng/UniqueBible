@@ -78,7 +78,10 @@ class AlephMainWindow(MainWindow):
         search_menu.addAction(QAction(config.thisTranslation["menu5_bible"], self, shortcut="Ctrl+S, B", triggered=self.displaySearchBibleMenu))
         search_menu.addAction(QAction(config.thisTranslation["menu_verse_all_versions"], self, shortcut="Ctrl+S, V", triggered=self.runCOMPARE))
         search_command = search_menu.addMenu(config.thisTranslation["menu_command"])
-        search_command.addAction(QAction(config.thisTranslation["menu_bible"], self, triggered=self.displaySearchBibleCommand))
+        search_command.addAction(
+            QAction(config.thisTranslation["menu_bible"], self, triggered=self.displaySearchBibleCommand))
+        if config.enableVerseHighlighting:
+            search_command.addAction(QAction(config.thisTranslation["menu_highlight"], self, triggered=self.displaySearchHighlightCommand))
         search_command.addAction(QAction(config.thisTranslation["menu_lexicon"], self, triggered=self.searchCommandLexicon))
         search_command.addAction(
             QAction(config.thisTranslation["menu_bible_chapter_notes"], self, triggered=self.searchCommandChapterNote))

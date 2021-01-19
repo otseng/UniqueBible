@@ -104,3 +104,10 @@ class BibleVerseParserTestCase(unittest.TestCase):
         expected = (55, 5, 1)
         res = self.parser.verseReferenceToBCV(input)
         self.assertEqual(expected, res)
+
+    def test_adddaniel_verseReferenceToBCV(self):
+        input = "Additions to Daniel 10"
+        expected = (71, 10, 1)
+        res = self.parser.verseReferenceToBCV(input)
+        self.assertEqual(expected, res)
+

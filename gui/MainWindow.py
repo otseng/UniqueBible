@@ -1934,7 +1934,7 @@ class MainWindow(QMainWindow):
             if re.search('^(_commentary:::|_menu:::)', textCommand.lower()):
                 self.newTabException = True
             # parse command
-            view, content = self.textCommandParser.parser(textCommand, source)
+            view, content, dict = self.textCommandParser.parser(textCommand, source)
             # process content
             if content == "INVALID_COMMAND_ENTERED":
                 self.displayMessage(config.thisTranslation["message_invalid"] + ":" + textCommand)

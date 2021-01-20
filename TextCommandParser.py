@@ -618,11 +618,11 @@ class TextCommandParser:
     def databaseNotInstalled(self, keyword):
         databaseInfo = self.databaseInfo()[keyword]
         self.parent.downloadHelper(databaseInfo)
-        return ("", "")
+        return ("", "", {})
 
     # return invalid command
     def invalidCommand(self, source="main"):
-        return (source, "INVALID_COMMAND_ENTERED")
+        return (source, "INVALID_COMMAND_ENTERED", {})
 
     # sort out keywords from a single line command
     def splitCommand(self, command):
@@ -702,7 +702,7 @@ class TextCommandParser:
             else:
                 updateViewConfig, *_ = self.getViewConfig(view)
                 updateViewConfig(text, bcvTuple)
-                return (view, content, {})
+                return (view, content, {'tab_title': text})
 
     def hideLexicalEntryInBible(self, text):
         if config.hideLexicalEntryInBible and re.search("onclick=['{0}]lex".format('"'), text):
@@ -1406,7 +1406,10 @@ class TextCommandParser:
             exactMatch = searchSqlite.getContent(module, entry)
             similarMatch = searchSqlite.getSimilarContent(module, entry)
             del searchSqlite
-            return ("study", "<h2>Search <span style='color: brown;'>{0}</span> for <span style='color: brown;'>{1}</span></h2><p>{4}</p><p><b>Exact match:</b><br><br>{2}</p><p><b>Partial match:</b><br><br>{3}".format(module, entry, exactMatch, similarMatch, selectList), {})
+            return ("study",
+                    "<h2>Search <span style='color: brown;'>{0}</span> for <span style='color: brown;'>{1}</span></h2>" +
+                    "<p>{4}</p><p><b>Exact match:</b><br><br>{2}</p><p><b>Partial match:</b><br><br>{3}"
+                    .format(module, entry, exactMatch, similarMatch, selectList), {'tab_title': 'Search:' + module + ':' + entry})
         else:
             del indexes
             return self.invalidCommand()
@@ -1499,7 +1502,7 @@ class TextCommandParser:
             content += re.sub('^.*?<br><br><b><i>TBESG', '<b><i>TBESG', wordData.getContent("NT", wordId))
 
         self.setStudyVerse(config.studyText, bcvTuple)
-        return ("study", content, {})
+        return ("study", content, {'tab_title': 'Mor:' + wordId})
 
     # return default lexicons
     def getDefaultLexicons(self):
@@ -1527,7 +1530,7 @@ class TextCommandParser:
         if not content or content == "INVALID_COMMAND_ENTERED":
             return self.invalidCommand()
         else:
-            return ("study", content, {'tab_title': 'Lex:' + module + ':" + entries'})
+            return ("study", content, {'tab_title': 'Lex:' + module + ':' + entries})
 
     # LMCOMBO:::
     def textLMcombo(self, command, source):

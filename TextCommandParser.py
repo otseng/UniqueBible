@@ -1362,7 +1362,7 @@ class TextCommandParser:
             if not content == "INVALID_COMMAND_ENTERED":
                 self.setCommentaryVerse(module, bcvTuple)
             del commentary
-            return ("study", content, {'tab_title':module})
+            return ("study", content, {'tab_title':'Com:' + module})
 
     # COMMENTARY2:::
     def textCommentary2(self, command, source):
@@ -1527,7 +1527,7 @@ class TextCommandParser:
         if not content or content == "INVALID_COMMAND_ENTERED":
             return self.invalidCommand()
         else:
-            return ("study", content, {})
+            return ("study", content, {'tab_title': 'Lex:' + module + ':" + entries'})
 
     # LMCOMBO:::
     def textLMcombo(self, command, source):

@@ -145,7 +145,7 @@ class BibleVerseParser:
             )
             bookName = RegexSearch.replace(bookName, searchReplace)
             # get assigned book number from dictionary
-            bookNumber = self.bibleBooksDict[name]
+            bookNumber = str(self.bibleBooksDict[name])
             # search & replace for marking book
             searchReplace = (
                 ('('+bookName+') ([0-9])', '『'+bookNumber+r'｜\1』 \2'),

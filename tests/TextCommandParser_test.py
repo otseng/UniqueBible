@@ -11,15 +11,6 @@ class TextCommandParserTestCase(unittest.TestCase):
         config.useFastVerseParsing = False
         self.parser = TextCommandParser("")
 
-    def test_bibles_in_parser(self):
-        config.useFastVerseParsing = False
-        bvp = BibleVerseParser(config.standardAbbreviation)
-        extended = len(bvp.bibleBooksDict.keys())
-        config.useFastVerseParsing = True
-        bvp = BibleVerseParser(config.standardAbbreviation)
-        fast = len(bvp.bibleBooksDict.keys())
-        self.assertLess(extended, fast)
-
     # @unittest.skip
     def test_matt_textBibleVerseParser(self):
         config.useFastVerseParsing = False

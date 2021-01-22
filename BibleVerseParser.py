@@ -66,9 +66,13 @@ class BibleVerseParser:
         for bible in BibleBooks.name2number.keys():
             num = BibleBooks.name2number[bible]
             self.bibleBooksDict[bible] = int(num)
-            if "." in bible:
-                bible = bible.replace(".", "")
-                self.bibleBooksDict[bible] = int(num)
+            if config.useFastVerseParsing:
+                if "." in bible:
+                    bible = bible.replace(".", "")
+                    self.bibleBooksDict[bible] = int(num)
+                if bible[0] < 'a':
+                    bible = bible.lower()
+                    self.bibleBooksDict[bible] = int(num)
         sortedNames = sorted(self.bibleBooksDict.keys())
         self.sortedNames = sorted(sortedNames, key=len, reverse=True)
 
@@ -212,7 +216,10 @@ class BibleVerseParser:
     def extractAllReferencesFast(self, text, tagged=False):
         if tagged:
             return "This is not supported"
-        ret = [self.verseReferenceToBCV(verse) for verse in text.split(";")]
+        sep = ";"
+        if "," in text:
+            sep = ","
+        ret = [self.verseReferenceToBCV(verse) for verse in text.split(sep)]
         return ret
 
     def parseFile(self, inputFile):

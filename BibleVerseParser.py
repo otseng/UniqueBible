@@ -209,7 +209,7 @@ class BibleVerseParser:
         # return a list of tuples (b, c, v)
         return [literal_eval(m) for m in re.findall('bcv(\([0-9]+?,[ ]*[0-9]+?,[ ]*[0-9, ]*?\))', text)]
 
-    def extractAllReferencesNew(self, text, tagged=False):
+    def extractAllReferencesFast(self, text, tagged=False):
         if tagged:
             return "This is not supported"
         ret = [self.verseReferenceToBCV(verse) for verse in text.split(";")]

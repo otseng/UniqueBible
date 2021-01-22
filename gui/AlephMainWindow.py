@@ -33,12 +33,13 @@ class AlephMainWindow(MainWindow):
             QAction(config.thisTranslation["menu_config_flags"], self, triggered=self.moreConfigOptionsDialog))
 
         navigation_menu = self.menuBar().addMenu(config.thisTranslation["menu_navigation"])
-        prev_chap = QAction(config.thisTranslation["menu4_previous"], self, shortcut='Ctrl+<', triggered=self.previousMainChapter)
-        prev_chap.setShortcuts(["Ctrl+<", "Ctrl+,,"])
-        next_chap = QAction(config.thisTranslation["menu4_next"], self, shortcut='Ctrl+>', triggered=self.nextMainChapter)
-        next_chap.setShortcuts(["Ctrl+>", "Ctrl+."])
+        navigation_menu.addAction(
+            QAction(config.thisTranslation["menu_first_chapter"], self, shortcut='Ctrl+<', triggered=self.gotoFirstChapter))
+        prev_chap = QAction(config.thisTranslation["menu4_previous"], self, shortcut='Ctrl+,,', triggered=self.previousMainChapter)
+        prev_chap.setShortcuts(["Ctrl+,,"])
         navigation_menu.addAction(prev_chap)
-        navigation_menu.addAction(next_chap)
+        navigation_menu.addAction(QAction(config.thisTranslation["menu4_next"], self, shortcut='Ctrl+.', triggered=self.nextMainChapter))
+        navigation_menu.addAction(QAction(config.thisTranslation["menu_last_chapter"], self, shortcut='Ctrl+>', triggered=self.gotoLastChapter))
         navigation_menu.addAction(QAction(config.thisTranslation["menu_next_book"], self, shortcut='Ctrl+]', triggered=self.nextMainBook))
         navigation_menu.addAction(QAction(config.thisTranslation["menu_previous_book"], self, shortcut='Ctrl+[', triggered=self.previousMainBook))
         scroll_menu = navigation_menu.addMenu("&{0}".format(config.thisTranslation["menu_scroll"]))

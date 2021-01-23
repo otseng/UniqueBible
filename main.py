@@ -343,6 +343,9 @@ if not hasattr(config, "menuLayout"):
 # Verse parsing method
 if not hasattr(config, "useFastVerseParsing"):
     config.useFastVerseParsing = False
+# Enable macros
+if not hasattr(config, "enableMacros"):
+    config.enableMacros = False
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -540,7 +543,8 @@ def saveDataOnExit():
         ("migrateDatabaseBibleNameToDetailsTable", config.migrateDatabaseBibleNameToDetailsTable),
         ("menuLayout", config.menuLayout),
         ("showHighlightMarkers", config.showHighlightMarkers),
-        ("useFastVerseParsing", config.useFastVerseParsing)
+        ("useFastVerseParsing", config.useFastVerseParsing),
+        ("enableMacros", config.enableMacros)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:

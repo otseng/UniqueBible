@@ -1765,4 +1765,4 @@ class BibleBooks:
         if book in BibleBooks.chapters.keys():
             return BibleBooks.chapters[book]
         else:
-            return 1
+            return 100

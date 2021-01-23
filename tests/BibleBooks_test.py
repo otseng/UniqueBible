@@ -9,6 +9,6 @@ class BibleBooksTestCase(unittest.TestCase):
         self.assertEqual(BibleBooks.getLastChapter(1), 50)
         self.assertEqual(BibleBooks.getLastChapter(2), 40)
         self.assertEqual(BibleBooks.getLastChapter(66), 22)
-        self.assertEqual(BibleBooks.getLastChapter(100), 1)
+        self.assertEqual(BibleBooks.getLastChapter(100), 100)
 
 

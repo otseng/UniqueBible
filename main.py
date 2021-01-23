@@ -7,10 +7,6 @@
 import os, platform, logging
 import logging.handlers as handlers
 
-from gui.AlephMainWindow import AlephMainWindow
-from gui.ClassicMainWindow import ClassicMainWindow
-from themes import Themes
-
 # File "config.py" is essential for running module "config"
 # Create file "config.py" if it is missing.
 if not os.path.isfile("config.py"):
@@ -567,6 +563,10 @@ if config.ibus:
 # Set Qt input method variable to use Qt virtual keyboards if config.virtualKeyboard is "True"
 if config.virtualKeyboard:
     os.environ["QT_IM_MODULE"] = "qtvirtualkeyboard"
+
+from gui.AlephMainWindow import AlephMainWindow
+from gui.ClassicMainWindow import ClassicMainWindow
+from themes import Themes
 
 # Start PySide2 gui
 app = QApplication(sys.argv)

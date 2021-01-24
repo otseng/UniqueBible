@@ -175,7 +175,10 @@ class AlephMainWindow(MainWindow):
 
         if config.enableMacros:
             macros_menu = self.menuBar().addMenu(config.thisTranslation["menu_macros"])
-            self.loadRunMacrosMenu(macros_menu)
+            run_macros_menu = macros_menu.addMenu(config.thisTranslation["menu_run"])
+            self.loadRunMacrosMenu(run_macros_menu)
+            build_macros_menu = macros_menu.addMenu(config.thisTranslation["menu_build_macro"])
+            build_macros_menu.addAction(QAction(config.thisTranslation["menu_highlight"], self, triggered=self.macroBuildHighlights))
 
         about_menu = self.menuBar().addMenu(config.thisTranslation["menu_about"])
         about_menu.addAction(QAction(config.thisTranslation["menu_wiki"], self, triggered=self.openUbaWiki))

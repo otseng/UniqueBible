@@ -253,6 +253,7 @@ class Languages:
         "menu_bible_chapter_notes": "Bible Chapter Notes",
         "menu_bible_notes": "Bible Notes",
         "menu_bible_verse_notes": "Bible Verse Notes",
+        "menu_build_macro": "Build Macro",
         "menu_chapter": "Chapter",
         "menu_chineseFont": "Chinese Font",
         "menu_command": "Command",
@@ -268,6 +269,7 @@ class Languages:
         "menu_font": "Font and Size",
         "menu_font": "Font",
         "menu_highlight": "Highlight",
+        "menu_highlight": "Highlights",
         "menu_history": "History",
         "menu_language": "Language",
         "menu_last_chapter": "Last Chapter",
@@ -483,6 +485,7 @@ class Languages:
         "dictionaries": "Dictionaries",
         "enter": "Enter",
         "enter_command_here": "Enter command here ...",
+        "filename": "Filename",
     }
 
     def translateInterface(self, language):

@@ -2174,6 +2174,11 @@ class MainWindow(QMainWindow):
         js = "document.body.scrollTop = document.documentElement.scrollTop = 0;"
         self.studyPage.runJavaScript(js)
 
+    def macroBuildHighlights(self):
+        filename, ok = QInputDialog.getText(self, "UniqueBible.app",
+                                        config.thisTranslation["filename"], QLineEdit.Normal, "")
+        print(filename)
+
     def loadRunMacrosMenu(self, run_macro_menu):
         if config.enableMacros:
             count = 1
@@ -2182,8 +2187,11 @@ class MainWindow(QMainWindow):
                 os.mkdir(macros_dir)
             for file in os.listdir(macros_dir):
                 if os.path.isfile(os.path.join(macros_dir, file)) and ".txt" in file:
-                    run_macro_menu.addAction(file.replace(".txt", ""), partial(self.runMacro, file))
-                    # run_macro_menu.addAction(file.replace(".ubm", ""), shortcut="Ctrl+M," + str(count), triggered=partial(self.runMacro, file))
+                    action = QAction(file.replace(".txt", ""), self, triggered=partial(self.runMacro, file))
+                    action.setShortcuts(["Ctrl+M, " + str(count)])
+                    if count < 10:
+                        run_macro_menu.addAction(action)
+                        count += 1
 
     def runMacro(self, file):
         if config.enableMacros:

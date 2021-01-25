@@ -486,6 +486,8 @@ class Languages:
         "enter": "Enter",
         "enter_command_here": "Enter command here ...",
         "filename": "Filename",
+
+        "message_macro_save_highlights": "Enter filename to save all highlights as a macro file"
     }
 
     def translateInterface(self, language):

@@ -16,6 +16,7 @@ from NoteSqlite import NoteSqlite
 from ThirdParty import Converter, ThirdPartyDictionary
 from Languages import Languages
 from ToolsSqlite import BookData, IndexesSqlite
+from db.Highlight import Highlight
 from translations import translations
 from shutil import copyfile, rmtree
 from distutils.dir_util import copy_tree
@@ -2175,9 +2176,27 @@ class MainWindow(QMainWindow):
         self.studyPage.runJavaScript(js)
 
     def macroBuildHighlights(self):
-        filename, ok = QInputDialog.getText(self, "UniqueBible.app",
-                                        config.thisTranslation["filename"], QLineEdit.Normal, "")
-        print(filename)
+        verses = Highlight().getHighlightedVerses()
+        if len(verses) == 0:
+            self.displayMessage("No verses are highlighted")
+        else:
+            filename, ok = QInputDialog.getText(self, "UniqueBible.app",
+                                            config.thisTranslation["message_macro_save_highlights"], QLineEdit.Normal, "")
+            if ok and not filename == "":
+                if not ".txt" in filename:
+                    filename += ".txt"
+                file = os.path.join(MacroParser.macros_dir, filename)
+                if os.path.isfile(file):
+                    self.displayMessage("{0} already exists".format(filename))
+                else:
+                    outfile = open(file, "w")
+                    parser = BibleVerseParser(config.standardAbbreviation)
+                    for (b, c, v, code) in verses:
+                        reference = parser.bcvToVerseReference(b, c, v)
+                        outfile.write("_HIGHLIGHT:::{0}:::{1}\n".format(reference, code))
+                    outfile.write(". displayMessage Highlighted verses loaded\n")
+                    outfile.close()
+                    self.displayMessage("Highlighted verses saved to {0}".format(filename))
 
     def loadRunMacrosMenu(self, run_macro_menu):
         if config.enableMacros:
@@ -2196,4 +2215,5 @@ class MainWindow(QMainWindow):
     def runMacro(self, file):
         if config.enableMacros:
             MacroParser.parse(self, file)
+            self.reloadCurrentRecord()
 

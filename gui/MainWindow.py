@@ -116,6 +116,8 @@ class MainWindow(QMainWindow):
         self.checkModulesUpdate()
         # Remote control
         self.remoteControl = None
+        # Startup macro
+        # self.runMacro(config.startupMacro)
 
     def __del__(self):
         del self.textCommandParser
@@ -232,6 +234,9 @@ class MainWindow(QMainWindow):
         else:
             event.accept()
             qApp.quit()
+
+    def quitApp(self):
+        qApp.quit()
 
     # check migration
     def checkMigration(self):
@@ -2175,6 +2180,21 @@ class MainWindow(QMainWindow):
         js = "document.body.scrollTop = document.documentElement.scrollTop = 0;"
         self.studyPage.runJavaScript(js)
 
+    def setStartupMacro(self):
+        if not os.path.isdir(MacroParser.macros_dir):
+            os.mkdir(MacroParser.macros_dir)
+        files = []
+        for file in os.listdir(MacroParser.macros_dir):
+            if os.path.isfile(os.path.join(MacroParser.macros_dir, file)) and ".txt" in file:
+                files.append(file.replace(".txt", ""))
+        index = 0
+        if config.startupMacro in files:
+            index = files.index(config.startupMacro)
+        item, ok = QInputDialog.getItem(self, "UniqueBible",
+                                        config.thisTranslation["message_select_macro"], files, index, False)
+        if ok and item:
+            config.startupMacro = item
+
     def macroBuildHighlights(self):
         verses = Highlight().getHighlightedVerses()
         if len(verses) == 0:
@@ -2212,8 +2232,8 @@ class MainWindow(QMainWindow):
                         run_macro_menu.addAction(action)
                         count += 1
 
-    def runMacro(self, file):
-        if config.enableMacros:
+    def runMacro(self, file=""):
+        if config.enableMacros and not file == "":
             MacroParser.parse(self, file)
             self.reloadCurrentRecord()
 

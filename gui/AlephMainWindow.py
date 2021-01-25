@@ -26,11 +26,16 @@ class AlephMainWindow(MainWindow):
             QAction(config.thisTranslation["menu_favouriteBible"], self, triggered=self.openFavouriteBibleDialog))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_abbreviations"], self, triggered=self.setBibleAbbreviations))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_tabs"], self, triggered=self.setTabNumberDialog))
+        # if config.enableMacros:
+        #     menu1_defaults.addAction(
+        #         QAction(config.thisTranslation["menu_startup_macro"], self, triggered=self.setStartupMacro))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_language"], self, triggered=self.openMyLanguageDialog))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_font"], self, triggered=self.setDefaultFont))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_chineseFont"], self, triggered=self.setChineseFont))
         menu1.addAction(
             QAction(config.thisTranslation["menu_config_flags"], self, triggered=self.moreConfigOptionsDialog))
+        menu1.addAction(
+            QAction(config.thisTranslation["menu_quit"], self, shortcut='Ctrl+Q', triggered=self.quitApp))
 
         navigation_menu = self.menuBar().addMenu(config.thisTranslation["menu_navigation"])
         navigation_menu.addAction(

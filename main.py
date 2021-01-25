@@ -342,6 +342,9 @@ if not hasattr(config, "useFastVerseParsing"):
 # Enable macros
 if not hasattr(config, "enableMacros"):
     config.enableMacros = False
+# Startup macro
+if not hasattr(config, "startupMacro"):
+    config.startupMacro = ""
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -509,7 +512,8 @@ def saveDataOnExit():
         ("menuLayout", config.menuLayout),
         ("showHighlightMarkers", config.showHighlightMarkers),
         ("useFastVerseParsing", config.useFastVerseParsing),
-        ("enableMacros", config.enableMacros)
+        ("enableMacros", config.enableMacros),
+        ("startupMacro", config.startupMacro)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:

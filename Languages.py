@@ -289,6 +289,7 @@ class Languages:
         "menu_open_note": "Open Note",
         "menu_previous_book": "Previous Book",
         "menu_previous_chapter": "Previous Chapter",
+        "menu_quit": "Quit",
         "menu_read_note": "Read Note",
         "menu_reload": "Reload",
         "menu_run": "Run",
@@ -296,6 +297,7 @@ class Languages:
         "menu_search": "Search",
         "menu_simple_formatted": "Simple/Formatted",
         "menu_select_default_font": "Set Default Font and Size",
+        "menu_startup_macro": "Startup Macro",
         "menu_study_page_down": "Study Page Scroll Down",
         "menu_study_page_up": "Study Page Page Up",
         "menu_study_scroll_to_top": "Study Scroll To Top",
@@ -487,6 +489,7 @@ class Languages:
         "enter_command_here": "Enter command here ...",
         "filename": "Filename",
 
+        "message_select_macro": "Select Macro",
         "message_macro_save_highlights": "Enter filename to save all highlights as a macro file"
     }
 

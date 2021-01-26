@@ -585,6 +585,9 @@ except:
 # Set indexes of history records
 mainWindow.setCurrentRecord()
 
+# Startup macro
+mainWindow.runMacro(config.startupMacro)
+
 def global_excepthook(type, value, traceback):
     logger.error("Uncaught exception", exc_info=(type, value, traceback))
     print(traceback.format_exc())

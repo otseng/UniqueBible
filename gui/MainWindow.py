@@ -116,8 +116,6 @@ class MainWindow(QMainWindow):
         self.checkModulesUpdate()
         # Remote control
         self.remoteControl = None
-        # Startup macro
-        # self.runMacro(config.startupMacro)
 
     def __del__(self):
         del self.textCommandParser
@@ -2254,7 +2252,7 @@ class MainWindow(QMainWindow):
                         count += 1
 
     def runMacro(self, file=""):
-        if config.enableMacros and not file == "":
+        if config.enableMacros and len(file) > 0:
             MacroParser.parse(self, file)
             self.reloadCurrentRecord()
 

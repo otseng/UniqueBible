@@ -1,3 +1,4 @@
+# coding=utf-8
 import os, subprocess, re, config, webbrowser, platform
 from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite, Bible, ClauseData, MorphologySqlite

@@ -2,7 +2,7 @@ import os
 import unittest
 
 if not os.path.isfile("config.py"):
-    open("config.py", "w", encoding="utf-8").close()
+    open("config.py", "w").close()
 
 import config
 

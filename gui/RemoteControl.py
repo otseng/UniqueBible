@@ -1,4 +1,5 @@
 from PySide2.QtCore import Qt
+from PySide2.QtGui import QGuiApplication
 
 import config
 from functools import partial

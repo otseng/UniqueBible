@@ -1,3 +1,5 @@
+from PySide2.QtGui import QGuiApplication
+
 import config
 from PySide2.QtCore import QUrl, Qt
 from PySide2.QtWidgets import (QAction)

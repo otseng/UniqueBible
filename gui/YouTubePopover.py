@@ -61,7 +61,7 @@ class YouTubePopover(QWebEngineView):
 
     def copy(self):
         if self.urlString:
-            qApp.clipboard().setText(self.urlString)
+            QGuiApplication.instance().clipboard().setText(self.urlString)
 
     def downloadMp3(self):
         if not self.urlString or "/results?search_query=" in self.urlString:

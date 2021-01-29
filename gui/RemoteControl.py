@@ -34,7 +34,7 @@ class RemoteControl(QWidget):
 
     # window appearance
     def resizeWindow(self, widthFactor, heightFactor):
-        availableGeometry = qApp.desktop().availableGeometry()
+        availableGeometry = QGuiApplication.instance().desktop().availableGeometry()
         self.setMinimumWidth(500)
         self.resize(availableGeometry.width() * widthFactor, availableGeometry.height() * heightFactor)
 

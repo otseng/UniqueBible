@@ -7,10 +7,16 @@
 import os, platform, logging
 import logging.handlers as handlers
 
-# File "config.py" is essential for running module "config"
-# Create file "config.py" if it is missing.
-if not os.path.isfile("config.py"):
-    open("config.py", "w", encoding="utf-8").close()
+# Create files for user customisation
+
+# Create files for user customisation
+# "config.py" is essential for running module "config".
+# "custom.css" is essential for custom css feature.
+customCssFile = os.path.join("htmlResources", "css", "custom.css")
+userFiles = ("config.py", customCssFile)
+for userFile in userFiles:
+    if not os.path.isfile(userFile):
+        open(userFile, "w", encoding="utf-8").close()
 
 import config
 
@@ -41,9 +47,16 @@ if not hasattr(config, "remoteControl"):
 if not hasattr(config, "closeControlPanelAfterRunningCommand"):
     config.closeControlPanelAfterRunningCommand = False
 if not hasattr(config, "preferControlPanelForCommandLineEntry"):
-    config.preferControlPanelForCommandLineEntry = False
+    # Check if UniqueBible.app is running on Chrome OS:
+    if (os.path.exists("/mnt/chromeos/")):
+        config.preferControlPanelForCommandLineEntry = True
+    else:
+        config.preferControlPanelForCommandLineEntry = False
 if not hasattr(config, "addBreakAfterTheFirstToolBar"):
-    config.addBreakAfterTheFirstToolBar = True
+    if (os.path.exists("/mnt/chromeos/")):
+        config.addBreakAfterTheFirstToolBar = False
+    else:
+        config.addBreakAfterTheFirstToolBar = True
 if not hasattr(config, "addBreakBeforeTheLastToolBar"):
     config.addBreakBeforeTheLastToolBar = False
 # Start full-screen on Linux os

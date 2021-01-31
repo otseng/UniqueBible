@@ -382,6 +382,9 @@ if not hasattr(config, "enableMacros"):
 # Startup macro
 if not hasattr(config, "startupMacro"):
     config.startupMacro = ""
+# Gist Token
+if not hasattr(config, "gistToken"):
+    config.gistToken = ""
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -556,7 +559,8 @@ def saveDataOnExit():
         ("showHighlightMarkers", config.showHighlightMarkers),
         ("useFastVerseParsing", config.useFastVerseParsing),
         ("enableMacros", config.enableMacros),
-        ("startupMacro", config.startupMacro)
+        ("startupMacro", config.startupMacro),
+        ("gistToken", config.gistToken)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:

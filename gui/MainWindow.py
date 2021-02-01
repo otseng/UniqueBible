@@ -2296,6 +2296,11 @@ class MainWindow(QMainWindow):
         if ok:
             config.startupMacro = item
 
+    def setGistToken(self):
+        item, ok = QInputDialog.getText(self, "UniqueBible", "Gist Token", QLineEdit.Normal, config.gistToken)
+        if ok:
+            config.gistToken = item
+
     def macroSaveHighlights(self):
         verses = Highlight().getHighlightedVerses()
         if len(verses) == 0:

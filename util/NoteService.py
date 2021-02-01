@@ -1,3 +1,4 @@
+import config
 from NoteSqlite import NoteSqlite
 from util.GitHubGist import GitHubGist
 
@@ -12,14 +13,31 @@ class NoteService:
         return NoteService.ns
 
     def getChapterNote(b, c):
+        validGist = False
+        if config.enableGist:
+            ghGist = GitHubGist()
+            ghGist.open_gist_chapter_note(b, c)
+            file = ghGist.get_file()
+            updatedG = ghGist.get_updated()
+            if file:
+                noteG = file.content
+                validGist = True
         ns = NoteService.getNoteSqlite()
-        note, updated = ns.displayChapterNote(b, c)
+        noteL, updatedL = ns.displayChapterNote(b, c)
+        if not validGist:
+            note = noteL
+        else:
+            if updatedG > updatedL:
+                note = noteG
+            else:
+                note = noteL
         return note
 
     def saveChapterNote(b, c, note):
-        ghGist = GitHubGist()
-        ghGist.open_gist_chapter_note(b, c)
-        ghGist.update_file(note)
+        if config.enableGist:
+            ghGist = GitHubGist()
+            ghGist.open_gist_chapter_note(b, c)
+            ghGist.update_file(note)
         ns = NoteService.getNoteSqlite()
         ns.saveChapterNote(b, c, note)
 
@@ -29,9 +47,10 @@ class NoteService:
         return note
 
     def saveVerseNote(b, c, v, note):
-        ghGist = GitHubGist()
-        ghGist.open_gist_verse_note(b, c, v)
-        ghGist.update_file(note)
+        if config.enableGist:
+            ghGist = GitHubGist()
+            ghGist.open_gist_verse_note(b, c, v)
+            ghGist.update_file(note)
         ns = NoteService.getNoteSqlite()
         ns.saveVerseNote(b, c, v, note)
 

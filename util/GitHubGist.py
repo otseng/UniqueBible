@@ -109,8 +109,9 @@ if __name__ == "__main__":
 
         book = 40
         chapter = 1
-        verse = 1
+        verse = 2
         ghGist.open_gist_verse_note(book, chapter, verse)
+        ghGist.update_file("Matthew verse 2 from command line")
         print(ghGist.get_updated())
         file = ghGist.get_file()
         if file:

@@ -31,9 +31,11 @@ class NoteService:
             ns.saveChapterNote(b, c, noteG)
             note = noteG
         elif not validGist and validLocal:
+            if config.enableGist:
+                ghGist.update_file(noteL)
             note = noteL
         elif validGist and validLocal:
-            if updatedG > updatedL:
+            if updatedL is None or updatedG > updatedL:
                 note = noteG
             else:
                 note = noteL
@@ -50,8 +52,34 @@ class NoteService:
         ns.saveChapterNote(b, c, note)
 
     def getVerseNote(b, c, v):
+        validGist = False
+        if config.enableGist:
+            ghGist = GitHubGist()
+            ghGist.open_gist_verse_note(b, c, v)
+            file = ghGist.get_file()
+            updatedG = ghGist.get_updated()
+            if file:
+                noteG = file.content
+                validGist = True
         ns = NoteService.getNoteSqlite()
-        note, updated = ns.displayVerseNote(b, c, v)
+        noteL, updatedL = ns.displayVerseNote(b, c, v)
+        validLocal = True
+        if noteL == config.thisTranslation["empty"]:
+            validLocal = False
+        if validGist and not validLocal:
+            ns.saveVerseNote(b, c, noteG)
+            note = noteG
+        elif not validGist and validLocal:
+            if config.enableGist:
+                ghGist.update_file(noteL)
+            note = noteL
+        elif validGist and validLocal:
+            if updatedL is None or updatedG > updatedL:
+                note = noteG
+            else:
+                note = noteL
+        else:
+            note = noteL
         return note
 
     def saveVerseNote(b, c, v, note):

@@ -24,13 +24,21 @@ class NoteService:
                 validGist = True
         ns = NoteService.getNoteSqlite()
         noteL, updatedL = ns.displayChapterNote(b, c)
-        if not validGist:
+        validLocal = True
+        if noteL == config.thisTranslation["empty"]:
+            validLocal = False
+        if validGist and not validLocal:
+            ns.saveChapterNote(b, c, noteG)
+            note = noteG
+        elif not validGist and validLocal:
             note = noteL
-        else:
+        elif validGist and validLocal:
             if updatedG > updatedL:
                 note = noteG
             else:
                 note = noteL
+        else:
+            note = noteL
         return note
 
     def saveChapterNote(b, c, note):

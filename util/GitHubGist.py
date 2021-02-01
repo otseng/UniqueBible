@@ -93,10 +93,10 @@ if __name__ == "__main__":
     if not ghGist.connected:
         print(ghGist.status)
     else:
-        book = 1
+        book = 40
         chapter = 1
         ghGist.open_gist_chapter_note(book, chapter)
-        ghGist.update_file("In the beginning, God created the heavens")
+        ghGist.update_file("Matthew chapter change from command line")
         file = ghGist.get_file()
         updated = ghGist.get_updated()
         print(updated)

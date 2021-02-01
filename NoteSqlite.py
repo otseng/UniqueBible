@@ -19,32 +19,32 @@ class NoteSqlite:
     def __del__(self):
         self.connection.close()
 
-    def getChapterNote(self, bcTuple):
+    def getChapterNote(self, b, c):
         query = "SELECT Note FROM ChapterNote WHERE Book=? AND Chapter=?"
-        self.cursor.execute(query, bcTuple)
+        self.cursor.execute(query, (b, c))
         content = self.cursor.fetchone()
         if content:
             return content[0]
         else:
             return config.thisTranslation["empty"]
 
-    def getVerseNote(self, bcvTuple):
+    def getVerseNote(self, b, c, v):
         query = "SELECT Note FROM VerseNote WHERE Book=? AND Chapter=? AND Verse=?"
-        self.cursor.execute(query, bcvTuple)
+        self.cursor.execute(query, (b, c, v))
         content = self.cursor.fetchone()
         if content:
             return content[0]
         else:
             return config.thisTranslation["empty"]
 
-    def displayChapterNote(self, bcTuple):
-        content = self.getChapterNote(bcTuple)
+    def displayChapterNote(self, b, c):
+        content = self.getChapterNote(b, c)
         #content = self.customFormat(content)
         content = self.highlightSearch(content)
         return content
 
-    def displayVerseNote(self, bcvTuple):
-        content = self.getVerseNote(bcvTuple)
+    def displayVerseNote(self, b, c, v):
+        content = self.getVerseNote(b, c, v)
         #content = self.customFormat(content)
         content = self.highlightSearch(content)
         return content
@@ -56,24 +56,22 @@ class NoteSqlite:
         else:
             return True
 
-    def saveChapterNote(self, bcNoteTuple):
-        b, c, note = bcNoteTuple
+    def saveChapterNote(self, b, c, note):
         delete = "DELETE FROM ChapterNote WHERE Book=? AND Chapter=?"
         self.cursor.execute(delete, (b, c))
         self.connection.commit()
         if note and note != config.thisTranslation["empty"] and self.isNotEmptyNote(note):
             insert = "INSERT INTO ChapterNote (Book, Chapter, Note) VALUES (?, ?, ?)"
-            self.cursor.execute(insert, bcNoteTuple)
+            self.cursor.execute(insert, (b, c, note))
             self.connection.commit()
 
-    def saveVerseNote(self, bcvNoteTuple):
-        b, c, v, note = bcvNoteTuple
+    def saveVerseNote(self, b, c, v, note):
         delete = "DELETE FROM VerseNote WHERE Book=? AND Chapter=? AND Verse=?"
         self.cursor.execute(delete, (b, c, v))
         self.connection.commit()
         if note and note != config.thisTranslation["empty"] and self.isNotEmptyNote(note):
             insert = "INSERT INTO VerseNote (Book, Chapter, Verse, Note) VALUES (?, ?, ?, ?)"
-            self.cursor.execute(insert, bcvNoteTuple)
+            self.cursor.execute(insert, (b, c, v, note))
             self.connection.commit()
 
     def getSearchedChapterList(self, searchString):

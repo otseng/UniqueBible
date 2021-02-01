@@ -4,9 +4,9 @@ from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite, Bible, ClauseData, MorphologySqlite
 from ToolsSqlite import CrossReferenceSqlite, CollectionsSqlite, ImageSqlite, IndexesSqlite, EncyclopediaData, DictionaryData, ExlbData, SearchSqlite, Commentary, VerseData, WordData, BookData, Book, Lexicon
 from ThirdParty import ThirdPartyDictionary
-from NoteSqlite import NoteSqlite
 from PySide2.QtWidgets import QApplication
 from db.Highlight import Highlight
+from util.NoteService import NoteService
 
 
 class TextCommandParser:
@@ -1749,9 +1749,7 @@ class TextCommandParser:
             return self.invalidCommand("study")
         else:
             config.noteSearchString = command
-            noteSqlite = NoteSqlite()
-            chapters = noteSqlite.getSearchedChapterList(command)
-            del noteSqlite
+            chapters = NoteService.getSearchedChapterList(command)
             return ("study", "<p>\"<b style='color: brown;'>{0}</b>\" is found in <b style='color: brown;'>{1}</b> note(s) on chapter(s)</p><p>{2}</p>".format(command, len(chapters), "; ".join(chapters)), {})
 
     # SEARCHVERSENOTE:::
@@ -1760,9 +1758,7 @@ class TextCommandParser:
             return self.invalidCommand("study")
         else:
             config.noteSearchString = command
-            noteSqlite = NoteSqlite()
-            verses = noteSqlite.getSearchedVerseList(command)
-            del noteSqlite
+            verses = NoteService.getSearchedVerseList(command)
             return ("study", "<p>\"<b style='color: brown;'>{0}</b>\" is found in <b style='color: brown;'>{1}</b> note(s) on verse(s)</p><p>{2}</p>".format(command, len(verses), "; ".join(verses)), {})
 
     # CROSSREFERENCE:::

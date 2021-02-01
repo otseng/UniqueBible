@@ -12,7 +12,6 @@ from TextCommandParser import TextCommandParser
 from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite, Bible
 from TextFileReader import TextFileReader
-from NoteSqlite import NoteSqlite
 from ThirdParty import Converter, ThirdPartyDictionary
 from Languages import Languages
 from ToolsSqlite import BookData, IndexesSqlite
@@ -31,6 +30,7 @@ from gui.CentralWidget import CentralWidget
 from gui.imports import *
 from ToolsSqlite import LexiconData
 from util.MacroParser import MacroParser
+from util.NoteService import NoteService
 
 
 class MainWindow(QMainWindow):
@@ -771,7 +771,7 @@ class MainWindow(QMainWindow):
         self.updateStudyRefButton()
         config.commentaryB, config.commentaryC, config.commentaryV = b, c, 1
         self.updateCommentaryRefButton()
-        note = self.fixNoteFontDisplay(NoteSqlite().displayChapterNote((b, c)))
+        note = self.fixNoteFontDisplay(NoteService.getChapterNote(b, c))
         note = "<p style=\"font-family:'{4}'; font-size:{5}pt;\"><b>Note on {0}</b> &ensp;<button class='feature' onclick='document.title=\"_editchapternote:::{2}.{3}\"'>edit</button></p>{1}".format(reference[:-2], note, b, c, config.font, config.fontSize)
         note = self.htmlWrapper(note, True, "study", False)
         self.openTextOnStudyView(note)
@@ -783,7 +783,7 @@ class MainWindow(QMainWindow):
         self.updateStudyRefButton()
         config.commentaryB, config.commentaryC, config.commentaryV = b, c, v
         self.updateCommentaryRefButton()
-        note = self.fixNoteFontDisplay(NoteSqlite().displayVerseNote((b, c, v)))
+        note = self.fixNoteFontDisplay(NoteService.getVerseNote(b, c, v))
         note = "<p style=\"font-family:'{5}'; font-size:{6}pt;\"><b>Note on {0}</b> &ensp;<button class='feature' onclick='document.title=\"_editversenote:::{2}.{3}.{4}\"'>edit</button></p>{1}".format(reference, note, b, c, v, config.font, config.fontSize)
         note = self.htmlWrapper(note, True, "study", False)
         self.openTextOnStudyView(note)

@@ -1,6 +1,4 @@
 import logging
-import sys
-from logging import handlers
 
 from github import Github, InputFileContent
 import config
@@ -17,7 +15,7 @@ class GitHubGist:
             logHandler = logging.StreamHandler()
             logHandler.setLevel(logging.DEBUG)
             self.logger.addHandler(logHandler)
-            self.logger.setLevel(logging.DEBUG)
+            self.logger.setLevel(logging.INFO)
         self.status = "Not configured"
         self.connected = False
         self.user = None
@@ -31,7 +29,7 @@ class GitHubGist:
             self.gh = Github(config.gistToken)
             self.user = self.gh.get_user()
             self.status = "Gist user: " + self.user.name
-            self.logger.info(self.status)
+            self.logger.debug(self.status)
             self.connected = True
         except Exception as error:
             self.status = error
@@ -56,15 +54,18 @@ class GitHubGist:
                 if description == g.description:
                     self.gist = g
                     self.description = description
-                    self.logger.debug("Existing Gist :{0}:{1}".format(description, self.gist.id))
+                    self.logger.debug("Existing Gist:{0}:{1}".format(description, self.gist.id))
                     break
-            if not self.gist:
-                self.gist = self.user.create_gist(False, {self.name: InputFileContent("&nbsp;")}, self.name)
-                self.description = description
-                self.logger.debug("New Gist :{0}:{1}".format(description, self.gist.id))
+
+    def open_gist_by_id(self, id):
+        if self.user:
+            self.gist = self.user.get_gist(id)
 
     def update_file(self, content):
-        if self.gist:
+        if not self.gist:
+            self.gist = self.user.create_gist(False, {self.name: InputFileContent(content)}, self.name)
+            self.logger.debug("New Gist :{0}:{1}".format(self.name, self.gist.id))
+        else:
             self.gist.edit(files={self.name: content})
 
     def get_file(self):
@@ -72,12 +73,18 @@ class GitHubGist:
             files = self.gist.files
             file = files[self.name]
             return file
+        else:
+            return None
 
     def chapter_name(self, b, c):
         return "UBA-Note-Chapter-{0}-{1}".format(b, c)
 
     def verse_name(self, b, c, v):
         return "UBA-Note-Verse-{0}-{1}-{2}".format(b, c, v)
+
+    def get_updated_at(self):
+        if self.gist:
+            return self.gist.updated_at
 
 if __name__ == "__main__":
 
@@ -88,14 +95,25 @@ if __name__ == "__main__":
         book = 1
         chapter = 1
         ghGist.open_gist_chapter_note(book, chapter)
-        # ghGist.update_file(InputFileContent("In the beginning, God created the heavens"))
-        # file = ghGist.get_file()
-        # print(file.content)
+        ghGist.update_file(InputFileContent("In the beginning, God created the heavens"))
+        file = ghGist.get_file()
+        updated = ghGist.get_updated_at()
+        print(updated)
+        if file:
+            print(file.content)
+        else:
+            print(ghGist.name + " gist does not exist")
+
+        print("---")
 
         book = 40
         chapter = 1
         verse = 1
         ghGist.open_gist_verse_note(book, chapter, verse)
-        # file = ghGist.get_file()
-        # print(file.content)
-        # print(ghGist.gist.id)
+        print(ghGist.get_updated_at())
+        file = ghGist.get_file()
+        if file:
+            print(ghGist.gist.id)
+            print(file.content)
+        else:
+            print(ghGist.name + " gist does not exist")

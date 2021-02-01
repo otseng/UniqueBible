@@ -1,4 +1,5 @@
 import logging
+import time
 
 from github import Github, InputFileContent
 import config
@@ -66,7 +67,7 @@ class GitHubGist:
             self.gist = self.user.create_gist(False, {self.name: InputFileContent(content)}, self.name)
             self.logger.debug("New Gist :{0}:{1}".format(self.name, self.gist.id))
         else:
-            self.gist.edit(files={self.name: content})
+            self.gist.edit(files={self.name: InputFileContent(content)})
 
     def get_file(self):
         if self.gist:
@@ -82,9 +83,9 @@ class GitHubGist:
     def verse_name(self, b, c, v):
         return "UBA-Note-Verse-{0}-{1}-{2}".format(b, c, v)
 
-    def get_updated_at(self):
+    def get_updated(self):
         if self.gist:
-            return self.gist.updated_at
+            return int(self.gist.updated_at.timestamp())
 
 if __name__ == "__main__":
 
@@ -95,9 +96,9 @@ if __name__ == "__main__":
         book = 1
         chapter = 1
         ghGist.open_gist_chapter_note(book, chapter)
-        ghGist.update_file(InputFileContent("In the beginning, God created the heavens"))
+        ghGist.update_file("In the beginning, God created the heavens")
         file = ghGist.get_file()
-        updated = ghGist.get_updated_at()
+        updated = ghGist.get_updated()
         print(updated)
         if file:
             print(file.content)
@@ -110,10 +111,14 @@ if __name__ == "__main__":
         chapter = 1
         verse = 1
         ghGist.open_gist_verse_note(book, chapter, verse)
-        print(ghGist.get_updated_at())
+        print(ghGist.get_updated())
         file = ghGist.get_file()
         if file:
             print(ghGist.gist.id)
             print(file.content)
         else:
             print(ghGist.name + " gist does not exist")
+
+        print("---")
+
+        print(int(time.time()))

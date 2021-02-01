@@ -1,4 +1,5 @@
 from NoteSqlite import NoteSqlite
+from util.GitHubGist import GitHubGist
 
 
 class NoteService:
@@ -12,19 +13,25 @@ class NoteService:
 
     def getChapterNote(b, c):
         ns = NoteService.getNoteSqlite()
-        note = ns.displayChapterNote(b, c)
+        note, updated = ns.displayChapterNote(b, c)
         return note
 
     def saveChapterNote(b, c, note):
+        ghGist = GitHubGist()
+        ghGist.open_gist_chapter_note(b, c)
+        ghGist.update_file(note)
         ns = NoteService.getNoteSqlite()
         ns.saveChapterNote(b, c, note)
 
     def getVerseNote(b, c, v):
         ns = NoteService.getNoteSqlite()
-        note = ns.displayVerseNote(b, c, v)
+        note, updated = ns.displayVerseNote(b, c, v)
         return note
 
     def saveVerseNote(b, c, v, note):
+        ghGist = GitHubGist()
+        ghGist.open_gist_verse_note(b, c, v)
+        ghGist.update_file(note)
         ns = NoteService.getNoteSqlite()
         ns.saveVerseNote(b, c, v, note)
 

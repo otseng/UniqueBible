@@ -1,4 +1,6 @@
 import os, re, sqlite3, config
+import time
+
 from BibleVerseParser import BibleVerseParser
 
 class NoteSqlite:
@@ -14,40 +16,44 @@ class NoteSqlite:
         )
         for statement in create:
             self.cursor.execute(statement)
+        if not self.checkColumnExists("ChapterNote", "Updated"):
+            self.addColumnToTable("ChapterNote", "Updated", "INT")
+        if not self.checkColumnExists("VerseNote", "Updated"):
+            self.addColumnToTable("VerseNote", "Updated", "INT")
         self.connection.commit()
 
     def __del__(self):
         self.connection.close()
 
     def getChapterNote(self, b, c):
-        query = "SELECT Note FROM ChapterNote WHERE Book=? AND Chapter=?"
+        query = "SELECT Note, Updated FROM ChapterNote WHERE Book=? AND Chapter=?"
         self.cursor.execute(query, (b, c))
         content = self.cursor.fetchone()
         if content:
-            return content[0]
+            return content
         else:
-            return config.thisTranslation["empty"]
+            return config.thisTranslation["empty"], 0
 
     def getVerseNote(self, b, c, v):
-        query = "SELECT Note FROM VerseNote WHERE Book=? AND Chapter=? AND Verse=?"
+        query = "SELECT Note, Updated FROM VerseNote WHERE Book=? AND Chapter=? AND Verse=?"
         self.cursor.execute(query, (b, c, v))
         content = self.cursor.fetchone()
         if content:
-            return content[0]
+            return content
         else:
-            return config.thisTranslation["empty"]
+            return config.thisTranslation["empty"], 0
 
     def displayChapterNote(self, b, c):
-        content = self.getChapterNote(b, c)
+        content, updated = self.getChapterNote(b, c)
         #content = self.customFormat(content)
         content = self.highlightSearch(content)
-        return content
+        return content, updated
 
     def displayVerseNote(self, b, c, v):
-        content = self.getVerseNote(b, c, v)
+        content, updated = self.getVerseNote(b, c, v)
         #content = self.customFormat(content)
         content = self.highlightSearch(content)
-        return content
+        return content, updated
 
     def isNotEmptyNote(self, text):
         p = re.compile("<body[^<>]*?>[ \r\n ]*?<p[^<>]*?>[ \r\n ]*?<br />[ \r\n ]*?</p>[ \r\n ]*?</body>[ \r\n ]*?</html>", flags=re.M)
@@ -61,8 +67,8 @@ class NoteSqlite:
         self.cursor.execute(delete, (b, c))
         self.connection.commit()
         if note and note != config.thisTranslation["empty"] and self.isNotEmptyNote(note):
-            insert = "INSERT INTO ChapterNote (Book, Chapter, Note) VALUES (?, ?, ?)"
-            self.cursor.execute(insert, (b, c, note))
+            insert = "INSERT INTO ChapterNote (Book, Chapter, Note, Updated) VALUES (?, ?, ?, ?)"
+            self.cursor.execute(insert, (b, c, note, int(time.time())))
             self.connection.commit()
 
     def saveVerseNote(self, b, c, v, note):
@@ -70,8 +76,8 @@ class NoteSqlite:
         self.cursor.execute(delete, (b, c, v))
         self.connection.commit()
         if note and note != config.thisTranslation["empty"] and self.isNotEmptyNote(note):
-            insert = "INSERT INTO VerseNote (Book, Chapter, Verse, Note) VALUES (?, ?, ?, ?)"
-            self.cursor.execute(insert, (b, c, v, note))
+            insert = "INSERT INTO VerseNote (Book, Chapter, Verse, Note, Updated) VALUES (?, ?, ?, ?, ?)"
+            self.cursor.execute(insert, (b, c, v, note, int(time.time())))
             self.connection.commit()
 
     def getSearchedChapterList(self, searchString):
@@ -111,3 +117,15 @@ class NoteSqlite:
             # add an id so as to scroll to the first result
             content = re.sub("<z>", "<z id='v{0}.{1}.{2}'>".format(config.studyB, config.studyC, config.studyV), content, count=1)
         return content
+
+    def checkColumnExists(self, table, column):
+        self.cursor.execute("SELECT * FROM pragma_table_info(?) WHERE name=?", (table, column))
+        if self.cursor.fetchone():
+            return True
+        else:
+            return False
+
+    def addColumnToTable(self, table, column, column_type):
+        sql = "ALTER TABLE " + table + " ADD COLUMN " + column + " " + column_type
+        self.cursor.execute(sql)
+

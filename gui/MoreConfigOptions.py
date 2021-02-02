@@ -27,6 +27,8 @@ class MoreConfigOptions(QDialog):
 
         leftContainer = QWidget()
         leftContainerLayout = QVBoxLayout()
+        middleContainer = QWidget()
+        middleContainerLayout = QVBoxLayout()
         rightContainer = QWidget()
         rightContainerLayout = QVBoxLayout()
 
@@ -67,9 +69,17 @@ class MoreConfigOptions(QDialog):
         if platform.system() == "Linux":
             options += [
                 ("linuxStartFullScreen", config.linuxStartFullScreen, self.linuxStartFullScreenChanged),
-                ("showTtsOnLinux", config.showTtsOnLinux, self.showTtsOnLinuxChanged),
                 ("fcitx", config.fcitx, self.fcitxChanged),
                 ("ibus", config.ibus, self.ibusChanged),
+                ("showTtsOnLinux", config.showTtsOnLinux, self.showTtsOnLinuxChanged),
+                ("espeak", config.espeak, self.espeakChanged),
+            ]
+        if config.ttsSupport:
+            options += [
+                ("ttsEnglishAlwaysUS", config.ttsEnglishAlwaysUS, self.ttsEnglishAlwaysUSChanged),
+                ("ttsEnglishAlwaysUK", config.ttsEnglishAlwaysUK, self.ttsEnglishAlwaysUKChanged),
+                ("ttsChineseAlwaysMandarin", config.ttsChineseAlwaysMandarin, self.ttsChineseAlwaysMandarinChanged),
+                ("ttsChineseAlwaysCantonese", config.ttsChineseAlwaysCantonese, self.ttsChineseAlwaysCantoneseChanged),
             ]
         for counter, content in enumerate(options):
             name, value, function = content
@@ -77,14 +87,18 @@ class MoreConfigOptions(QDialog):
             checkbox.setText(name)
             checkbox.setChecked(value)
             checkbox.stateChanged.connect(function)
-            if counter % 2 == 0:
-                leftContainerLayout.addWidget(checkbox)
-            else:
+            if (counter + 1) % 3 == 0:
                 rightContainerLayout.addWidget(checkbox)
+            elif (counter + 1) % 2 == 0:
+                middleContainerLayout.addWidget(checkbox)
+            else:
+                leftContainerLayout.addWidget(checkbox)
 
         leftContainer.setLayout(leftContainerLayout)
+        middleContainer.setLayout(middleContainerLayout)
         rightContainer.setLayout(rightContainerLayout)
         horizontalContainerLayout.addWidget(leftContainer)
+        horizontalContainerLayout.addWidget(middleContainer)
         horizontalContainerLayout.addWidget(rightContainer)
         horizontalContainer.setLayout(horizontalContainerLayout)
         layout.addWidget(horizontalContainer)
@@ -113,6 +127,26 @@ class MoreConfigOptions(QDialog):
         if config.virtualKeyboard and config.ibus:
             config.ibus = not config.ibus
         self.parent.displayMessage(config.thisTranslation["message_restart"])
+
+    def ttsEnglishAlwaysUSChanged(self):
+        config.ttsEnglishAlwaysUS = not config.ttsEnglishAlwaysUS
+        if config.ttsEnglishAlwaysUK and config.ttsEnglishAlwaysUS:
+            config.ttsEnglishAlwaysUK = not config.ttsEnglishAlwaysUK
+
+    def ttsEnglishAlwaysUKChanged(self):
+        config.ttsEnglishAlwaysUK = not config.ttsEnglishAlwaysUK
+        if config.ttsEnglishAlwaysUK and config.ttsEnglishAlwaysUS:
+            config.ttsEnglishAlwaysUS = not config.ttsEnglishAlwaysUS
+
+    def ttsChineseAlwaysMandarinChanged(self):
+        config.ttsChineseAlwaysMandarin = not config.ttsChineseAlwaysMandarin
+        if config.ttsChineseAlwaysMandarin and config.ttsChineseAlwaysCantonese:
+            config.ttsChineseAlwaysCantonese = not config.ttsChineseAlwaysCantonese
+
+    def ttsChineseAlwaysCantoneseChanged(self):
+        config.ttsChineseAlwaysCantonese = not config.ttsChineseAlwaysCantonese
+        if config.ttsChineseAlwaysMandarin and config.ttsChineseAlwaysCantonese:
+            config.ttsChineseAlwaysMandarin = not config.ttsChineseAlwaysMandarin
 
     def showVerseNumbersInRangeChanged(self):
         config.showVerseNumbersInRange = not config.showVerseNumbersInRange
@@ -206,6 +240,9 @@ class MoreConfigOptions(QDialog):
     def showTtsOnLinuxChanged(self):
         config.showTtsOnLinux = not config.showTtsOnLinux
         self.parent.displayMessage(config.thisTranslation["message_restart"])
+
+    def espeakChanged(self):
+        config.espeak = not config.espeak
 
     def logCommandsChanged(self):
         config.logCommands = not config.logCommands

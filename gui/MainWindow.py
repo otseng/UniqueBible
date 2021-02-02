@@ -1,11 +1,11 @@
-import os, sys, re, config, base64, webbrowser, platform, subprocess, zipfile, gdown, requests, update, myTranslation, logging
+import os, sys, re, config, base64, webbrowser, platform, subprocess, zipfile, requests, update, myTranslation, logging
 from datetime import datetime
 from ast import literal_eval
 from functools import partial
 
 from PySide2.QtCore import QUrl, Qt, QEvent
 from PySide2.QtGui import QIcon, QGuiApplication, QFont
-from PySide2.QtWidgets import (QAction, QInputDialog, QLineEdit, QMainWindow, QMessageBox, QPushButton, QToolBar, QWidget, QFileDialog, QLabel, QFrame, QFontDialog)
+from PySide2.QtWidgets import (QAction, QInputDialog, QLineEdit, QMainWindow, QMessageBox, QWidget, QFileDialog, QLabel, QFrame, QFontDialog)
 
 from BibleBooks import BibleBooks
 from TextCommandParser import TextCommandParser
@@ -16,6 +16,7 @@ from ThirdParty import Converter, ThirdPartyDictionary
 from Languages import Languages
 from ToolsSqlite import BookData, IndexesSqlite
 from db.Highlight import Highlight
+from gui.GistWindow import GistWindow
 from translations import translations
 from shutil import copyfile, rmtree
 from distutils.dir_util import copy_tree
@@ -2367,3 +2368,10 @@ class MainWindow(QMainWindow):
             MacroParser.parse(self, file)
             self.reloadCurrentRecord()
 
+    def showGistWindow(self):
+        gw = GistWindow(config.enableGist, config.gistToken)
+        if gw.exec_():
+            config.gistToken = gw.gistToken.text()
+            config.enableGist = gw.enableGist.isChecked()
+        else:
+            print("Cancel")

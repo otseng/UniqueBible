@@ -1,6 +1,7 @@
 import logging
 import re
 import time
+import config
 
 from github import Github, InputFileContent
 import config
@@ -22,30 +23,34 @@ from util.DateUtil import DateUtil
 
 class GitHubGist:
 
-    def __init__(self):
+    def __init__(self, gistToken=""):
         self.logger = logging.getLogger('uba')
         if not self.logger.hasHandlers():
             logHandler = logging.StreamHandler()
             logHandler.setLevel(logging.DEBUG)
             self.logger.addHandler(logHandler)
             self.logger.setLevel(logging.INFO)
+        if gistToken == "":
+            self.gistToken = config.gistToken
+        else:
+            self.gistToken = gistToken
         self.status = "Not configured"
         self.connected = False
         self.user = None
         self.gist = None
         self.description = None
         try:
-            if len(config.gistToken) == 0:
-                self.status = "gistToken has not been set in config"
+            if len(self.gistToken) < 40:
+                self.status = "Gist token is has valid"
                 raise Exception(self.status)
-            self.gh = Github(config.gistToken)
+            self.gh = Github(self.gistToken)
             self.user = self.gh.get_user()
             self.status = "Gist user: " + self.user.name
             self.logger.debug(self.status)
             self.connected = True
         except Exception as error:
-            self.status = error
-            self.logger.error(self.status)
+            self.status = "Could not connect"
+            self.logger.error(str(error))
 
     def open_gist_chapter_note(self, book, chapter):
         description = GitHubGist.chapter_name(book, chapter)

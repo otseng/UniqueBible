@@ -2297,11 +2297,6 @@ class MainWindow(QMainWindow):
         if ok:
             config.startupMacro = item
 
-    def setGistToken(self):
-        item, ok = QInputDialog.getText(self, "UniqueBible", "Gist Token", QLineEdit.Normal, config.gistToken)
-        if ok:
-            config.gistToken = item
-
     def macroSaveHighlights(self):
         verses = Highlight().getHighlightedVerses()
         if len(verses) == 0:
@@ -2371,7 +2366,7 @@ class MainWindow(QMainWindow):
     def showGistWindow(self):
         gw = GistWindow(config.enableGist, config.gistToken)
         if gw.exec_():
-            config.gistToken = gw.gistToken.text()
-            config.enableGist = gw.enableGist.isChecked()
+            config.gistToken = gw.gistTokenInput.text()
         else:
-            print("Cancel")
+            # Cancel button pressed
+            pass

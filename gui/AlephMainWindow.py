@@ -29,9 +29,6 @@ class AlephMainWindow(MainWindow):
         if config.enableMacros:
             menu1_defaults.addAction(
                 QAction(config.thisTranslation["menu_startup_macro"], self, triggered=self.setStartupMacro))
-        if config.enableGist:
-            menu1_defaults.addAction(
-                QAction(config.thisTranslation["menu_gist_token"], self, triggered=self.setGistToken))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_language"], self, triggered=self.openMyLanguageDialog))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_font"], self, triggered=self.setDefaultFont))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_chineseFont"], self, triggered=self.setChineseFont))

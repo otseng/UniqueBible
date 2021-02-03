@@ -18,8 +18,12 @@ class NoteSqlite:
             self.cursor.execute(statement)
         if not self.checkColumnExists("ChapterNote", "Updated"):
             self.addColumnToTable("ChapterNote", "Updated", "INT")
+        if not self.checkColumnExists("ChapterNote", "Gist_id"):
+            self.addColumnToTable("ChapterNote", "Gist_id", "NVARCHAR(50)")
         if not self.checkColumnExists("VerseNote", "Updated"):
             self.addColumnToTable("VerseNote", "Updated", "INT")
+        if not self.checkColumnExists("ChapterNote", "Gist_id"):
+            self.addColumnToTable("ChapterNote", "Gist_id", "NVARCHAR(50)")
         self.connection.commit()
 
     def __del__(self):

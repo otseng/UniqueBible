@@ -88,8 +88,8 @@ if not hasattr(config, "espeak"):
     else:
         config.espeak = False
 # tts language options
-if not hasattr(config, "tssDefaultLangauge"):
-    config.tssDefaultLangauge = "en"
+if not hasattr(config, "ttsDefaultLangauge"):
+    config.ttsDefaultLangauge = "en"
 if not hasattr(config, "ttsChineseAlwaysCantonese"):
     config.ttsChineseAlwaysCantonese = False
 if not hasattr(config, "ttsChineseAlwaysMandarin"):
@@ -492,6 +492,8 @@ from PySide2.QtWidgets import QApplication
 
 # Save configurations on exit
 def saveDataOnExit():
+    mainWindow.mainWindow.textCommandParser.stopTtsAudio()
+
     config.bookSearchString = ""
     config.noteSearchString = ""
     configs = (
@@ -506,7 +508,7 @@ def saveDataOnExit():
         ("linuxStartFullScreen", config.linuxStartFullScreen),
         ("showTtsOnLinux", config.showTtsOnLinux),
         ("espeak", config.espeak),
-        ("tssDefaultLangauge", config.tssDefaultLangauge),
+        ("ttsDefaultLangauge", config.ttsDefaultLangauge),
         ("ttsChineseAlwaysCantonese", config.ttsChineseAlwaysCantonese),
         ("ttsChineseAlwaysMandarin", config.ttsChineseAlwaysMandarin),
         ("ttsEnglishAlwaysUS", config.ttsEnglishAlwaysUS),

@@ -1,7 +1,7 @@
 import os, re, sqlite3, config
-import time
-
 from BibleVerseParser import BibleVerseParser
+from util.DateUtil import DateUtil
+
 
 class NoteSqlite:
 
@@ -18,12 +18,9 @@ class NoteSqlite:
             self.cursor.execute(statement)
         if not self.checkColumnExists("ChapterNote", "Updated"):
             self.addColumnToTable("ChapterNote", "Updated", "INT")
-        if not self.checkColumnExists("ChapterNote", "Gist_id"):
-            self.addColumnToTable("ChapterNote", "Gist_id", "NVARCHAR(50)")
-        if not self.checkColumnExists("VerseNote", "Updated"):
+            self.addColumnToTable("ChapterNote", "GistId", "NVARCHAR(40)")
             self.addColumnToTable("VerseNote", "Updated", "INT")
-        if not self.checkColumnExists("ChapterNote", "Gist_id"):
-            self.addColumnToTable("ChapterNote", "Gist_id", "NVARCHAR(50)")
+            self.addColumnToTable("VerseNote", "GistId", "NVARCHAR(40)")
         self.connection.commit()
 
     def __del__(self):
@@ -72,7 +69,7 @@ class NoteSqlite:
         self.connection.commit()
         if note and note != config.thisTranslation["empty"] and self.isNotEmptyNote(note):
             insert = "INSERT INTO ChapterNote (Book, Chapter, Note, Updated) VALUES (?, ?, ?, ?)"
-            self.cursor.execute(insert, (b, c, note, int(time.time())))
+            self.cursor.execute(insert, (b, c, note, DateUtil.epoch()))
             self.connection.commit()
 
     def saveVerseNote(self, b, c, v, note):
@@ -81,7 +78,7 @@ class NoteSqlite:
         self.connection.commit()
         if note and note != config.thisTranslation["empty"] and self.isNotEmptyNote(note):
             insert = "INSERT INTO VerseNote (Book, Chapter, Verse, Note, Updated) VALUES (?, ?, ?, ?, ?)"
-            self.cursor.execute(insert, (b, c, v, note, int(time.time())))
+            self.cursor.execute(insert, (b, c, v, note, DateUtil.epoch()))
             self.connection.commit()
 
     def getSearchedChapterList(self, searchString):

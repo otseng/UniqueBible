@@ -119,6 +119,12 @@ class NoteSqlite:
             content = re.sub("<z>", "<z id='v{0}.{1}.{2}'>".format(config.studyB, config.studyC, config.studyV), content, count=1)
         return content
 
+    def getAllChapters(self):
+        query = "SELECT Book, Chapter, Note, Updated FROM ChapterNote ORDER BY Book, Chapter"
+        self.cursor.execute(query)
+        content = self.cursor.fetchall()
+        return content
+
     def checkColumnExists(self, table, column):
         self.cursor.execute("SELECT * FROM pragma_table_info(?) WHERE name=?", (table, column))
         if self.cursor.fetchone():

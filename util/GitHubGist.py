@@ -1,6 +1,8 @@
 import logging
 import re
 import time
+from datetime import timezone
+
 import config
 
 from github import Github, InputFileContent
@@ -53,19 +55,16 @@ class GitHubGist:
             self.logger.error(str(error))
 
     def open_gist_chapter_note(self, book, chapter):
-        description = GitHubGist.chapter_name(book, chapter)
-        self.description = description
+        self.description = GitHubGist.bc_to_chapter_name(book, chapter)
         self.open_gist_by_description(self.description)
 
     def open_gist_verse_note(self, book, chapter, verse):
-        description = GitHubGist.verse_name(book, chapter, verse)
-        self.description = description
+        self.description = GitHubGist.bc_to_verse_name(book, chapter, verse)
         self.open_gist_by_description(self.description)
 
     def open_gist_by_description(self, description):
         if self.user:
             self.gist = None
-            self.description = None
             gists = self.user.get_gists()
             for g in gists:
                 if description == g.description:
@@ -75,9 +74,14 @@ class GitHubGist:
                     break
 
     def open_gist_by_id(self, id):
-        if self.gh:
-            self.gist = self.gh.get_gist(id)
-            self.description = self.gist.description
+        self.gist = None
+        try:
+            if self.gh:
+                self.gist = self.gh.get_gist(id)
+        except:
+            return None
+        if not self.description == self.gist.description:
+            return None
 
     def get_all_note_gists(self):
         if self.user:
@@ -96,17 +100,13 @@ class GitHubGist:
         else:
             return ""
 
-    def description(self):
-        if self.gist:
-            return self.gist.description
-        else:
-            return ""
-
     def update_content(self, content):
         if not self.gist:
+            print("Creating gist {0}".format(self.description))
             self.gist = self.user.create_gist(False, {self.description: InputFileContent(content)}, self.description)
             self.logger.debug("New Gist :{0}:{1}".format(self.description, self.gist.id))
         else:
+            print("Updating gist {0}".format(self.description))
             self.gist.edit(files={self.description: InputFileContent(content)})
 
     def get_file(self):
@@ -124,25 +124,36 @@ class GitHubGist:
         else:
             return ""
 
-    def last_modified(self):
+    def get_updated(self):
         if self.gist:
-            lm = self.gist.last_modified
-            if lm:
-                return GitHubGist.extract_epoch(lm)
-            else:
-                return 0;
+            # doesn't work - last_modified is blank sometimes!
+            # lm = self.gist.last_modified
+            # return GitHubGist.extract_epoch(lm)
+            updated = self.gist.updated_at
+            return int(DateUtil.datetime_to_epoch(updated) - DateUtil.seconds_between_local_and_utc())
+        else:
+            return 0
 
-    def chapter_name(b, c):
+    def delete_all_notes(self):
+        if self.user:
+            self.gist = None
+            self.description = None
+            gists = self.user.get_gists()
+            for g in gists:
+                if g.description.startswith("UBA-Note-"):
+                    g.delete()
+
+    def bc_to_chapter_name(b, c):
         return "UBA-Note-Chapter-{0}-{1}".format(b, c)
 
-    def verse_name(b, c, v):
+    def bc_to_verse_name(b, c, v):
         return "UBA-Note-Verse-{0}-{1}-{2}".format(b, c, v)
 
-    def extract_bc(name):
+    def chapter_name_to_bc(name):
         res = re.search(r'UBA-Note-Chapter-(\d*)-(\d*)', name).groups()
         return res
 
-    def extract_bcv(name):
+    def verse_name_to_bc(name):
         res = re.search(r'UBA-Note-Verse-(\d*)-(\d*)-(\d*)', name).groups()
         return res
 
@@ -156,7 +167,11 @@ class GitHubGist:
         else:
             return 0
 
-def test1():
+#
+# Only used for testing
+#
+
+def test_write():
     gh = GitHubGist()
     if not gh.connected:
         print(gh.status)
@@ -165,9 +180,9 @@ def test1():
         chapter = 1
         gh.open_gist_chapter_note(book, chapter)
         gh.update_content("Matthew chapter change from command line")
-        file = gh.get_file()
-        updated = gh.last_modified()
+        updated = gh.get_updated()
         print(updated)
+        file = gh.get_file()
         if file:
             print(file.content)
             print(gh.id())
@@ -183,29 +198,56 @@ def test1():
         gh.open_gist_verse_note(book, chapter, verse)
         gh.update_content("Matthew verse 2 from command line")
         file = gh.get_file()
-        print(gh.last_modified())
-        # Wed, 03 Feb 2021 03:44:38 GMT
+        updated = gh.get_updated()
+        print(updated)
         if file:
             print(gh.id())
             print(file.content)
         else:
             print(gh.description + " gist does not exist")
 
-def test2():
+def test_read():
+    gh = GitHubGist()
+    if not gh.connected:
+        print(gh.status)
+    else:
+        book = 40
+        chapter = 1
+        gh.open_gist_chapter_note(book, chapter)
+        updated = gh.get_updated()
+        print(updated)
+        file = gh.get_file()
+        if file:
+            print(file.content)
+            print(gh.id())
+        else:
+            print(gh.description + " gist does not exist")
+            print(gh.id())
+
+        print("---")
+
+        book = 40
+        chapter = 1
+        verse = 2
+        gh.open_gist_verse_note(book, chapter, verse)
+        file = gh.get_file()
+        updated = gh.get_updated()
+        print(updated)
+        if file:
+            print(gh.id())
+            print(file.content)
+        else:
+            print(gh.description + " gist does not exist")
+
+def test_names():
     chapter = "UBA-Note-Chapter-1-2"
-    res = GitHubGist.extract_bc(chapter)
+    res = GitHubGist.chapter_name_to_bc(chapter)
     print(res)
     verse = "UBA-Note-Verse-10-4-5"
-    res = GitHubGist.extract_bcv(verse)
+    res = GitHubGist.verse_name_to_bc(verse)
     print(res)
 
-def test3():
-    gh = GitHubGist()
-    gh.open_gist_by_id("9a5331cc774aeb361780f90e0492461a")
-    content = gh.get_content()
-    print(content)
-
-def test4():
+def test_get_notes():
     gh = GitHubGist()
     notes = gh.get_all_note_gists()
     for gist in notes:
@@ -216,14 +258,32 @@ def test4():
         print(modified)
         # print(content)
 
-def test5():
+def test_updated():
+    gh = GitHubGist()
+    book = 40
+    chapter = 1
+    gh.open_gist_chapter_note(book, chapter)
+    updated = gh.get_updated()
+    print(updated)
+    content = gh.get_content()
+    print(content)
+
+def test_time():
     struct = time.strptime("Wed, 03 Feb 2021 03:44:38 GMT", "%a, %d %b %Y %H:%M:%S GMT")
     print(time.mktime(struct))
     print(time.mktime(time.gmtime()))
 
-if __name__ == "__main__":
+def test_delete():
+    gh = GitHubGist()
+    gh.delete_all_notes()
 
-    test4()
+if __name__ == "__main__":
+    start = time.time()
+
+    test_delete()
 
     print("---")
-    print(DateUtil.epoch())
+
+    end = time.time()
+    print("Epoch: {0}".format(DateUtil.epoch()))
+    print("Total time: {0}".format(end - start))

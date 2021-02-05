@@ -56,7 +56,7 @@ class GitHubGist:
         self.open_gist_by_description(self.description)
 
     def open_gist_verse_note(self, book, chapter, verse):
-        self.description = GitHubGist.bc_to_verse_name(book, chapter, verse)
+        self.description = GitHubGist.bcv_to_verse_name(book, chapter, verse)
         self.open_gist_by_description(self.description)
 
     def open_gist_by_description(self, description):
@@ -143,14 +143,14 @@ class GitHubGist:
     def bc_to_chapter_name(b, c):
         return "UBA-Note-Chapter-{0}-{1}".format(b, c)
 
-    def bc_to_verse_name(b, c, v):
+    def bcv_to_verse_name(b, c, v):
         return "UBA-Note-Verse-{0}-{1}-{2}".format(b, c, v)
 
     def chapter_name_to_bc(name):
         res = re.search(r'UBA-Note-Chapter-(\d*)-(\d*)', name).groups()
         return res
 
-    def verse_name_to_bc(name):
+    def verse_name_to_bcv(name):
         res = re.search(r'UBA-Note-Verse-(\d*)-(\d*)-(\d*)', name).groups()
         return res
 
@@ -252,6 +252,12 @@ def test_get_notes():
         print(gist.description)
         content = GitHubGist.extract_content(gist)
         modified = GitHubGist.extract_epoch(gist.last_modified)
+        if "Chapter" in gist.description:
+            (book, chapter) = GitHubGist.chapter_name_to_bc(gist.description)
+            print("Book {0} Chapter {1}".format(book, chapter))
+        elif "Verse" in gist.description:
+            (book, chapter, verse) = GitHubGist.verse_name_to_bcv(gist.description)
+            print("Book {0} Chapter {1} Verse {2}".format(book, chapter, verse))
         print(modified)
         # print(content)
 
@@ -277,7 +283,7 @@ def test_delete():
 if __name__ == "__main__":
     start = time.time()
 
-    test_delete()
+    test_get_notes()
 
     print("---")
 

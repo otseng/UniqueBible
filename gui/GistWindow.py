@@ -17,6 +17,7 @@ class GistWindow(QDialog):
     def __init__(self):
         super(GistWindow, self).__init__()
 
+        self.thread = None
         self.gistToken = config.gistToken
         self.connected = False
 
@@ -47,7 +48,9 @@ class GistWindow(QDialog):
         buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
         self.buttonBox = QDialogButtonBox(buttons)
         self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.accepted.connect(self.stopSync)
         self.buttonBox.rejected.connect(self.reject)
+        self.buttonBox.rejected.connect(self.stopSync)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
 
@@ -106,11 +109,15 @@ class GistWindow(QDialog):
     def syncCompleted(self, count):
         self.setStatus("Processed {0} notes".format(count), True)
 
+    def stopSync(self):
+        if self.thread:
+            if self.thread.isRunning():
+                self.thread.quit()
+                print("Sync canceled")
+
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
     gistWindow = GistWindow()
     if gistWindow.exec_():
         print(gistWindow.gistTokenInput.text())
-    else:
-        print("Cancel")

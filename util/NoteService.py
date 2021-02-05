@@ -123,7 +123,9 @@ class SyncNotesWithGist(QObject):
         gh = GitHubGist()
         ns = NoteService.getNoteSqlite()
         count = 0
-        notes = ns.getAllChapters() + ns.getAllVerses()
+        chapters = ns.getAllChapters()
+        verses = ns.getAllVerses()
+        notes = chapters + verses
         for note in notes:
             count += 1
             book = note[0]
@@ -135,8 +137,7 @@ class SyncNotesWithGist(QObject):
                 gh.open_gist_chapter_note(book, chapter)
             else:
                 gh.open_gist_verse_note(book, chapter, verse)
-            if count % 10 > 0:
-                self.progress.emit("Uploading " + gh.description + " ...")
+            self.progress.emit("Uploading " + gh.description + " ...")
             updatedG = gh.get_updated()
             if updatedG == 0:
                 gh.update_content(content)
@@ -148,6 +149,23 @@ class SyncNotesWithGist(QObject):
                 sizeL = len(content)
                 if sizeL > sizeG:
                     gh.update_content(content)
+        gh.delete_all_notes()
+        gNotes = gh.get_all_note_gists()
+        for gist in gNotes:
+            count += 1
+            self.progress.emit("Downloading " + gh.description + " ...")
+            print(gist.id)
+            print(gist.description)
+            content = GitHubGist.extract_content(gist)
+            modified = GitHubGist.extract_epoch(gist.last_modified)
+            if "Chapter" in gist.description:
+                (book, chapter) = GitHubGist.chapter_name_to_bc(gist.description)
+                print("Book {0} Chapter {1}".format(book, chapter))
+            elif "Verse" in gist.description:
+                (book, chapter, verse) = GitHubGist.verse_name_to_bcv(gist.description)
+                print("Book {0} Chapter {1} Verse {2}".format(book, chapter, verse))
+            print(modified)
+
         self.finished.emit(count)
 
 def test_note():

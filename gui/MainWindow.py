@@ -67,6 +67,7 @@ class MainWindow(QMainWindow):
         self.lastStudyTextCommand = ""
         self.newTabException = False
         self.pdfOpened = False
+        self.isDownloading = False
         # a variable to monitor if new changes made to editor's notes
         self.noteSaved = True
         # variables to work with Qt dialog
@@ -445,10 +446,12 @@ class MainWindow(QMainWindow):
         # Update install History
         fileItems, cloudID, *_ = databaseInfo
         config.installHistory[fileItems[-1]] = cloudID
+        self.parent.isDownloading = False
 
     def moduleInstalledFailed(self, databaseInfo):
         self.downloader.close()
         self.displayMessage(config.thisTranslation["message_fail"])
+        self.parent.isDownloading = False
 
     def downloadGoogleStaticMaps(self):
         # https://developers.google.com/maps/documentation/maps-static/intro

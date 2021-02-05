@@ -2,6 +2,7 @@ import time
 import config
 from Languages import Languages
 from NoteSqlite import NoteSqlite
+from util.DateUtil import DateUtil
 from util.GitHubGist import GitHubGist
 from PySide2.QtCore import QObject, Signal
 
@@ -135,36 +136,55 @@ class SyncNotesWithGist(QObject):
             updatedL = note[4]
             if verse == 0:
                 gh.open_gist_chapter_note(book, chapter)
+                description = GitHubGist.bc_to_chapter_name(book, chapter)
             else:
                 gh.open_gist_verse_note(book, chapter, verse)
-            self.progress.emit("Uploading " + gh.description + " ...")
-            updatedG = gh.get_updated()
-            if updatedG == 0:
-                gh.update_content(content)
-            elif updatedL is not None and updatedL > updatedG:
-                gh.update_content(content)
+                description = GitHubGist.bcv_to_verse_name(book, chapter, verse)
+            self.progress.emit("Uploading " + description + " ...")
+            updateGistFile = False
+            updated = DateUtil.epoch()
+            if gh.gist is None:
+                updateGistFile = True
             else:
-                gistFile = gh.get_file()
-                sizeG = gistFile.size
-                sizeL = len(content)
-                if sizeL > sizeG:
-                    gh.update_content(content)
-        gh.delete_all_notes()
+                updatedG = gh.get_updated()
+                if updatedL is None:
+                    gistFile = gh.get_file()
+                    sizeG = gistFile.size
+                    sizeL = len(content)
+                    if sizeL > sizeG:
+                        if verse == 0:
+                            ns.setChapterNoteUpdate(book, chapter, updated)
+                        else:
+                            ns.setVerseNoteUpdate(book, chapter, verse, updated)
+                        updateGistFile = True
+                elif updatedG == 0 or updatedL > updatedG:
+                    updateGistFile = True
+                    updated = updatedL
+            if updateGistFile:
+                gh.update_content(content, updated)
         gNotes = gh.get_all_note_gists()
         for gist in gNotes:
             count += 1
-            self.progress.emit("Downloading " + gh.description + " ...")
-            print(gist.id)
-            print(gist.description)
-            content = GitHubGist.extract_content(gist)
-            modified = GitHubGist.extract_epoch(gist.last_modified)
+            self.progress.emit("Downloading " + gist.description + " ...")
+            contentG = GitHubGist.extract_content(gist)
+            updatedG = GitHubGist.extract_updated(gist)
             if "Chapter" in gist.description:
                 (book, chapter) = GitHubGist.chapter_name_to_bc(gist.description)
-                print("Book {0} Chapter {1}".format(book, chapter))
+                verse = 0
+                res = [note for note in chapters if note[0] == book and note[1] == chapter]
             elif "Verse" in gist.description:
                 (book, chapter, verse) = GitHubGist.verse_name_to_bcv(gist.description)
-                print("Book {0} Chapter {1} Verse {2}".format(book, chapter, verse))
-            print(modified)
+                res = [note for note in verses if note[0] == book and note[1] == chapter and note[2] == verse]
+            if len(res) > 0:
+                noteL = res[0]
+                contentL = noteL[3]
+                updatedL = noteL[4]
+                if updatedG > updatedL:
+                    print("Updating local " + gist.description)
+                    if verse == 0:
+                        ns.setChapterNoteUpdate(book, chapter, contentG, updatedG)
+                    else:
+                        ns.setVerseNoteUpdate(book, chapter, verse, contentG, updatedG)
 
         self.finished.emit(count)
 

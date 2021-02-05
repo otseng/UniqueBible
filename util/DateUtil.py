@@ -4,7 +4,7 @@ from datetime import timezone
 
 class DateUtil:
 
-    # Return current epoch time in UTC timezone
+    # Return current epoch time
     def epoch():
         return int(time.time())
         # return int(time.mktime(time.gmtime()))

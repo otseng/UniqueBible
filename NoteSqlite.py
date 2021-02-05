@@ -72,6 +72,16 @@ class NoteSqlite:
             self.cursor.execute(insert, (b, c, note, DateUtil.epoch()))
             self.connection.commit()
 
+    def setChapterNoteUpdate(self, b, c, updated):
+        update = "UPDATE ChapterNote (Updated) VALUES (?) WHERE Book=? and Chapter=?"
+        self.cursor.execute(update, (updated, b, c))
+        self.connection.commit()
+
+    def setChapterNoteContent(self, b, c, content, updated):
+        update = "UPDATE ChapterNote (Note, Updated) VALUES (?, ?) WHERE Book=? and Chapter=?"
+        self.cursor.execute(update, (content, updated, b, c))
+        self.connection.commit()
+
     def saveVerseNote(self, b, c, v, note):
         delete = "DELETE FROM VerseNote WHERE Book=? AND Chapter=? AND Verse=?"
         self.cursor.execute(delete, (b, c, v))
@@ -80,6 +90,16 @@ class NoteSqlite:
             insert = "INSERT INTO VerseNote (Book, Chapter, Verse, Note, Updated) VALUES (?, ?, ?, ?, ?)"
             self.cursor.execute(insert, (b, c, v, note, DateUtil.epoch()))
             self.connection.commit()
+
+    def setVerseNoteUpdate(self, b, c, v, updated):
+        update = "UPDATE VerseNote (Updated) VALUES (?) WHERE Book=? and Chapter=? and Verse=?"
+        self.cursor.execute(update, (updated, b, c, v))
+        self.connection.commit()
+
+    def setVerseNoteContent(self, b, c, v, content, updated):
+        update = "UPDATE VerseNote (Note, Updated) VALUES (?, ?) WHERE Book=? and Chapter=? and Verse=?"
+        self.cursor.execute(update, (content, updated, b, c, v))
+        self.connection.commit()
 
     def getSearchedChapterList(self, searchString):
         searchString = "%{0}%".format(searchString)

@@ -97,14 +97,17 @@ class GitHubGist:
         else:
             return ""
 
-    def update_content(self, content):
+    def update_content(self, content, updated):
         if not self.gist:
             print("Creating gist {0}".format(self.description))
-            self.gist = self.user.create_gist(False, {self.description: InputFileContent(content)}, self.description)
+            self.gist = self.user.create_gist(False, {self.description: InputFileContent(content),
+                                                      "updated": InputFileContent(str(updated))},
+                                                       self.description)
             self.logger.debug("New Gist :{0}:{1}".format(self.description, self.gist.id))
         else:
             print("Updating gist {0}".format(self.description))
-            self.gist.edit(files={self.description: InputFileContent(content)})
+            self.gist.edit(files={self.description: InputFileContent(content),
+                                  "updated": InputFileContent(str(updated))})
 
     def get_file(self):
         if self.gist:
@@ -123,13 +126,11 @@ class GitHubGist:
 
     def get_updated(self):
         if self.gist:
-            # doesn't work - last_modified is blank sometimes!
-            # lm = self.gist.last_modified
-            # return GitHubGist.extract_epoch(lm)
-            updated = self.gist.updated_at
-            return int(DateUtil.datetime_to_epoch(updated) - DateUtil.seconds_between_local_and_utc())
-        else:
-            return 0
+            files = self.gist.files
+            file = files["updated"]
+            if file and file.content is not None:
+                return int(file.content)
+        return 0
 
     def delete_all_notes(self):
         if self.user:
@@ -157,6 +158,14 @@ class GitHubGist:
     def extract_content(gist):
         return gist.files[gist.description].content
 
+    def extract_updated(gist):
+        files = gist.files
+        file = files["updated"]
+        if file:
+            return int(file.content)
+        else:
+            return 0
+
     def extract_epoch(datetime):
         if datetime:
             st = time.strptime(datetime, "%a, %d %b %Y %H:%M:%S GMT")
@@ -176,7 +185,8 @@ def test_write():
         book = 40
         chapter = 1
         gh.open_gist_chapter_note(book, chapter)
-        gh.update_content("Matthew chapter change from command line")
+        updated = DateUtil.epoch()
+        gh.update_content("Matthew chapter change from command line", updated)
         updated = gh.get_updated()
         print(updated)
         file = gh.get_file()
@@ -193,7 +203,8 @@ def test_write():
         chapter = 1
         verse = 2
         gh.open_gist_verse_note(book, chapter, verse)
-        gh.update_content("Matthew verse 2 from command line")
+        updated = DateUtil.epoch()
+        gh.update_content("Matthew verse 2 from command line", updated)
         file = gh.get_file()
         updated = gh.get_updated()
         print(updated)
@@ -283,7 +294,9 @@ def test_delete():
 if __name__ == "__main__":
     start = time.time()
 
-    test_get_notes()
+    # test_write()
+    # test_get_notes()
+    test_delete()
 
     print("---")
 

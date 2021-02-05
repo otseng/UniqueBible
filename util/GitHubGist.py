@@ -135,9 +135,12 @@ class GitHubGist:
             self.gist = None
             self.description = None
             gists = self.user.get_gists()
+            count = 0
             for g in gists:
                 if g.description.startswith("UBA-Note-"):
+                    count += 1
                     g.delete()
+            return count
 
     def bc_to_chapter_name(b, c):
         return "UBA-Note-Chapter-{0}-{1}".format(b, c)
@@ -269,21 +272,16 @@ def test_updated():
     content = gh.get_content()
     print(content)
 
-def test_time():
-    struct = time.strptime("Wed, 03 Feb 2021 03:44:38 GMT", "%a, %d %b %Y %H:%M:%S GMT")
-    print(time.mktime(struct))
-    print(time.mktime(time.gmtime()))
-
 def test_delete():
     gh = GitHubGist()
-    gh.delete_all_notes()
+    print(gh.delete_all_notes())
 
 if __name__ == "__main__":
     start = time.time()
 
+    # test_delete()
     # test_write()
-    # test_get_notes()
-    test_delete()
+    test_get_notes()
 
     print("---")
 

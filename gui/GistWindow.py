@@ -15,6 +15,7 @@ class GistWindow(QDialog):
         super(GistWindow, self).__init__()
 
         self.thread = None
+        self.worker = None
         self.gistToken = config.gistToken
         self.connected = False
 
@@ -79,7 +80,7 @@ class GistWindow(QDialog):
                 self.connected = False
         self.enableButtons()
 
-    def setStatus(self, message, connected = True):
+    def setStatus(self, message, connected=True):
         self.testStatus.setText("Status: " + message)
         if connected:
             self.testStatus.setStyleSheet("color: rgb(128, 255, 7);")
@@ -102,7 +103,7 @@ class GistWindow(QDialog):
         self.thread.start()
 
     def syncCompleted(self, count):
-        self.setStatus("Done. Processed {0} notes".format(count), True)
+        self.setStatus("Done! Processed {0} notes".format(count), True)
 
     def stopSync(self):
         if self.thread:

@@ -124,6 +124,10 @@ class SyncNotesWithGist(QObject):
     def run(self):
         logger = logging.getLogger('uba')
         gh = GitHubGist()
+        gNotes = gh.get_all_note_gists()
+        gists = {}
+        for gist in gNotes:
+            gists[gist.description] = gist
         ns = NoteService.getNoteSqlite()
         count = 0
         chapters = ns.getAllChapters()
@@ -137,21 +141,22 @@ class SyncNotesWithGist(QObject):
             content = note[3]
             updatedL = note[4]
             if verse == 0:
-                gh.open_gist_chapter_note(book, chapter)
                 description = GitHubGist.bc_to_chapter_name(book, chapter)
             else:
-                gh.open_gist_verse_note(book, chapter, verse)
                 description = GitHubGist.bcv_to_verse_name(book, chapter, verse)
             self.progress.emit("Uploading " + description + " ...")
             updateGistFile = False
             updated = DateUtil.epoch()
-            if gh.gist is None:
+            gist = None
+            if description in gists.keys():
+                gist = gists[description]
+            if gist is None:
                 updateGistFile = True
             else:
-                updatedG = gh.get_updated()
+                updatedG = GitHubGist.extract_updated(gist)
                 if updatedL is None:
-                    gistFile = gh.get_file()
-                    sizeG = gistFile.size
+                    content = GitHubGist.extract_content(gist)
+                    sizeG = len(content)
                     sizeL = len(content)
                     if sizeL > sizeG:
                         if verse == 0:
@@ -164,6 +169,10 @@ class SyncNotesWithGist(QObject):
                     updated = updatedL
             if updateGistFile:
                 logger.debug("Updating gist " + description)
+                if verse == 0:
+                    gh.open_gist_chapter_note(book, chapter)
+                else:
+                    gh.open_gist_verse_note(book, chapter, verse)
                 gh.update_content(content, updated)
         gNotes = gh.get_all_note_gists()
         for gist in gNotes:

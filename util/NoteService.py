@@ -1,11 +1,9 @@
 import time
-
-from PySide2.QtWidgets import QApplication
-
 import config
 from Languages import Languages
 from NoteSqlite import NoteSqlite
 from util.GitHubGist import GitHubGist
+from PySide2.QtCore import QObject, Signal
 
 
 class NoteService:
@@ -117,7 +115,11 @@ class NoteService:
         result = ns.isChapterNote(b, c)
         return result
 
-    def uploadToGist(parent):
+class SyncNotesWithGist(QObject):
+    finished = Signal(int)
+    progress = Signal(str)
+
+    def run(self):
         gh = GitHubGist()
         ns = NoteService.getNoteSqlite()
         count = 0
@@ -133,10 +135,8 @@ class NoteService:
                 gh.open_gist_chapter_note(book, chapter)
             else:
                 gh.open_gist_verse_note(book, chapter, verse)
-            if parent and "setStatus" in dir(parent):
-                if count % 10 == 0:
-                    parent.setStatus("Uploading " + gh.description + " ...", True)
-                    QApplication.processEvents()
+            if count % 10 > 0:
+                self.progress.emit("Uploading " + gh.description + " ...")
             updatedG = gh.get_updated()
             if updatedG == 0:
                 gh.update_content(content)
@@ -148,7 +148,7 @@ class NoteService:
                 sizeL = len(content)
                 if sizeL > sizeG:
                     gh.update_content(content)
-        return count
+        self.finished.emit(count)
 
 def test_note():
     b = 40

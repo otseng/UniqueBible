@@ -1,4 +1,7 @@
 import sys
+
+from PySide2.QtCore import QThread
+
 import config
 
 from PySide2 import QtCore
@@ -6,7 +9,7 @@ from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayo
     QPushButton, QHBoxLayout
 
 from util.GitHubGist import GitHubGist
-from util.NoteService import NoteService
+from util.NoteService import NoteService, SyncNotesWithGist
 
 
 class GistWindow(QDialog):
@@ -36,16 +39,10 @@ class GistWindow(QDialog):
         self.testButton.clicked.connect(self.checkStatus)
         self.layout.addWidget(self.testButton)
 
-        actionLayout = QHBoxLayout()
-        self.uploadButton = QPushButton("Upload to Gist")
-        self.uploadButton.setEnabled(False)
-        self.uploadButton.clicked.connect(self.uploadToGist)
-        actionLayout.addWidget(self.uploadButton)
-
-        self.downloadButton = QPushButton("Download from Gist")
-        self.downloadButton.setEnabled(False)
-        actionLayout.addWidget(self.downloadButton)
-        self.layout.addLayout(actionLayout)
+        self.syncButton = QPushButton("Synch Notes")
+        self.syncButton.setEnabled(False)
+        self.syncButton.clicked.connect(self.syncGist)
+        self.layout.addWidget(self.syncButton)
 
         buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
         self.buttonBox = QDialogButtonBox(buttons)
@@ -66,11 +63,9 @@ class GistWindow(QDialog):
             self.setStatus("", False)
         if self.connected:
             self.testButton.setEnabled(False)
-            self.uploadButton.setEnabled(True)
-            self.downloadButton.setEnabled(True)
+            self.syncButton.setEnabled(True)
         else:
-            self.uploadButton.setEnabled(False)
-            self.downloadButton.setEnabled(False)
+            self.syncButton.setEnabled(False)
 
     def checkStatus(self):
         if len(self.gistTokenInput.text()) < 40:
@@ -86,24 +81,30 @@ class GistWindow(QDialog):
                 self.connected = False
         self.enableButtons()
 
-    def setStatus(self, message, connected):
+    def setStatus(self, message, connected = True):
         self.testStatus.setText("Status: " + message)
         if connected:
             self.testStatus.setStyleSheet("color: rgb(128, 255, 7);")
         else:
             self.testStatus.setStyleSheet("color: rgb(253, 128, 8);")
 
-    def uploadToGist(self):
-        self.setStatus("Uploading ...", True)
-        self.uploadButton.setEnabled(False)
-        self.downloadButton.setEnabled(False)
-        QApplication.processEvents()
+    def syncGist(self):
+        self.setStatus("Syncing ...", True)
+        self.syncButton.setEnabled(False)
 
-        count = NoteService.uploadToGist(self)
+        self.thread = QThread()
+        self.worker = SyncNotesWithGist()
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.worker.deleteLater)
+        self.worker.finished.connect(self.syncCompleted)
+        self.worker.progress.connect(self.setStatus)
+        self.thread.start()
 
-        self.setStatus("Uploaded {0} notes".format(count), True)
-        self.uploadButton.setEnabled(True)
-        self.downloadButton.setEnabled(True)
+    def syncCompleted(self, count):
+        self.setStatus("Processed {0} notes".format(count), True)
 
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)

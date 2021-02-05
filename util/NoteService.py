@@ -121,6 +121,9 @@ class SyncNotesWithGist(QObject):
     finished = Signal(int)
     progress = Signal(str)
 
+    def __init__(self):
+        super(SyncNotesWithGist, self).__init__()
+
     def run(self):
         logger = logging.getLogger('uba')
         gh = GitHubGist()

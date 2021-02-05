@@ -106,9 +106,8 @@ class GistWindow(QDialog):
         self.setStatus("Done! Processed {0} notes".format(count), True)
 
     def stopSync(self):
-        if self.thread:
-            if self.thread.isRunning():
-                self.thread.quit()
+        if self.thread and self.thread.isRunning():
+            self.thread.quit()
 
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)

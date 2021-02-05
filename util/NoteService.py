@@ -1,5 +1,7 @@
 import time
 
+from PySide2.QtWidgets import QApplication
+
 import config
 from Languages import Languages
 from NoteSqlite import NoteSqlite
@@ -115,6 +117,39 @@ class NoteService:
         result = ns.isChapterNote(b, c)
         return result
 
+    def uploadToGist(parent):
+        gh = GitHubGist()
+        ns = NoteService.getNoteSqlite()
+        count = 0
+        notes = ns.getAllChapters() + ns.getAllVerses()
+        for note in notes:
+            count += 1
+            book = note[0]
+            chapter = note[1]
+            verse = note[2]
+            content = note[3]
+            updatedL = note[4]
+            if verse == 0:
+                gh.open_gist_chapter_note(book, chapter)
+            else:
+                gh.open_gist_verse_note(book, chapter, verse)
+            if parent and "setStatus" in dir(parent):
+                if count % 10 == 0:
+                    parent.setStatus("Uploading " + gh.description + " ...", True)
+                    QApplication.processEvents()
+            updatedG = gh.get_updated()
+            if updatedG == 0:
+                gh.update_content(content)
+            elif updatedL is not None and updatedL > updatedG:
+                gh.update_content(content)
+            else:
+                gistFile = gh.get_file()
+                sizeG = gistFile.size
+                sizeL = len(content)
+                if sizeL > sizeG:
+                    gh.update_content(content)
+        return count
+
 def test_note():
     b = 40
     c = 1
@@ -126,13 +161,18 @@ def test_note():
     gh.open_gist_chapter_note(b, c)
     print(gh.get_updated())
 
+def test_get_all_notes():
+    ns = NoteService.getNoteSqlite()
+    notes = ns.getAllChapters() + ns.getAllVerses()
+    return notes
+
 if __name__ == "__main__":
     config.thisTranslation = Languages.translation
-
     start = time.time()
 
-    print("---")
+    test_get_all_notes()
 
+    print("---")
     end = time.time()
     print("Total time: {0}".format(end - start))
 

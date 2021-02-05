@@ -120,7 +120,13 @@ class NoteSqlite:
         return content
 
     def getAllChapters(self):
-        query = "SELECT Book, Chapter, Note, Updated FROM ChapterNote ORDER BY Book, Chapter"
+        query = "SELECT Book, Chapter, 0, Note, Updated FROM ChapterNote ORDER BY Book, Chapter"
+        self.cursor.execute(query)
+        content = self.cursor.fetchall()
+        return content
+
+    def getAllVerses(self):
+        query = "SELECT Book, Chapter, Verse, Note, Updated FROM VerseNote ORDER BY Book, Chapter, Verse"
         self.cursor.execute(query)
         content = self.cursor.fetchall()
         return content

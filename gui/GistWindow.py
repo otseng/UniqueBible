@@ -94,27 +94,16 @@ class GistWindow(QDialog):
             self.testStatus.setStyleSheet("color: rgb(253, 128, 8);")
 
     def uploadToGist(self):
-        gh = GitHubGist()
-        ns = NoteService.getNoteSqlite()
-        count = 0
-        notes = ns.getAllChapters()
-        for note in notes:
-            count += 1
-            book = note[0]
-            chapter = note[1]
-            content = note[2]
-            updatedL = note[3]
-            gh.open_gist_chapter_note(book, chapter)
-            updatedG = gh.get_updated()
-            if updatedG == 0:
-                gh.update_content(content)
-            elif updatedL is not None and updatedL > updatedG:
-                gh.update_content(content)
-            else:
-                gistFile = gh.get_file()
-                sizeG = gistFile.size
-                sizeL = len(content)
+        self.setStatus("Uploading ...", True)
+        self.uploadButton.setEnabled(False)
+        self.downloadButton.setEnabled(False)
+        QApplication.processEvents()
+
+        count = NoteService.uploadToGist(self)
+
         self.setStatus("Uploaded {0} notes".format(count), True)
+        self.uploadButton.setEnabled(True)
+        self.downloadButton.setEnabled(True)
 
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)

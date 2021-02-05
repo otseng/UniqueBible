@@ -1,12 +1,9 @@
 import logging
 import re
 import time
-from datetime import timezone
-
 import config
 
 from github import Github, InputFileContent
-import config
 
 # https://docs.github.com/en/rest/reference/gists
 # https://pygithub.readthedocs.io/en/latest/introduction.html

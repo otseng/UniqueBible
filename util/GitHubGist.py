@@ -99,13 +99,11 @@ class GitHubGist:
 
     def update_content(self, content, updated):
         if not self.gist:
-            print("Creating gist {0}".format(self.description))
             self.gist = self.user.create_gist(False, {self.description: InputFileContent(content),
                                                       "updated": InputFileContent(str(updated))},
                                                        self.description)
-            self.logger.debug("New Gist :{0}:{1}".format(self.description, self.gist.id))
+            # self.logger.debug("New Gist :{0}:{1}".format(self.description, self.gist.id))
         else:
-            print("Updating gist {0}".format(self.description))
             self.gist.edit(files={self.description: InputFileContent(content),
                                   "updated": InputFileContent(str(updated))})
 
@@ -163,13 +161,6 @@ class GitHubGist:
         file = files["updated"]
         if file:
             return int(file.content)
-        else:
-            return 0
-
-    def extract_epoch(datetime):
-        if datetime:
-            st = time.strptime(datetime, "%a, %d %b %Y %H:%M:%S GMT")
-            return int(time.mktime(st))
         else:
             return 0
 
@@ -259,18 +250,14 @@ def test_get_notes():
     gh = GitHubGist()
     notes = gh.get_all_note_gists()
     for gist in notes:
-        print(gist.id)
         print(gist.description)
-        content = GitHubGist.extract_content(gist)
-        modified = GitHubGist.extract_epoch(gist.last_modified)
+        print(int(GitHubGist.extract_updated(gist)))
         if "Chapter" in gist.description:
             (book, chapter) = GitHubGist.chapter_name_to_bc(gist.description)
-            print("Book {0} Chapter {1}".format(book, chapter))
+            # print("Book {0} Chapter {1}".format(book, chapter))
         elif "Verse" in gist.description:
             (book, chapter, verse) = GitHubGist.verse_name_to_bcv(gist.description)
-            print("Book {0} Chapter {1} Verse {2}".format(book, chapter, verse))
-        print(modified)
-        # print(content)
+            # print("Book {0} Chapter {1} Verse {2}".format(book, chapter, verse))
 
 def test_updated():
     gh = GitHubGist()

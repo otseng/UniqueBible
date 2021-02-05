@@ -1,15 +1,12 @@
 import sys
-
-from PySide2.QtCore import QThread
-
 import config
 
+from PySide2.QtCore import QThread
 from PySide2 import QtCore
 from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QCheckBox, QLabel, QLineEdit, \
-    QPushButton, QHBoxLayout
-
+    QPushButton
 from util.GitHubGist import GitHubGist
-from util.NoteService import NoteService, SyncNotesWithGist
+from util.NoteService import SyncNotesWithGist
 
 
 class GistWindow(QDialog):
@@ -45,12 +42,10 @@ class GistWindow(QDialog):
         self.syncButton.clicked.connect(self.syncGist)
         self.layout.addWidget(self.syncButton)
 
-        buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        buttons = QDialogButtonBox.Ok
         self.buttonBox = QDialogButtonBox(buttons)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.accepted.connect(self.stopSync)
-        self.buttonBox.rejected.connect(self.reject)
-        self.buttonBox.rejected.connect(self.stopSync)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
 
@@ -63,7 +58,7 @@ class GistWindow(QDialog):
         else:
             self.testButton.setEnabled(False)
             self.connected = False
-            self.setStatus("", False)
+            self.setStatus("Not connected", False)
         if self.connected:
             self.testButton.setEnabled(False)
             self.syncButton.setEnabled(True)
@@ -80,7 +75,7 @@ class GistWindow(QDialog):
                 self.setStatus("Connected to " + self.gh.user.name, True)
                 self.connected = True
             else:
-                self.setStatus(self.gh.status, False)
+                self.setStatus("Not connected", False)
                 self.connected = False
         self.enableButtons()
 
@@ -107,13 +102,12 @@ class GistWindow(QDialog):
         self.thread.start()
 
     def syncCompleted(self, count):
-        self.setStatus("Processed {0} notes".format(count), True)
+        self.setStatus("Done. Processed {0} notes".format(count), True)
 
     def stopSync(self):
         if self.thread:
             if self.thread.isRunning():
                 self.thread.quit()
-                print("Sync canceled")
 
 if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)

@@ -1,3 +1,4 @@
+import logging
 import time
 import config
 from Languages import Languages
@@ -121,6 +122,7 @@ class SyncNotesWithGist(QObject):
     progress = Signal(str)
 
     def run(self):
+        logger = logging.getLogger('uba')
         gh = GitHubGist()
         ns = NoteService.getNoteSqlite()
         count = 0
@@ -161,6 +163,7 @@ class SyncNotesWithGist(QObject):
                     updateGistFile = True
                     updated = updatedL
             if updateGistFile:
+                logger.debug("Updating gist " + description)
                 gh.update_content(content, updated)
         gNotes = gh.get_all_note_gists()
         for gist in gNotes:
@@ -180,7 +183,7 @@ class SyncNotesWithGist(QObject):
                 contentL = noteL[3]
                 updatedL = noteL[4]
                 if updatedG > updatedL:
-                    print("Updating local " + gist.description)
+                    logger.debug("Updating local " + gist.description)
                     if verse == 0:
                         ns.setChapterNoteUpdate(book, chapter, contentG, updatedG)
                     else:

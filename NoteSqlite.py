@@ -63,13 +63,13 @@ class NoteSqlite:
         else:
             return True
 
-    def saveChapterNote(self, b, c, note):
+    def saveChapterNote(self, b, c, note, updated=DateUtil.epoch()):
         delete = "DELETE FROM ChapterNote WHERE Book=? AND Chapter=?"
         self.cursor.execute(delete, (b, c))
         self.connection.commit()
         if note and note != config.thisTranslation["empty"] and self.isNotEmptyNote(note):
             insert = "INSERT INTO ChapterNote (Book, Chapter, Note, Updated) VALUES (?, ?, ?, ?)"
-            self.cursor.execute(insert, (b, c, note, DateUtil.epoch()))
+            self.cursor.execute(insert, (b, c, note, updated))
             self.connection.commit()
 
     def setChapterNoteUpdate(self, b, c, updated):
@@ -82,13 +82,13 @@ class NoteSqlite:
         self.cursor.execute(update, (content, updated, b, c))
         self.connection.commit()
 
-    def saveVerseNote(self, b, c, v, note):
+    def saveVerseNote(self, b, c, v, note, updated=DateUtil.epoch()):
         delete = "DELETE FROM VerseNote WHERE Book=? AND Chapter=? AND Verse=?"
         self.cursor.execute(delete, (b, c, v))
         self.connection.commit()
         if note and note != config.thisTranslation["empty"] and self.isNotEmptyNote(note):
             insert = "INSERT INTO VerseNote (Book, Chapter, Verse, Note, Updated) VALUES (?, ?, ?, ?, ?)"
-            self.cursor.execute(insert, (b, c, v, note, DateUtil.epoch()))
+            self.cursor.execute(insert, (b, c, v, note, updated))
             self.connection.commit()
 
     def setVerseNoteUpdate(self, b, c, v, updated):

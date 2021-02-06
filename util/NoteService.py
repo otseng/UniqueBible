@@ -190,11 +190,23 @@ class SyncNotesWithGist(QObject):
             elif "Verse" in gist.description:
                 (book, chapter, verse) = GitHubGist.verse_name_to_bcv(gist.description)
                 res = [note for note in verses if note[0] == book and note[1] == chapter and note[2] == verse]
-            if len(res) > 0:
+            if len(res) == 0:
+                logger.debug("Creating local " + gist.description)
+                if verse == 0:
+                    ns.saveChapterNote(book, chapter, contentG, updatedG)
+                else:
+                    ns.saveVerseNote(book, chapter, verse, contentG, updatedG)
+            else:
                 noteL = res[0]
                 contentL = noteL[3]
                 updatedL = noteL[4]
-                if updatedG > updatedL:
+                update = False
+                if updatedL is None:
+                    if len(contentG) > len(contentL):
+                        update = True
+                elif updatedG > updatedL:
+                    update = True
+                if update:
                     logger.debug("Updating local " + gist.description)
                     if verse == 0:
                         ns.setChapterNoteUpdate(book, chapter, contentG, updatedG)

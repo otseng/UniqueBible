@@ -151,6 +151,18 @@ class NoteSqlite:
         content = self.cursor.fetchall()
         return content
 
+    def getChapterCount(self):
+        query = "SELECT count(*) FROM ChapterNote"
+        dataCopy = self.cursor.execute(query)
+        result = dataCopy.fetchone()
+        return result[0]
+
+    def getVerseCount(self):
+        query = "SELECT count(*) FROM VerseNote"
+        dataCopy = self.cursor.execute(query)
+        result = dataCopy.fetchone()
+        return result[0]
+
     def checkColumnExists(self, table, column):
         self.cursor.execute("SELECT * FROM pragma_table_info(?) WHERE name=?", (table, column))
         if self.cursor.fetchone():

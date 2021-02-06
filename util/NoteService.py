@@ -19,6 +19,7 @@ class NoteService:
 
     def getChapterNote(b, c):
         validGist = False
+        noteL = noteG = None
         if config.enableGist:
             gh = GitHubGist()
             gh.open_gist_chapter_note(b, c)
@@ -47,7 +48,7 @@ class NoteService:
                 note = noteL
         else:
             note = noteL
-        if note == noteG:
+        if noteG and note == noteG:
             ns.saveChapterNote(b, c, noteG, updatedG)
         return note
 
@@ -62,6 +63,7 @@ class NoteService:
 
     def getVerseNote(b, c, v):
         validGist = False
+        noteL = noteG = None
         if config.enableGist:
             gh = GitHubGist()
             gh.open_gist_verse_note(b, c, v)
@@ -90,7 +92,7 @@ class NoteService:
                 note = noteL
         else:
             note = noteL
-        if note == noteG:
+        if noteG and note == noteG:
             ns.saveVerseNote(b, c, noteG, updatedG)
         return note
 

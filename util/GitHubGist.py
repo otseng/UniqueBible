@@ -24,6 +24,7 @@ class GitHubGist:
 
     def __init__(self, gistToken=""):
         self.logger = logging.getLogger('uba')
+        self.enablePublicGist = True
         if not self.logger.hasHandlers():
             logHandler = logging.StreamHandler()
             logHandler.setLevel(logging.DEBUG)
@@ -99,10 +100,9 @@ class GitHubGist:
 
     def update_content(self, content, updated):
         if not self.gist:
-            self.gist = self.user.create_gist(False, {self.description: InputFileContent(content),
+            self.gist = self.user.create_gist(self.enablePublicGist, {self.description: InputFileContent(content),
                                                       "updated": InputFileContent(str(updated))},
                                                        self.description)
-            # self.logger.debug("New Gist :{0}:{1}".format(self.description, self.gist.id))
         else:
             self.gist.edit(files={self.description: InputFileContent(content),
                                   "updated": InputFileContent(str(updated))})
@@ -279,9 +279,9 @@ def test_delete():
 if __name__ == "__main__":
     start = time.time()
 
-    # test_delete()
+    test_delete()
     # test_write()
-    test_get_notes()
+    # test_get_notes()
 
     print("---")
 

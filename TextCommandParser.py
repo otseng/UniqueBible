@@ -335,7 +335,7 @@ class TextCommandParser:
             # e.g. cmd:::notepad
             # e.g. cmd:::start latest_changes.txt
             # Examples on macOS:
-            # e.g. cmd:::open latest_changes.txtR
+            # e.g. cmd:::open latest_changes.txt
             # e.g. cmd:::open "~/Applications/Visual Studio Code.app"/
             # Examples on Linux:
             # e.g. cmd:::firefox

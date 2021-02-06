@@ -269,3 +269,4 @@ class MoreConfigOptions(QDialog):
 
     def enableGistChanged(self):
         config.enableGist = not config.enableGist
+        self.parent.displayMessage(config.thisTranslation["message_restart"])

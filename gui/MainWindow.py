@@ -2376,6 +2376,4 @@ class MainWindow(QMainWindow):
         gw = GistWindow()
         if gw.exec():
             config.gistToken = gw.gistTokenInput.text()
-        else:
-            # Cancel button pressed
-            pass
+        self.reloadCurrentRecord()

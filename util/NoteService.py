@@ -33,14 +33,16 @@ class NoteService:
         if noteL == config.thisTranslation["empty"]:
             validLocal = False
         if validGist and not validLocal:
-            ns.saveChapterNote(b, c, noteG)
+            ns.saveChapterNote(b, c, noteG, updatedG)
             note = noteG
         elif not validGist and validLocal:
             if config.enableGist:
-                gh.update_content(noteL)
+                gh.update_content(noteL, updatedL)
             note = noteL
         elif validGist and validLocal:
-            if updatedL is None or updatedG > updatedL:
+            if updatedL is None and len(noteG) > len(noteL):
+                note = noteG
+            elif updatedG > updatedL:
                 note = noteG
             else:
                 note = noteL
@@ -53,7 +55,7 @@ class NoteService:
         if config.enableGist:
             gh = GitHubGist()
             gh.open_gist_chapter_note(b, c)
-            gh.update_content(note)
+            gh.update_content(note, DateUtil.epoch())
             gistId = gh.id()
         ns = NoteService.getNoteSqlite()
         ns.saveChapterNote(b, c, note)
@@ -78,7 +80,7 @@ class NoteService:
             note = noteG
         elif not validGist and validLocal:
             if config.enableGist:
-                gh.update_content(noteL)
+                gh.update_content(noteL, DateUtil.epoch())
             note = noteL
         elif validGist and validLocal:
             if updatedL is None or updatedG > updatedL:
@@ -93,7 +95,7 @@ class NoteService:
         if config.enableGist:
             gh = GitHubGist()
             gh.open_gist_verse_note(b, c, v)
-            gh.update_content(note)
+            gh.update_content(note, DateUtil.epoch())
         ns = NoteService.getNoteSqlite()
         ns.saveVerseNote(b, c, v, note)
 

@@ -23,8 +23,8 @@ class NoteService:
             gh = GitHubGist()
             gh.open_gist_chapter_note(b, c)
             file = gh.get_file()
-            updatedG = gh.get_updated()
             if file:
+                updatedG = gh.get_updated()
                 noteG = file.content
                 validGist = True
         ns = NoteService.getNoteSqlite()
@@ -33,7 +33,6 @@ class NoteService:
         if noteL == config.thisTranslation["empty"]:
             validLocal = False
         if validGist and not validLocal:
-            ns.saveChapterNote(b, c, noteG, updatedG)
             note = noteG
         elif not validGist and validLocal:
             if config.enableGist:
@@ -48,17 +47,18 @@ class NoteService:
                 note = noteL
         else:
             note = noteL
+        if note == noteG:
+            ns.saveChapterNote(b, c, noteG, updatedG)
         return note
 
     def saveChapterNote(b, c, note):
-        gistId = None
+        now = DateUtil.epoch()
         if config.enableGist:
             gh = GitHubGist()
             gh.open_gist_chapter_note(b, c)
-            gh.update_content(note, DateUtil.epoch())
-            gistId = gh.id()
+            gh.update_content(note, now)
         ns = NoteService.getNoteSqlite()
-        ns.saveChapterNote(b, c, note)
+        ns.saveChapterNote(b, c, note, now)
 
     def getVerseNote(b, c, v):
         validGist = False
@@ -66,8 +66,8 @@ class NoteService:
             gh = GitHubGist()
             gh.open_gist_verse_note(b, c, v)
             file = gh.get_file()
-            updatedG = gh.get_updated()
             if file:
+                updatedG = gh.get_updated()
                 noteG = file.content
                 validGist = True
         ns = NoteService.getNoteSqlite()
@@ -76,28 +76,32 @@ class NoteService:
         if noteL == config.thisTranslation["empty"]:
             validLocal = False
         if validGist and not validLocal:
-            ns.saveVerseNote(b, c, noteG)
             note = noteG
         elif not validGist and validLocal:
             if config.enableGist:
-                gh.update_content(noteL, DateUtil.epoch())
+                gh.update_content(noteL, updatedL)
             note = noteL
         elif validGist and validLocal:
-            if updatedL is None or updatedG > updatedL:
+            if updatedL is None  and len(noteG) > len(noteL):
+                note = noteG
+            elif updatedG > updatedL:
                 note = noteG
             else:
                 note = noteL
         else:
             note = noteL
+        if note == noteG:
+            ns.saveVerseNote(b, c, noteG, updatedG)
         return note
 
     def saveVerseNote(b, c, v, note):
+        now = DateUtil.epoch()
         if config.enableGist:
             gh = GitHubGist()
             gh.open_gist_verse_note(b, c, v)
-            gh.update_content(note, DateUtil.epoch())
+            gh.update_content(note, now)
         ns = NoteService.getNoteSqlite()
-        ns.saveVerseNote(b, c, v, note)
+        ns.saveVerseNote(b, c, v, note, now)
 
     def getSearchedChapterList(command):
         ns = NoteService.getNoteSqlite()

@@ -92,8 +92,8 @@ class NoteService:
                 note = noteL
         else:
             note = noteL
-        if noteG and note == noteG:
-            ns.saveVerseNote(b, c, noteG, updatedG)
+        if noteG is not None and note == noteG:
+            ns.saveVerseNote(b, c, v, noteG, updatedG)
         return note
 
     def saveVerseNote(b, c, v, note):

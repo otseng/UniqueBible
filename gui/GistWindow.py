@@ -38,10 +38,15 @@ class GistWindow(QDialog):
         self.testButton.clicked.connect(self.checkStatus)
         self.layout.addWidget(self.testButton)
 
-        self.syncButton = QPushButton("Synch Notes")
-        self.syncButton.setEnabled(False)
-        self.syncButton.clicked.connect(self.syncGist)
-        self.layout.addWidget(self.syncButton)
+        # self.syncHighlightsButton = QPushButton("Synch Highlights")
+        # self.syncHighlightsButton.setEnabled(False)
+        # self.syncHighlightsButton.clicked.connect(self.syncHighlights)
+        # self.layout.addWidget(self.syncHighlightsButton)
+
+        self.syncBibleNotesButton = QPushButton("Synch Bibles Notes")
+        self.syncBibleNotesButton.setEnabled(False)
+        self.syncBibleNotesButton.clicked.connect(self.syncBibleNotes)
+        self.layout.addWidget(self.syncBibleNotesButton)
 
         buttons = QDialogButtonBox.Ok
         self.buttonBox = QDialogButtonBox(buttons)
@@ -62,9 +67,9 @@ class GistWindow(QDialog):
             self.setStatus("Not connected", False)
         if self.connected:
             self.testButton.setEnabled(False)
-            self.syncButton.setEnabled(True)
+            self.syncBibleNotesButton.setEnabled(True)
         else:
-            self.syncButton.setEnabled(False)
+            self.syncBibleNotesButton.setEnabled(False)
 
     def checkStatus(self):
         if len(self.gistTokenInput.text()) < 40:
@@ -87,9 +92,9 @@ class GistWindow(QDialog):
         else:
             self.testStatus.setStyleSheet("color: rgb(253, 128, 8);")
 
-    def syncGist(self):
+    def syncBibleNotes(self):
         self.setStatus("Syncing ...", True)
-        self.syncButton.setEnabled(False)
+        self.syncBibleNotesButton.setEnabled(False)
 
         self.thread = QThread()
         self.worker = SyncNotesWithGist()

@@ -1862,6 +1862,8 @@ class TextCommandParser:
                 exlbData = ExlbData()
                 content = exlbData.getContent(commandList[0], commandList[1])
                 del exlbData
+                if config.theme == "dark":
+                    content = TextCommandParser.adjustDarkThemeColors(content)
                 return ("study", content, {})
             else:
                 return self.invalidCommand("study")
@@ -2185,6 +2187,11 @@ class TextCommandParser:
                 hl.highlightVerse(b, c, v, code)
         return ("command", "", {})
 
+    def adjustDarkThemeColors(content):
+        content = content.replace("#FFFFFF", "#555555")
+        content = content.replace("#DFDFDF", "gray")
+        content = content.replace('color="navy"', 'color="#609b00"')
+        return content
 
 if __name__ == "__main__":
     from Languages import Languages

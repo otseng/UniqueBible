@@ -4,9 +4,10 @@ from BibleBooks import BibleBooks
 from gui.BibleExplorer import BibleExplorer
 from gui.ToolsLauncher import ToolsLauncher
 from gui.CheckableComboBox import CheckableComboBox
-from BibleVerseParser import BibleVerseParser
 from PySide2.QtWidgets import (QGridLayout, QBoxLayout, QHBoxLayout, QVBoxLayout, QFormLayout, QLabel, QPushButton, QWidget, QComboBox, QTabWidget, QLineEdit)
-
+from ThirdParty import ThirdPartyDictionary
+from ToolsSqlite import Commentary, LexiconData, BookData, IndexesSqlite
+from BibleVerseParser import BibleVerseParser
 
 class MasterControl(QWidget):
 
@@ -17,8 +18,43 @@ class MasterControl(QWidget):
 
         # set title
         self.setWindowTitle(config.thisTranslation["remote_control"])
+        # setup item option lists
+        self.setupItemLists()
         # setup interface
         self.setupUI()
+
+    def setupItemLists(self):
+        # bible versions
+        self.textList = BiblesSqlite().getBibleList()
+        # commentaries
+        self.commentaryList = Commentary().getCommentaryList()
+        # reference book
+        # menu10_dialog
+        bookData = BookData()
+        self.referenceBookList = [book for book, *_ in bookData.getBookList()]
+        # open database
+        indexes = IndexesSqlite()
+        # topic
+        # menu5_topics
+        self.topicDictAbb2Name = {abb: name for abb, name in indexes.topicList}
+        self.topicDict = {name: abb for abb, name in indexes.topicList}
+        self.topicList = list(self.topicDict.keys())
+        # lexicon
+        # context1_originalLexicon
+        self.lexiconList = LexiconData().lexiconList
+        # dictionary
+        # context1_dict
+        self.dictionaryDictAbb2Name = {abb: name for abb, name in indexes.dictionaryList}
+        self.dictionaryDict = {name: abb for abb, name in indexes.dictionaryList}
+        self.dictionaryList = list(self.dictionaryDict.keys())
+        # encyclopedia
+        # context1_encyclopedia
+        self.encyclopediaDictAbb2Name = {abb: name for abb, name in indexes.encyclopediaList}
+        self.encyclopediaDict = {name: abb for abb, name in indexes.encyclopediaList}
+        self.encyclopediaList = list(self.encyclopediaDict.keys())
+        # 3rd-party dictionary
+        # menu5_3rdDict
+        self.thirdPartyDictionaryList = ThirdPartyDictionary(self.parent.textCommandParser.isThridPartyDictionary(config.thirdDictionary)).moduleList
 
     def setupUI(self):
         mainLayout = QVBoxLayout()

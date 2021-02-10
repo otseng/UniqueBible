@@ -698,7 +698,7 @@ class MainWindow(QMainWindow):
         if config.clickToOpenImage:
             text = self.addOpenImageAction(text)
         # check size of text content
-        if sys.getsizeof(text) < 2097152:
+        if not config.forceGenerateHtml and sys.getsizeof(text) < 2097152:
             self.studyView.setHtml(text, baseUrl)
         else:
             # save html in a separate file if text is larger than 2MB

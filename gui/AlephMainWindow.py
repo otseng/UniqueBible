@@ -104,9 +104,11 @@ class AlephMainWindow(MainWindow):
             QAction(config.thisTranslation["menu_bible_chapter_notes"], self, shortcut="Ctrl+S, 2", triggered=self.searchCommandChapterNote))
         search_command.addAction(QAction(config.thisTranslation["menu_bible_verse_notes"], self, shortcut="Ctrl+S, 3", triggered=self.searchCommandVerseNote))
         search_command.addAction(QAction(config.thisTranslation["menu_lexicon"], self, shortcut="Ctrl+S, L", triggered=self.searchCommandLexicon))
-        search_command.addAction(QAction(config.thisTranslation["menu5_encyclopedia"], self, shortcut="Ctrl+S, E", triggered=self.searchCommandBibleEncyclopedia))
         search_command.addAction(QAction(config.thisTranslation["menu5_characters"], self, shortcut="Ctrl+S, C", triggered=self.searchCommandBibleCharacter))
+        search_command.addAction(QAction(config.thisTranslation["menu5_names"], self, shortcut="Ctrl+S, N",
+                                triggered=self.searchCommandBibleName))
         search_command.addAction(QAction(config.thisTranslation["menu5_locations"], self, shortcut="Ctrl+S, O", triggered=self.searchCommandBibleLocation))
+        search_command.addAction(QAction(config.thisTranslation["menu5_allTopics"], self, triggered=self.searchCommandAllBibleTopic))
         search_command.addAction(
             QAction(config.thisTranslation["menu5_allBook"], self, shortcut="Ctrl+S, R", triggered=self.displaySearchAllBookCommand))
 

@@ -402,6 +402,18 @@ class AlephMainWindow(MainWindow):
         self.bookButton.clicked.connect(self.openBookMenu)
         self.secondToolBar.addWidget(self.bookButton)
 
+        previousChapterButton = QPushButton()
+        previousChapterButton.setToolTip(config.thisTranslation["menu_previous_chapter"])
+        previousChapterButton.setText("<")
+        previousChapterButton.clicked.connect(self.openBookPreviousChapter)
+        self.secondToolBar.addWidget(previousChapterButton)
+
+        nextChapterButton = QPushButton()
+        nextChapterButton.setToolTip(config.thisTranslation["menu_next_chapter"])
+        nextChapterButton.setText(">")
+        nextChapterButton.clicked.connect(self.openBookNextChapter)
+        self.secondToolBar.addWidget(nextChapterButton)
+
         searchBookButton = QPushButton()
         searchBookButton.setToolTip(config.thisTranslation["bar2_searchBooks"])
         searchBookButtonFile = os.path.join("htmlResources", "search.png")

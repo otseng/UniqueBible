@@ -1545,6 +1545,7 @@ class TextCommandParser:
     def textBookMenu(self, command, source):
         bookData = BookData()
         bookMenu = bookData.getMenu(command)
+        config.bookChapNum = 0
         del bookData
         self.parent.bookButton.setText(config.book)
         return ("study", bookMenu, {})

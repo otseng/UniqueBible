@@ -1334,6 +1334,7 @@ class MainWindow(QMainWindow):
             config.bookChapNum -= 1
             if config.bookChapNum < 1:
                 config.bookChapNum = 1
+            self.newTabException = True
             self.runTextCommand("BOOK:::{0}:::{1}".format(config.book, config.bookChapNum), True, "main")
 
     def openBookNextChapter(self):
@@ -1341,7 +1342,8 @@ class MainWindow(QMainWindow):
             book = Book(config.book)
             if config.bookChapNum < book.getChapterCount():
                 config.bookChapNum += 1
-                self.runTextCommand("BOOK:::{0}:::{1}".format(config.book, config.bookChapNum), True, "main")
+            self.newTabException = True
+            self.runTextCommand("BOOK:::{0}:::{1}".format(config.book, config.bookChapNum), True, "main")
 
     def displaySearchBookCommand(self):
         config.bookSearchString = ""

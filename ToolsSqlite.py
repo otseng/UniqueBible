@@ -769,5 +769,6 @@ class Book:
 
     def adjustDarkThemeColorsForBook(self, content):
         content = content.replace('<body style="background-attachment: fixed" background="http://www.swartzentrover.com/cotor/Bootstrap/img/bg/sdf/BK249.GIF">', '<body>')
+        content = content.replace('<body style="background-attachment: fixed" background="http://www.swartzentrover.com/Web Graphics/BackGrounds/concrete/concrete12.jpg">', '<body>')
         content = content.replace('cellpadding="0"', 'cellpadding="5"')
         return content

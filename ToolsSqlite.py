@@ -704,6 +704,10 @@ class Book:
         self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
+        if not self.checkColumnExists("Reference", "ChapNum"):
+            self.addColumnToTable("Reference", "ChapNum", "INT")
+            self.populateIndex()
+
     def __del__(self):
         self.connection.close()
 
@@ -748,4 +752,29 @@ class Book:
             # return content
             return "<p><ref onclick='document.title={3}BOOK:::{0}{3}'>{0}</ref><br>&gt; <b>{1}</b></p>{2}".format(self.module, entry, content, '"')
 
+    def populateIndex(self):
+        query = "SELECT Chapter FROM Reference"
+        self.cursor.execute(query)
+        count = 0
+        for row in self.cursor:
+            count += 1
+            chapter = row[0]
+            cursor2 = self.connection.cursor()
+            update = "UPDATE Reference set ChapNum=? WHERE Chapter=?"
+            cursor2.execute(update, (count, chapter))
+        self.connection.commit()
 
+    def checkColumnExists(self, table, column):
+        self.cursor.execute("SELECT * FROM pragma_table_info(?) WHERE name=?", (table, column))
+        if self.cursor.fetchone():
+            return True
+        else:
+            return False
+
+    def addColumnToTable(self, table, column, column_type):
+        sql = "ALTER TABLE " + table + " ADD COLUMN " + column + " " + column_type
+        self.cursor.execute(sql)
+
+# Testing code
+
+# if __name__ == "__main__":

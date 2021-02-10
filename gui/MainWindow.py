@@ -220,6 +220,8 @@ class MainWindow(QMainWindow):
             self.manageRemoteControl()
         elif self.textCommandLineEdit.isVisible():
             self.textCommandLineEdit.setFocus()
+        if config.clearCommandEntry:
+            self.textCommandLineEdit.setText("")
 
     def manageRemoteControl(self):
         if config.remoteControl and not self.remoteControl.isActiveWindow():
@@ -239,6 +241,8 @@ class MainWindow(QMainWindow):
             textCommandText = self.textCommandLineEdit.text()
             if textCommandText:
                 self.remoteControl.searchLineEdit.setText(textCommandText)
+            if config.clearCommandEntry:
+                self.remoteControl.searchLineEdit.setText("")
             config.remoteControl = True
         elif self.remoteControl:
                 self.remoteControl.close()

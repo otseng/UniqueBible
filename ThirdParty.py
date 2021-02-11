@@ -1519,7 +1519,8 @@ class ThirdPartyDictionary:
                 self.cursor = self.connection.cursor()
 
     def __del__(self):
-        self.connection.close()
+        if self.connection:
+            self.connection.close()
 
     def getModuleList(self):
         moduleFolder = os.path.join("thirdParty", "dictionaries")

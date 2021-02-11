@@ -238,9 +238,6 @@ class AlephMainWindow(MainWindow):
 
         textButtonStyle = "QPushButton {background-color: #151B54; color: white;} QPushButton:hover {background-color: #333972;} QPushButton:pressed { background-color: #515790;}"
 
-        if config.qtMaterial and config.qtMaterialTheme:
-            self.buttonWidth = self.mainTextMenuButton.height()
-
         self.firstToolBar = QToolBar()
         self.firstToolBar.setWindowTitle(config.thisTranslation["bar1_title"])
         self.firstToolBar.setContextMenuPolicy(Qt.PreventContextMenu)
@@ -251,6 +248,9 @@ class AlephMainWindow(MainWindow):
         self.mainTextMenuButton.setStyleSheet(textButtonStyle)
         self.mainTextMenuButton.clicked.connect(self.mainTextMenu)
         self.firstToolBar.addWidget(self.mainTextMenuButton)
+
+        if config.qtMaterial and config.qtMaterialTheme:
+            self.buttonWidth = self.mainTextMenuButton.height()
 
         self.mainRefButton = QPushButton(self.verseReference("main")[1])
         self.mainRefButton.setToolTip(config.thisTranslation["bar1_reference"])

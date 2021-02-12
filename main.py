@@ -565,10 +565,12 @@ def setCurrentRecord():
     studyRecordPosition = len(config.history["study"]) - 1
     config.currentRecord = {'main': mainRecordPosition, 'study': studyRecordPosition}
 
+def exitApplication():
+    mainWindow.textCommandParser.stopTtsAudio()
+    saveDataOnExit()
+
 # Save configurations on exit
 def saveDataOnExit():
-    mainWindow.textCommandParser.stopTtsAudio()
-
     config.bookSearchString = ""
     config.noteSearchString = ""
     configs = (
@@ -728,13 +730,21 @@ if config.virtualKeyboard:
     os.environ["QT_IM_MODULE"] = "qtvirtualkeyboard"
 
 # Remote CLI
-if config.enableRemoteCLI:
+if (len(sys.argv) > 0) and sys.argv[1] == "cli":
     try:
         import telnetlib3
-        import asyncio
-        from util.RemoteCliHandler import RemoteCliHandler
+    except:
+        print("Please run 'pip install telnetlib3' to use remote CLI")
+        config.enableRemoteCLI = True
+        saveDataOnExit()
+        exit(0)
 
-        if (len(sys.argv) > 0) and sys.argv[1] == "cli":
+    if config.enableRemoteCLI:
+        try:
+            import telnetlib3
+            import asyncio
+            from util.RemoteCliHandler import RemoteCliHandler
+
             port = 8888
             if (len(sys.argv) > 2):
                 port = int(sys.argv[2])
@@ -746,16 +756,16 @@ if config.enableRemoteCLI:
             server = loop.run_until_complete(coro)
             loop.run_until_complete(server.wait_closed())
             exit(0)
-    except KeyboardInterrupt:
-        exit(0)
-    except Exception as e:
-        print(str(e))
-        exit(-1)
+        except KeyboardInterrupt:
+            exit(0)
+        except Exception as e:
+            print(str(e))
+            exit(-1)
 
 # Start PySide2 gui
 app = QApplication(sys.argv)
 # Assign a function to save configurations when the app is closed.
-app.aboutToQuit.connect(saveDataOnExit)
+app.aboutToQuit.connect(exitApplication)
 # Apply window style
 if config.windowStyle and config.windowStyle in QStyleFactory.keys():
     app.setStyle(config.windowStyle)

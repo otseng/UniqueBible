@@ -436,7 +436,7 @@ if not hasattr(config, "clearCommandEntry"):
     config.clearCommandEntry = False
 # Remote CLI
 if not hasattr(config, "enableRemoteCLI"):
-    config.enableRemoteCLI = True
+    config.enableRemoteCLI = False
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -521,8 +521,6 @@ if config.enableGist:
 if config.developer:
     #import exlbl
     pass
-
-config.enableRemoteCLI = True
 
 import pprint
 from PySide2.QtWidgets import QApplication, QStyleFactory

@@ -68,8 +68,7 @@ class MoreConfigOptions(QDialog):
             ("useFastVerseParsing", config.useFastVerseParsing, self.useFastVerseParsingChanged),
             ("enableMacros", config.enableMacros, self.enableMacrosChanged),
             ("enableGist", config.enableGist, self.enableGistChanged),
-            ("clearCommandEntry", config.clearCommandEntry, self.clearCommandEntryChanged),
-            ("enableRemoteCLI", config.enableRemoteCLI, self.enableRemoteCLIChanged)
+            ("clearCommandEntry", config.clearCommandEntry, self.clearCommandEntryChanged)
         ]
         if platform.system() == "Linux":
             options += [
@@ -307,8 +306,3 @@ class MoreConfigOptions(QDialog):
         else:
             config.enableGist = not config.enableGist
             self.parent.displayMessage(config.thisTranslation["message_restart"])
-
-    def enableRemoteCLIChanged(self):
-        config.enableRemoteCLI = not config.enableRemoteCLI
-        self.parent.displayMessage(config.thisTranslation["message_restart"])
-

@@ -434,9 +434,6 @@ if not hasattr(config, "gistToken"):
 # Clear command entry line by default
 if not hasattr(config, "clearCommandEntry"):
     config.clearCommandEntry = False
-# Remote CLI
-if not hasattr(config, "enableRemoteCLI"):
-    config.enableRemoteCLI = False
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -702,8 +699,7 @@ def saveDataOnExit():
         ("startupMacro", config.startupMacro),
         ("enableGist", config.enableGist),
         ("gistToken", config.gistToken),
-        ("clearCommandEntry", config.clearCommandEntry),
-        ("enableRemoteCLI", config.enableRemoteCLI)
+        ("clearCommandEntry", config.clearCommandEntry)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:
@@ -735,32 +731,30 @@ if (len(sys.argv) > 0) and sys.argv[1] == "cli":
         import telnetlib3
     except:
         print("Please run 'pip install telnetlib3' to use remote CLI")
-        config.enableRemoteCLI = True
         saveDataOnExit()
         exit(0)
 
-    if config.enableRemoteCLI:
-        try:
-            import telnetlib3
-            import asyncio
-            from util.RemoteCliHandler import RemoteCliHandler
+    try:
+        import telnetlib3
+        import asyncio
+        from util.RemoteCliHandler import RemoteCliHandler
 
-            port = 8888
-            if (len(sys.argv) > 2):
-                port = int(sys.argv[2])
-            print("Running in remote CLI Mode on port {0}".format(port))
-            print("Access by 'telnet localhost {0}'".format(port))
-            print("Press Ctrl-C to stop the server")
-            loop = asyncio.get_event_loop()
-            coro = telnetlib3.create_server(port=port, shell=RemoteCliHandler.shell)
-            server = loop.run_until_complete(coro)
-            loop.run_until_complete(server.wait_closed())
-            exit(0)
-        except KeyboardInterrupt:
-            exit(0)
-        except Exception as e:
-            print(str(e))
-            exit(-1)
+        port = 8888
+        if (len(sys.argv) > 2):
+            port = int(sys.argv[2])
+        print("Running in remote CLI Mode on port {0}".format(port))
+        print("Access by 'telnet localhost {0}'".format(port))
+        print("Press Ctrl-C to stop the server")
+        loop = asyncio.get_event_loop()
+        coro = telnetlib3.create_server(port=port, shell=RemoteCliHandler.shell)
+        server = loop.run_until_complete(coro)
+        loop.run_until_complete(server.wait_closed())
+        exit(0)
+    except KeyboardInterrupt:
+        exit(0)
+    except Exception as e:
+        print(str(e))
+        exit(-1)
 
 # Start PySide2 gui
 app = QApplication(sys.argv)

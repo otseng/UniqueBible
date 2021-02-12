@@ -116,7 +116,8 @@ class MockWindow:
 
 if __name__ == "__main__":
     import config
-
+    from Languages import Languages
+    
     config.thisTranslation = Languages.translation
     config.parserStandarisation = 'NO'
     config.standardAbbreviation = 'ENG'

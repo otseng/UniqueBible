@@ -1,8 +1,10 @@
 import os, config, myTranslation
 from PySide2.QtGui import QIcon, Qt
+from PySide2.QtCore import QSize
 from PySide2.QtWidgets import (QAction, QToolBar, QPushButton, QLineEdit, QStyleFactory)
 from gui.MainWindow import MainWindow
 from gui.MasterControl import MasterControl
+from gui.MenuItems import *
 
 class ClassicMainWindow(MainWindow):
 
@@ -10,66 +12,84 @@ class ClassicMainWindow(MainWindow):
         super().__init__()
 
     def create_menu(self):
-        menu1 = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu1_app"]))
-
-        menu1.addAction(QAction(config.thisTranslation["controlPanel"], self, shortcut="Ctrl+M", triggered=self.manageControlPanel))
-        menu1.addAction(QAction(config.thisTranslation["menu1_remoteControl"], self, shortcut="Ctrl+O", triggered=self.manageRemoteControl))
-        menu1.addSeparator()
-
-        clipboardMenu = menu1.addMenu(config.thisTranslation["menu1_clipboard"])
-        clipboardMenu.addAction(QAction(config.thisTranslation["menu1_readClipboard"], self, shortcut="Ctrl+^", triggered=self.pasteFromClipboard))
-        clipboardMenu.addAction(QAction(config.thisTranslation["menu1_runClipboard"], self, triggered=self.parseContentOnClipboard))
-        menu1.addSeparator()
-
-        generalPreferencesMenu = menu1.addMenu(config.thisTranslation["menu1_generalPreferences"])
-        generalPreferencesMenu.addAction(QAction(config.thisTranslation["menu1_tabNo"], self, triggered=self.setTabNumberDialog))
-        generalPreferencesMenu.addAction(QAction(config.thisTranslation["menu1_setAbbreviations"], self, triggered=self.setBibleAbbreviations))
-        generalPreferencesMenu.addAction(QAction(config.thisTranslation["menu1_setMyFavouriteBible"], self, triggered=self.openFavouriteBibleDialog))
-        generalPreferencesMenu.addAction(QAction(config.thisTranslation["menu1_setMyLanguage"], self, triggered=self.openMyLanguageDialog))
-        #lexiconMenu = menu1.addMenu(config.thisTranslation["menu1_selectDefaultLexicon"])
-        generalPreferencesMenu.addAction(QAction(config.thisTranslation["menu1_setDefaultStrongsHebrewLexicon"], self, triggered=self.openSelectDefaultStrongsHebrewLexiconDialog))
-        generalPreferencesMenu.addAction(QAction(config.thisTranslation["menu1_setDefaultStrongsGreekLexicon"], self, triggered=self.openSelectDefaultStrongsGreekLexiconDialog))
-        
-        windowStyleMenu = menu1.addMenu(config.thisTranslation["menu1_selectWindowStyle"])
-        windowStyleMenu.addAction(QAction("default", self, triggered=lambda: self.setAppWindowStyle("default")))
+        menuBar = self.menuBar()
+        # 1st column
+        menu = addMenu(menuBar, "menu1_app")
+        items = (
+            ("controlPanel", self.manageControlPanel, "Ctrl+M"),
+            ("menu1_remoteControl", self.manageRemoteControl, "Ctrl+O"),
+        )
+        for feature, action, shortcut in items:
+            addMenuItem(menu, feature, self, action, shortcut)
+        menu.addSeparator()
+        subMenu = addSubMenu(menu, "menu1_clipboard")
+        items = (
+            ("menu1_readClipboard", self.pasteFromClipboard, None),
+            ("menu1_runClipboard", self.parseContentOnClipboard, "Ctrl+^"),
+        )
+        for feature, action, shortcut in items:
+            addMenuItem(subMenu, feature, self, action, shortcut)
+        menu.addSeparator()
+        subMenu = addSubMenu(menu, "menu1_generalPreferences")
+        items = (
+            ("menu1_tabNo", self.setTabNumberDialog, None),
+            ("menu1_setAbbreviations", self.setBibleAbbreviations, None),
+            ("menu1_setMyFavouriteBible", self.openFavouriteBibleDialog, None),
+            ("menu1_setMyLanguage", self.openMyLanguageDialog, None),
+            ("menu1_setDefaultStrongsHebrewLexicon", self.openSelectDefaultStrongsHebrewLexiconDialog, None),
+            ("menu1_setDefaultStrongsGreekLexicon", self.openSelectDefaultStrongsGreekLexiconDialog, None),
+        )
+        for feature, action, shortcut in items:
+            addMenuItem(subMenu, feature, self, action, shortcut)
+        subMenu = addSubMenu(menu, "menu1_selectWindowStyle")
+        addMenuItem(subMenu, "default", self, lambda: self.setAppWindowStyle("default"), None, False)
         for style in QStyleFactory.keys():
-            windowStyleMenu.addAction(QAction(style, self, triggered=lambda style=style: self.setAppWindowStyle(style)))
+            addMenuItem(subMenu, style, self, lambda style=style: self.setAppWindowStyle(style), None, False)
 
-        themeMenu = menu1.addMenu(config.thisTranslation["menu1_selectTheme"])
+        subMenu = addSubMenu(menu, "menu1_selectTheme")
         if config.qtMaterial:
             qtMaterialThemes = ["light_amber.xml",  "light_blue.xml",  "light_cyan.xml",  "light_cyan_500.xml",  "light_lightgreen.xml",  "light_pink.xml",  "light_purple.xml",  "light_red.xml",  "light_teal.xml",  "light_yellow.xml", "dark_amber.xml",  "dark_blue.xml",  "dark_cyan.xml",  "dark_lightgreen.xml",  "dark_pink.xml",  "dark_purple.xml",  "dark_red.xml",  "dark_teal.xml",  "dark_yellow.xml"]
             for theme in qtMaterialThemes:
-                themeMenu.addAction(QAction(theme[:-4], self, triggered=lambda theme=theme: self.setQtMaterialTheme(theme)))
+                addMenuItem(subMenu, theme[:-4], self, lambda theme=theme: self.setQtMaterialTheme(theme), None, False)
         else:
-            themeMenu.addAction(QAction(config.thisTranslation["menu_light_theme"], self, triggered=self.setDefaultTheme))
-            themeMenu.addAction(QAction(config.thisTranslation["menu1_dark_theme"], self, triggered=self.setDarkTheme))
+            items = (
+                ("menu_light_theme", self.setDefaultTheme, None),
+                ("menu1_dark_theme", self.setDarkTheme, None),
+            )
+            for feature, action, shortcut in items:
+                addMenuItem(subMenu, feature, self, action, shortcut)
         
-        layoutMenu = menu1.addMenu(config.thisTranslation["menu1_selectMenuLayout"])
-        layoutMenu.addAction(
-            QAction(config.thisTranslation["menu1_classic_menu_layout"], self, triggered=self.setDefaultMenuLayout))
-        layoutMenu.addAction(QAction(config.thisTranslation["menu1_aleph_menu_layout"], self, triggered=self.setAlephMenuLayout))
+        subMenu = addSubMenu(menu, "menu1_selectMenuLayout")
+        items = (
+            ("menu1_aleph_menu_layout", lambda: self.setMenuLayout("aleph"), None),
+            ("menu1_focus_menu_layout", lambda: self.setMenuLayout("focus"), None),
+            ("menu1_classic_menu_layout", lambda: self.setMenuLayout("classic"), None),
+        )
+        for feature, action, shortcut in items:
+            addMenuItem(subMenu, feature, self, action, shortcut)
         if config.enableMacros:
-            menu1.addAction(
-                QAction(config.thisTranslation["menu_startup_macro"], self, triggered=self.setStartupMacro))
-        menu1.addAction(QAction(config.thisTranslation["menu1_moreConfig"], self, triggered=self.moreConfigOptionsDialog))
-        menu1.addSeparator()
-
-        userInterfaceMenu = menu1.addMenu(config.thisTranslation["menu1_programInterface"])
+            addMenuItem(menu, "menu_startup_macro", self, self.setStartupMacro, None)
+        addMenuItem(menu, "menu1_moreConfig", self, self.moreConfigOptionsDialog, None)
+        menu.addSeparator()
+        subMenu = addSubMenu(menu, "menu1_programInterface")
         if (not self.isMyTranslationAvailable() and not self.isOfficialTranslationAvailable()) or (self.isMyTranslationAvailable() and not myTranslation.translationLanguage == config.userLanguage) or (self.isOfficialTranslationAvailable() and not config.translationLanguage == config.userLanguage):
-            userInterfaceMenu.addAction(QAction(config.thisTranslation["menu1_translateInterface"], self, triggered=self.translateInterface))
-        userInterfaceMenu.addAction(QAction(config.thisTranslation["menu1_toogleInterface"], self, triggered=self.toogleInterfaceTranslation))
-        menu1.addSeparator()
+            addMenuItem(subMenu, "menu1_translateInterface", self, self.translateInterface, None)
+        addMenuItem(subMenu, "menu1_toogleInterface", self, self.toogleInterfaceTranslation, None)
+        menu.addSeparator()
+        subMenu = addSubMenu(menu, "bar3_pdf")
+        items = (
+            ("bar1_menu", self.printMainPage, None),
+            ("bar2_menu", self.printStudyPage, None),
+        )
+        for feature, action, shortcut in items:
+            addMenuItem(subMenu, feature, self, action, shortcut)
+        menu.addSeparator()
+        addMenuItem(menu, "menu1_update", self, self.updateUniqueBibleApp, None)
+        menu.addSeparator()
 
-        exportPdfMenu = menu1.addMenu(config.thisTranslation["bar3_pdf"])
-        exportPdfMenu.addAction(QAction(config.thisTranslation["bar1_menu"], self, triggered=self.printMainPage))
-        exportPdfMenu.addAction(QAction(config.thisTranslation["bar2_menu"], self, triggered=self.printStudyPage))
-        menu1.addSeparator()
-
-        menu1.addAction(QAction(config.thisTranslation["menu1_update"], self, triggered=self.updateUniqueBibleApp))
-        menu1.addSeparator()
         appIcon = QIcon(os.path.join("htmlResources", "UniqueBibleApp.png"))
         quit_action = QAction(appIcon, config.thisTranslation["menu1_exit"], self, shortcut="Ctrl+Q", triggered=self.quitApp)
-        menu1.addAction(quit_action)
+        menu.addAction(quit_action)
 
         menu2 = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu2_view"]))
 
@@ -390,9 +410,9 @@ class ClassicMainWindow(MainWindow):
         if button is None:
             button = QPushButton()
         if config.qtMaterial and config.qtMaterialTheme:
-            #button.setFixedSize(self.buttonWidth, self.buttonWidth)
-            button.setFixedWidth(self.buttonWidth)
-            #button.setFixedHeight(self.buttonWidth)
+            #button.setFixedSize(config.iconButtonWidth, config.iconButtonWidth)
+            button.setFixedWidth(config.iconButtonWidth)
+            #button.setFixedHeight(config.iconButtonWidth)
         button.setToolTip(config.thisTranslation[toolTip] if translation else toolTip)
         buttonIconFile = os.path.join("htmlResources", icon)
         button.setIcon(QIcon(buttonIconFile))
@@ -406,16 +426,12 @@ class ClassicMainWindow(MainWindow):
         self.firstToolBar.setContextMenuPolicy(Qt.PreventContextMenu)
         self.addToolBar(self.firstToolBar)
 
-        self.mainTextMenuButton = QPushButton(self.verseReference("main")[0])
-        toolTip = "{0} {1}".format(config.thisTranslation["bar1_menu"], config.thisTranslation["menu_bibleMenu"])
-        self.addStandardTextButton(toolTip, self.mainTextMenu, self.firstToolBar, self.mainTextMenuButton, False)
+        self.mainRefButton = QPushButton(self.verseReference("main")[1])
+        self.addStandardTextButton("bar1_reference", self.mainRefButtonClicked, self.firstToolBar, self.mainRefButton)
 
         # The height of the first text button is used to fix icon button width when a qt-material theme is applied.
         if config.qtMaterial and config.qtMaterialTheme:
-            self.buttonWidth = self.mainTextMenuButton.height()
-
-        self.mainRefButton = QPushButton(self.verseReference("main")[1])
-        self.addStandardTextButton("bar1_reference", self.mainRefButtonClicked, self.firstToolBar, self.mainRefButton)
+            config.iconButtonWidth = self.mainRefButton.height()
 
         self.addStandardIconButton("bar1_chapterNotes", "noteChapter.png", self.openMainChapterNote, self.firstToolBar)
         self.addStandardIconButton("bar1_verseNotes", "noteVerse.png", self.openMainVerseNote, self.firstToolBar)
@@ -443,11 +459,7 @@ class ClassicMainWindow(MainWindow):
         self.studyBibleToolBar.setContextMenuPolicy(Qt.PreventContextMenu)
         self.addToolBar(self.studyBibleToolBar)
 
-        self.studyTextMenuButton = QPushButton(self.verseReference("study")[0])
-        toolTip = "{0} {1}".format(config.thisTranslation["bar2_menu"], config.thisTranslation["menu_bibleMenu"])
-        self.addStandardTextButton(toolTip, self.studyTextMenu, self.studyBibleToolBar, self.studyTextMenuButton, False)
-
-        self.studyRefButton = QPushButton(self.verseReference("study")[0])
+        self.studyRefButton = QPushButton(":::".join(self.verseReference("study")))
         self.addStandardTextButton("bar2_reference", self.studyRefButtonClicked, self.studyBibleToolBar, self.studyRefButton)
 
         self.addStandardIconButton("bar2_chapterNotes", "noteChapter.png", self.openStudyChapterNote, self.studyBibleToolBar)
@@ -532,7 +544,8 @@ class ClassicMainWindow(MainWindow):
         self.leftToolBar.addSeparator()
         self.addStandardIconButton("menu4_compareAll", "compare_with.png", self.runCOMPARE, self.leftToolBar)
         self.addStandardIconButton("menu4_moreComparison", "parallel_with.png", self.mainRefButtonClicked, self.leftToolBar)
-        self.addStandardIconButton(self.getEnableCompareParallelDisplayToolTip(), self.getEnableCompareParallelDisplay(), self.enforceCompareParallelButtonClicked, self.leftToolBar, None, False)
+        self.enforceCompareParallelButton = QPushButton()
+        self.addStandardIconButton(self.getEnableCompareParallelDisplayToolTip(), self.getEnableCompareParallelDisplay(), self.enforceCompareParallelButtonClicked, self.leftToolBar, self.enforceCompareParallelButton, False)
         self.leftToolBar.addSeparator()
         self.addStandardIconButton("Marvel Original Bible", "original.png", self.runMOB, self.leftToolBar, None, False)
         self.addStandardIconButton("Marvel Interlinear Bible", "interlinear.png", self.runMIB, self.leftToolBar, None, False)
@@ -580,17 +593,15 @@ class ClassicMainWindow(MainWindow):
         self.firstToolBar.setContextMenuPolicy(Qt.PreventContextMenu)
         self.addToolBar(self.firstToolBar)
 
-        self.mainTextMenuButton = QPushButton(self.verseReference("main")[0])
-        self.mainTextMenuButton.setToolTip("{0} {1}".format(config.thisTranslation["bar1_menu"], config.thisTranslation["menu_bibleMenu"]))
-        self.mainTextMenuButton.setStyleSheet(textButtonStyle)
-        self.mainTextMenuButton.clicked.connect(self.mainTextMenu)
-        self.firstToolBar.addWidget(self.mainTextMenuButton)
-
         self.mainRefButton = QPushButton(self.verseReference("main")[1])
         self.mainRefButton.setToolTip(config.thisTranslation["bar1_reference"])
         self.mainRefButton.setStyleSheet(textButtonStyle)
         self.mainRefButton.clicked.connect(self.mainRefButtonClicked)
         self.firstToolBar.addWidget(self.mainRefButton)
+
+        # The height of the first text button is used to fix icon button width when a qt-material theme is applied.
+        if config.qtMaterial and config.qtMaterialTheme:
+            config.iconButtonWidth = self.mainRefButton.height()
 
         iconFile = os.path.join("htmlResources", "noteChapter.png")
         self.firstToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar1_chapterNotes"], self.openMainChapterNote)
@@ -624,12 +635,6 @@ class ClassicMainWindow(MainWindow):
         self.studyBibleToolBar.setWindowTitle(config.thisTranslation["bar2_title"])
         self.studyBibleToolBar.setContextMenuPolicy(Qt.PreventContextMenu)
         self.addToolBar(self.studyBibleToolBar)
-
-        self.studyTextMenuButton = QPushButton(self.verseReference("study")[0])
-        self.studyTextMenuButton.setToolTip("{0} {1}".format(config.thisTranslation["bar2_menu"], config.thisTranslation["menu_bibleMenu"]))
-        self.studyTextMenuButton.setStyleSheet(textButtonStyle)
-        self.studyTextMenuButton.clicked.connect(self.studyTextMenu)
-        self.studyBibleToolBar.addWidget(self.studyTextMenuButton)
 
         self.studyRefButton = QPushButton(self.verseReference("study")[1])
         self.studyRefButton.setToolTip(config.thisTranslation["bar2_reference"])
@@ -869,3 +874,10 @@ class ClassicMainWindow(MainWindow):
         self.rightToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu2_bottom"], self.cycleInstant)
 
         self.rightToolBar.addSeparator()
+
+        if config.qtMaterial and config.qtMaterialTheme:
+            for toolbar in (self.firstToolBar, self.studyBibleToolBar, self.secondToolBar):
+                toolbar.setIconSize(QSize(config.iconButtonWidth / 1.33, config.iconButtonWidth / 1.33))
+                toolbar.setFixedHeight(config.iconButtonWidth + 4)
+            for toolbar in (self.leftToolBar, self.rightToolBar):
+                toolbar.setIconSize(QSize(config.iconButtonWidth * 0.6, config.iconButtonWidth * 0.6))

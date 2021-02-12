@@ -30,13 +30,13 @@ class RemoteCliHandler:
                     return
                 command = linereader.send(inp)
             writer.write(CRLF)
+            command = re.sub("\[[ABCD]", "", command)
+            command = command.strip()
             if command.lower() in ('quit', 'exit', 'bye'):
                 break
             elif command.lower() in ('help', '?'):
                 RemoteCliHandler.help(writer)
             elif len(command) > 0:
-                command = re.sub("\[[ABCD]", "", command)
-                command = command.strip()
                 view, content, dict = textCommandParser.parser(command, "cli")
                 content = re.sub("<br/?>", CRLF, content)
                 content = re.sub('<[^<]+?>', '', content)

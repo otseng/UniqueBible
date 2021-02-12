@@ -6,6 +6,8 @@
 import os, subprocess, platform, logging
 import logging.handlers as handlers
 import sys
+import socket
+
 
 def messageFeatureNotEnabled(feature, module):
     print("Optional feature '{0}'is not enabled.  To enable it, install python package '{1}' first, by running 'pip3 install {1}' with terminal.".format(feature, module))
@@ -725,6 +727,18 @@ elif config.ibus:
 if config.virtualKeyboard:
     os.environ["QT_IM_MODULE"] = "qtvirtualkeyboard"
 
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
 # Remote CLI
 if (len(sys.argv) > 1) and sys.argv[1] == "cli":
     try:
@@ -743,7 +757,7 @@ if (len(sys.argv) > 1) and sys.argv[1] == "cli":
         if (len(sys.argv) > 2):
             port = int(sys.argv[2])
         print("Running in remote CLI Mode on port {0}".format(port))
-        print("Access by 'telnet localhost {0}'".format(port))
+        print("Access by 'telnet {0} {1}'".format(get_ip(), port))
         print("Press Ctrl-C to stop the server")
         loop = asyncio.get_event_loop()
         coro = telnetlib3.create_server(port=port, shell=RemoteCliHandler.shell)

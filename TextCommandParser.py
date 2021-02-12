@@ -1167,9 +1167,17 @@ class TextCommandParser:
                 self.parent.downloadHelper(databaseInfo)
                 return ("", "", {})
             else:
-                tableList = [("<th><ref onclick='document.title=\"TEXT:::{0}\"'>{0}</ref></th>".format(text), "<td style='vertical-align: text-top;'>{0}</td>".format(self.textBibleVerseParser(references, text, source, True)[1])) for text in confirmedTexts]
-                versions, verses = zip(*tableList)
-                return (source, "<table style='width:100%; table-layout:fixed;'><tr>{0}</tr><tr>{1}</tr></table>".format("".join(versions), "".join(verses)), {})
+                if source in ('cli'):
+                    tableList = ["{0} {1}".format(text, self.textBibleVerseParser(references, text, source, True)[1])
+                                 for text in confirmedTexts]
+                    return(source, "<br>".join(tableList), {})
+                else:
+                    tableList = [("<th><ref onclick='document.title=\"TEXT:::{0}\"'>{0}</ref></th>".format(text),
+                                  "<td style='vertical-align: text-top;'>{0}</td>".format(
+                                      self.textBibleVerseParser(references, text, source, True)[1]))
+                                 for text in confirmedTexts]
+                    versions, verses = zip(*tableList)
+                    return (source, "<table style='width:100%; table-layout:fixed;'><tr>{0}</tr><tr>{1}</tr></table>".format("".join(versions), "".join(verses)), {})
 
    # PASSAGES:::
     def textPassages(self, command, source):
@@ -1785,7 +1793,8 @@ class TextCommandParser:
             command = "{0}:::{1}".format(defaultLexicon[command[0]], command)
         module, entries = self.splitCommand(command)
         entries = entries.strip()
-        QApplication.clipboard().setText(entries)
+        if source not in ("cli"):
+            QApplication.clipboard().setText(entries)
         TextCommandParser.last_lexicon_entry = entries
         config.lexicon = module
         lexicon = Lexicon(module)

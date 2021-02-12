@@ -747,6 +747,7 @@ if config.enableRemoteCLI:
                 port = int(sys.argv[2])
             print("Running in remote CLI Mode on port {0}".format(port))
             print("Access by 'telnet localhost {0}'".format(port))
+            print("Press Ctrl-C to stop the server")
             loop = asyncio.get_event_loop()
             coro = telnetlib3.create_server(port=port, shell=RemoteCliHandler.shell)
             server = loop.run_until_complete(coro)

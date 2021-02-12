@@ -13,7 +13,7 @@ class RemoteCliHandler:
 
         textCommandParser = TextCommandParser(MockWindow())
 
-        writer.write("Connected to UniqueBible.app" + CR + LF)
+        writer.write("Connected to UniqueBible.app" + CRLF)
 
         linereader = RemoteCliHandler.readline(reader, writer)
         linereader.send(None)
@@ -21,7 +21,7 @@ class RemoteCliHandler:
         command = None
         while True:
             if command:
-                writer.write(CR + LF)
+                writer.write(CRLF)
             writer.write('> ')
             command = None
             while command is None:
@@ -29,20 +29,31 @@ class RemoteCliHandler:
                 if not inp:
                     return
                 command = linereader.send(inp)
-            writer.write(CR + LF)
+            writer.write(CRLF)
             if command.lower() in ('quit', 'exit', 'bye'):
                 break
             elif command.lower() in ('help', '?'):
-                writer.write("Type 'quit' to exit" + CRLF)
-                writer.write("All other commands will be processed by UBA")
+                RemoteCliHandler.help(writer)
             elif len(command) > 0:
                 command = re.sub("\[[ABCD]", "", command)
                 command = command.strip()
                 view, content, dict = textCommandParser.parser(command, "cli")
+                content = re.sub("<br/?>", CRLF, content)
                 content = re.sub('<[^<]+?>', '', content)
                 content = content.strip()
                 writer.write(content)
         writer.close()
+
+    def help(writer):
+        writer.write("Type 'quit' to exit" + CRLF)
+        writer.write("All other commands will be processed by UBA" + CRLF)
+        writer.write("Examples:" + CRLF)
+        writer.write("BIBLE:::KJV:::John 3:16" + CRLF)
+        writer.write("BIBLE:::KJV:::Jn 3:16; Rm 5:8; Deu 6:4" + CRLF)
+        writer.write("PARALLEL:::NIV_KJV:::John 3:16" + CRLF)
+        writer.write("SHOWSEARCH:::KJV:::omnipotent" + CRLF)
+        writer.write("ADVANCEDSEARCH:::KJV_WEB:::Book = 1 AND Scripture LIKE '%love%'" + CRLF)
+        writer.write("WORDS:::Gen 1:1")
 
     @asyncio.coroutine
     def readline(reader, writer):
@@ -82,7 +93,11 @@ class MockWindow:
 
     def __init__(self):
         import update
+        import config
+        from Languages import Languages
+
         self.bibleInfo = update.bibleInfo
+        config.thisTranslation = Languages.translation
 
     def updateMainRefButton(self):
         pass
@@ -93,9 +108,13 @@ class MockWindow:
     def downloadHelper(self, v):
         pass
 
+    def updateStudyRefButton(self):
+        pass
+
+    def updateCommentaryRefButton(self):
+        pass
 
 if __name__ == "__main__":
-    from Languages import Languages
     import config
 
     config.thisTranslation = Languages.translation

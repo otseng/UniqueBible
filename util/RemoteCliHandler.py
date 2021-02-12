@@ -2,9 +2,6 @@
 import asyncio
 import re
 
-import update
-from TextCommandParser import TextCommandParser
-
 CR, LF, NUL = '\r\n\x00'
 CRLF = '\r\n'
 
@@ -12,7 +9,9 @@ class RemoteCliHandler:
 
     @asyncio.coroutine
     def shell(reader, writer):
-        textCommandParser = TextCommandParser(SetupCLI())
+        from TextCommandParser import TextCommandParser
+
+        textCommandParser = TextCommandParser(MockWindow())
 
         writer.write("Connected to UniqueBible.app" + CR + LF)
 
@@ -36,9 +35,12 @@ class RemoteCliHandler:
             elif command.lower() in ('help', '?'):
                 writer.write("Type 'quit' to exit" + CRLF)
                 writer.write("All other commands will be processed by UBA")
-            elif command:
+            elif len(command) > 0:
+                command = re.sub("\[[ABCD]", "", command)
+                command = command.strip()
                 view, content, dict = textCommandParser.parser(command, "cli")
                 content = re.sub('<[^<]+?>', '', content)
+                content = content.strip()
                 writer.write(content)
         writer.close()
 
@@ -76,10 +78,31 @@ class RemoteCliHandler:
                 last_inp = inp
                 inp = yield None
 
-class SetupCLI:
+class MockWindow:
 
     def __init__(self):
+        import update
         self.bibleInfo = update.bibleInfo
 
     def updateMainRefButton(self):
         pass
+
+    def enableParagraphButtonAction(self, v):
+        pass
+
+    def downloadHelper(self, v):
+        pass
+
+
+if __name__ == "__main__":
+    from Languages import Languages
+    import config
+
+    config.thisTranslation = Languages.translation
+    config.parserStandarisation = 'NO'
+    config.standardAbbreviation = 'ENG'
+    config.marvelData = "/Users/otseng/dev/UniqueBible/marvelData/"
+
+    command = "1[A[B[C[D2"
+    command = re.sub("\[[ABCD]", "", command)
+    print(command)

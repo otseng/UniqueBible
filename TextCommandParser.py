@@ -751,8 +751,11 @@ class TextCommandParser:
             if (len(verseList) == 1) and (len(verseList[0]) == 3):
                 # i.e. only one verse reference is specified
                 bcvTuple = verseList[0]
-                chapters = self.getChaptersMenu(bcvTuple[0], bcvTuple[1], text)
-                content = "{0}<hr>{1}<hr>{0}".format(chapters, self.textFormattedBible(bcvTuple, text))
+                if view in ("cli"):
+                    chapters = ""
+                else:
+                    chapters = self.getChaptersMenu(bcvTuple[0], bcvTuple[1], text)
+                content = "{0}<hr>{1}<hr>{0}".format(chapters, self.textFormattedBible(bcvTuple, text, view))
             else:
                 # i.e. when more than one verse reference is found
                 content = self.textPlainBible(verseList, text)
@@ -802,21 +805,22 @@ class TextCommandParser:
         del biblesSqlite
         return verses
 
-    def textFormattedBible(self, verse, text):
+    def textFormattedBible(self, verse, text, source=""):
         formattedBiblesFolder = os.path.join(config.marvelData, "bibles")
         formattedBibles = [f[:-6] for f in os.listdir(formattedBiblesFolder) if os.path.isfile(os.path.join(formattedBiblesFolder, f)) and f.endswith(".bible") and not re.search(r"^[\._]", f)]
         #marvelBibles = ("MOB", "MIB", "MAB", "MPB", "MTB", "LXX1", "LXX1i", "LXX2", "LXX2i")
         marvelBibles = list(self.getMarvelBibles().keys())
-        if text in formattedBibles and config.readFormattedBibles:
-            bibleSqlite = Bible(text)
-            chapter = bibleSqlite.readFormattedChapter(verse)
-            del bibleSqlite
+        bibleSqlite = Bible(text)
+        if source in ("cli"):
+            b, c, v, *_ = verse
+            b, c, v, content = bibleSqlite.readTextVerse(b, c, v)
+        elif text in formattedBibles and config.readFormattedBibles:
+            content = bibleSqlite.readFormattedChapter(verse)
         else:
             # use plain bibles database when corresponding formatted version is not available
-            biblesSqlite = BiblesSqlite()
-            chapter = biblesSqlite.readPlainChapter(text, verse)
-            del biblesSqlite
-        return chapter
+            content = bibleSqlite.readPlainChapter(text, verse)
+        del bibleSqlite
+        return content
 
     # cmd:::
     # run os command

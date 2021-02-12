@@ -3,9 +3,12 @@
 # UniqueBible.app
 # a cross-platform desktop bible application
 # For more information on this application, visit https://BibleTools.app or https://UniqueBible.app.
-
 import os, subprocess, platform, logging
 import logging.handlers as handlers
+import sys
+
+from util.RemoteCliHandler import RemoteCliHandler
+
 
 def messageFeatureNotEnabled(feature, module):
     print("Optional feature '{0}'is not enabled.  To enable it, install python package '{1}' first, by running 'pip3 install {1}' with terminal.".format(feature, module))
@@ -434,6 +437,11 @@ if not hasattr(config, "gistToken"):
 # Clear command entry line by default
 if not hasattr(config, "clearCommandEntry"):
     config.clearCommandEntry = False
+# Remote CLI
+if not hasattr(config, "enableRemoteCLI"):
+    config.enableRemoteCLI = True
+if not hasattr(config, "allowRemoteConnection"):
+    config.allowRemoteConnection = False
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -519,9 +527,32 @@ if config.developer:
     #import exlbl
     pass
 
+config.enableRemoteCLI = True
 
+# Remote CLI
+if config.enableRemoteCLI:
+    try:
+        import telnetlib3
+        import asyncio
 
-import sys, pprint
+        if (len(sys.argv) > 0) and sys.argv[1] == "cli":
+            port = 8888
+            if (len(sys.argv) > 2):
+                port = int(sys.argv[2])
+            print("Running in remote CLI Mode on port {0}".format(port))
+            print("Access by 'telnet localhost {0}'".format(port))
+            loop = asyncio.get_event_loop()
+            coro = telnetlib3.create_server(port=port, shell=RemoteCliHandler.shell)
+            server = loop.run_until_complete(coro)
+            loop.run_until_complete(server.wait_closed())
+            exit(0)
+    except KeyboardInterrupt:
+        exit(0)
+    except Exception as e:
+        print(str(e))
+        exit(-1)
+
+import pprint
 from PySide2.QtWidgets import QApplication, QStyleFactory
 from themes import Themes
 from gui.AlephMainWindow import AlephMainWindow
@@ -699,7 +730,9 @@ def saveDataOnExit():
         ("startupMacro", config.startupMacro),
         ("enableGist", config.enableGist),
         ("gistToken", config.gistToken),
-        ("clearCommandEntry", config.clearCommandEntry)
+        ("clearCommandEntry", config.clearCommandEntry),
+        ("enableRemoteCLI", config.enableRemoteCLI),
+        ("allowRemoteConnection", config.allowRemoteConnection)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:

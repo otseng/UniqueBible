@@ -726,7 +726,7 @@ if config.virtualKeyboard:
     os.environ["QT_IM_MODULE"] = "qtvirtualkeyboard"
 
 # Remote CLI
-if (len(sys.argv) > 0) and sys.argv[1] == "cli":
+if (len(sys.argv) > 1) and sys.argv[1] == "cli":
     try:
         import telnetlib3
     except:

@@ -7,9 +7,6 @@ import os, subprocess, platform, logging
 import logging.handlers as handlers
 import sys
 
-from util.RemoteCliHandler import RemoteCliHandler
-
-
 def messageFeatureNotEnabled(feature, module):
     print("Optional feature '{0}'is not enabled.  To enable it, install python package '{1}' first, by running 'pip3 install {1}' with terminal.".format(feature, module))
 
@@ -440,8 +437,6 @@ if not hasattr(config, "clearCommandEntry"):
 # Remote CLI
 if not hasattr(config, "enableRemoteCLI"):
     config.enableRemoteCLI = True
-if not hasattr(config, "allowRemoteConnection"):
-    config.allowRemoteConnection = False
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -708,8 +703,7 @@ def saveDataOnExit():
         ("enableGist", config.enableGist),
         ("gistToken", config.gistToken),
         ("clearCommandEntry", config.clearCommandEntry),
-        ("enableRemoteCLI", config.enableRemoteCLI),
-        ("allowRemoteConnection", config.allowRemoteConnection)
+        ("enableRemoteCLI", config.enableRemoteCLI)
     )
     with open("config.py", "w", encoding="utf-8") as fileObj:
         for name, value in configs:
@@ -740,6 +734,7 @@ if config.enableRemoteCLI:
     try:
         import telnetlib3
         import asyncio
+        from util.RemoteCliHandler import RemoteCliHandler
 
         if (len(sys.argv) > 0) and sys.argv[1] == "cli":
             port = 8888

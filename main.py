@@ -529,29 +529,6 @@ if config.developer:
 
 config.enableRemoteCLI = True
 
-# Remote CLI
-if config.enableRemoteCLI:
-    try:
-        import telnetlib3
-        import asyncio
-
-        if (len(sys.argv) > 0) and sys.argv[1] == "cli":
-            port = 8888
-            if (len(sys.argv) > 2):
-                port = int(sys.argv[2])
-            print("Running in remote CLI Mode on port {0}".format(port))
-            print("Access by 'telnet localhost {0}'".format(port))
-            loop = asyncio.get_event_loop()
-            coro = telnetlib3.create_server(port=port, shell=RemoteCliHandler.shell)
-            server = loop.run_until_complete(coro)
-            loop.run_until_complete(server.wait_closed())
-            exit(0)
-    except KeyboardInterrupt:
-        exit(0)
-    except Exception as e:
-        print(str(e))
-        exit(-1)
-
 import pprint
 from PySide2.QtWidgets import QApplication, QStyleFactory
 from themes import Themes
@@ -757,6 +734,29 @@ elif config.ibus:
 # Set Qt input method variable to use Qt virtual keyboards if config.virtualKeyboard is "True"
 if config.virtualKeyboard:
     os.environ["QT_IM_MODULE"] = "qtvirtualkeyboard"
+
+# Remote CLI
+if config.enableRemoteCLI:
+    try:
+        import telnetlib3
+        import asyncio
+
+        if (len(sys.argv) > 0) and sys.argv[1] == "cli":
+            port = 8888
+            if (len(sys.argv) > 2):
+                port = int(sys.argv[2])
+            print("Running in remote CLI Mode on port {0}".format(port))
+            print("Access by 'telnet localhost {0}'".format(port))
+            loop = asyncio.get_event_loop()
+            coro = telnetlib3.create_server(port=port, shell=RemoteCliHandler.shell)
+            server = loop.run_until_complete(coro)
+            loop.run_until_complete(server.wait_closed())
+            exit(0)
+    except KeyboardInterrupt:
+        exit(0)
+    except Exception as e:
+        print(str(e))
+        exit(-1)
 
 # Start PySide2 gui
 app = QApplication(sys.argv)

@@ -1,5 +1,9 @@
 # https://github.com/jquast/telnetlib3/blob/master/telnetlib3/server_shell.py
 import asyncio
+import re
+
+import update
+from TextCommandParser import TextCommandParser
 
 CR, LF, NUL = '\r\n\x00'
 CRLF = '\r\n'
@@ -8,6 +12,8 @@ class RemoteCliHandler:
 
     @asyncio.coroutine
     def shell(reader, writer):
+        textCommandParser = TextCommandParser(SetupCLI())
+
         writer.write("Connected to UniqueBible.app" + CR + LF)
 
         linereader = RemoteCliHandler.readline(reader, writer)
@@ -31,7 +37,9 @@ class RemoteCliHandler:
                 writer.write("Type 'quit' to exit" + CRLF)
                 writer.write("All other commands will be processed by UBA")
             elif command:
-                writer.write('Executing ' + command)
+                view, content, dict = textCommandParser.parser(command, "cli")
+                content = re.sub('<[^<]+?>', '', content)
+                writer.write(content)
         writer.close()
 
     @asyncio.coroutine
@@ -68,4 +76,10 @@ class RemoteCliHandler:
                 last_inp = inp
                 inp = yield None
 
+class SetupCLI:
 
+    def __init__(self):
+        self.bibleInfo = update.bibleInfo
+
+    def updateMainRefButton(self):
+        pass

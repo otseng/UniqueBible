@@ -813,13 +813,16 @@ class TextCommandParser:
         bibleSqlite = Bible(text)
         if source in ("cli"):
             b, c, v, *_ = verse
+            bibleSqlite = Bible(text)
             b, c, v, content = bibleSqlite.readTextVerse(b, c, v)
+            del bibleSqlite
         elif text in formattedBibles and config.readFormattedBibles:
+            bibleSqlite = Bible(text)
             content = bibleSqlite.readFormattedChapter(verse)
+            del bibleSqlite
         else:
             # use plain bibles database when corresponding formatted version is not available
-            content = bibleSqlite.readPlainChapter(text, verse)
-        del bibleSqlite
+            content = BiblesSqlite().readPlainChapter(text, verse)
         return content
 
     # cmd:::

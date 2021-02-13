@@ -1,7 +1,10 @@
 import pprint
-from os import path
 
+from os import path
 from PySide2.QtCore import Qt
+
+from util.FileUtil import FileUtil
+
 
 class ShortcutUtil:
 
@@ -150,28 +153,26 @@ class ShortcutUtil:
 
     @staticmethod
     def setup(name):
-
         try:
             if name not in ("brachys", "syntemno"):
                 filename = "shortcut_" + name + ".py"
-                if path.exists(filename):
+                if path.exists(filename) and not path.exists("shortcut.py"):
                     from shutil import copyfile
+                    print("Creating shortcut.py from " + filename)
                     copyfile(filename, "shortcut.py")
-                else:
-                    name = "brachys"
         except:
             name = "brachys"
 
         if name == "brachys":
-            print("Using brachys")
             ShortcutUtil.create(ShortcutUtil.brachysData)
         elif name == "syntemno":
-            print("Using syntemno")
             ShortcutUtil.create(ShortcutUtil.syntemnoData)
+        print("Using " + name + " shortcut")
 
     @staticmethod
     def create(data):
-        if not path.exists("shortcut.py"):
+        if not path.exists("shortcut.py") or FileUtil.getLineCount("shortcut.py") != len(data):
+            print("Writing shortcut.py file")
             with open("shortcut.py", "w", encoding="utf-8") as fileObj:
                 for name in data.keys():
                     value = data[name]
@@ -185,6 +186,22 @@ class ShortcutUtil:
         else:
             return Qt.Key_A + ord(letter) - ord("A")
 
-if __name__ == "__main__":
 
+# Test code
+def print_info():
+    print("shortcut.py: {0}".format(FileUtil.getLineCount("shortcut.py")))
+    print("brachysData: {0}".format(len(ShortcutUtil.brachysData)))
+    print("syntemnoData: {0}".format(len(ShortcutUtil.syntemnoData)))
+
+def test_brachys():
+    ShortcutUtil.setup("brachys")
+
+def test_syntemno():
     ShortcutUtil.setup("syntemno")
+
+def test_custom():
+    ShortcutUtil.setup("custom")
+
+if __name__ == "__main__":
+    test_brachys()
+    print_info()

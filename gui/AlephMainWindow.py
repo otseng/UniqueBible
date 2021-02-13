@@ -54,7 +54,7 @@ class AlephMainWindow(MainWindow):
             QAction(config.thisTranslation["menu_quit"], self, shortcut=sc.quitApp, triggered=self.quitApp))
 
         navigation_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_navigation"]))
-        navigation_menu.addAction(QAction(config.thisTranslation["menu1_remoteControl"], self, shortcut="Ctrl+O", triggered=self.manageRemoteControl))
+        navigation_menu.addAction(QAction(config.thisTranslation["menu1_remoteControl"], self, shortcut=sc.manageRemoteControl, triggered=self.manageRemoteControl))
         masterControlMenu = addMenu(navigation_menu, "controlPanel")
         for index, shortcut in enumerate(("B", "L", "F", "H")):
             addMenuItem(masterControlMenu, "cp{0}".format(index), self, lambda index=index, shortcut=shortcut: self.openControlPanelTab(index), "Ctrl+{0}".format(shortcut))
@@ -120,15 +120,15 @@ class AlephMainWindow(MainWindow):
         if config.enableVerseHighlighting:
             search_command.addAction(QAction(config.thisTranslation["menu_highlight"], self, shortcut=sc.displaySearchHighlightCommand, triggered=self.displaySearchHighlightCommand))
         search_command.addAction(
-                QAction(config.thisTranslation["menu_bible_book_notes"], self, shortcut="Ctrl+S, 1", triggered=self.searchCommandBookNote))
+                QAction(config.thisTranslation["menu_bible_book_notes"], self, shortcut=sc.searchCommandBookNote, triggered=self.searchCommandBookNote))
         search_command.addAction(
-            QAction(config.thisTranslation["menu_bible_chapter_notes"], self, shortcut="Ctrl+S, 2", triggered=self.searchCommandChapterNote))
-        search_command.addAction(QAction(config.thisTranslation["menu_bible_verse_notes"], self, shortcut="Ctrl+S, 3", triggered=self.searchCommandVerseNote))
-        search_command.addAction(QAction(config.thisTranslation["menu_lexicon"], self, shortcut="Ctrl+S, L", triggered=self.searchCommandLexicon))
-        search_command.addAction(QAction(config.thisTranslation["menu5_characters"], self, shortcut="Ctrl+S, C", triggered=self.searchCommandBibleCharacter))
-        search_command.addAction(QAction(config.thisTranslation["menu5_names"], self, shortcut="Ctrl+S, N",
+            QAction(config.thisTranslation["menu_bible_chapter_notes"], self, shortcut=sc.searchCommandChapterNote, triggered=self.searchCommandChapterNote))
+        search_command.addAction(QAction(config.thisTranslation["menu_bible_verse_notes"], self, shortcut=sc.searchCommandVerseNote, triggered=self.searchCommandVerseNote))
+        search_command.addAction(QAction(config.thisTranslation["menu_lexicon"], self, shortcut=sc.searchCommandLexicon, triggered=self.searchCommandLexicon))
+        search_command.addAction(QAction(config.thisTranslation["menu5_characters"], self, shortcut=sc.searchCommandBibleCharacter, triggered=self.searchCommandBibleCharacter))
+        search_command.addAction(QAction(config.thisTranslation["menu5_names"], self, shortcut=sc.searchCommandBibleName,
                                 triggered=self.searchCommandBibleName))
-        search_command.addAction(QAction(config.thisTranslation["menu5_locations"], self, shortcut="Ctrl+S, O", triggered=self.searchCommandBibleLocation))
+        search_command.addAction(QAction(config.thisTranslation["menu5_locations"], self, shortcut=sc.searchCommandBibleLocation, triggered=self.searchCommandBibleLocation))
         search_command.addAction(QAction(config.thisTranslation["menu5_allTopics"], self, triggered=self.searchCommandAllBibleTopic))
         search_command.addAction(
             QAction(config.thisTranslation["menu5_allBook"], self, shortcut=sc.displaySearchAllBookCommand, triggered=self.displaySearchAllBookCommand))
@@ -142,16 +142,16 @@ class AlephMainWindow(MainWindow):
         bible_notes.addAction(
             QAction(config.thisTranslation["menu_book"], self, shortcut=sc.openMainBookNote, triggered=self.openMainBookNote))
         bible_notes.addAction(
-            QAction(config.thisTranslation["menu_chapter"], self, shortcut="Ctrl+N, C", triggered=self.openMainChapterNote))
-        bible_notes.addAction(QAction(config.thisTranslation["menu_verse"], self, shortcut="Ctrl+N, V", triggered=self.openMainVerseNote))
+            QAction(config.thisTranslation["menu_chapter"], self, shortcut=sc.openMainChapterNote, triggered=self.openMainChapterNote))
+        bible_notes.addAction(QAction(config.thisTranslation["menu_verse"], self, shortcut=sc.openMainVerseNote, triggered=self.openMainVerseNote))
         external_notes = annotate_menu.addMenu(config.thisTranslation["menu_external_notes"])
-        external_notes.addAction(QAction(config.thisTranslation["menu_new_note"], self, shortcut="Ctrl+N, N", triggered=self.createNewNoteFile))
-        external_notes.addAction(QAction(config.thisTranslation["menu_open_note"], self, shortcut="Ctrl+N, O", triggered=self.openTextFileDialog))
-        external_notes.addAction(QAction(config.thisTranslation["menu_read_note"], self, shortcut="Ctrl+N, R", triggered=self.externalFileButtonClicked))
-        external_notes.addAction(QAction(config.thisTranslation["menu_edit_note"], self, shortcut="Ctrl+N, E", triggered=self.editExternalFileButtonClicked))
+        external_notes.addAction(QAction(config.thisTranslation["menu_new_note"], self, shortcut=sc.createNewNoteFile, triggered=self.createNewNoteFile))
+        external_notes.addAction(QAction(config.thisTranslation["menu_open_note"], self, shortcut=sc.openTextFileDialog, triggered=self.openTextFileDialog))
+        external_notes.addAction(QAction(config.thisTranslation["menu_read_note"], self, shortcut=sc.externalFileButtonClicked, triggered=self.externalFileButtonClicked))
+        external_notes.addAction(QAction(config.thisTranslation["menu_edit_note"], self, shortcut=sc.editExternalFileButtonClicked, triggered=self.editExternalFileButtonClicked))
         if config.enableGist:
             annotate_menu.addAction(
-                QAction(config.thisTranslation["menu_gist"], self, shortcut="Ctrl+N, G", triggered=self.showGistWindow))
+                QAction(config.thisTranslation["menu_gist"], self, shortcut=sc.showGistWindow, triggered=self.showGistWindow))
 
         library_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_library"]))
         library_menu.addAction(QAction(config.thisTranslation["menu4_words"], self, shortcut=sc.runWORDS, triggered=self.runWORDS))

@@ -10,10 +10,8 @@ import sys
 # Create files for user customisation
 # "config.py" is essential for running module "config".
 # "custom.css" is essential for custom css feature.
-# "shortcut.py" is used to define menu shortcut keystrokes
-
 customCssFile = os.path.join("htmlResources", "css", "custom.css")
-userFiles = ("config.py", "shortcut.py", customCssFile)
+userFiles = ("config.py", customCssFile)
 for userFile in userFiles:
     if not os.path.isfile(userFile):
         open(userFile, "w", encoding="utf-8").close()
@@ -42,7 +40,7 @@ from qt_material import apply_stylesheet
 
 # Setup menu shortcut configuration file
 from util.ShorcutUtil import ShortcutUtil
-ShortcutUtil.setup("brachys")
+ShortcutUtil.setup(config.menuShortcuts)
 
 from gui.ClassicMainWindow import ClassicMainWindow
 from gui.AlephMainWindow import AlephMainWindow

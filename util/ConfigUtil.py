@@ -430,7 +430,7 @@ class ConfigUtil:
             config.clearCommandEntry = False
         # Default menu shortcuts
         if not hasattr(config, "menuShortcuts"):
-            config.menuShortcuts = "syntemno"
+            config.menuShortcuts = "brachys"
 
 
         # Temporary configurations

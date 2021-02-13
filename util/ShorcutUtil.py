@@ -1,7 +1,6 @@
 import pprint
-from sys import path
+from os import path
 
-import shortcut
 from PySide2.QtCore import Qt
 
 class ShortcutUtil:
@@ -73,10 +72,12 @@ class ShortcutUtil:
         "switchLandscapeMode": "Ctrl+L",
         "topHalfScreenHeight": "Ctrl+S,1",
         "twoThirdWindow": "Ctrl+S,S",
+        "runTransliteralBible": None,
+        "runKJV2Bible": None,
     }
 
     syntemnoData = {
-        "back": "Ctrl+[",
+        "back": "Ctrl+Y, 1",
         "bottomHalfScreenHeight": "Ctrl+S,2",
         "commentaryRefButtonClicked": "Ctrl+Y",
         "createNewNoteFile": "Ctrl+N",
@@ -93,10 +94,10 @@ class ShortcutUtil:
         "hideShowAdditionalToolBar": "Ctrl+G",
         "largerFont": "Ctrl++",
         "leftHalfScreenWidth": "Ctrl+S,3",
-        "mainHistoryButtonClicked": "Ctrl+'",
-        "mainPageScrollPageDown": "Ctrl+H,5",
-        "mainPageScrollPageUp": "Ctrl+H,4",
-        "mainPageScrollToTop": "Ctrl+H,3",
+        "mainHistoryButtonClicked": "Ctrl+Y, M",
+        "mainPageScrollPageDown": 'Ctrl+J',
+        "mainPageScrollPageUp": 'Ctrl+K',
+        "mainPageScrollToTop": 'Ctrl+7',
         "manageControlPanel": "Ctrl+M",
         "manageRemoteControl": "Ctrl+R",
         "masterCurrentIndex0": None,
@@ -109,7 +110,7 @@ class ShortcutUtil:
         "openTextFileDialog": "Ctrl+O",
         "parallel": "Ctrl+W",
         "parseContentOnClipboard": "Ctrl+^",
-        "previousMainBook": "Ctrl+H,2",
+        "previousMainBook": 'Ctrl+[',
         "previousMainChapter": "Ctrl+<",
         "previousMainChapter": 'Ctrl+,',
         "quitApp": "Ctrl+Q",
@@ -118,6 +119,7 @@ class ShortcutUtil:
         "runCOMMENTARY": "Ctrl+Y",
         "runCOMPARE": "Ctrl+D",
         "runCROSSREFERENCE": "Ctrl+R",
+        "runKJV2Bible": "Ctrl+B, K",
         "runINDEX": "Ctrl+.",
         "runMAB": "Ctrl+B, 5",
         "runMIB": "Ctrl+B, 2",
@@ -125,6 +127,7 @@ class ShortcutUtil:
         "runMPB": "Ctrl+B, 4",
         "runMTB": "Ctrl+B, 3",
         "runTSKE": "Ctrl+E",
+        "runTransliteralBible": "Ctrl+B, T",
         "searchCommandBibleCharacter": "Ctrl+7",
         "searchCommandBibleDictionary": "Ctrl+3",
         "searchCommandBibleEncyclopedia": "Ctrl+4",
@@ -137,8 +140,8 @@ class ShortcutUtil:
         "studyBack": "Ctrl+{",
         "studyForward": "Ctrl+}",
         "studyHistoryButtonClicked": 'Ctrl+"',
-        "studyPageScrollPageDown": "Ctrl+H,8",
-        "studyPageScrollPageUp": "Ctrl+H,7",
+        "studyPageScrollPageDown": 'Ctrl+9',
+        "studyPageScrollPageUp": 'Ctrl+0',
         "studyPageScrollToTop": "Ctrl+H,6",
         "switchLandscapeMode": "Ctrl+L",
         "topHalfScreenHeight": "Ctrl+S,1",
@@ -168,12 +171,12 @@ class ShortcutUtil:
 
     @staticmethod
     def create(data):
-        with open("shortcut.py", "w", encoding="utf-8") as fileObj:
-            for name in data.keys():
-                value = data[name]
-                fileObj.write("{0} = {1}\n".format(name, pprint.pformat(value)))
-                setattr(shortcut, name, value)
-        fileObj.close()
+        if not path.exists("shortcut.py"):
+            with open("shortcut.py", "w", encoding="utf-8") as fileObj:
+                for name in data.keys():
+                    value = data[name]
+                    fileObj.write("{0} = {1}\n".format(name, pprint.pformat(value)))
+            fileObj.close()
 
     @staticmethod
     def keyCode(letter):
@@ -184,4 +187,4 @@ class ShortcutUtil:
 
 if __name__ == "__main__":
 
-    ShortcutUtil.setup("test")
+    ShortcutUtil.setup("syntemno")

@@ -67,36 +67,36 @@ class AlephMainWindow(MainWindow):
         navigation_menu.addAction(QAction(config.thisTranslation["menu4_next"], self, shortcut=sc.nextMainChapter, triggered=self.nextMainChapter))
         navigation_menu.addAction(QAction(config.thisTranslation["menu_last_chapter"], self, shortcut=sc.gotoLastChapter, triggered=self.gotoLastChapter))
         navigation_menu.addAction(QAction(config.thisTranslation["menu_next_book"], self, shortcut=sc.nextMainBook, triggered=self.nextMainBook))
-        navigation_menu.addAction(QAction(config.thisTranslation["menu_previous_book"], self, shortcut='Ctrl+[', triggered=self.previousMainBook))
+        navigation_menu.addAction(QAction(config.thisTranslation["menu_previous_book"], self, shortcut=sc.previousMainBook, triggered=self.previousMainBook))
         scroll_menu = navigation_menu.addMenu("&{0}".format(config.thisTranslation["menu_scroll"]))
-        scroll_menu.addAction(QAction(config.thisTranslation["menu_main_scroll_to_top"], self, shortcut='Ctrl+7',
+        scroll_menu.addAction(QAction(config.thisTranslation["menu_main_scroll_to_top"], self, shortcut=sc.mainPageScrollToTop,
                                           triggered=self.mainPageScrollToTop))
-        scroll_menu.addAction(QAction(config.thisTranslation["menu_main_page_down"], self, shortcut='Ctrl+J',
+        scroll_menu.addAction(QAction(config.thisTranslation["menu_main_page_down"], self, shortcut=sc.mainPageScrollPageDown,
                                           triggered=self.mainPageScrollPageDown))
-        scroll_menu.addAction(QAction(config.thisTranslation["menu_main_page_up"], self, shortcut='Ctrl+K',
+        scroll_menu.addAction(QAction(config.thisTranslation["menu_main_page_up"], self, shortcut=sc.mainPageScrollPageUp,
                                           triggered=self.mainPageScrollPageUp))
         scroll_menu.addAction(QAction(config.thisTranslation["menu_study_scroll_to_top"], self,
                                       shortcut='Ctrl+8',triggered=self.studyPageScrollToTop))
-        scroll_menu.addAction(QAction(config.thisTranslation["menu_study_page_down"], self, shortcut='Ctrl+9',
+        scroll_menu.addAction(QAction(config.thisTranslation["menu_study_page_down"], self, shortcut=sc.studyPageScrollPageDown,
                                       triggered=self.studyPageScrollPageDown))
-        scroll_menu.addAction(QAction(config.thisTranslation["menu_study_page_up"], self, shortcut='Ctrl+0',
+        scroll_menu.addAction(QAction(config.thisTranslation["menu_study_page_up"], self, shortcut=sc.studyPageScrollPageUp,
                                       triggered=self.studyPageScrollPageUp))
         navigation_menu.addSeparator()
         marvel_bible_menu = navigation_menu.addMenu(config.thisTranslation["menu_bible"])
-        marvel_bible_menu.addAction(QAction("Marvel Original Bible", self, shortcut="Ctrl+B, 1", triggered=self.runMOB))
-        marvel_bible_menu.addAction(QAction("Marvel Interlinear Bible", self, shortcut="Ctrl+B, 2", triggered=self.runMIB))
-        marvel_bible_menu.addAction(QAction("Marvel Trilingual Bible", self, shortcut="Ctrl+B, 3", triggered=self.runMTB))
+        marvel_bible_menu.addAction(QAction("Marvel Original Bible", self, shortcut=sc.runMOB, triggered=self.runMOB))
+        marvel_bible_menu.addAction(QAction("Marvel Interlinear Bible", self, shortcut=sc.runMIB, triggered=self.runMIB))
+        marvel_bible_menu.addAction(QAction("Marvel Trilingual Bible", self, shortcut=sc.runMTB, triggered=self.runMTB))
         marvel_bible_menu.addAction(
-            QAction("Marvel Parallel Bible", self, shortcut="Ctrl+B, 4", triggered=self.runMPB))
+            QAction("Marvel Parallel Bible", self, shortcut=sc.runMPB, triggered=self.runMPB))
         if os.path.isfile(os.path.join(config.marvelData, "bibles/TRLIT.bible")):
             marvel_bible_menu.addAction(
-                QAction("Transliteral Bible", self, shortcut="Ctrl+B, T", triggered=self.runTransliteralBible))
+                QAction("Transliteral Bible", self, shortcut=sc.runTransliteralBible, triggered=self.runTransliteralBible))
         if os.path.isfile(os.path.join(config.marvelData, "bibles/KJV*.bible")):
             marvel_bible_menu.addAction(
-                QAction("KJV* Bible", self, shortcut="Ctrl+B, K", triggered=self.runKJV2Bible))
+                QAction("KJV* Bible", self, shortcut=sc.runKJV2Bible, triggered=self.runKJV2Bible))
         history_menu = navigation_menu.addMenu("&{0}".format(config.thisTranslation["menu_history"]))
-        history_menu.addAction(QAction(config.thisTranslation["menu3_main"], self, shortcut="Ctrl+Y, M", triggered=self.mainHistoryButtonClicked))
-        history_menu.addAction(QAction(config.thisTranslation["menu3_mainBack"], self, shortcut="Ctrl+Y, 1", triggered=self.back))
+        history_menu.addAction(QAction(config.thisTranslation["menu3_main"], self, shortcut=sc.mainHistoryButtonClicked, triggered=self.mainHistoryButtonClicked))
+        history_menu.addAction(QAction(config.thisTranslation["menu3_mainBack"], self, shortcut=sc.back, triggered=self.back))
         history_menu.addAction(QAction(config.thisTranslation["menu3_mainForward"], self, shortcut="Ctrl+Y, 2", triggered=self.forward))
         history_menu.addAction(QAction(config.thisTranslation["menu3_study"], self, shortcut = 'Ctrl+Y, S', triggered=self.studyHistoryButtonClicked))
         history_menu.addAction(QAction(config.thisTranslation["menu3_studyBack"], self, shortcut="Ctrl+Y, 3", triggered=self.studyBack))

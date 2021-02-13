@@ -1,6 +1,9 @@
+from pyshortcuts import Shortcut
+
 from gui.MenuItems import *
 from PySide2.QtCore import QSize
 import shortcut as sc
+from util.ShortcutUtil import ShortcutUtil
 
 
 class AlephMainWindow(MainWindow):
@@ -39,6 +42,10 @@ class AlephMainWindow(MainWindow):
         shortcutsMenu.addAction(
             QAction(config.thisTranslation["menu_syntemno"], self,
                     triggered=lambda: self.setShortcuts("syntemno")))
+        customShortcuts = ShortcutUtil.getListCustomShortcuts()
+        for shortcut in customShortcuts:
+            shortcutsMenu.addAction(
+                QAction(shortcut, self, triggered=lambda: self.setShortcuts(shortcut)))
 
         lexiconMenu = menu1_defaults.addMenu(config.thisTranslation["menu_lexicon"])
         lexiconMenu.addAction(QAction(config.thisTranslation["menu1_StrongsHebrew"], self, triggered=self.openSelectDefaultStrongsHebrewLexiconDialog))

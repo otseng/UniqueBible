@@ -1,3 +1,4 @@
+import glob
 import pprint
 
 from os import path
@@ -43,7 +44,7 @@ class ShortcutUtil:
         "mainPageScrollPageUp": "Ctrl+H,4",
         "mainPageScrollToTop": "Ctrl+H,3",
         "manageControlPanel": "Ctrl+M",
-        "manageRemoteControl": "Ctrl+R",
+        "manageRemoteControl": None,
         "masterCurrentIndex0": 'B',
         "masterCurrentIndex1": 'L',
         "masterCurrentIndex2": 'F',
@@ -215,7 +216,7 @@ class ShortcutUtil:
         try:
             if name not in ("brachys", "syntemno"):
                 filename = "shortcut_" + name + ".py"
-                if path.exists(filename) and not path.exists("shortcut.py"):
+                if path.exists(filename) and FileUtil.getLineCount("shortcut.py") < 2:
                     from shutil import copyfile
                     print("Creating shortcut.py from " + filename)
                     copyfile(filename, "shortcut.py")
@@ -252,6 +253,9 @@ class ShortcutUtil:
         else:
             return Qt.Key_A + ord(letter) - ord("A")
 
+    @staticmethod
+    def getListCustomShortcuts():
+        return [file[9:-3] for file in glob.glob("shortcut_*.py")]
 
 # Test code
 def print_info():
@@ -266,8 +270,8 @@ def test_syntemno():
     ShortcutUtil.setup("syntemno")
 
 def test_custom():
-    ShortcutUtil.setup("custom")
+    print(ShortcutUtil.getListCustomShortcuts())
+    # ShortcutUtil.setup("custom")
 
 if __name__ == "__main__":
-    test_brachys()
-    print_info()
+    test_custom()

@@ -44,7 +44,7 @@ class ConfigUtil:
         if not hasattr(config, "preferControlPanelForCommandLineEntry"):
             config.preferControlPanelForCommandLineEntry = False
         if not hasattr(config, "closeControlPanelAfterRunningCommand"):
-            config.closeControlPanelAfterRunningCommand = False
+            config.closeControlPanelAfterRunningCommand = True
         if not hasattr(config, "addBreakAfterTheFirstToolBar"):
             config.addBreakAfterTheFirstToolBar = True
         if not hasattr(config, "addBreakBeforeTheLastToolBar"):
@@ -334,7 +334,7 @@ class ConfigUtil:
             config.thirdDictionary = "webster"
         # Last-opened lexicon
         if not hasattr(config, "lexicon"):
-            config.lexicon = "SECE"
+            config.lexicon = "ConcordanceBook"
         # Default Hebrew lexicon
         if not hasattr(config, "defaultLexiconStrongH"):
             config.defaultLexiconStrongH = "TBESH"
@@ -428,6 +428,9 @@ class ConfigUtil:
         # Clear command entry line by default
         if not hasattr(config, "clearCommandEntry"):
             config.clearCommandEntry = False
+        # Highlight collections
+        if not hasattr(config, "highlightCollections"):
+            config.highlightCollections = ["Highlight 1", "Highlight 2"]
         # Default menu shortcuts
         if not hasattr(config, "menuShortcuts"):
             config.menuShortcuts = "brachys"
@@ -653,6 +656,8 @@ class ConfigUtil:
             ("enableGist", config.enableGist),
             ("gistToken", config.gistToken),
             ("clearCommandEntry", config.clearCommandEntry),
+            ("highlightCollections", config.highlightCollections),
+            ("showHighlightMarkers", config.showHighlightMarkers),
             ("menuShortcuts", config.menuShortcuts)
         )
         with open("config.py", "w", encoding="utf-8") as fileObj:

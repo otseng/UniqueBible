@@ -97,15 +97,15 @@ class AlephMainWindow(MainWindow):
         history_menu = navigation_menu.addMenu("&{0}".format(config.thisTranslation["menu_history"]))
         history_menu.addAction(QAction(config.thisTranslation["menu3_main"], self, shortcut=sc.mainHistoryButtonClicked, triggered=self.mainHistoryButtonClicked))
         history_menu.addAction(QAction(config.thisTranslation["menu3_mainBack"], self, shortcut=sc.back, triggered=self.back))
-        history_menu.addAction(QAction(config.thisTranslation["menu3_mainForward"], self, shortcut="Ctrl+Y, 2", triggered=self.forward))
-        history_menu.addAction(QAction(config.thisTranslation["menu3_study"], self, shortcut = 'Ctrl+Y, S', triggered=self.studyHistoryButtonClicked))
-        history_menu.addAction(QAction(config.thisTranslation["menu3_studyBack"], self, shortcut="Ctrl+Y, 3", triggered=self.studyBack))
-        history_menu.addAction(QAction(config.thisTranslation["menu3_studyForward"], self, shortcut="Ctrl+Y, 4", triggered=self.studyForward))
-        #navigation_menu.addAction(QAction(config.thisTranslation["controlPanel"], self, shortcut="Ctrl+M", triggered=self.manageControlPanel))
+        history_menu.addAction(QAction(config.thisTranslation["menu3_mainForward"], self, shortcut=sc.forward, triggered=self.forward))
+        history_menu.addAction(QAction(config.thisTranslation["menu3_study"], self, shortcut=sc.studyHistoryButtonClicked, triggered=self.studyHistoryButtonClicked))
+        history_menu.addAction(QAction(config.thisTranslation["menu3_studyBack"], self, shortcut=sc.studyBack, triggered=self.studyBack))
+        history_menu.addAction(QAction(config.thisTranslation["menu3_studyForward"], self, shortcut=sc.studyForward, triggered=self.studyForward))
+        #navigation_menu.addAction(QAction(config.thisTranslation["controlPanel"], self, shortcut=sc.manageControlPanel, triggered=self.manageControlPanel))
 
         search_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_search"]))
-        search_menu.addAction(QAction(config.thisTranslation["menu5_bible"], self, shortcut="Ctrl+S, M", triggered=self.displaySearchBibleMenu))
-        search_menu.addAction(QAction(config.thisTranslation["menu_verse_all_versions"], self, shortcut="Ctrl+S, V", triggered=self.runCOMPARE))
+        search_menu.addAction(QAction(config.thisTranslation["menu5_bible"], self, shortcut=sc.displaySearchBibleMenu, triggered=self.displaySearchBibleMenu))
+        search_menu.addAction(QAction(config.thisTranslation["menu_verse_all_versions"], self, shortcut=sc.runCOMPARE, triggered=self.runCOMPARE))
 
         search_resources = search_menu.addMenu("&{0}".format(config.thisTranslation["menu_library"]))
         search_resources.addAction(QAction(config.thisTranslation["menu5_topics"], self, triggered=self.searchTopicDialog))
@@ -116,9 +116,9 @@ class AlephMainWindow(MainWindow):
 
         search_command = search_menu.addMenu(config.thisTranslation["menu_command"])
         search_command.addAction(
-            QAction(config.thisTranslation["menu_bible"], self, shortcut="Ctrl+S, B", triggered=self.displaySearchBibleCommand))
+            QAction(config.thisTranslation["menu_bible"], self, shortcut=sc.displaySearchBibleCommand, triggered=self.displaySearchBibleCommand))
         if config.enableVerseHighlighting:
-            search_command.addAction(QAction(config.thisTranslation["menu_highlight"], self, shortcut="Ctrl+S, H", triggered=self.displaySearchHighlightCommand))
+            search_command.addAction(QAction(config.thisTranslation["menu_highlight"], self, shortcut=sc.displaySearchHighlightCommand, triggered=self.displaySearchHighlightCommand))
         search_command.addAction(
                 QAction(config.thisTranslation["menu_bible_book_notes"], self, shortcut="Ctrl+S, 1", triggered=self.searchCommandBookNote))
         search_command.addAction(
@@ -131,7 +131,7 @@ class AlephMainWindow(MainWindow):
         search_command.addAction(QAction(config.thisTranslation["menu5_locations"], self, shortcut="Ctrl+S, O", triggered=self.searchCommandBibleLocation))
         search_command.addAction(QAction(config.thisTranslation["menu5_allTopics"], self, triggered=self.searchCommandAllBibleTopic))
         search_command.addAction(
-            QAction(config.thisTranslation["menu5_allBook"], self, shortcut="Ctrl+S, R", triggered=self.displaySearchAllBookCommand))
+            QAction(config.thisTranslation["menu5_allBook"], self, shortcut=sc.displaySearchAllBookCommand, triggered=self.displaySearchAllBookCommand))
 
         annotate_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_annotate"]))
         if config.enableVerseHighlighting:
@@ -140,7 +140,7 @@ class AlephMainWindow(MainWindow):
                 QAction(config.thisTranslation["menu2_toggleHighlightMarkers"], self, triggered=self.toggleHighlightMarker))
         bible_notes = annotate_menu.addMenu(config.thisTranslation["menu_bible_notes"])
         bible_notes.addAction(
-            QAction(config.thisTranslation["menu_book"], self, shortcut="Ctrl+N, B", triggered=self.openMainBookNote))
+            QAction(config.thisTranslation["menu_book"], self, shortcut=sc.openMainBookNote, triggered=self.openMainBookNote))
         bible_notes.addAction(
             QAction(config.thisTranslation["menu_chapter"], self, shortcut="Ctrl+N, C", triggered=self.openMainChapterNote))
         bible_notes.addAction(QAction(config.thisTranslation["menu_verse"], self, shortcut="Ctrl+N, V", triggered=self.openMainVerseNote))
@@ -154,14 +154,14 @@ class AlephMainWindow(MainWindow):
                 QAction(config.thisTranslation["menu_gist"], self, shortcut="Ctrl+N, G", triggered=self.showGistWindow))
 
         library_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_library"]))
-        library_menu.addAction(QAction(config.thisTranslation["menu4_words"], self, shortcut="Ctrl+L, W", triggered=self.runWORDS))
-        library_menu.addAction(QAction(config.thisTranslation["menu4_commentary"], self, shortcut="Ctrl+L, C", triggered=self.runCOMMENTARY))
-        library_menu.addAction(QAction(config.thisTranslation["menu4_crossRef"], self, shortcut="Ctrl+L, X", triggered=self.runCROSSREFERENCE))
-        library_menu.addAction(QAction(config.thisTranslation["menu4_tske"], self, shortcut="Ctrl+L, T", triggered=self.runTSKE))
-        library_menu.addAction(QAction(config.thisTranslation["menu4_discourse"], self, shortcut="Ctrl+L, D", triggered=self.runDISCOURSE))
-        library_menu.addAction(QAction(config.thisTranslation["menu4_tdw"], self, shortcut="Ctrl+L, M", triggered=self.runCOMBO))
-        library_menu.addAction(QAction(config.thisTranslation["menu4_book"], self, shortcut="Ctrl+L, F", triggered=self.bookFeatures))
-        library_menu.addAction(QAction(config.thisTranslation["menu4_chapter"], self, shortcut="Ctrl+L, H", triggered=self.chapterFeatures))
+        library_menu.addAction(QAction(config.thisTranslation["menu4_words"], self, shortcut=sc.runWORDS, triggered=self.runWORDS))
+        library_menu.addAction(QAction(config.thisTranslation["menu4_commentary"], self, shortcut=sc.runCOMMENTARY, triggered=self.runCOMMENTARY))
+        library_menu.addAction(QAction(config.thisTranslation["menu4_crossRef"], self, shortcut=sc.runCROSSREFERENCE, triggered=self.runCROSSREFERENCE))
+        library_menu.addAction(QAction(config.thisTranslation["menu4_tske"], self, shortcut=sc.runTSKE, triggered=self.runTSKE))
+        library_menu.addAction(QAction(config.thisTranslation["menu4_discourse"], self, shortcut=sc.runDISCOURSE, triggered=self.runDISCOURSE))
+        library_menu.addAction(QAction(config.thisTranslation["menu4_tdw"], self, shortcut=sc.runCOMBO, triggered=self.runCOMBO))
+        library_menu.addAction(QAction(config.thisTranslation["menu4_book"], self, shortcut=sc.bookFeatures, triggered=self.bookFeatures))
+        library_menu.addAction(QAction(config.thisTranslation["menu4_chapter"], self, shortcut=sc.chapterFeatures, triggered=self.chapterFeatures))
 
         menu_data = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_data"]))
         menu_data.addAction(QAction(config.thisTranslation["menu8_bibles"], self, triggered=self.installMarvelBibles))
@@ -179,29 +179,29 @@ class AlephMainWindow(MainWindow):
 
         display_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_display"]))
         bible_format_menu = display_menu.addMenu(config.thisTranslation["menu_bible_format"])
-        bible_format_menu.addAction(QAction(config.thisTranslation["menu_simple_formatted"], self, shortcut="Ctrl+D, S",
+        bible_format_menu.addAction(QAction(config.thisTranslation["menu_simple_formatted"], self, shortcut=sc.enableParagraphButtonClicked,
                                          triggered=self.enableParagraphButtonClicked))
-        bible_format_menu.addAction(QAction(config.thisTranslation["menu_subheadings"], self, shortcut="Ctrl+D, P",
+        bible_format_menu.addAction(QAction(config.thisTranslation["menu_subheadings"], self, shortcut=sc.enableSubheadingButtonClicked,
                                             triggered=self.enableSubheadingButtonClicked))
         screenSizeMenu = display_menu.addMenu(config.thisTranslation["menu1_screenSize"])
-        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_fullScreen"], self, shortcut="Ctrl+W,F",
+        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_fullScreen"], self, shortcut=sc.fullsizeWindow,
                                          triggered=self.fullsizeWindow))
-        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_smallSize"], self, shortcut="Ctrl+W,S",
+        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_smallSize"], self, shortcut=sc.twoThirdWindow,
                                          triggered=self.twoThirdWindow))
-        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_topHalf"], self, shortcut="Ctrl+W, T",
+        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_topHalf"], self, shortcut=sc.topHalfScreenHeight,
                                          triggered=self.topHalfScreenHeight))
-        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_bottomHalf"], self, shortcut="Ctrl+W, B",
+        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_bottomHalf"], self, shortcut=sc.bottomHalfScreenHeight,
                                          triggered=self.bottomHalfScreenHeight))
-        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_leftHalf"], self, shortcut="Ctrl+W, L",
+        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_leftHalf"], self, shortcut=sc.leftHalfScreenWidth,
                                          triggered=self.leftHalfScreenWidth))
-        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_rightHalf"], self, shortcut="Ctrl+W, R",
+        screenSizeMenu.addAction(QAction(config.thisTranslation["menu1_rightHalf"], self, shortcut=sc.rightHalfScreenWidth,
                                          triggered=self.rightHalfScreenWidth))
         window_menu = display_menu.addMenu(config.thisTranslation["menu_window"])
-        window_menu.addAction(QAction(config.thisTranslation["menu2_study"], self, shortcut="Ctrl+;", triggered=self.parallel))
-        window_menu.addAction(QAction(config.thisTranslation["menu2_bottom"], self, shortcut="Ctrl+'", triggered=self.cycleInstant))
-        window_menu.addAction(QAction(config.thisTranslation["menu2_landscape"], self, shortcut="Ctrl+/", triggered=self.switchLandscapeMode))
+        window_menu.addAction(QAction(config.thisTranslation["menu2_study"], self, shortcut=sc.parallel, triggered=self.parallel))
+        window_menu.addAction(QAction(config.thisTranslation["menu2_bottom"], self, shortcut=sc.cycleInstant, triggered=self.cycleInstant))
+        window_menu.addAction(QAction(config.thisTranslation["menu2_landscape"], self, shortcut=sc.switchLandscapeMode, triggered=self.switchLandscapeMode))
         toolbar_menu = display_menu.addMenu(config.thisTranslation["menu_toolbar"])
-        toolbar_menu.addAction(QAction(config.thisTranslation["menu2_all"], self, shortcut="Ctrl+T, T", triggered=self.setNoToolBar))
+        toolbar_menu.addAction(QAction(config.thisTranslation["menu2_all"], self, shortcut=sc.setNoToolBar, triggered=self.setNoToolBar))
         toolbar_menu.addAction(QAction(config.thisTranslation["menu2_top"], self, shortcut="Ctrl+T, 1", triggered=self.hideShowMainToolBar))
         toolbar_menu.addAction(QAction(config.thisTranslation["menu2_topOnly"], self, shortcut="Ctrl+T, 2", triggered=self.hideShowAdditionalToolBar))
         toolbar_menu.addAction(QAction(config.thisTranslation["menu2_second"], self, shortcut="Ctrl+T,3", triggered=self.hideShowSecondaryToolBar))

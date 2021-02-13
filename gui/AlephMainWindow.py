@@ -1,5 +1,3 @@
-from pyshortcuts import Shortcut
-
 from gui.MenuItems import *
 from PySide2.QtCore import QSize
 import shortcut as sc

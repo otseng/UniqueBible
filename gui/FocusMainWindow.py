@@ -151,21 +151,21 @@ class FocusMainWindow(MainWindow):
             addMenuItem(subMenu, feature, self, action, shortcut)
         subMenu = addSubMenu(menu, "menu_scroll")
         items = (
-            ("menu_main_scroll_to_top", self.mainPageScrollToTop, "Ctrl+H,3"),
-            ("menu_main_page_up", self.mainPageScrollPageUp, "Ctrl+H,4"),
-            ("menu_main_page_down", self.mainPageScrollPageDown, "Ctrl+H,5"),
-            ("menu_study_scroll_to_top", self.studyPageScrollToTop, "Ctrl+H,6"),
-            ("menu_study_page_up", self.studyPageScrollPageUp, "Ctrl+H,7"),
-            ("menu_study_page_down", self.studyPageScrollPageDown, "Ctrl+H,8"),
+            ("menu_main_scroll_to_top", self.mainPageScrollToTop, sc.mainPageScrollToTop),
+            ("menu_main_page_up", self.mainPageScrollPageUp, sc.mainPageScrollPageUp),
+            ("menu_main_page_down", self.mainPageScrollPageDown, sc.mainPageScrollPageDown),
+            ("menu_study_scroll_to_top", self.studyPageScrollToTop, sc.studyPageScrollToTop),
+            ("menu_study_page_up", self.studyPageScrollPageUp, sc.studyPageScrollPageUp),
+            ("menu_study_page_down", self.studyPageScrollPageDown, sc.studyPageScrollPageDown),
         )
         for feature, action, shortcut in items:
             addMenuItem(subMenu, feature, self, action, shortcut)
         menu.addSeparator()
         subMenu = addSubMenu(menu, "menu_toggleFeatures")
         items = (
-            ("menu2_format", self.enableParagraphButtonClicked, "Ctrl+P"),
+            ("menu2_format", self.enableParagraphButtonClicked, sc.enableParagraphButtonClicked),
             ("menu2_subHeadings", self.enableSubheadingButtonClicked, None),
-            ("menu2_hover", self.enableInstantButtonClicked, "Ctrl+="),
+            ("menu2_hover", self.enableInstantButtonClicked, sc.enableInstantButtonClicked),
             ("menu_toggleEnforceCompareParallel", self.enforceCompareParallelButtonClicked, None),
             ("menu_syncStudyWindowBible", self.enableSyncStudyWindowBibleButtonClicked, None),
             ("menu_syncBibleCommentary", self.enableSyncCommentaryButtonClicked, None),
@@ -180,7 +180,7 @@ class FocusMainWindow(MainWindow):
         for index, shortcut in enumerate(("B", "L", "F", "H")):
             addMenuItem(menu, "cp{0}".format(index), self, lambda index=index, shortcut=shortcut: self.openControlPanelTab(index), "Ctrl+{0}".format(shortcut))
         menu.addSeparator()
-        addMenuItem(menu, "menu1_remoteControl", self, self.manageRemoteControl, "Ctrl+R")
+        addMenuItem(menu, "menu1_remoteControl", self, self.manageRemoteControl, sc.manageRemoteControl)
 
         # 4th column
         menu = addMenu(menuBar, "menu8_resources")

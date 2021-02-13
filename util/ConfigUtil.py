@@ -428,6 +428,10 @@ class ConfigUtil:
         # Clear command entry line by default
         if not hasattr(config, "clearCommandEntry"):
             config.clearCommandEntry = False
+        # Default menu shortcuts
+        if not hasattr(config, "menuShortcuts"):
+            config.menuShortcuts = "syntemno"
+
 
         # Temporary configurations
         # Their values are not saved on exit.
@@ -648,7 +652,8 @@ class ConfigUtil:
             ("startupMacro", config.startupMacro),
             ("enableGist", config.enableGist),
             ("gistToken", config.gistToken),
-            ("clearCommandEntry", config.clearCommandEntry)
+            ("clearCommandEntry", config.clearCommandEntry),
+            ("menuShortcuts", config.menuShortcuts)
         )
         with open("config.py", "w", encoding="utf-8") as fileObj:
             for name, value in configs:

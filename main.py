@@ -11,7 +11,6 @@ import sys
 # "config.py" is essential for running module "config".
 # "custom.css" is essential for custom css feature.
 # "shortcut.py" is used to define menu shortcut keystrokes
-from qt_material import apply_stylesheet
 
 customCssFile = os.path.join("htmlResources", "css", "custom.css")
 userFiles = ("config.py", "shortcut.py", customCssFile)
@@ -20,10 +19,6 @@ for userFile in userFiles:
         open(userFile, "w", encoding="utf-8").close()
 
 import config
-
-# Setup config values
-from util.ConfigUtil import ConfigUtil
-ConfigUtil.setup()
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -37,12 +32,18 @@ if config.enableLogging:
 else:
     logger.addHandler(logging.NullHandler())
 
-# Setup menu shortcut configuration file
-from util.ShorcutUtil import ShortcutUtil
-ShortcutUtil.setup()
+# Setup config values
+from util.ConfigUtil import ConfigUtil
+ConfigUtil.setup()
 
 from PySide2.QtWidgets import QApplication, QStyleFactory
 from themes import Themes
+from qt_material import apply_stylesheet
+
+# Setup menu shortcut configuration file
+from util.ShorcutUtil import ShortcutUtil
+ShortcutUtil.setup("brachys")
+
 from gui.ClassicMainWindow import ClassicMainWindow
 from gui.AlephMainWindow import AlephMainWindow
 from gui.FocusMainWindow import FocusMainWindow

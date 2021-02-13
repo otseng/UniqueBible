@@ -1,9 +1,7 @@
-import os, config
-from PySide2.QtGui import QIcon, Qt
-from PySide2.QtWidgets import (QAction, QToolBar, QPushButton, QLineEdit)
-from gui.MainWindow import MainWindow
 from gui.MenuItems import *
 from PySide2.QtCore import QSize
+import shortcut as sc
+
 
 class AlephMainWindow(MainWindow):
 
@@ -13,8 +11,7 @@ class AlephMainWindow(MainWindow):
     def create_menu(self):
         menu1 = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu1_app"]))
         menu1_defaults = menu1.addMenu(config.thisTranslation["menu_defaults"])
-        themeMenu = menu1_defaults.addMenu(config.thisTranslation["menu_theme"])
-        themeMenu = menu1.addMenu(config.thisTranslation["menu1_selectTheme"])
+        selectTheme = menu1_defaults.addMenu(config.thisTranslation["menu1_selectTheme"])
         if config.qtMaterial:
             qtMaterialThemes = ["light_amber.xml", "light_blue.xml", "light_cyan.xml", "light_cyan_500.xml",
                                 "light_lightgreen.xml", "light_pink.xml", "light_purple.xml", "light_red.xml",
@@ -22,11 +19,11 @@ class AlephMainWindow(MainWindow):
                                 "dark_cyan.xml", "dark_lightgreen.xml", "dark_pink.xml", "dark_purple.xml",
                                 "dark_red.xml", "dark_teal.xml", "dark_yellow.xml"]
             for theme in qtMaterialThemes:
-                themeMenu.addAction(
+                selectTheme.addAction(
                     QAction(theme[:-4], self, triggered=lambda theme=theme: self.setQtMaterialTheme(theme)))
         else:
-            themeMenu.addAction(QAction(config.thisTranslation["menu_light_theme"], self, triggered=self.setDefaultTheme))
-            themeMenu.addAction(QAction(config.thisTranslation["menu1_dark_theme"], self, triggered=self.setDarkTheme))
+            selectTheme.addAction(QAction(config.thisTranslation["menu_light_theme"], self, triggered=self.setDefaultTheme))
+            selectTheme.addAction(QAction(config.thisTranslation["menu1_dark_theme"], self, triggered=self.setDarkTheme))
         layoutMenu = menu1_defaults.addMenu(config.thisTranslation["menu1_menuLayout"])
         layoutMenu.addAction(
             QAction(config.thisTranslation["menu1_aleph_menu_layout"], self, triggered=lambda: self.setMenuLayout("aleph")))
@@ -54,29 +51,22 @@ class AlephMainWindow(MainWindow):
             QAction(config.thisTranslation["menu_config_flags"], self, triggered=self.moreConfigOptionsDialog))
 
         menu1.addAction(
-            QAction(config.thisTranslation["menu_quit"], self, shortcut='Ctrl+Q', triggered=self.quitApp))
-
-        # A message to @otseng:
-        # A column of control panel is added for you reference below.  Please feel free to move to where you like or even remove.
-        # Please reserve shortcuts Ctrl+B [Bible], Ctrl+L [Library], Ctrl+F [Search], Ctrl+H [History] & Ctrl+M for control panel.
-        # These shortcut keys are kept for the sake of consistency, because I added the same shortcut keys to file MasterControl.py
-        # so that users can use the same shortcut keys to switch between tabs when Control Panel is opened.
-        # Ctrl+M will be added next upgrade as I am going to add new tab "Miscellaneous".
-        # I will also add highlight search to search tab next update.  I just realised I missed that.
-        # In addition, when Control Panel is opened "Ctrl+X" is the shortcut key to hide the control panel.  "Ctrl+X" is not added to the main window.  It is added to MasterControl.py
-        menu = addMenu(self.menuBar(), "controlPanel")
-        for index, shortcut in enumerate(("B", "L", "F", "H")):
-            addMenuItem(menu, "cp{0}".format(index), self, lambda index=index, shortcut=shortcut: self.openControlPanelTab(index), "Ctrl+{0}".format(shortcut))
+            QAction(config.thisTranslation["menu_quit"], self, shortcut=sc.quitApp, triggered=self.quitApp))
 
         navigation_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_navigation"]))
+        navigation_menu.addAction(QAction(config.thisTranslation["menu1_remoteControl"], self, shortcut="Ctrl+O", triggered=self.manageRemoteControl))
+        masterControlMenu = addMenu(navigation_menu, "controlPanel")
+        for index, shortcut in enumerate(("B", "L", "F", "H")):
+            addMenuItem(masterControlMenu, "cp{0}".format(index), self, lambda index=index, shortcut=shortcut: self.openControlPanelTab(index), "Ctrl+{0}".format(shortcut))
+        navigation_menu.addSeparator()
         navigation_menu.addAction(
-            QAction(config.thisTranslation["menu_first_chapter"], self, shortcut='Ctrl+<', triggered=self.gotoFirstChapter))
-        prev_chap = QAction(config.thisTranslation["menu4_previous"], self, shortcut='Ctrl+,', triggered=self.previousMainChapter)
+            QAction(config.thisTranslation["menu_first_chapter"], self, shortcut=sc.gotoFirstChapter, triggered=self.gotoFirstChapter))
+        prev_chap = QAction(config.thisTranslation["menu4_previous"], self, shortcut=sc.previousMainChapter, triggered=self.previousMainChapter)
         # prev_chap.setShortcuts(["Ctrl+,"])
         navigation_menu.addAction(prev_chap)
-        navigation_menu.addAction(QAction(config.thisTranslation["menu4_next"], self, shortcut='Ctrl+.', triggered=self.nextMainChapter))
-        navigation_menu.addAction(QAction(config.thisTranslation["menu_last_chapter"], self, shortcut='Ctrl+>', triggered=self.gotoLastChapter))
-        navigation_menu.addAction(QAction(config.thisTranslation["menu_next_book"], self, shortcut='Ctrl+]', triggered=self.nextMainBook))
+        navigation_menu.addAction(QAction(config.thisTranslation["menu4_next"], self, shortcut=sc.nextMainChapter, triggered=self.nextMainChapter))
+        navigation_menu.addAction(QAction(config.thisTranslation["menu_last_chapter"], self, shortcut=sc.gotoLastChapter, triggered=self.gotoLastChapter))
+        navigation_menu.addAction(QAction(config.thisTranslation["menu_next_book"], self, shortcut=sc.nextMainBook, triggered=self.nextMainBook))
         navigation_menu.addAction(QAction(config.thisTranslation["menu_previous_book"], self, shortcut='Ctrl+[', triggered=self.previousMainBook))
         scroll_menu = navigation_menu.addMenu("&{0}".format(config.thisTranslation["menu_scroll"]))
         scroll_menu.addAction(QAction(config.thisTranslation["menu_main_scroll_to_top"], self, shortcut='Ctrl+7',
@@ -112,7 +102,6 @@ class AlephMainWindow(MainWindow):
         history_menu.addAction(QAction(config.thisTranslation["menu3_studyBack"], self, shortcut="Ctrl+Y, 3", triggered=self.studyBack))
         history_menu.addAction(QAction(config.thisTranslation["menu3_studyForward"], self, shortcut="Ctrl+Y, 4", triggered=self.studyForward))
         #navigation_menu.addAction(QAction(config.thisTranslation["controlPanel"], self, shortcut="Ctrl+M", triggered=self.manageControlPanel))
-        navigation_menu.addAction(QAction(config.thisTranslation["menu1_remoteControl"], self, shortcut="Ctrl+O", triggered=self.manageRemoteControl))
 
         search_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_search"]))
         search_menu.addAction(QAction(config.thisTranslation["menu5_bible"], self, shortcut="Ctrl+S, M", triggered=self.displaySearchBibleMenu))

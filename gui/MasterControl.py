@@ -8,6 +8,9 @@ from PySide2.QtWidgets import (QGridLayout, QBoxLayout, QVBoxLayout, QPushButton
 from ThirdParty import ThirdPartyDictionary
 from ToolsSqlite import Commentary, LexiconData, BookData, IndexesSqlite
 from PySide2.QtCore import QUrl, Qt, QEvent
+import shortcut as sc
+from util.ShorcutUtil import ShortcutUtil
+
 
 class MasterControl(QWidget):
 
@@ -27,15 +30,15 @@ class MasterControl(QWidget):
     def event(self, event):
         if event.type() == QEvent.KeyRelease:
             if event.modifiers() == Qt.ControlModifier:
-                if event.key() == Qt.Key_B:
+                if event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex0):
                     self.tabs.setCurrentIndex(0)
-                elif event.key() == Qt.Key_L:
+                elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex1):
                     self.tabs.setCurrentIndex(1)
-                elif event.key() == Qt.Key_F:
+                elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex2):
                     self.tabs.setCurrentIndex(2)
-                elif event.key() == Qt.Key_H:
+                elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex3):
                     self.tabs.setCurrentIndex(3)
-                elif event.key() == Qt.Key_X:
+                elif event.key() == ShortcutUtil.keyCode(sc.masterHide):
                     self.hide()
         return QWidget.event(self, event)
 

@@ -232,20 +232,44 @@ class MainWindow(QMainWindow):
         if config.clearCommandEntry:
             self.textCommandLineEdit.setText("")
 
-    def openControlPanelTab(self, index=0):
+    def openControlPanelTab(self, index=None, b=None, c=None, v=None, text=None):
+        if index is None:
+            index = 0
+        if b is None:
+            b = config.mainB
+        if c is None:
+            c = config.mainC
+        if v is None:
+            v = config.mainV
+        if text is None:
+            text = config.mainText
+
         if self.textCommandParser.isDatabaseInstalled("bible"):
             #self.controlPanel.tabs.setCurrentIndex(index)
-            self.manageControlPanel(True, index)
+            self.manageControlPanel(True, index, b, c, v, text)
         else:
             self.textCommandParser.databaseNotInstalled("bible")
 
-    def manageControlPanel(self, show=True, index=0):
+    def manageControlPanel(self, show=True, index=None, b=None, c=None, v=None, text=None):
+        if index is None:
+            index = 0
+        if b is None:
+            b = config.mainB
+        if c is None:
+            c = config.mainC
+        if v is None:
+            v = config.mainV
+        if text is None:
+            text = config.mainText
+
         if self.textCommandParser.isDatabaseInstalled("bible"):
             if config.controlPanel and not self.controlPanel.isVisible():
+                self.controlPanel.updateBCVText(b, c, v, text)
                 self.controlPanel.tabs.setCurrentIndex(index)
                 self.controlPanel.raise_()
                 self.controlPanel.show()
             elif config.controlPanel and not self.controlPanel.isActiveWindow():
+                self.controlPanel.updateBCVText(b, c, v, text)
                 self.controlPanel.tabs.setCurrentIndex(index)
                 textCommandText = self.textCommandLineEdit.text()
                 if textCommandText:
@@ -261,7 +285,7 @@ class MainWindow(QMainWindow):
                 else:
                     self.controlPanel.activateWindow()
             elif not config.controlPanel:
-                self.controlPanel = MasterControl(self, initialTab=index)
+                self.controlPanel = MasterControl(self, index, b, c, v, text)
                 if show:
                     self.controlPanel.show()
                 textCommandText = self.textCommandLineEdit.text()
@@ -693,6 +717,35 @@ class MainWindow(QMainWindow):
     def setQtMaterialTheme(self, theme):
         config.qtMaterialTheme = theme
         self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+
+    def enableQtMaterial(self, qtMaterial=True):
+        if qtMaterial:
+            try:
+                from qt_material import apply_stylesheet
+                self.selectQtMaterialTheme()
+            except:
+                config.qtMaterial = False
+                self.displayMessage(config.thisTranslation["installQtMaterial"])
+        else:
+            self.selectBuiltinTheme()
+
+    def selectQtMaterialTheme(self):
+        items = ("light_amber.xml",  "light_blue.xml",  "light_cyan.xml",  "light_cyan_500.xml",  "light_lightgreen.xml",  "light_pink.xml",  "light_purple.xml",  "light_red.xml",  "light_teal.xml",  "light_yellow.xml", "dark_amber.xml",  "dark_blue.xml",  "dark_cyan.xml",  "dark_lightgreen.xml",  "dark_pink.xml",  "dark_purple.xml",  "dark_red.xml",  "dark_teal.xml",  "dark_yellow.xml")
+        item, ok = QInputDialog.getItem(self, "UniqueBible",
+                                        config.thisTranslation["menu1_selectThemeQtMaterial"], items, items.index(config.qtMaterialTheme) if config.qtMaterialTheme and config.qtMaterialTheme in items else 0, False)
+        if ok and item:
+            config.qtMaterial = True
+            config.qtMaterialTheme = item
+            self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+
+    def selectBuiltinTheme(self):
+        items = ("default",  "dark")
+        item, ok = QInputDialog.getItem(self, "UniqueBible",
+                                        config.thisTranslation["menu1_selectThemeBuiltin"], items, items.index(config.theme) if config.theme and config.theme in items else 0, False)
+        if ok and item:
+            config.qtMaterial = False
+            config.theme = item
+            self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
 
     def setDefaultTheme(self):
         config.theme = "default"
@@ -1419,6 +1472,12 @@ class MainWindow(QMainWindow):
         self.rightToolBar.hide()
 
     # Actions - book features
+    def installBooks(self):
+        if self.textCommandParser.isDatabaseInstalled("book"):
+            self.displayMessage(config.thisTranslation["message_installed"])
+        else:
+            self.textCommandParser.databaseNotInstalled("book")
+
     def openBookMenu(self):
         if self.textCommandParser.isDatabaseInstalled("book"):
             self.openControlPanelTab(1)
@@ -2016,7 +2075,7 @@ class MainWindow(QMainWindow):
         self.openControlPanelTab(0)
 
     def studyRefButtonClicked(self):
-        self.openControlPanelTab(0)
+        self.openControlPanelTab(0, config.studyB, config.studyC, config.studyV, config.studyText)
 
     def commentaryRefButtonClicked(self):
         if self.textCommandParser.isDatabaseInstalled("commentary"):
@@ -2024,9 +2083,13 @@ class MainWindow(QMainWindow):
         else:
             self.textCommandParser.databaseNotInstalled("commentary")
 
+    def changeBibleVersion(self, index):
+        command = "TEXT:::{0}".format(self.bibleVersions[index])
+        self.runTextCommand(command)
+
     def updateMainRefButton(self):
         text, verseReference = self.verseReference("main")
-        self.mainRefButton.setText(":::".join(self.verseReference("main")))
+        self.mainRefButton.setText(self.verseReference("main")[-1])
         if config.syncStudyWindowBibleWithMainWindow and not config.openBibleInMainViewOnly and not self.syncingBibles:
             self.syncingBibles = True
             newTextCommand = "STUDY:::{0}".format(verseReference)

@@ -4,27 +4,29 @@ from gui.BibleExplorer import BibleExplorer
 from gui.SearchLauncher import SearchLauncher
 from gui.LibraryLauncher import LibraryLauncher
 from gui.HistoryLauncher import HistoryLauncher
-from PySide2.QtWidgets import (QGridLayout, QBoxLayout, QVBoxLayout, QPushButton, QWidget, QTabWidget, QLineEdit)
+from PySide2.QtWidgets import QGridLayout, QBoxLayout, QHBoxLayout, QVBoxLayout, QPushButton, QWidget, QTabWidget, QLineEdit, QCheckBox
 from ThirdParty import ThirdPartyDictionary
 from ToolsSqlite import Commentary, LexiconData, BookData, IndexesSqlite
-from PySide2.QtCore import QUrl, Qt, QEvent
 import shortcut as sc
 from util.ShorcutUtil import ShortcutUtil
-
+from PySide2.QtCore import Qt, QEvent
 
 class MasterControl(QWidget):
 
-    def __init__(self, parent, b=config.mainB, c=config.mainC, v=config.mainV, text=config.mainText, initialTab=0):
+    def __init__(self, parent, initialTab=0, b=config.mainB, c=config.mainC, v=config.mainV, text=config.mainText):
         super().__init__()
 
-        self.parent = parent
+        self.isRefreshing = True
 
+        self.parent = parent
         # set title
         self.setWindowTitle(config.thisTranslation["controlPanel"])
         # setup item option lists
         self.setupItemLists()
         # setup interface
         self.setupUI(b, c, v, text, initialTab)
+        
+        self.isRefreshing = False
 
     # manage key capture
     def event(self, event):
@@ -93,7 +95,10 @@ class MasterControl(QWidget):
     def sharedWidget(self):
         sharedWidget = QWidget()
         sharedWidgetLayout = QVBoxLayout()
-        sharedWidgetLayout.addWidget(self.commandFieldWidget())
+        subLayout = QHBoxLayout()
+        subLayout.addWidget(self.commandFieldWidget())
+        subLayout.addWidget(self.autoCloseCheckBox())
+        sharedWidgetLayout.addLayout(subLayout)
         sharedWidget.setLayout(sharedWidgetLayout)
         return sharedWidget
 
@@ -123,6 +128,14 @@ class MasterControl(QWidget):
         self.commandField.setToolTip(config.thisTranslation["enter_command_here"])
         self.commandField.returnPressed.connect(self.commandEntered)
         return self.commandField
+
+    def autoCloseCheckBox(self):
+        checkbox = QCheckBox()
+        checkbox.setText(config.thisTranslation["autoClose"])
+        checkbox.setToolTip(config.thisTranslation["autoCloseToolTip"])
+        checkbox.setChecked(config.closeControlPanelAfterRunningCommand)
+        checkbox.stateChanged.connect(self.closeControlPanelAfterRunningCommandChanged)
+        return checkbox
 
     # Common layout
 
@@ -159,6 +172,12 @@ class MasterControl(QWidget):
 
     # Actions
 
+    def closeControlPanelAfterRunningCommandChanged(self):
+        config.closeControlPanelAfterRunningCommand = not config.closeControlPanelAfterRunningCommand
+
+    def updateBCVText(self, b, c, v, text):
+        self.bibleTab.updateBCVText(b, c, v, text)
+
     def commandEntered(self):
         command = self.commandField.text()
         self.runTextCommand(command, False)
@@ -167,13 +186,15 @@ class MasterControl(QWidget):
         if printCommand:
             self.commandField.setText(command)
         self.parent.runTextCommand(command)
-        if config.closeControlPanelAfterRunningCommand:
+        if config.closeControlPanelAfterRunningCommand and not self.isRefreshing:
             self.hide()
 
     def tabChanged(self, index):
         if index == 2:
             self.toolTab.searchField.setFocus()
         elif index == 3:
+            self.isRefreshing = True
             self.historyTab.refreshHistoryRecords()
+            self.isRefreshing = False
         else:
             self.commandField.setFocus()

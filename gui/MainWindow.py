@@ -36,6 +36,7 @@ from gui.imports import *
 from ToolsSqlite import LexiconData
 from util.MacroParser import MacroParser
 from util.NoteService import NoteService
+from util.ShortcutUtil import ShortcutUtil
 
 
 class MainWindow(QMainWindow):
@@ -766,6 +767,11 @@ class MainWindow(QMainWindow):
     def setAlephMenuLayout(self):
         config.menuLayout = "aleph"
         self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+
+    def setShortcuts(self, shortcut):
+        config.menuShortcuts = shortcut
+        ShortcutUtil.reset()
+        self.displayMessage(config.thisTranslation["message_configurationTakeEffectAfterRestart"])
 
     def exportAllImages(self, htmlText):
         self.exportImageNumber = 0

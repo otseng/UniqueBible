@@ -52,6 +52,10 @@ class ShortcutUtil:
         "nextChapterButton": "Ctrl+)",
         "nextMainBook": "Ctrl+H,1",
         "nextMainChapter": "Ctrl+>",
+        "openControlPanelTab0": 'Ctrl+B',
+        "openControlPanelTab1": 'Ctrl+L',
+        "openControlPanelTab2": 'Ctrl+F',
+        "openControlPanelTab3": 'Ctrl+H',
         "openMainBookNote": "Ctrl+N, B",
         "openMainChapterNote": "Ctrl+N, C",
         "openMainVerseNote": "Ctrl+N, V",
@@ -139,7 +143,7 @@ class ShortcutUtil:
         "mainPageScrollPageDown": 'Ctrl+J',
         "mainPageScrollPageUp": 'Ctrl+K',
         "mainPageScrollToTop": 'Ctrl+7',
-        "manageControlPanel": "Ctrl+A",
+        "manageControlPanel": "Ctrl+A, 0",
         "manageRemoteControl": "Ctrl+O",
         "masterCurrentIndex0": None,
         "masterCurrentIndex1": None,
@@ -149,6 +153,10 @@ class ShortcutUtil:
         "nextChapterButton": "Ctrl+)",
         "nextMainBook": 'Ctrl+]',
         "nextMainChapter": 'Ctrl+.',
+        "openControlPanelTab0": 'Ctrl+U, B',
+        "openControlPanelTab1": 'Ctrl+U, L',
+        "openControlPanelTab2": 'Ctrl+U, S',
+        "openControlPanelTab3": 'Ctrl+U, H',
         "openMainBookNote": "Ctrl+N, B",
         "openMainChapterNote": "Ctrl+N, C",
         "openMainVerseNote": "Ctrl+N, V",
@@ -228,6 +236,13 @@ class ShortcutUtil:
                 for name in data.keys():
                     value = data[name]
                     fileObj.write("{0} = {1}\n".format(name, pprint.pformat(value)))
+                fileObj.close()
+
+    @staticmethod
+    def reset():
+        print("Resetting shortcut.py file")
+        with open("shortcut.py", "w", encoding="utf-8") as fileObj:
+            fileObj.write("")
             fileObj.close()
 
     @staticmethod

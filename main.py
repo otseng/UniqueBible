@@ -39,7 +39,7 @@ from themes import Themes
 from qt_material import apply_stylesheet
 
 # Setup menu shortcut configuration file
-from util.ShorcutUtil import ShortcutUtil
+from util.ShortcutUtil import ShortcutUtil
 ShortcutUtil.setup(config.menuShortcuts)
 
 from gui.ClassicMainWindow import ClassicMainWindow

@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QGridLayout, QBoxLayout, QHBoxLayout, QVBoxLayout,
 from ThirdParty import ThirdPartyDictionary
 from ToolsSqlite import Commentary, LexiconData, BookData, IndexesSqlite
 import shortcut as sc
-from util.ShorcutUtil import ShortcutUtil
+from util.ShortcutUtil import ShortcutUtil
 from PySide2.QtCore import Qt, QEvent
 
 class MasterControl(QWidget):
@@ -30,18 +30,19 @@ class MasterControl(QWidget):
 
     # manage key capture
     def event(self, event):
-        if event.type() == QEvent.KeyRelease:
-            if event.modifiers() == Qt.ControlModifier:
-                if event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex0):
-                    self.tabs.setCurrentIndex(0)
-                elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex1):
-                    self.tabs.setCurrentIndex(1)
-                elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex2):
-                    self.tabs.setCurrentIndex(2)
-                elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex3):
-                    self.tabs.setCurrentIndex(3)
-                elif event.key() == ShortcutUtil.keyCode(sc.masterHide):
-                    self.hide()
+        if config.menuShortcuts == "brachys":
+            if event.type() == QEvent.KeyRelease:
+                if event.modifiers() == Qt.ControlModifier:
+                    if event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex0):
+                        self.tabs.setCurrentIndex(0)
+                    elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex1):
+                        self.tabs.setCurrentIndex(1)
+                    elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex2):
+                        self.tabs.setCurrentIndex(2)
+                    elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex3):
+                        self.tabs.setCurrentIndex(3)
+                    elif event.key() == ShortcutUtil.keyCode(sc.masterHide):
+                        self.hide()
         return QWidget.event(self, event)
 
     def closeEvent(self, event):

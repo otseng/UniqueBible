@@ -31,6 +31,15 @@ class AlephMainWindow(MainWindow):
             QAction(config.thisTranslation["menu1_focus_menu_layout"], self, triggered=lambda: self.setMenuLayout("focus")))
         layoutMenu.addAction(
             QAction(config.thisTranslation["menu1_classic_menu_layout"], self, triggered=lambda: self.setMenuLayout("classic")))
+
+        shortcutsMenu = menu1_defaults.addMenu(config.thisTranslation["menu_shortcuts"])
+        shortcutsMenu.addAction(
+            QAction(config.thisTranslation["menu_brachys"], self,
+                    triggered=lambda: self.setShortcuts("brachys")))
+        shortcutsMenu.addAction(
+            QAction(config.thisTranslation["menu_syntemno"], self,
+                    triggered=lambda: self.setShortcuts("syntemno")))
+
         lexiconMenu = menu1_defaults.addMenu(config.thisTranslation["menu_lexicon"])
         lexiconMenu.addAction(QAction(config.thisTranslation["menu1_StrongsHebrew"], self, triggered=self.openSelectDefaultStrongsHebrewLexiconDialog))
         lexiconMenu.addAction(QAction(config.thisTranslation["menu1_StrongsGreek"], self, triggered=self.openSelectDefaultStrongsGreekLexiconDialog))
@@ -54,10 +63,12 @@ class AlephMainWindow(MainWindow):
             QAction(config.thisTranslation["menu_quit"], self, shortcut=sc.quitApp, triggered=self.quitApp))
 
         navigation_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_navigation"]))
-        navigation_menu.addAction(QAction(config.thisTranslation["menu1_remoteControl"], self, shortcut=sc.manageRemoteControl, triggered=self.manageRemoteControl))
         masterControlMenu = addMenu(navigation_menu, "controlPanel")
-        for index, shortcut in enumerate(("B", "L", "F", "H")):
-            addMenuItem(masterControlMenu, "cp{0}".format(index), self, lambda index=index, shortcut=shortcut: self.openControlPanelTab(index), "Ctrl+{0}".format(shortcut))
+        masterControlMenu.addAction(QAction(config.thisTranslation["cp0"], self, shortcut=sc.openControlPanelTab0, triggered=lambda: self.openControlPanelTab(0)))
+        masterControlMenu.addAction(QAction(config.thisTranslation["cp1"], self, shortcut=sc.openControlPanelTab1, triggered=lambda: self.openControlPanelTab(1)))
+        masterControlMenu.addAction(QAction(config.thisTranslation["cp2"], self, shortcut=sc.openControlPanelTab2, triggered=lambda: self.openControlPanelTab(2)))
+        masterControlMenu.addAction(QAction(config.thisTranslation["cp3"], self, shortcut=sc.openControlPanelTab3, triggered=lambda: self.openControlPanelTab(3)))
+        navigation_menu.addAction(QAction(config.thisTranslation["menu1_remoteControl"], self, shortcut=sc.manageRemoteControl, triggered=self.manageRemoteControl))
         navigation_menu.addSeparator()
         navigation_menu.addAction(
             QAction(config.thisTranslation["menu_first_chapter"], self, shortcut=sc.gotoFirstChapter, triggered=self.gotoFirstChapter))

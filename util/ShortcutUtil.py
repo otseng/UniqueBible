@@ -218,7 +218,7 @@ class ShortcutUtil:
                 filename = "shortcut_" + name + ".py"
                 if path.exists(filename) and FileUtil.getLineCount("shortcut.py") < 2:
                     from shutil import copyfile
-                    print("Creating shortcut.py from " + filename)
+                    # print("Creating shortcut.py from " + filename)
                     copyfile(filename, "shortcut.py")
         except:
             name = "brachys"
@@ -227,12 +227,12 @@ class ShortcutUtil:
             ShortcutUtil.create(ShortcutUtil.brachysData)
         elif name == "syntemno":
             ShortcutUtil.create(ShortcutUtil.syntemnoData)
-        print("Using " + name + " shortcut")
+        # print("Using " + name + " shortcut")
 
     @staticmethod
     def create(data):
         if not path.exists("shortcut.py") or FileUtil.getLineCount("shortcut.py") != len(data):
-            print("Writing shortcut.py file")
+            # print("Writing shortcut.py file")
             with open("shortcut.py", "w", encoding="utf-8") as fileObj:
                 for name in data.keys():
                     value = data[name]
@@ -241,7 +241,7 @@ class ShortcutUtil:
 
     @staticmethod
     def reset():
-        print("Resetting shortcut.py file")
+        # print("Resetting shortcut.py file")
         with open("shortcut.py", "w", encoding="utf-8") as fileObj:
             fileObj.write("")
             fileObj.close()
@@ -274,4 +274,4 @@ def test_custom():
     # ShortcutUtil.setup("custom")
 
 if __name__ == "__main__":
-    test_custom()
+    print_info()

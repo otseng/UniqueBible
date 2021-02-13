@@ -6,6 +6,8 @@ from gui.MenuItems import *
 from gui.MainWindow import MainWindow
 import shortcut as sc
 from BiblesSqlite import BiblesSqlite
+from util.ShortcutUtil import ShortcutUtil
+
 
 class FocusMainWindow(MainWindow):
 
@@ -63,6 +65,15 @@ class FocusMainWindow(MainWindow):
         )
         for feature, action in items:
             addMenuItem(subMenu, feature, self, action)
+        subMenu = addSubMenu(subMenu0, "menu_shortcuts")
+        items = (
+            ("menu_brachys", lambda: self.setShortcuts("brachys")),
+            ("menu_syntemno", lambda: self.setShortcuts("syntemno")),
+        )
+        for feature, action in items:
+            addMenuItem(subMenu, feature, self, action)
+        for shortcut in ShortcutUtil.getListCustomShortcuts():
+            addMenuItem(subMenu, shortcut, self, lambda: self.setShortcuts(shortcut), translation=False)
         subMenu = addSubMenu(subMenu0, "toolbarIcon")
         items = (
             ("toolbarIconStandard", lambda: self.setFullIconSize(False)),

@@ -1,6 +1,7 @@
 from PySide2.QtCore import QSize
 from gui.MenuItems import *
 import shortcut as sc
+from util.ShortcutUtil import ShortcutUtil
 
 
 class ClassicMainWindow(MainWindow):
@@ -64,6 +65,15 @@ class ClassicMainWindow(MainWindow):
         )
         for feature, action, shortcut in items:
             addMenuItem(subMenu, feature, self, action, shortcut)
+        subMenu = addSubMenu(menu, "menu_shortcuts")
+        items = (
+            ("menu_brachys", lambda: self.setShortcuts("brachys")),
+            ("menu_syntemno", lambda: self.setShortcuts("syntemno")),
+        )
+        for feature, action in items:
+            addMenuItem(subMenu, feature, self, action)
+        for shortcut in ShortcutUtil.getListCustomShortcuts():
+            addMenuItem(subMenu, shortcut, self, lambda: self.setShortcuts(shortcut), translation=False)
         if config.enableMacros:
             addMenuItem(menu, "menu_startup_macro", self, self.setStartupMacro, None)
         addMenuItem(menu, "menu1_moreConfig", self, self.moreConfigOptionsDialog, None)
@@ -209,7 +219,7 @@ class ClassicMainWindow(MainWindow):
         menu4.addSeparator()
 
         compareFeaturesMenu = menu4.addMenu(config.thisTranslation["menu4_compareFeatures"])
-        compareFeaturesMenu.addAction(QAction(config.thisTranslation["menu4_compareAll"], self, shortcut=runCOMPARE, triggered=self.runCOMPARE))
+        compareFeaturesMenu.addAction(QAction(config.thisTranslation["menu4_compareAll"], self, shortcut=sc.runCOMPARE, triggered=self.runCOMPARE))
         compareFeaturesMenu.addAction(QAction(config.thisTranslation["menu4_moreComparison"], self, triggered=self.mainRefButtonClicked))
         menu4.addSeparator()
 

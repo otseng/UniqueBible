@@ -769,6 +769,7 @@ class MainWindow(QMainWindow):
     def setShortcuts(self, shortcut):
         config.menuShortcuts = shortcut
         ShortcutUtil.reset()
+        ShortcutUtil.setup(shortcut)
         self.displayMessage(config.thisTranslation["message_configurationTakeEffectAfterRestart"])
 
     def exportAllImages(self, htmlText):
@@ -1425,6 +1426,14 @@ class MainWindow(QMainWindow):
 
     def showRightToolBar(self):
         self.rightToolBar.show()
+
+    def hideShowSideToolBars(self):
+        if self.leftToolBar.isVisible():
+            self.leftToolBar.hide()
+            self.rightToolBar.hide()
+        else:
+            self.leftToolBar.show()
+            self.rightToolBar.show()
 
     def hideShowAdditionalToolBar(self):
         if config.topToolBarOnly:

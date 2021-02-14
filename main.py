@@ -34,14 +34,14 @@ else:
 from util.ConfigUtil import ConfigUtil
 ConfigUtil.setup()
 
-from PySide2.QtWidgets import QApplication, QStyleFactory
-from themes import Themes
-from qt_material import apply_stylesheet
-
 # Setup menu shortcut configuration file
 from util.ShortcutUtil import ShortcutUtil
 ShortcutUtil.setup(config.menuShortcuts)
 
+# Setup GUI windows
+from PySide2.QtWidgets import QApplication, QStyleFactory
+from themes import Themes
+from qt_material import apply_stylesheet
 from gui.ClassicMainWindow import ClassicMainWindow
 from gui.AlephMainWindow import AlephMainWindow
 from gui.FocusMainWindow import FocusMainWindow

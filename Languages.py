@@ -165,6 +165,7 @@ class Languages:
         "menu2_topOnly": "All / Top Toolbar Only",
         "menu2_top": "Top Toolbar [Show / Hide]",
         "menu2_second": "Second Toolbar [Show / Hide]",
+        "menu2_sidebars": "Sidebars [Show / Hide]",
         "menu2_left": "Left Sidebar [Show / Hide]",
         "menu2_right": "Right Sidebar [Show / Hide]",
         "menu2_icons": "Toolbar Icons [Standard / Full-size]",

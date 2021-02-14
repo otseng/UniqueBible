@@ -153,7 +153,7 @@ class AlephMainWindow(MainWindow):
         if config.enableVerseHighlighting:
             highlight = annotate_menu.addMenu(config.thisTranslation["menu_highlight"])
             highlight.addAction(
-                QAction(config.thisTranslation["menu2_toggleHighlightMarkers"], self, triggered=self.toggleHighlightMarker))
+                QAction(config.thisTranslation["menu2_toggleHighlightMarkers"], self, shortcut=sc.toggleHighlightMarker, triggered=self.toggleHighlightMarker))
         bible_notes = annotate_menu.addMenu(config.thisTranslation["menu_bible_notes"])
         bible_notes.addAction(
             QAction(config.thisTranslation["menu_book"], self, shortcut=sc.openMainBookNote, triggered=self.openMainBookNote))
@@ -221,6 +221,7 @@ class AlephMainWindow(MainWindow):
         toolbar_menu.addAction(QAction(config.thisTranslation["menu2_top"], self, shortcut=sc.hideShowMainToolBar, triggered=self.hideShowMainToolBar))
         toolbar_menu.addAction(QAction(config.thisTranslation["menu2_topOnly"], self, shortcut=sc.hideShowAdditionalToolBar, triggered=self.hideShowAdditionalToolBar))
         toolbar_menu.addAction(QAction(config.thisTranslation["menu2_second"], self, shortcut=sc.hideShowSecondaryToolBar, triggered=self.hideShowSecondaryToolBar))
+        toolbar_menu.addAction(QAction(config.thisTranslation["menu2_sidebars"], self, shortcut=sc.hideShowSideToolBars, triggered=self.hideShowSideToolBars))
         toolbar_menu.addAction(QAction(config.thisTranslation["menu2_left"], self, shortcut=sc.hideShowLeftToolBar, triggered=self.hideShowLeftToolBar))
         toolbar_menu.addAction(QAction(config.thisTranslation["menu2_right"], self, shortcut=sc.hideShowRightToolBar, triggered=self.hideShowRightToolBar))
         toolbar_menu.addAction(QAction(config.thisTranslation["menu2_icons"], self, shortcut=sc.switchIconSize, triggered=self.switchIconSize))

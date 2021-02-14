@@ -48,6 +48,10 @@ class ShortcutUtil:
         "mainPageScrollToTop": "Ctrl+H,3",
         "manageControlPanel": "Ctrl+M, 0",
         "manageRemoteControl": "Ctrl+I, R",
+        "masterCurrentIndex0": "Ctrl+B",
+        "masterCurrentIndex1": "Ctrl+L",
+        "masterCurrentIndex2": "Ctrl+F",
+        "masterCurrentIndex3": "Ctrl+Y",
         "masterHideKeyCode": 'Z',
         "nextChapterButton": "Ctrl+)",
         "nextMainBook": "Ctrl+}",
@@ -56,6 +60,7 @@ class ShortcutUtil:
         "openControlPanelTab1": 'Ctrl+L',
         "openControlPanelTab2": 'Ctrl+F',
         "openControlPanelTab3": 'Ctrl+Y',
+        "openControlPanelTab4": 'Ctrl+M',
         "openMainBookNote": "Ctrl+N, B",
         "openMainChapterNote": "Ctrl+N, C",
         "openMainVerseNote": "Ctrl+N, V",
@@ -148,9 +153,10 @@ class ShortcutUtil:
         "manageControlPanel": "Ctrl+U, 0",
         "manageRemoteControl": "Ctrl+O",
         "masterCurrentIndex0": "Ctrl+U, B",
-        "masterCurrentIndex1": "Ctrl+U, F",
-        "masterCurrentIndex2": "Ctrl+U, L",
-        "masterCurrentIndex3": "Ctrl+U, H",
+        "masterCurrentIndex1": "Ctrl+U, L",
+        "masterCurrentIndex2": "Ctrl+U, F",
+        "masterCurrentIndex3": "Ctrl+U, Y",
+        "masterCurrentIndex4": "Ctrl+U, M",
         "masterHideKeyCode": "Z",
         "nextChapterButton": "Ctrl+)",
         "nextMainBook": 'Ctrl+]',
@@ -306,5 +312,6 @@ def test_printAllShortcuts():
 
 
 if __name__ == "__main__":
-    print_brachysData()
+    # print_brachysData()
     # print_syntemnoData()
+    print_info()

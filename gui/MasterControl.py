@@ -30,19 +30,10 @@ class MasterControl(QWidget):
 
     # manage key capture
     def event(self, event):
-        if config.menuShortcuts == "brachys":
-            if event.type() == QEvent.KeyRelease:
-                if event.modifiers() == Qt.ControlModifier:
-                    # if event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex0KeyCode):
-                    #     self.tabs.setCurrentIndex(0)
-                    # elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex1KeyCode):
-                    #     self.tabs.setCurrentIndex(1)
-                    # elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex2KeyCode):
-                    #     self.tabs.setCurrentIndex(2)
-                    # elif event.key() == ShortcutUtil.keyCode(sc.masterCurrentIndex3KeyCode):
-                    #     self.tabs.setCurrentIndex(3)
-                    if event.key() == ShortcutUtil.keyCode(sc.masterHideKeyCode):
-                        self.hide()
+        if event.type() == QEvent.KeyRelease:
+            if event.modifiers() == Qt.ControlModifier:
+                if event.key() == ShortcutUtil.keyCode(sc.masterHideKeyCode):
+                    self.hide()
         return QWidget.event(self, event)
 
     def closeEvent(self, event):

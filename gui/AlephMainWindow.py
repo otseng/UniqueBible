@@ -895,6 +895,20 @@ class AlephMainWindow(MainWindow):
         self.bookButton.clicked.connect(self.openBookMenu)
         self.secondToolBar.addWidget(self.bookButton)
 
+        previousChapterButton = QPushButton()
+        previousChapterButton.setToolTip(config.thisTranslation["menu_previous_chapter"])
+        previousChapterButton.setText("<")
+        previousChapterButton.clicked.connect(self.openBookPreviousChapter)
+        previousChapterButton.setShortcut(sc.previousChapterButton)
+        self.secondToolBar.addWidget(previousChapterButton)
+
+        nextChapterButton = QPushButton()
+        nextChapterButton.setToolTip(config.thisTranslation["menu_next_chapter"])
+        nextChapterButton.setText(">")
+        nextChapterButton.clicked.connect(self.openBookNextChapter)
+        nextChapterButton.setShortcut(sc.nextChapterButton)
+        self.secondToolBar.addWidget(nextChapterButton)
+
         iconFile = os.path.join("htmlResources", "search.png")
         self.secondToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar2_searchBooks"], self.displaySearchBookCommand)
 
@@ -914,25 +928,6 @@ class AlephMainWindow(MainWindow):
 
         iconFile = os.path.join("htmlResources", "edit.png")
         self.secondToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu7_edit"], self.editExternalFileButtonClicked)
-
-        self.secondToolBar.addSeparator()
-
-        iconFile = os.path.join("htmlResources", "fontMinus.png")
-        self.secondToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu2_smaller"], self.smallerFont)
-
-        self.defaultFontButton = QPushButton("{0} {1}".format(config.font, config.fontSize))
-        self.defaultFontButton.setToolTip(config.thisTranslation["menu1_setDefaultFont"])
-        self.defaultFontButton.setStyleSheet(textButtonStyle)
-        self.defaultFontButton.clicked.connect(self.setDefaultFont)
-        self.secondToolBar.addWidget(self.defaultFontButton)
-
-        iconFile = os.path.join("htmlResources", "fontPlus.png")
-        self.secondToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu2_larger"], self.largerFont)
-
-        self.secondToolBar.addSeparator()
-
-        iconFile = os.path.join("htmlResources", "youtube.png")
-        self.secondToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu11_youtube"], self.openYouTube)
 
         self.secondToolBar.addSeparator()
 

@@ -73,7 +73,7 @@ class FocusMainWindow(MainWindow):
         for feature, action in items:
             addMenuItem(subMenu, feature, self, action)
         for shortcut in ShortcutUtil.getListCustomShortcuts():
-            addMenuItem(subMenu, shortcut, self, lambda: self.setShortcuts(shortcut), translation=False)
+            addMenuItem(subMenu, shortcut, self, lambda shortcut=shortcut: self.setShortcuts(shortcut), None, False)
         subMenu = addSubMenu(subMenu0, "toolbarIcon")
         items = (
             ("toolbarIconStandard", lambda: self.setFullIconSize(False)),

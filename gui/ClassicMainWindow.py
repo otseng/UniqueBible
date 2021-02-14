@@ -73,7 +73,7 @@ class ClassicMainWindow(MainWindow):
         for feature, action in items:
             addMenuItem(subMenu, feature, self, action)
         for shortcut in ShortcutUtil.getListCustomShortcuts():
-            addMenuItem(subMenu, shortcut, self, lambda: self.setShortcuts(shortcut), translation=False)
+            addMenuItem(subMenu, shortcut, self, lambda shortcut=shortcut: self.setShortcuts(shortcut), None, False)
         if config.enableMacros:
             addMenuItem(menu, "menu_startup_macro", self, self.setStartupMacro, None)
         addMenuItem(menu, "menu1_moreConfig", self, self.moreConfigOptionsDialog, None)

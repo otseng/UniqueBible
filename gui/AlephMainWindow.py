@@ -43,7 +43,7 @@ class AlephMainWindow(MainWindow):
         customShortcuts = ShortcutUtil.getListCustomShortcuts()
         for shortcut in customShortcuts:
             shortcutsMenu.addAction(
-                QAction(shortcut, self, triggered=lambda: self.setShortcuts(shortcut)))
+                QAction(shortcut, self, triggered=lambda shortcut=shortcut: self.setShortcuts(shortcut)))
 
         lexiconMenu = menu1_defaults.addMenu(config.thisTranslation["menu_lexicon"])
         lexiconMenu.addAction(QAction(config.thisTranslation["menu1_StrongsHebrew"], self, triggered=self.openSelectDefaultStrongsHebrewLexiconDialog))

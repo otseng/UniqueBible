@@ -4,6 +4,7 @@ import pprint
 from os import path
 from PySide2.QtCore import Qt
 
+import config
 from util.FileUtil import FileUtil
 
 
@@ -43,9 +44,9 @@ class ShortcutUtil:
         "largerFont": "Ctrl++",
         "leftHalfScreenWidth": "Ctrl+S, 3",
         "mainHistoryButtonClicked": "Ctrl+'",
-        "mainPageScrollPageDown": "Ctrl+H,5",
-        "mainPageScrollPageUp": "Ctrl+H,4",
-        "mainPageScrollToTop": "Ctrl+H,3",
+        "mainPageScrollPageDown": "Ctrl+H, 5",
+        "mainPageScrollPageUp": "Ctrl+H, 4",
+        "mainPageScrollToTop": "Ctrl+H, 3",
         "manageControlPanel": "Ctrl+M, 0",
         "manageRemoteControl": "Ctrl+I, R",
         "masterCurrentIndex0": "Ctrl+B",
@@ -72,7 +73,7 @@ class ShortcutUtil:
         "previousMainChapter": "Ctrl+<",
         "quitApp": "Ctrl+Q",
         "reloadCurrentRecord": "Ctrl+D, R",
-        "rightHalfScreenWidth": "Ctrl+S,4",
+        "rightHalfScreenWidth": "Ctrl+S, 4",
         "runCOMBO": "Ctrl+K",
         "runCOMMENTARY": "Ctrl+I, C",
         "runCOMPARE": "Ctrl+D, C",
@@ -92,7 +93,7 @@ class ShortcutUtil:
         "searchCommandBibleDictionary": "Ctrl+E, 2",
         "searchCommandBibleEncyclopedia": "Ctrl+E, 3",
         "searchCommandBibleLocation": "Ctrl+E, 9",
-        "searchCommandBibleName": "Ctrl+E, 88",
+        "searchCommandBibleName": "Ctrl+E, 8",
         "searchCommandBibleTopic": "Ctrl+E, 6",
         "searchCommandBookNote": "Ctrl+S, 1",
         "searchCommandChapterNote": "Ctrl+S, 2",
@@ -111,8 +112,8 @@ class ShortcutUtil:
         "switchIconSize": "Ctrl+T, I",
         "switchLandscapeMode": "Ctrl+R, M",
         "toggleHighlightMarker": "Ctrl+I, I",
-        "topHalfScreenHeight": "Ctrl+S,1",
-        "twoThirdWindow": "Ctrl+S,S",
+        "topHalfScreenHeight": "Ctrl+S, 1",
+        "twoThirdWindow": "Ctrl+S, S",
     }
 
     syntemnoData = {
@@ -164,7 +165,7 @@ class ShortcutUtil:
         "openControlPanelTab0": 'Ctrl+U, B',
         "openControlPanelTab1": 'Ctrl+U, L',
         "openControlPanelTab2": 'Ctrl+U, S',
-        "openControlPanelTab3": 'Ctrl+U, H',
+        "openControlPanelTab3": 'Ctrl+U, Y',
         "openMainBookNote": "Ctrl+N, B",
         "openMainChapterNote": "Ctrl+N, C",
         "openMainVerseNote": "Ctrl+N, V",
@@ -224,23 +225,23 @@ class ShortcutUtil:
         try:
             if name not in ("brachys", "syntemno"):
                 filename = "shortcut_" + name + ".py"
-                if path.exists(filename) and FileUtil.getLineCount("shortcut.py") < 2:
+                if not path.exists(filename):
+                    name = "brachys"
+                elif FileUtil.getLineCount("shortcut.py") < 2:
                     from shutil import copyfile
-                    # print("Creating shortcut.py from " + filename)
                     copyfile(filename, "shortcut.py")
-        except:
+        except Exception as e:
             name = "brachys"
 
         if name == "brachys":
             ShortcutUtil.create(ShortcutUtil.brachysData)
         elif name == "syntemno":
             ShortcutUtil.create(ShortcutUtil.syntemnoData)
-        # print("Using " + name + " shortcut")
+        config.menuShortcuts = name
 
     @staticmethod
     def create(data):
         if not path.exists("shortcut.py") or FileUtil.getLineCount("shortcut.py") != len(data):
-            # print("Writing shortcut.py file")
             with open("shortcut.py", "w", encoding="utf-8") as fileObj:
                 for name in data.keys():
                     value = data[name]
@@ -249,7 +250,6 @@ class ShortcutUtil:
 
     @staticmethod
     def reset():
-        # print("Resetting shortcut.py file")
         with open("shortcut.py", "w", encoding="utf-8") as fileObj:
             fileObj.write("")
             fileObj.close()

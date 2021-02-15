@@ -6,7 +6,6 @@ from os import path
 from PySide2.QtCore import Qt
 
 import config
-from util.FileUtil import FileUtil
 
 
 # Defined sets of shortcuts:
@@ -503,9 +502,9 @@ class ShortcutUtil:
     def checkCustomShortcutFileValid(filename, source="micron"):
         customShortcuts = ShortcutUtil.readShorcutFile(filename)
         actions = customShortcuts.keys()
-        for action, shortcut in ShortcutUtil.data[source]:
+        for action in ShortcutUtil.data[source]:
             if action not in actions:
-                ShortcutUtil.addActionToShortcutFile(filename, action, shortcut)
+                ShortcutUtil.addActionToShortcutFile(filename, action, ShortcutUtil.data[source][action])
 
     @staticmethod
     def readShorcutFile(filename):
@@ -565,39 +564,16 @@ def print_shortcuts(name):
     lines.sort()
     print("\n".join(lines))
 
-def test_brachys():
-    ShortcutUtil.setup("brachys")
-    print(ShortcutUtil.getAllShortcutsAsString())
-
-def test_micron():
-    ShortcutUtil.setup("micron")
-    print(ShortcutUtil.getAllShortcutsAsString())
-
-def test_syntemno():
-    ShortcutUtil.setup("syntemno")
-    print(ShortcutUtil.getAllShortcutsAsString())
-
-def test_custom(name):
-    ShortcutUtil.setup(name)
-    print(ShortcutUtil.getAllShortcutsAsString())
-    print_compare("micron", name)
-
-def test_printAllShortcuts():
-    print(ShortcutUtil.getAllShortcutsAsString())
-
-def test_readFile(filename):
-    data = ShortcutUtil.readShorcutFile(filename)
-    print(data)
-
 def fix_custom(name):
     ShortcutUtil.checkCustomShortcutFileValid("shortcut_"+name+".py")
 
 # To use:
 # python -m util.ShortcutUtil <command> <shortcut1> <shortcut2>
+#
 # Examples:
 #   python -m util.ShortcutUtil print_info
-#   python -m util.ShortcutUtil print_data micron
-#   python -m util.ShortcutUtil fix_data myshortcut
+#   python -m util.ShortcutUtil print_shortcuts micron
+#   python -m util.ShortcutUtil fix_custom myshortcut
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -624,4 +600,4 @@ if __name__ == "__main__":
         # print_shortcuts("micron")
         # print_shortcuts("syntemno")
         print_shortcuts("test1")
-        # test_checkValid("shortcut_test1.py")
+        # fix_custom("test1")

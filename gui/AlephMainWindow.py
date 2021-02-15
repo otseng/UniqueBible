@@ -35,6 +35,9 @@ class AlephMainWindow(MainWindow):
 
         shortcutsMenu = menu1_defaults.addMenu(config.thisTranslation["menu_shortcuts"])
         shortcutsMenu.addAction(
+            QAction(config.thisTranslation["menu_blank"], self,
+                    triggered=lambda: self.setShortcuts("blank")))
+        shortcutsMenu.addAction(
             QAction(config.thisTranslation["menu_brachys"], self,
                     triggered=lambda: self.setShortcuts("brachys")))
         shortcutsMenu.addAction(

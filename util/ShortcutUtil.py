@@ -1,5 +1,6 @@
 import glob
 import pprint
+import sys
 
 from os import path
 from PySide2.QtCore import Qt
@@ -273,6 +274,7 @@ class ShortcutUtil:
             "openControlPanelTab1": '',
             "openControlPanelTab2": '',
             "openControlPanelTab3": '',
+            "openControlPanelTab4": '',
             "openMainBookNote": "Ctrl+N, B",
             "openMainChapterNote": "Ctrl+N, C",
             "openMainVerseNote": "Ctrl+N, V",
@@ -429,6 +431,15 @@ def print_info():
     print("micronData: {0}".format(len(ShortcutUtil.data['micron'])))
     print("syntemnoData: {0}".format(len(ShortcutUtil.data['syntemno'])))
 
+def print_compare(set1, set2):
+    keys1 = ShortcutUtil.data[set1].keys()
+    keys2 = ShortcutUtil.data[set2].keys()
+    for key in keys1:
+        if key not in keys2:
+            print(key + " not in " + set2)
+    for key in keys2:
+        if key not in keys1:
+            print(key + " not in " + set1)
 
 def print_data(name):
     print(name)
@@ -437,7 +448,6 @@ def print_data(name):
         lines.append(str(ShortcutUtil.data[name][key]) + " : " + key)
     lines.sort()
     print("\n".join(lines))
-
 
 def test_brachys():
     ShortcutUtil.setup("brachys")
@@ -454,6 +464,7 @@ def test_syntemno():
 def test_custom(name):
     ShortcutUtil.setup(name)
     print(ShortcutUtil.getAllShortcutsAsString())
+    print_compare("micron", name)
 
 def test_printAllShortcuts():
     print(ShortcutUtil.getAllShortcutsAsString())
@@ -465,11 +476,26 @@ def test_readFile(filename):
 def test_checkValid(filename):
     ShortcutUtil.checkCustomShortcutFileValid(filename)
 
+
 if __name__ == "__main__":
-    # print_info()
-    # print_data("brachys")
-    print_data("micron")
-    # print_data("syntemno")
-    # test_micron()
-    # test_custom("test1")
-    # test_checkValid("shortcut_test1.py")
+    if len(sys.argv) > 1:
+        try:
+            method = sys.argv[1].strip()
+            if len(sys.argv) == 2:
+                globals()[method]()
+            else:
+                name1 = sys.argv[2].strip()
+                if len(sys.argv) == 3:
+                    globals()[method](name1)
+            print("Done")
+        except Exception as e:
+            print("Error: " + str(e))
+    else:
+        print_info()
+        # print_compare("brachys", "syntemno")
+        # print_data("brachys")
+        # print_data("micron")
+        # print_data("syntemno")
+        # test_micron()
+        # test_custom("test1")
+        # test_checkValid("shortcut_test1.py")

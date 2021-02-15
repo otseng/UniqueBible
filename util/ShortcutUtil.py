@@ -47,6 +47,7 @@ class ShortcutUtil:
             "hideShowSecondaryToolBar": "Ctrl+T, 3",
             "largerFont": "Ctrl++",
             "leftHalfScreenWidth": "Ctrl+S, 3",
+            "loadRunMacro": "Ctrl+M",
             "mainHistoryButtonClicked": "Ctrl+'",
             "mainPageScrollPageDown": "Ctrl+H, 5",
             "mainPageScrollPageUp": "Ctrl+H, 4",
@@ -57,7 +58,6 @@ class ShortcutUtil:
             "masterCurrentIndex1": "Ctrl+L",
             "masterCurrentIndex2": "Ctrl+F",
             "masterCurrentIndex3": "Ctrl+Y",
-            "masterHideKeyCode": 'Z',
             "nextChapterButton": "Ctrl+)",
             "nextMainBook": "Ctrl+}",
             "nextMainChapter": "Ctrl+>",
@@ -151,6 +151,7 @@ class ShortcutUtil:
             "hideShowSecondaryToolBar": "Ctrl+T, 3",
             "largerFont": "Ctrl++",
             "leftHalfScreenWidth": "Ctrl+W, L",
+            "loadRunMacro": "Ctrl+M",
             "mainHistoryButtonClicked": "Ctrl+Y, M",
             "mainPageScrollPageDown": 'Ctrl+J',
             "mainPageScrollPageUp": 'Ctrl+K',
@@ -162,7 +163,6 @@ class ShortcutUtil:
             "masterCurrentIndex2": "Ctrl+U, F",
             "masterCurrentIndex3": "Ctrl+U, Y",
             "masterCurrentIndex4": "Ctrl+U, M",
-            "masterHideKeyCode": "Z",
             "nextChapterButton": "Ctrl+)",
             "nextMainBook": 'Ctrl+]',
             "nextMainChapter": 'Ctrl+.',
@@ -255,6 +255,7 @@ class ShortcutUtil:
             "hideShowSecondaryToolBar": '',
             "largerFont": 'Ctrl++',
             "leftHalfScreenWidth": '',
+            "loadRunMacro": "Ctrl+M",
             "mainHistoryButtonClicked": "Ctrl+'",
             "mainPageScrollPageDown": '',
             "mainPageScrollPageUp": '',
@@ -265,7 +266,6 @@ class ShortcutUtil:
             "masterCurrentIndex1": 'Ctrl+L',
             "masterCurrentIndex2": 'Ctrl+F',
             "masterCurrentIndex3": 'Ctrl+Y',
-            "masterHideKeyCode": 'Z',
             "nextChapterButton": 'Ctrl+)',
             "nextMainBook": 'Ctrl+}',
             "nextMainChapter": 'Ctrl+>',
@@ -335,12 +335,14 @@ class ShortcutUtil:
             if name not in ShortcutUtil.data.keys():
                 filename = "shortcut_" + name + ".py"
                 if not path.exists(filename):
-                    name = "brachys"
-                elif FileUtil.getLineCount("shortcut.py") < 2:
+                    name = "micron"
+                elif FileUtil.getLineCount("shortcut.py") < 2 \
+                        or FileUtil.getLineCount(filename) != len(ShortcutUtil.data['micron']):
                     from shutil import copyfile
+                    ShortcutUtil.checkCustomShortcutFileValid(filename)
                     copyfile(filename, "shortcut.py")
         except Exception as e:
-            name = "brachys"
+            name = "micron"
 
         if name in ShortcutUtil.data.keys():
             ShortcutUtil.create(ShortcutUtil.data[name])
@@ -390,6 +392,36 @@ class ShortcutUtil:
             str += "{0} : {1}\n".format(key, command)
         return str
 
+    @staticmethod
+    def checkCustomShortcutFileValid(filename):
+        customShortcuts = ShortcutUtil.readShorcutFile(filename)
+        actions = customShortcuts.keys()
+        for action in ShortcutUtil.data["micron"]:
+            if action not in actions:
+                ShortcutUtil.addActionToShortcutFile(filename, action)
+
+    @staticmethod
+    def readShorcutFile(filename):
+        file = open(filename, "r")
+        lines = file.readlines()
+        data = {}
+        for line in lines:
+            line = line.strip()
+            if len(line) > 0:
+                values = line.split('=')
+                key = values[0].strip()
+                action = values[1].strip()
+                data[key] = action
+        return data
+
+    @staticmethod
+    def addActionToShortcutFile(filename, action):
+        with open(filename, "a", encoding="utf-8") as fileObj:
+            print("Added {0} to {1}".format(action, filename))
+            fileObj.write(action + ' = ""\n')
+            fileObj.close()
+
+
 # Test code
 
 def print_info():
@@ -427,11 +459,18 @@ def test_custom(name):
 def test_printAllShortcuts():
     print(ShortcutUtil.getAllShortcutsAsString())
 
+def test_readFile(filename):
+    data = ShortcutUtil.readShorcutFile(filename)
+    print(data)
+
+def test_checkValid(filename):
+    ShortcutUtil.checkCustomShortcutFileValid(filename)
 
 if __name__ == "__main__":
-    # print_info()
+    print_info()
     # print_data("brachys")
     # print_data("micron")
     # print_data("syntemno")
-    test_micron()
+    # test_micron()
     # test_custom("test1")
+    # test_checkValid("shortcut_test1.py")

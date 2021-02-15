@@ -337,8 +337,9 @@ class ShortcutUtil:
                 filename = "shortcut_" + name + ".py"
                 if not path.exists(filename):
                     name = "micron"
-                elif FileUtil.getLineCount("shortcut.py") < 2 \
-                        or FileUtil.getLineCount(filename) != len(ShortcutUtil.data['micron']):
+                # elif FileUtil.getLineCount("shortcut.py") < 2 \
+                #         or FileUtil.getLineCount(filename) != len(ShortcutUtil.data['micron']):
+                else:
                     from shutil import copyfile
                     ShortcutUtil.checkCustomShortcutFileValid(filename)
                     copyfile(filename, "shortcut.py")

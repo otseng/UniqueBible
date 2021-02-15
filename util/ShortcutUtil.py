@@ -351,12 +351,12 @@ class ShortcutUtil:
 
     @staticmethod
     def create(data):
-        if not path.exists("shortcut.py") or FileUtil.getLineCount("shortcut.py") != len(data):
-            with open("shortcut.py", "w", encoding="utf-8") as fileObj:
-                for name in data.keys():
-                    value = data[name]
-                    fileObj.write("{0} = {1}\n".format(name, pprint.pformat(value)))
-                fileObj.close()
+        # if not path.exists("shortcut.py") or FileUtil.getLineCount("shortcut.py") != len(data):
+        with open("shortcut.py", "w", encoding="utf-8") as fileObj:
+            for name in data.keys():
+                value = data[name]
+                fileObj.write("{0} = {1}\n".format(name, pprint.pformat(value)))
+            fileObj.close()
 
     @staticmethod
     def reset():

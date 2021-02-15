@@ -10,12 +10,117 @@ from util.FileUtil import FileUtil
 
 
 # Defined sets of shortcuts:
+# blank
 # brachys
 # micron
 # syntemno
 class ShortcutUtil:
 
     data = {
+        "blank": {
+            "back": "",
+            "bookFeatures": "",
+            "bottomHalfScreenHeight": "",
+            "chapterFeatures": "",
+            "commentaryRefButtonClicked": "",
+            "createNewNoteFile": "",
+            "cycleInstant": "",
+            "displaySearchAllBookCommand": "",
+            "displaySearchBibleCommand": "",
+            "displaySearchBibleMenu": "",
+            "displaySearchBookCommand": "",
+            "displaySearchHighlightCommand": "",
+            "displaySearchStudyBibleCommand": "",
+            "displayShortcuts": "",
+            "editExternalFileButtonClicked": "",
+            "enableInstantButtonClicked": "",
+            "enableParagraphButtonClicked": "",
+            "enableSubheadingButtonClicked": "",
+            "externalFileButtonClicked": "",
+            "forward": "",
+            "fullsizeWindow": "",
+            "gotoFirstChapter": "",
+            "gotoLastChapter": "",
+            "hideShowSideToolBars": "",
+            "hideShowAdditionalToolBar": "",
+            "hideShowLeftToolBar": "",
+            "hideShowMainToolBar": "",
+            "hideShowRightToolBar": "",
+            "hideShowSecondaryToolBar": "",
+            "largerFont": "",
+            "leftHalfScreenWidth": "",
+            "loadRunMacro": "",
+            "mainHistoryButtonClicked": "",
+            "mainPageScrollPageDown": "",
+            "mainPageScrollPageUp": "",
+            "mainPageScrollToTop": "",
+            "manageControlPanel": "",
+            "manageRemoteControl": "",
+            "masterCurrentIndex0": "",
+            "masterCurrentIndex1": "",
+            "masterCurrentIndex2": "",
+            "masterCurrentIndex3": "",
+            "nextChapterButton": "",
+            "nextMainBook": "",
+            "nextMainChapter": "",
+            "openControlPanelTab0": "",
+            "openControlPanelTab1": "",
+            "openControlPanelTab2": "",
+            "openControlPanelTab3": "",
+            "openControlPanelTab4": "",
+            "openMainBookNote": "",
+            "openMainChapterNote": "",
+            "openMainVerseNote": "",
+            "openTextFileDialog": "",
+            "parallel": "",
+            "parseContentOnClipboard": "",
+            "previousChapterButton": "",
+            "previousMainBook": "",
+            "previousMainChapter": "",
+            "quitApp": "",
+            "reloadCurrentRecord": "",
+            "rightHalfScreenWidth": "",
+            "runCOMBO": "",
+            "runCOMMENTARY": "",
+            "runCOMPARE": "",
+            "runCROSSREFERENCE": "",
+            "runDISCOURSE": "",
+            "runINDEX": "",
+            "runKJV2Bible": "",
+            "runMAB": "",
+            "runMIB": "",
+            "runMOB": "",
+            "runMPB": "",
+            "runMTB": "",
+            "runTSKE": "",
+            "runTransliteralBible": "",
+            "runWORDS": "",
+            "searchCommandBibleCharacter": "",
+            "searchCommandBibleDictionary": "",
+            "searchCommandBibleEncyclopedia": "",
+            "searchCommandBibleLocation": "",
+            "searchCommandBibleName": "",
+            "searchCommandBibleTopic": "",
+            "searchCommandBookNote": "",
+            "searchCommandChapterNote": "",
+            "searchCommandLexicon": "",
+            "searchCommandVerseNote": "",
+            "setDefaultFont": "",
+            "setNoToolBar": "",
+            "showGistWindow": "",
+            "smallerFont": "",
+            "studyBack": "",
+            "studyForward": "",
+            "studyHistoryButtonClicked": "",
+            "studyPageScrollPageDown": "",
+            "studyPageScrollPageUp": "",
+            "studyPageScrollToTop": "",
+            "switchIconSize": "",
+            "switchLandscapeMode": "",
+            "toggleHighlightMarker": "",
+            "topHalfScreenHeight": "",
+            "twoThirdWindow": "",
+        },
         "brachys": {
             "back": "Ctrl+[",
             "bookFeatures": "Ctrl+R, F",
@@ -395,12 +500,12 @@ class ShortcutUtil:
         return str
 
     @staticmethod
-    def checkCustomShortcutFileValid(filename):
+    def checkCustomShortcutFileValid(filename, source="micron"):
         customShortcuts = ShortcutUtil.readShorcutFile(filename)
         actions = customShortcuts.keys()
-        for action in ShortcutUtil.data["micron"]:
+        for action, shortcut in ShortcutUtil.data[source]:
             if action not in actions:
-                ShortcutUtil.addActionToShortcutFile(filename, action)
+                ShortcutUtil.addActionToShortcutFile(filename, action, shortcut)
 
     @staticmethod
     def readShorcutFile(filename):
@@ -417,24 +522,30 @@ class ShortcutUtil:
         return data
 
     @staticmethod
-    def addActionToShortcutFile(filename, action):
+    def addActionToShortcutFile(filename, action, shortcut=""):
         with open(filename, "a", encoding="utf-8") as fileObj:
             print("Added {0} to {1}".format(action, filename))
-            fileObj.write(action + ' = ""\n')
+            fileObj.write('{0} = "{1}"\n'.format(action, shortcut))
             fileObj.close()
 
 
 # Test code
 
 def print_info():
-    print("shortcut.py: {0}".format(FileUtil.getLineCount('shortcut.py')))
-    print("brachysData: {0}".format(len(ShortcutUtil.data['brachys'])))
-    print("micronData: {0}".format(len(ShortcutUtil.data['micron'])))
-    print("syntemnoData: {0}".format(len(ShortcutUtil.data['syntemno'])))
+    for name in ShortcutUtil.data.keys():
+        print("{0}: {1}".format(name, len(ShortcutUtil.data[name])))
+    for name in ShortcutUtil.getListCustomShortcuts():
+        print("{0}: {1}".format(name, len(ShortcutUtil.readShorcutFile("shortcut_"+name+".py").keys())))
 
 def print_compare(set1, set2):
-    keys1 = ShortcutUtil.data[set1].keys()
-    keys2 = ShortcutUtil.data[set2].keys()
+    if set1 in ShortcutUtil.data.keys():
+        keys1 = ShortcutUtil.data[set1].keys()
+    else:
+        keys1 = ShortcutUtil.readShorcutFile("shortcut_"+set1+".py").keys()
+    if set2 in ShortcutUtil.data.keys():
+        keys2 = ShortcutUtil.data[set2].keys()
+    else:
+        keys2 = ShortcutUtil.readShorcutFile("shortcut_"+set2+".py").keys()
     for key in keys1:
         if key not in keys2:
             print(key + " not in " + set2)
@@ -442,11 +553,15 @@ def print_compare(set1, set2):
         if key not in keys1:
             print(key + " not in " + set1)
 
-def print_data(name):
+def print_shortcuts(name):
     print(name)
     lines = []
-    for key in ShortcutUtil.data[name].keys():
-        lines.append(str(ShortcutUtil.data[name][key]) + " : " + key)
+    if name in ShortcutUtil.data.keys():
+        data = ShortcutUtil.data[name]
+    else:
+        data = ShortcutUtil.readShorcutFile("shortcut_"+name+".py")
+    for key in data.keys():
+        lines.append(str(data[key]) + " : " + key)
     lines.sort()
     print("\n".join(lines))
 
@@ -474,9 +589,15 @@ def test_readFile(filename):
     data = ShortcutUtil.readShorcutFile(filename)
     print(data)
 
-def test_checkValid(filename):
-    ShortcutUtil.checkCustomShortcutFileValid(filename)
+def fix_custom(name):
+    ShortcutUtil.checkCustomShortcutFileValid("shortcut_"+name+".py")
 
+# To use:
+# python -m util.ShortcutUtil <command> <shortcut1> <shortcut2>
+# Examples:
+#   python -m util.ShortcutUtil print_info
+#   python -m util.ShortcutUtil print_data micron
+#   python -m util.ShortcutUtil fix_data myshortcut
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -488,15 +609,19 @@ if __name__ == "__main__":
                 name1 = sys.argv[2].strip()
                 if len(sys.argv) == 3:
                     globals()[method](name1)
+                else:
+                    name2 = sys.argv[3].strip()
+                    globals()[method](name1, name2)
             print("Done")
         except Exception as e:
             print("Error: " + str(e))
     else:
-        print_info()
+        pass
+        # print_info()
         # print_compare("brachys", "syntemno")
-        # print_data("brachys")
-        # print_data("micron")
-        # print_data("syntemno")
-        # test_micron()
-        # test_custom("test1")
+        # print_shortcuts("blank")
+        # print_shortcuts("brachys")
+        # print_shortcuts("micron")
+        # print_shortcuts("syntemno")
+        print_shortcuts("test1")
         # test_checkValid("shortcut_test1.py")

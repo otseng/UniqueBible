@@ -1,3 +1,5 @@
+import webbrowser
+
 import config, platform
 from PySide2.QtWidgets import (QVBoxLayout, QHBoxLayout, QWidget, QDialog, QLabel, QCheckBox)
 
@@ -8,6 +10,7 @@ class MoreConfigOptions(QDialog):
         self.parent = parent
         #self.setModal(True)
         self.setWindowTitle(config.thisTranslation["menu_config_flags"])
+        self.wikiLink = "https://github.com/eliranwong/UniqueBible/wiki/Config-file-reference"
         self.setupLayout()
 
     def setupLayout(self):
@@ -15,7 +18,8 @@ class MoreConfigOptions(QDialog):
 
         readWiki = QLabel(config.thisTranslation["message_readWiki"])
         layout.addWidget(readWiki)
-        readWiki = QLabel("https://github.com/eliranwong/UniqueBible/wiki/config_file")
+        readWiki = QLabel(self.wikiLink)
+        readWiki.mouseReleaseEvent = self.openWiki
         layout.addWidget(readWiki)
 
         horizontalContainer = QWidget()
@@ -66,6 +70,7 @@ class MoreConfigOptions(QDialog):
             ("enableMacros", config.enableMacros, self.enableMacrosChanged, ""),
             ("enableGist", config.enableGist, self.enableGistChanged, ""),
             ("clearCommandEntry", config.clearCommandEntry, self.clearCommandEntryChanged, ""),
+            ("enableFastBootMode", config.enableFastBootMode, self.enableFastBootModeChanged, "")
         ]
         if platform.system() == "Linux":
             options += [
@@ -114,6 +119,9 @@ class MoreConfigOptions(QDialog):
         horizontalContainer.setLayout(horizontalContainerLayout)
         layout.addWidget(horizontalContainer)
         self.setLayout(layout)
+
+    def openWiki(self, event):
+        webbrowser.open(self.wikiLink)
 
     def ibusChanged(self):
         config.ibus = not config.ibus
@@ -276,6 +284,10 @@ class MoreConfigOptions(QDialog):
 
     def enableMacrosChanged(self):
         config.enableMacros = not config.enableMacros
+        self.parent.displayMessage(config.thisTranslation["message_restart"])
+
+    def enableFastBootModeChanged(self):
+        config.enableFastBootMode = not config.enableFastBootMode
         self.parent.displayMessage(config.thisTranslation["message_restart"])
 
     def clearCommandEntryChanged(self):

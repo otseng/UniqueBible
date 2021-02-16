@@ -47,7 +47,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.logger = logging.getLogger('uba')
 
-        self.logger = logging.getLogger('uba')
+        config.inBootupMode = True
+        bootStartTime = datetime.now()
         # Repository
         # Read about downloading a raw github file: https://unix.stackexchange.com/questions/228412/how-to-wget-a-github-file
         self.repository = "https://raw.githubusercontent.com/eliranwong/UniqueBible/master/"
@@ -134,6 +135,13 @@ class MainWindow(QMainWindow):
 
         # pre-load control panel
         self.manageControlPanel(config.showControlPanelOnStartup)
+
+        config.inBootupMode = False
+        bootEndTime = datetime.now()
+        timeDifference = (bootEndTime - bootStartTime).total_seconds()
+
+        self.logger.info("Boot start time: {0}".format(timeDifference))
+        self.logger.info("config.enableFastBootMode: {0}".format(config.enableFastBootMode))
 
     def __del__(self):
         del self.textCommandParser
@@ -2416,10 +2424,10 @@ class MainWindow(QMainWindow):
         timeDifference = int((now - self.now).total_seconds())
         if textCommand == "_stayOnSameTab:::":
             self.newTabException = True
-        # elif not forceExecute and \
-        #         (timeDifference <= 2 and (source == "main" and textCommand == self.lastMainTextCommand) or
-        #         (source == "study" and textCommand == self.lastStudyTextCommand) or textCommand == "main.html"):
-        #     self.logger.debug("Repeated command blocked " + textCommand)
+        elif not forceExecute and \
+                (timeDifference <= 2 and (source == "main" and textCommand == self.lastMainTextCommand) or
+                (source == "study" and textCommand == self.lastStudyTextCommand) or textCommand == "main.html"):
+            self.logger.debug("Repeated command blocked {0}:{1}".format(textCommand, source))
         else:
             # handle exception for new tab features
             if re.search('^(_commentary:::|_menu:::)', textCommand.lower()):

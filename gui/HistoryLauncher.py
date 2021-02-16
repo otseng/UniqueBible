@@ -123,7 +123,8 @@ class HistoryLauncher(QWidget):
 
     def historyAction(self, selection, key):
         selectedItem = selection[0].indexes()[0].data()
-        self.openSelectedItem(selectedItem, key)
+        if not(config.inBootupMode and config.enableFastBootMode):
+            self.openSelectedItem(selectedItem, key)
 
     def openSelectedItem(self, selectedItem, key):
         if key == "external":

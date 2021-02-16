@@ -531,8 +531,11 @@ class ShortcutUtil:
                 ShortcutUtil.addActionToShortcutFile(name, action, ShortcutUtil.data[source][action])
 
     @staticmethod
-    def readShorcutFile(name):
-        filename = "shortcut_" + name + ".py"
+    def readShorcutFile(name=None):
+        if name is None or name in ShortcutUtil.data.keys():
+            filename = "shortcut.py"
+        else:
+            filename = "shortcut_" + name + ".py"
         file = open(filename, "r")
         lines = file.readlines()
         data = {}
@@ -546,7 +549,7 @@ class ShortcutUtil:
         return data
 
     @staticmethod
-    def loadShortcutFile(name):
+    def loadShortcutFile(name=None):
         import shortcut
         customShortcuts = ShortcutUtil.readShorcutFile(name)
         for key in customShortcuts.keys():

@@ -30,7 +30,10 @@ class DisplayShortcutsWindow(QDialog):
             self.table.doubleClicked.connect(self.clickedRow)
         self.layout.addWidget(self.table)
 
-        buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        if name in ShortcutUtil.data.keys():
+            buttons = QDialogButtonBox.Ok
+        else:
+            buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
         self.buttonBox = QDialogButtonBox(buttons)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.accepted.connect(self.saveShortcut)
@@ -49,8 +52,6 @@ class DisplayShortcutsWindow(QDialog):
     def saveShortcut(self):
         if self.name not in ShortcutUtil.data.keys():
             ShortcutUtil.createShortcutFile(self.name, self.model.list)
-            ShortcutUtil.setup(self.name)
-            ShortcutUtil.loadShortcutFile(self.name)
 
     def canceled(self):
         if self.name not in ShortcutUtil.data.keys():

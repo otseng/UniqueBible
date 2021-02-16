@@ -444,9 +444,7 @@ class ConfigUtil:
         # Default menu shortcuts
         if not hasattr(config, "menuShortcuts"):
             config.menuShortcuts = "micron"
-        # Fast boot mode
-        if not hasattr(config, "enableFastBootMode"):
-            config.enableFastBootMode = False
+
 
         # Temporary configurations
         # Their values are not saved on exit.
@@ -665,8 +663,7 @@ class ConfigUtil:
             ("highlightLightThemeColours", config.highlightLightThemeColours),
             ("highlightDarkThemeColours", config.highlightDarkThemeColours),
             ("showHighlightMarkers", config.showHighlightMarkers),
-            ("menuShortcuts", config.menuShortcuts),
-            ("enableFastBootMode", config.enableFastBootMode)
+            ("menuShortcuts", config.menuShortcuts)
         )
         with open("config.py", "w", encoding="utf-8") as fileObj:
             for name, value in configs:

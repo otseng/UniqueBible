@@ -552,6 +552,13 @@ class ShortcutUtil:
             fileObj.write('{0} = "{1}"\n'.format(action, shortcut))
             fileObj.close()
 
+    @staticmethod
+    def createShortcutFile(name, shortcuts):
+        shortcuts.sort(key=lambda x: x[1])
+        with open("shortcut_"+name+".py", "w", encoding="utf-8") as fileObj:
+            for key, value in shortcuts:
+                fileObj.write("{0} = {1}\n".format(value, pprint.pformat(key)))
+            fileObj.close()
 
 # Test code
 

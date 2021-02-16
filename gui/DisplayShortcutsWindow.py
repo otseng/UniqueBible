@@ -49,9 +49,12 @@ class DisplayShortcutsWindow(QDialog):
     def saveShortcut(self):
         if self.name not in ShortcutUtil.data.keys():
             ShortcutUtil.createShortcutFile(self.name, self.model.list)
+            ShortcutUtil.setup(self.name)
+            ShortcutUtil.loadShortcutFile(self.name)
 
     def canceled(self):
-        pass
+        if self.name not in ShortcutUtil.data.keys():
+            ShortcutUtil.loadShortcutFile(self.name)
 
 class DisplayShortcutsModel(QAbstractTableModel):
 

@@ -97,13 +97,15 @@ class MainWindow(QMainWindow):
 
         # !!!!!
 
-        AlephMainWindow.create_menu(self)
-        if config.toolBarIconFullSize:
-            AlephMainWindow.setupToolBarFullIconSize(self)
-        else:
-            AlephMainWindow.setupToolBarStandardIconSize(self)
-            
-        self.setAdditionalToolBar()
+        self.setupMenuLayout()
+
+        # AlephMainWindow.create_menu(self)
+        # if config.toolBarIconFullSize:
+        #     AlephMainWindow.setupToolBarFullIconSize(self)
+        # else:
+        #     AlephMainWindow.setupToolBarStandardIconSize(self)
+        #
+        # self.setAdditionalToolBar()
 
         # assign views
         # mainView & studyView are assigned with class "CentralWidget"
@@ -153,6 +155,15 @@ class MainWindow(QMainWindow):
 
     def __del__(self):
         del self.textCommandParser
+
+    def setupMenuLayout(self):
+        AlephMainWindow.create_menu(self)
+        if config.toolBarIconFullSize:
+            AlephMainWindow.setupToolBarFullIconSize(self)
+        else:
+            AlephMainWindow.setupToolBarStandardIconSize(self)
+
+        self.setAdditionalToolBar()
 
     def setOsOpenCmd(self):
         if platform.system() == "Linux":

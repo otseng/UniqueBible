@@ -7,7 +7,7 @@ from functools import partial
 from PySide2.QtCore import QUrl, Qt, QEvent
 from PySide2.QtGui import QIcon, QGuiApplication, QFont
 from PySide2.QtWidgets import (QAction, QInputDialog, QLineEdit, QMainWindow, QMessageBox, QWidget, QFileDialog, QLabel,
-                               QFrame, QFontDialog, QApplication)
+                               QFrame, QFontDialog, QApplication, QPushButton)
 
 import exlbl
 from BibleBooks import BibleBooks
@@ -20,6 +20,8 @@ from Languages import Languages
 from ToolsSqlite import BookData, IndexesSqlite, Book
 from db.Highlight import Highlight
 from gui.AlephMainWindow import AlephMainWindow
+from gui.ClassicMainWindow import ClassicMainWindow
+from gui.FocusMainWindow import FocusMainWindow
 from gui.DisplayShortcutsWindow import DisplayShortcutsWindow
 from gui.GistWindow import GistWindow
 from translations import translations
@@ -95,17 +97,7 @@ class MainWindow(QMainWindow):
         QGuiApplication.setWindowIcon(appIcon)
         # setup user menu & toolbars
 
-        # !!!!!
-
-        self.setupMenuLayout()
-
-        # AlephMainWindow.create_menu(self)
-        # if config.toolBarIconFullSize:
-        #     AlephMainWindow.setupToolBarFullIconSize(self)
-        # else:
-        #     AlephMainWindow.setupToolBarStandardIconSize(self)
-        #
-        # self.setAdditionalToolBar()
+        self.setupMenuLayout(config.menuLayout)
 
         # assign views
         # mainView & studyView are assigned with class "CentralWidget"
@@ -156,14 +148,19 @@ class MainWindow(QMainWindow):
     def __del__(self):
         del self.textCommandParser
 
-    def setupMenuLayout(self):
-        AlephMainWindow.create_menu(self)
-        if config.toolBarIconFullSize:
-            AlephMainWindow.setupToolBarFullIconSize(self)
+    # Dynamically load menu layout
+    def setupMenuLayout(self, layout):
+        if layout not in ("classic", "focus", "aleph"):
+            raise Exception("{0} is not a valid menu layout")
         else:
-            AlephMainWindow.setupToolBarStandardIconSize(self)
-
-        self.setAdditionalToolBar()
+            windowName = layout.capitalize() + "MainWindow"
+            windowClass = getattr(sys.modules[__name__], windowName)
+            getattr(windowClass, 'create_menu')(self)
+            if config.toolBarIconFullSize:
+                getattr(windowClass, 'setupToolBarFullIconSize')(self)
+            else:
+                getattr(windowClass, 'setupToolBarStandardIconSize')(self)
+            self.setAdditionalToolBar()
 
     def setOsOpenCmd(self):
         if platform.system() == "Linux":
@@ -2804,3 +2801,30 @@ class MainWindow(QMainWindow):
         if gw.exec():
             config.gistToken = gw.gistTokenInput.text()
         self.reloadCurrentRecord()
+
+    def addStandardTextButton(self, toolTip, action, toolbar, button=None, translation=True):
+        textButtonStyle = "QPushButton {background-color: #151B54; color: white;} QPushButton:hover {background-color: #333972;} QPushButton:pressed { background-color: #515790;}"
+        if button is None:
+            button = QPushButton()
+        button.setToolTip(config.thisTranslation[toolTip] if translation else toolTip)
+        button.setStyleSheet(textButtonStyle)
+        button.clicked.connect(action)
+        toolbar.addWidget(button)
+
+    def addStandardIconButton(self, toolTip, icon, action, toolbar, button=None, translation=True):
+        if button is None:
+            button = QPushButton()
+        if config.qtMaterial and config.qtMaterialTheme:
+            #button.setFixedSize(config.iconButtonWidth, config.iconButtonWidth)
+            button.setFixedWidth(config.iconButtonWidth)
+            #button.setFixedHeight(config.iconButtonWidth)
+        button.setToolTip(config.thisTranslation[toolTip] if translation else toolTip)
+        buttonIconFile = os.path.join("htmlResources", icon)
+        button.setIcon(QIcon(buttonIconFile))
+        button.clicked.connect(action)
+        toolbar.addWidget(button)
+
+    def testing(self):
+        #pass
+        print("testing")
+

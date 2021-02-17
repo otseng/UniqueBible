@@ -149,7 +149,9 @@ class MainWindow(QMainWindow):
         del self.textCommandParser
 
     # Dynamically load menu layout
-    def setupMenuLayout(self, layout):
+    # !!!!
+    def setupMenuLayout(self, layout=config.menuLayout):
+        self.menuBar().clear()
         if layout not in ("classic", "focus", "aleph"):
             raise Exception("{0} is not a valid menu layout")
         else:
@@ -838,31 +840,31 @@ class MainWindow(QMainWindow):
 
     def setMenuLayout(self, layout):
         config.menuLayout = layout
-        self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+        self.setupMenuLayout(layout)
 
-    def setDefaultMenuLayout(self):
-        config.menuLayout = "classic"
-        self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+    def setClassicMenuLayout(self):
+        self.setMenuLayout("classic")
+
+    def setFocusMenuLayout(self):
+        self.setMenuLayout("focus")
 
     def setAlephMenuLayout(self):
-        config.menuLayout = "aleph"
-        self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+        self.setMenuLayout("aleph")
 
     def setShortcuts(self, shortcut):
         config.menuShortcuts = shortcut
         ShortcutUtil.reset()
         ShortcutUtil.setup(shortcut)
         ShortcutUtil.loadShortcutFile()
-        self.menuBar().clear()
-        self.create_menu()
+        self.setupMenuLayout()
 
     def displayShortcuts(self):
         shortcutWindow = DisplayShortcutsWindow(config.menuShortcuts, ShortcutUtil.getAllShortcuts())
         if shortcutWindow.exec():
             ShortcutUtil.setup(config.menuShortcuts)
             ShortcutUtil.loadShortcutFile(config.menuShortcuts)
-            self.menuBar().clear()
-            self.create_menu()
+            ShortcutUtil.loadShortcutFile()
+            self.setupMenuLayout()
 
     def exportAllImages(self, htmlText):
         self.exportImageNumber = 0

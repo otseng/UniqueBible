@@ -141,7 +141,6 @@ class MainWindow(QMainWindow):
         timeDifference = (bootEndTime - bootStartTime).total_seconds()
 
         self.logger.info("Boot start time: {0}".format(timeDifference))
-        self.logger.info("config.enableFastBootMode: {0}".format(config.enableFastBootMode))
 
     def __del__(self):
         del self.textCommandParser

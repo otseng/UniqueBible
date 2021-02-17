@@ -69,8 +69,7 @@ class MoreConfigOptions(QDialog):
             ("useFastVerseParsing", config.useFastVerseParsing, self.useFastVerseParsingChanged, ""),
             ("enableMacros", config.enableMacros, self.enableMacrosChanged, ""),
             ("enableGist", config.enableGist, self.enableGistChanged, ""),
-            ("clearCommandEntry", config.clearCommandEntry, self.clearCommandEntryChanged, ""),
-            ("enableFastBootMode", config.enableFastBootMode, self.enableFastBootModeChanged, "")
+            ("clearCommandEntry", config.clearCommandEntry, self.clearCommandEntryChanged, "")
         ]
         if platform.system() == "Linux":
             options += [
@@ -284,10 +283,6 @@ class MoreConfigOptions(QDialog):
 
     def enableMacrosChanged(self):
         config.enableMacros = not config.enableMacros
-        self.parent.displayMessage(config.thisTranslation["message_restart"])
-
-    def enableFastBootModeChanged(self):
-        config.enableFastBootMode = not config.enableFastBootMode
         self.parent.displayMessage(config.thisTranslation["message_restart"])
 
     def clearCommandEntryChanged(self):

@@ -74,10 +74,9 @@ def setupMainWindow(availableGeometry):
     mainWindow.checkMigration()
 
 def executeInitialTextCommand(textCommand, source="main"):
-    if not(config.inBootupMode and config.enableFastBootMode):
-        if source == "main":
-            mainWindow.textCommandLineEdit.setText(textCommand)
-        mainWindow.runTextCommand(textCommand, True, source)
+    if source == "main":
+        mainWindow.textCommandLineEdit.setText(textCommand)
+    mainWindow.runTextCommand(textCommand, True, source)
 
 def setCurrentRecord():
     mainRecordPosition = len(config.history["main"]) - 1

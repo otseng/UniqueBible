@@ -19,6 +19,7 @@ from ThirdParty import Converter, ThirdPartyDictionary
 from Languages import Languages
 from ToolsSqlite import BookData, IndexesSqlite, Book
 from db.Highlight import Highlight
+# These "unused" window imports are actually used.  Do not delete these lines.
 from gui.AlephMainWindow import AlephMainWindow
 from gui.ClassicMainWindow import ClassicMainWindow
 from gui.FocusMainWindow import FocusMainWindow
@@ -97,6 +98,7 @@ class MainWindow(QMainWindow):
         QGuiApplication.setWindowIcon(appIcon)
         # setup user menu & toolbars
 
+        # Setup menu layout
         self.setupMenuLayout(config.menuLayout)
 
         # assign views
@@ -149,9 +151,16 @@ class MainWindow(QMainWindow):
         del self.textCommandParser
 
     # Dynamically load menu layout
-    # !!!!
-    def setupMenuLayout(self, layout=config.menuLayout):
-        self.menuBar().clear()
+    def setupMenuLayout(self, layout):
+        try:
+            self.menuBar().clear()
+            self.removeToolBar(self.firstToolBar)
+            self.removeToolBar(self.secondToolBar)
+            self.removeToolBar(self.leftToolBar)
+            self.removeToolBar(self.rightToolBar)
+            self.removeToolBar(self.studyBibleToolBar)
+        except:
+            pass
         if layout not in ("classic", "focus", "aleph"):
             raise Exception("{0} is not a valid menu layout")
         else:
@@ -856,7 +865,7 @@ class MainWindow(QMainWindow):
         ShortcutUtil.reset()
         ShortcutUtil.setup(shortcut)
         ShortcutUtil.loadShortcutFile()
-        self.setupMenuLayout()
+        self.setupMenuLayout(config.menuLayout)
 
     def displayShortcuts(self):
         shortcutWindow = DisplayShortcutsWindow(config.menuShortcuts, ShortcutUtil.getAllShortcuts())

@@ -109,6 +109,7 @@ if config.qtMaterial and config.qtMaterialTheme:
 else:
     app.setPalette(Themes.getPalette())
 
+# Setup main window
 mainWindow = MainWindow()
 
 # Check screen size

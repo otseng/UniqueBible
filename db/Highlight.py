@@ -7,8 +7,7 @@ class Highlight:
 
     CREATE_HIGHLIGHT_TABLE = "CREATE TABLE IF NOT EXISTS Highlight (Book INT, Chapter INT, Verse INT, Code NVARCHAR(5))"
 
-    codes = {"yellow": "hl1", "hl1": "hl1",
-             "blue": "hl2", "hl2": "hl2",
+    codes = {"hl1": "hl1", "hl2": "hl2", "hl3": "hl3", "hl4": "hl4", "hl5": "hl5", "hl6": "hl6", "hl7": "hl7", "hl8": "hl8", "hl9": "hl9", "hl10": "hl10",
              "underline": "ul1", "ul1": "ul1"}
 
     def __init__(self):
@@ -51,6 +50,11 @@ class Highlight:
         self.cursor.execute(query, (b, c))
         return {verse: code for verse, code in self.cursor.fetchall()}
 
+    def isHighlighted(self, b, c, v):
+        query = "SELECT Code FROM Highlight WHERE Book=? AND Chapter=? AND Verse=?"
+        self.cursor.execute(query, (b, c, v))
+        return self.cursor.fetchone()
+
     def getHighlightedVerses(self, where=""):
         query = "SELECT Book, Chapter, Verse, Code FROM Highlight {0} ORDER BY Book, Chapter, Verse".format(where)
         self.cursor.execute(query)
@@ -79,8 +83,6 @@ class Highlight:
 
     def getHighlightedBcvList(self, highlight, reference):
         highlight = highlight.lower()
-        reference = reference.lower()
-        parser = BibleVerseParser(config.standardAbbreviation)
         if highlight == "" or highlight == "all":
             where = "WHERE 1=1 "
         else:
@@ -91,8 +93,9 @@ class Highlight:
         elif reference == "ot":
             where += "AND Book < 40"
         elif not(reference == "" or reference == "all"):
-            ref = parser.verseReferenceToBCV(reference)
-            where += "AND Book={0}".format(ref[0])
+            ref = BibleVerseParser(config.standardAbbreviation).extractAllReferences("{0} 1".format(reference))
+            if ref:
+                where += "AND Book={0}".format(ref[0][0])
         return self.getHighlightedVerses(where)
 
 if __name__ == "__main__":

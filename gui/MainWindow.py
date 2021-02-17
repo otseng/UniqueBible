@@ -1022,6 +1022,13 @@ class MainWindow(QMainWindow):
         note = self.htmlWrapper(note, True, "study", False)
         self.openTextOnStudyView(note, tab_title=reference)
 
+    def getHighlightCss(self):
+        css = ""
+        for i in range(10):
+            code = "hl{0}".format(i + 1)
+            css += ".{2} {0} background: {3}; {1} ".format("{", "}", code, config.highlightDarkThemeColours[i] if config.theme == "dark" else config.highlightLightThemeColours[i])
+        return css
+
     # Actions - open text from external sources
     def htmlWrapper(self, text, parsing=False, view="study", linebreak=True):
         searchReplace1 = (
@@ -1048,8 +1055,8 @@ class MainWindow(QMainWindow):
         elif view == "study":
             activeBCVsettings = "<script>var activeText = '{0}'; var activeB = {1}; var activeC = {2}; var activeV = {3};</script>".format(
                 config.studyText, config.studyB, config.studyC, config.studyV)
-        text = "<!DOCTYPE html><html><head><title>UniqueBible.app</title><style>body {2} font-size: {4}px; font-family:'{5}'; {3} zh {2} font-family:'{6}'; {3}</style><link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{7}.css'><link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css'><script src='js/common.js'></script><script src='js/{7}.js'></script><script src='w3.js'></script>{0}<script>var versionList = []; var compareList = []; var parallelList = []; var diffList = []; var searchList = [];</script></head><body><span id='v0.0.0'></span>{1}</body></html>".format(
-            activeBCVsettings, text, "{", "}", config.fontSize, config.font, config.fontChinese, config.theme)
+        text = "<!DOCTYPE html><html><head><title>UniqueBible.app</title><style>body {2} font-size: {4}px; font-family:'{5}'; {3} zh {2} font-family:'{6}'; {3} {8}</style><link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{7}.css'><link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css'><script src='js/common.js'></script><script src='js/{7}.js'></script><script src='w3.js'></script>{0}<script>var versionList = []; var compareList = []; var parallelList = []; var diffList = []; var searchList = [];</script></head><body><span id='v0.0.0'></span>{1}</body></html>".format(
+            activeBCVsettings, text, "{", "}", config.fontSize, config.font, config.fontChinese, config.theme, self.getHighlightCss())
 
         return text
 
@@ -2430,7 +2437,7 @@ class MainWindow(QMainWindow):
             self.logger.debug("Repeated command blocked {0}:{1}".format(textCommand, source))
         else:
             # handle exception for new tab features
-            if re.search('^(_commentary:::|_menu:::)', textCommand.lower()):
+            if re.search('^(_commentary:::|_menu:::|_vnsc:::)', textCommand.lower()):
                 self.newTabException = True
             # parse command
             view, content, dict = self.textCommandParser.parser(textCommand, source)
@@ -2448,9 +2455,8 @@ class MainWindow(QMainWindow):
                 elif view == "study":
                     activeBCVsettings = "<script>var activeText = '{0}'; var activeB = {1}; var activeC = {2}; var activeV = {3};</script>".format(
                         config.studyText, config.studyB, config.studyC, config.studyV)
-                html = "<!DOCTYPE html><html><head><title>UniqueBible.app</title><style>body {2} font-size: {4}px; font-family:'{5}'; {3} zh {2} font-family:'{6}'; {3}</style><link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{7}.css'><link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css'><script src='js/common.js'></script><script src='js/{7}.js'></script><script src='w3.js'></script>{0}<script>var versionList = []; var compareList = []; var parallelList = []; var diffList = []; var searchList = [];</script></head><body><span id='v0.0.0'></span>{1}</body></html>".format(
-                    activeBCVsettings, content, "{", "}", config.fontSize, config.font, config.fontChinese,
-                    config.theme)
+                html = "<!DOCTYPE html><html><head><title>UniqueBible.app</title><style>body {2} font-size: {4}px; font-family:'{5}'; {3} zh {2} font-family:'{6}'; {3} {8}</style><link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{7}.css'><link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css'><script src='js/common.js'></script><script src='js/{7}.js'></script><script src='w3.js'></script>{0}<script>var versionList = []; var compareList = []; var parallelList = []; var diffList = []; var searchList = [];</script></head><body><span id='v0.0.0'></span>{1}</body></html>".format(
+                    activeBCVsettings, content, "{", "}", config.fontSize, config.font, config.fontChinese, config.theme, self.getHighlightCss())
                 views = {
                     "main": self.mainView,
                     "study": self.studyView,
@@ -2601,8 +2607,7 @@ class MainWindow(QMainWindow):
         features = ["noAction", "cp0", "cp1", "cp2", "cp3", "cp4", "menu4_compareAll", "menu4_crossRef", "menu4_tske", "menu4_traslations", "menu4_discourse", "menu4_words", "menu4_tdw", "menu4_indexes", "menu4_commentary", "classicMenu"]
         items = [config.thisTranslation[feature] for feature in features]
         itemsDict = dict(zip(items, values))
-        
-        item, ok = QInputDialog.getItem(self, "UniqueBible", config.thisTranslation["menu1_setMyLanguage"], items, values.index(config.verseNoSingleClickAction), False)
+        item, ok = QInputDialog.getItem(self, "UniqueBible", config.thisTranslation["assignSingleClick"], items, values.index(config.verseNoSingleClickAction), False)
         if ok and item:
             config.verseNoSingleClickAction = itemsDict[item]
 
@@ -2612,8 +2617,7 @@ class MainWindow(QMainWindow):
         features = ["noAction", "cp0", "cp1", "cp2", "cp3", "cp4", "menu4_compareAll", "menu4_crossRef", "menu4_tske", "menu4_traslations", "menu4_discourse", "menu4_words", "menu4_tdw", "menu4_indexes", "menu4_commentary", "classicMenu"]
         items = [config.thisTranslation[feature] for feature in features]
         itemsDict = dict(zip(items, values))
-        
-        item, ok = QInputDialog.getItem(self, "UniqueBible", config.thisTranslation["menu1_setMyLanguage"], items, values.index(config.verseNoDoubleClickAction), False)
+        item, ok = QInputDialog.getItem(self, "UniqueBible", config.thisTranslation["assignDoubleClick"], items, values.index(config.verseNoDoubleClickAction), False)
         if ok and item:
             config.verseNoDoubleClickAction = itemsDict[item]
 
@@ -2727,7 +2731,7 @@ class MainWindow(QMainWindow):
                 parser = BibleVerseParser(config.standardAbbreviation)
                 for (b, c, v, code) in verses:
                     reference = parser.bcvToVerseReference(b, c, v)
-                    outfile.write("_HIGHLIGHT:::{0}:::{1}\n".format(reference, code))
+                    outfile.write("_HIGHLIGHT:::{0}:::{1}\n".format(code, reference))
                 outfile.write(". displayMessage Highlighted verses loaded\n")
                 outfile.close()
                 self.displayMessage("Highlighted verses saved to {0}".format(filename))

@@ -1,11 +1,12 @@
 if not __name__ == "__main__":
     import config
 from functools import partial
-from PySide2.QtGui import QPalette, QColor
+from PySide2.QtGui import QColor
 from PySide2.QtGui import QGuiApplication
-from PySide2.QtWidgets import QRadioButton, QComboBox, QHBoxLayout, QVBoxLayout, QLabel, QWidget, QPushButton, QColorDialog, QInputDialog, QLineEdit
+from PySide2.QtWidgets import QRadioButton, QComboBox, QHBoxLayout, QVBoxLayout, QWidget, QPushButton, QColorDialog, QInputDialog, QLineEdit
 from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite
+from db.Highlight import Highlight
 
 class HighlightLauncher(QWidget):
 
@@ -27,24 +28,33 @@ class HighlightLauncher(QWidget):
         self.setMinimumWidth(500)
         self.resize(availableGeometry.width() * widthFactor, availableGeometry.height() * heightFactor)
 
-    def setupUI(self):
-        layout = QVBoxLayout()
+    def refresh(self):
+        codes = Highlight().isHighlighted(self.parent.parent.bibleTab.b, self.parent.parent.bibleTab.c, self.parent.parent.bibleTab.v)
+        if codes:
+            index = int(codes[0][-1]) - 1
+            self.collectionRadioButtons[index].setChecked(True)
         
-        subLayout = QHBoxLayout()
-        radioButton = QRadioButton()
-        subLayout.addWidget(radioButton)
-        subLayout.addWidget(QLabel(config.thisTranslation["noHightlight"]))
-        layout.addLayout(subLayout)
+    def setupUI(self):
+
+        layout = QVBoxLayout()
+
+        columns = QHBoxLayout()
+        leftColumn = QVBoxLayout()
+        rightColumn = QVBoxLayout()
 
         self.collectionButton1, self.collectionButton2, self.collectionButton3, self.collectionButton4, self.collectionButton5, self.collectionButton6, self.collectionButton7, self.collectionButton8, self.collectionButton9, self.collectionButton10 = QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton()
         self.collectionButtons = (self.collectionButton1, self.collectionButton2, self.collectionButton3, self.collectionButton4, self.collectionButton5, self.collectionButton6, self.collectionButton7, self.collectionButton8, self.collectionButton9, self.collectionButton10)
         self.collectionColourButton1, self.collectionColourButton2, self.collectionColourButton3, self.collectionColourButton4, self.collectionColourButton5, self.collectionColourButton6, self.collectionColourButton7, self.collectionColourButton8, self.collectionColourButton9, self.collectionColourButton10 = QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton(), QPushButton()
         self.collectionColourButtons = (self.collectionColourButton1, self.collectionColourButton2, self.collectionColourButton3, self.collectionColourButton4, self.collectionColourButton5, self.collectionColourButton6, self.collectionColourButton7, self.collectionColourButton8, self.collectionColourButton9, self.collectionColourButton10)
+        self.collectionRadioButton1, self.collectionRadioButton2, self.collectionRadioButton3, self.collectionRadioButton4, self.collectionRadioButton5, self.collectionRadioButton6, self.collectionRadioButton7, self.collectionRadioButton8, self.collectionRadioButton9, self.collectionRadioButton10 = QRadioButton(), QRadioButton(), QRadioButton(), QRadioButton(), QRadioButton(), QRadioButton(), QRadioButton(), QRadioButton(), QRadioButton(), QRadioButton()
+        self.collectionRadioButtons = (self.collectionRadioButton1, self.collectionRadioButton2, self.collectionRadioButton3, self.collectionRadioButton4, self.collectionRadioButton5, self.collectionRadioButton6, self.collectionRadioButton7, self.collectionRadioButton8, self.collectionRadioButton9, self.collectionRadioButton10)
         for index, button in enumerate(self.collectionButtons):
             subLayout = QHBoxLayout()
             
-            radioButton = QRadioButton()
+            radioButton = self.collectionRadioButtons[index]
             radioButton.setFixedWidth(20)
+            radioButton.toggled.connect(lambda checked, option=index: self.highlightOptionChanged(checked, option))
+            radioButton.setToolTip(config.thisTranslation["selectApplyHighlight"])
             subLayout.addWidget(radioButton)
 
             button.setText("collection" if __name__ == "__main__" else config.highlightCollections[index])
@@ -62,11 +72,43 @@ class HighlightLauncher(QWidget):
             combo = QComboBox()
             combo.addItems(self.searchList)
             combo.setFixedWidth(100)
-            #combo.currentIndexChanged.connect(self.searchHighlight)
+            combo.currentIndexChanged.connect(lambda selectedIndex, index=index: self.searchHighlight(selectedIndex, index))
             subLayout.addWidget(combo)
-            layout.addLayout(subLayout)
+            
+            leftColumn.addLayout(subLayout) if (index % 2 == 0) else rightColumn.addLayout(subLayout)
+
+        columns.addLayout(leftColumn)
+        columns.addLayout(rightColumn)
+        layout.addLayout(columns)
+
+        button = QPushButton(config.thisTranslation["noHightlight"])
+        button.setToolTip(config.thisTranslation["selectRemoveHighlight"])
+        button.clicked.connect(lambda: self.highlightOptionChanged(True))
+        layout.addWidget(button)
+
+        layout.addStretch()
 
         self.setLayout(layout)
+
+    def highlightOptionChanged(self, checked, option=None):
+        if checked:
+            if option is None:
+                code = "delete"
+            else:
+                code = "hl{0}".format(option + 1)
+            command = "_HIGHLIGHT:::{0}:::{1}".format(code, self.parent.parent.bibleTab.getSelectedReference())
+            self.parent.parent.runTextCommand(command, reloadMainWindow=True)
+
+    def searchHighlight(self, selectedIndex, code):
+        if selectedIndex != 0:
+            scopes = {
+                1: "all",
+                2: "ot",
+                3: "nt",
+            }
+            scope = scopes.get(selectedIndex, self.searchList[selectedIndex])
+            command = "SEARCHHIGHLIGHT:::hl{0}:::{1}".format(code + 1, scope)
+            self.parent.parent.runTextCommand(command)
 
     def rename(self, index):
         newName, ok = QInputDialog.getText(self, "QInputDialog.getText()",
@@ -87,8 +129,6 @@ class HighlightLauncher(QWidget):
             button = self.collectionColourButtons[index]
             buttonStyle = "QPushButton {0}background-color: {2}; color: {3};{1}".format("{", "}", colorName, "white" if config.theme == "dark" else "black")
             button.setStyleSheet(buttonStyle)
-            return (color.name(), QPalette(color))
-        return ()
 
 if __name__ == "__main__":
     import sys

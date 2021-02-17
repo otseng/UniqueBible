@@ -487,6 +487,7 @@ function nB() {
 function luV(v) {
     var verseReference = bcvToVerseRefence(activeB,activeC,v);
     document.title = "_stayOnSameTab:::";
+    document.title = "_vnsc:::"+activeText+"."+activeB+"."+activeC+"."+v+"."+verseReference;
     document.title = "BIBLE:::"+activeText+":::"+verseReference;
 }
 
@@ -812,5 +813,5 @@ function hiV(b,c,v,code) {
         divEl.className = code;
     }
     verseReference = bcvToVerseRefence(b,c,v);
-    document.title = "_HIGHLIGHT:::"+verseReference+":::"+code;
+    document.title = "_HIGHLIGHT:::"+code+":::"+verseReference;
 }

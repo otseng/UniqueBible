@@ -19,6 +19,7 @@ from ThirdParty import Converter, ThirdPartyDictionary
 from Languages import Languages
 from ToolsSqlite import BookData, IndexesSqlite, Book
 from db.Highlight import Highlight
+from gui.AlephMainWindow import AlephMainWindow
 from gui.DisplayShortcutsWindow import DisplayShortcutsWindow
 from gui.GistWindow import GistWindow
 from translations import translations
@@ -93,9 +94,17 @@ class MainWindow(QMainWindow):
         appIcon = QIcon(appIconFile)
         QGuiApplication.setWindowIcon(appIcon)
         # setup user menu & toolbars
-        self.create_menu()
-        self.setupToolBar()
+
+        # !!!!!
+
+        AlephMainWindow.create_menu(self)
+        if config.toolBarIconFullSize:
+            AlephMainWindow.setupToolBarFullIconSize(self)
+        else:
+            AlephMainWindow.setupToolBarStandardIconSize(self)
+            
         self.setAdditionalToolBar()
+
         # assign views
         # mainView & studyView are assigned with class "CentralWidget"
         self.mainView = None
@@ -574,12 +583,6 @@ class MainWindow(QMainWindow):
                 # in this case gives image
                 f.write(r.content)
         print("done")
-
-    def setupToolBar(self):
-        if config.toolBarIconFullSize:
-            self.setupToolBarFullIconSize()
-        else:
-            self.setupToolBarStandardIconSize()
 
     def setStudyBibleToolBar(self):
         if not config.noStudyBibleToolbar:

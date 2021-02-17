@@ -9,10 +9,7 @@ from BiblesSqlite import BiblesSqlite
 from util.ShortcutUtil import ShortcutUtil
 
 
-class FocusMainWindow(MainWindow):
-
-    def __init__(self):
-        super().__init__()
+class FocusMainWindow:
 
     def create_menu(self):
         menuBar = self.menuBar()

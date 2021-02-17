@@ -10,6 +10,8 @@ import sys
 # Create files for user customisation
 # "config.py" is essential for running module "config".
 # "custom.css" is essential for custom css feature.
+from gui.MainWindow import MainWindow
+
 customCssFile = os.path.join("htmlResources", "css", "custom.css")
 userFiles = ("config.py", customCssFile)
 for userFile in userFiles:
@@ -111,13 +113,22 @@ if config.qtMaterial and config.qtMaterialTheme:
 else:
     app.setPalette(Themes.getPalette())
 # Apply window menu layout
-if config.menuLayout == "focus":
-    config.noStudyBibleToolbar = True
-    mainWindow = FocusMainWindow()
-elif config.menuLayout == "aleph":
-    mainWindow = AlephMainWindow()
-else:
-    mainWindow = ClassicMainWindow()
+
+windowLayouts = {
+    "aleph": {"menu": AlephMainWindow.create_menu},
+    "classic": {"menu": ClassicMainWindow.create_menu},
+    "focus": {"menu": FocusMainWindow.create_menu},
+}
+mainWindow = MainWindow()
+
+# if config.menuLayout == "focus":
+#     config.noStudyBibleToolbar = True
+#     mainWindow = FocusMainWindow()
+# elif config.menuLayout == "aleph":
+#     mainWindow = AlephMainWindow()
+# else:
+#     mainWindow = ClassicMainWindow()
+#
 
 # Check screen size
 availableGeometry = app.desktop().availableGeometry(mainWindow)

@@ -188,6 +188,7 @@ class MainWindow(QMainWindow):
         languages = Languages()
         if config.userLanguageInterface and hasattr(myTranslation, "translation"):
             # Check for missing items. Use Google Translate to translate the missing items.  Or use default English translation to fill in missing items if internet connection is not available.
+            missingItems = {}
             for key, value in languages.translation.items():
                 if not key in myTranslation.translation:
                     if config.googletransSupport and hasattr(myTranslation, "translationLanguage"):
@@ -198,17 +199,18 @@ class MainWindow(QMainWindow):
                             myTranslation.translation[key] = value
                     else:
                         myTranslation.translation[key] = value
+                    missingItems[key] = myTranslation.translation[key]
                     updateNeeded = True
             # set thisTranslation to customised translation
             config.thisTranslation = myTranslation.translation
             # update myTranslation.py
             if updateNeeded:
-                try:
-                    languages.writeMyTranslation(myTranslation.translation, myTranslation.translationLanguage)
-                except:
-                    print("Failed to update 'myTranslation.py'.")
-                self.displayMessage("{0}  {1} 'config.py'".format(config.thisTranslation["message_newInterfaceItems"],
-                                                                  config.thisTranslation["message_improveTrans"]))
+                print(missingItems)
+                #try:
+                #    languages.writeMyTranslation(myTranslation.translation, myTranslation.translationLanguage)
+                #except:
+                #    print("Failed to update 'myTranslation.py'.")
+                self.displayMessage("{0} {1} {2} 'myTranslation.py'".format(config.thisTranslation["message_newInterfaceItems"], ", ".join(missingItems.keys()), config.thisTranslation["message_improveTrans"]))
         elif config.userLanguageInterface and hasattr(config, "translationLanguage"):
             languageCode = languages.codes[config.translationLanguage]
             if languageCode in translations:
@@ -310,13 +312,7 @@ class MainWindow(QMainWindow):
             text = config.mainText
 
         if self.textCommandParser.isDatabaseInstalled("bible"):
-            if config.controlPanel and not self.controlPanel.isVisible():
-                self.controlPanel.updateBCVText(b, c, v, text)
-                self.controlPanel.tabs.setCurrentIndex(index)
-                self.controlPanel.raise_()
-                self.controlPanel.show()
-                self.controlPanel.tabChanged(index)
-            elif config.controlPanel and not self.controlPanel.isActiveWindow():
+            if config.controlPanel and not (self.controlPanel.isVisible() or self.controlPanel.isActiveWindow()):
                 self.controlPanel.updateBCVText(b, c, v, text)
                 self.controlPanel.tabs.setCurrentIndex(index)
                 textCommandText = self.textCommandLineEdit.text()
@@ -328,7 +324,8 @@ class MainWindow(QMainWindow):
                 # The error message is received when QT_QPA_PLATFORM=wayland:
                 # qt.qpa.wayland: Wayland does not support QWindow::requestActivate()
                 # Therefore, we use hide and show methods instead with wayland.
-                self.controlPanel.hide()
+                if self.controlPanel.isVisible() and not self.controlPanel.isActiveWindow():
+                    self.controlPanel.hide()
                 self.controlPanel.show()
                 self.controlPanel.tabChanged(index)
             elif not config.controlPanel:
@@ -336,11 +333,10 @@ class MainWindow(QMainWindow):
                 if show:
                     self.controlPanel.show()
                     self.controlPanel.tabChanged(index)
-                textCommandText = self.textCommandLineEdit.text()
                 if config.clearCommandEntry:
                     self.controlPanel.commandField.setText("")
-                elif textCommandText:
-                    self.controlPanel.commandField.setText(textCommandText)
+                else:
+                    self.controlPanel.commandField.setText(self.textCommandLineEdit.text())
                 config.controlPanel = True
             # elif self.controlPanel:
             #        self.controlPanel.close()

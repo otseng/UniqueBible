@@ -52,10 +52,17 @@ def validateLanguageFileSizes():
         trans = LanguageUtil.loadTranslation(lang)
         print("{0} has size {1}".format(lang, len(trans)))
 
+def compareLanguageFiles(lang1, lang2):
+    trans1 = LanguageUtil.loadTranslation(lang1)
+    trans2 = LanguageUtil.loadTranslation(lang2)
+    for key1 in trans1.keys():
+        if key1 not in trans2.keys():
+            print("{0} not in {1} : {2}".format(key1, lang2, trans1[key1]))
 
 if __name__ == "__main__":
 
     # test_defaultLanguage()
     # test_getlistSupportedLanguages()
     # test_loadTranslation()
-    validateLanguageFileSizes()
+    # validateLanguageFileSizes()
+    compareLanguageFiles("en_GB", "en_US")

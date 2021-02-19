@@ -524,4 +524,8 @@ translation = {
     'message_select_macro': 'Select Macro',
     'message_macro_save_highlights': 'Enter filename to save all highlights as a macro file',
     'message_macro_save_command': 'Enter filename to save current command as a macro file',
+    'menu1_programInterface': 'Program Interface',
+    'adjustSpeed': 'Adjust Speed',
+    'ibmWatsonNotEnalbed': 'Translation feature using IBM Watson service is not enabled. '
+
 }

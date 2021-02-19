@@ -45,6 +45,25 @@ class LanguageUtil:
         return trans.translation
 
     @staticmethod
+    def validateLanguageFileSizes():
+        languages = LanguageUtil.getCodesSupportedLanguages()
+        for lang in languages:
+            trans = LanguageUtil.loadTranslation(lang)
+            print("{0} has size {1}".format(lang, len(trans)))
+
+    @staticmethod
+    def compareLanguageFiles(lang1, lang2):
+        trans1 = LanguageUtil.loadTranslation(lang1)
+        trans2 = LanguageUtil.loadTranslation(lang2)
+        for key1 in trans1.keys():
+            if key1 not in trans2.keys():
+                print("{0} not in {1} : {2}".format(key1, lang2, trans1[key1]))
+        for key2 in trans2.keys():
+            if key2 not in trans1.keys():
+                print("{0} not in {1} : {2}".format(key2, lang1, trans2[key2]))
+
+
+    @staticmethod
     def createNewLanguageFile(lang, force=False):
         filename = "lang/language_" + lang + ".py"
         if not force and path.exists(filename):
@@ -68,27 +87,9 @@ class LanguageUtil:
                     else:
                         result = translator.translate(text, "en", lang[:2])
                     fileObj.write('    "{0}": "{1}",\n'.format(key, result))
-                fileObj.write("}\n")
+                fileObj.write("}")
                 fileObj.close()
                 print("{0} lines translated".format(count))
-
-    @staticmethod
-    def validateLanguageFileSizes():
-        languages = LanguageUtil.getCodesSupportedLanguages()
-        for lang in languages:
-            trans = LanguageUtil.loadTranslation(lang)
-            print("{0} has size {1}".format(lang, len(trans)))
-
-    @staticmethod
-    def compareLanguageFiles(lang1, lang2):
-        trans1 = LanguageUtil.loadTranslation(lang1)
-        trans2 = LanguageUtil.loadTranslation(lang2)
-        for key1 in trans1.keys():
-            if key1 not in trans2.keys():
-                print("{0} not in {1} : {2}".format(key1, lang2, trans1[key1]))
-        for key2 in trans2.keys():
-            if key2 not in trans1.keys():
-                print("{0} not in {1} : {2}".format(key2, lang1, trans2[key2]))
 
     @staticmethod
     def updateLanguageFile(lang):
@@ -101,8 +102,10 @@ class LanguageUtil:
             target = LanguageUtil.loadTranslation(lang)
             missing = ""
             translator = Translator()
+            count = 0
             for key in english.keys():
                 if key not in target.keys():
+                    count += 1
                     text = english[key]
                     result = translator.translate(text, "en", lang[:2])
                     missing += '    "{0}": "{1}",\n'.format(key, result)
@@ -114,6 +117,7 @@ class LanguageUtil:
             targetFile = open(filename, "w")
             targetFile.writelines(contents)
             targetFile.close()
+            print("{0} lines inserted into {1}".format(count, filename))
 
 
 # Test code

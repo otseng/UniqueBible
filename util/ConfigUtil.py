@@ -38,8 +38,6 @@ class ConfigUtil:
             else:
                 config.alwaysDisplayStaticMaps = True
         # IBM Watson service api key
-        if not hasattr(config, "enableIBMWatson"):
-            config.enableIBMWatson = True
         if not hasattr(config, "myIBMWatsonApikey"):
             config.myIBMWatsonApikey = ""
         if not hasattr(config, "myIBMWatsonUrl"):
@@ -521,14 +519,6 @@ class ConfigUtil:
             config.pinyinSupport = False
             ConfigUtil.messageFeatureNotEnabled("Translate Chinese words into pinyin", "pypinyin")
 
-        # [Optional] Google-translate
-        try:
-            from googletrans import Translator
-            config.googletransSupport = True
-        except:
-            config.googletransSupport = False
-            ConfigUtil.messageFeatureNotEnabled("Google translate", "googletrans")
-
         # [Optional] Gist-syncing notes
         if config.enableGist:
             try:
@@ -552,7 +542,6 @@ class ConfigUtil:
             ("developer", config.developer),
             ("myGoogleApiKey", config.myGoogleApiKey),
             ("alwaysDisplayStaticMaps", config.alwaysDisplayStaticMaps),
-            ("enableIBMWatson", config.enableIBMWatson),
             ("myIBMWatsonApikey", config.myIBMWatsonApikey),
             ("myIBMWatsonUrl", config.myIBMWatsonUrl),
             ("openWindows", config.openWindows),

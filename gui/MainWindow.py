@@ -15,6 +15,7 @@ from TextCommandParser import TextCommandParser
 from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite, Bible
 from TextFileReader import TextFileReader
+from Translator import Translator
 from ThirdParty import Converter, ThirdPartyDictionary
 from Languages import Languages
 from ToolsSqlite import BookData, IndexesSqlite, Book
@@ -192,24 +193,35 @@ class MainWindow(QMainWindow):
         languages = Languages()
         if config.userLanguageInterface and hasattr(myTranslation, "translation"):
             # Use translation API (Watson) for the missing items.  Or use default English translation to fill in missing items if internet connection is not available.
+            # temporary codes to generate missing items built-in Chinese translation
+            translator = Translator()
             missingItems = {}
+
             for key, value in languages.translation.items():
                 if not key in myTranslation.translation:
-                    if config.googletransSupport and hasattr(myTranslation, "translationLanguage"):
-                        try:
-                            languageCode = languages.codes[myTranslation.translationLanguage]
-                            myTranslation.translation[key] = Translator().translate(value, dest=languageCode).text
-                        except:
-                            myTranslation.translation[key] = value
-                    else:
-                        myTranslation.translation[key] = value
-                    missingItems[key] = myTranslation.translation[key]
+                    # google-translate no longer works here few lines below are commented for now.
+#                    if config.googletransSupport and hasattr(myTranslation, "translationLanguage"):
+#                        try:
+#                            languageCode = languages.codes[myTranslation.translationLanguage]
+#                            myTranslation.translation[key] = Translator().translate(value, dest=languageCode).text
+#                        except:
+#                            myTranslation.translation[key] = value
+#                    else:
+#                        myTranslation.translation[key] = value
+                    myTranslation.translation[key] = value
                     updateNeeded = True
+
+                    # temporary codes to generate missing items built-in Chinese translation
+                    missingItems[key] = translator.translate(value, "en", "zh-TW")
+
             # set thisTranslation to customised translation
             config.thisTranslation = myTranslation.translation
             # update myTranslation.py
             if updateNeeded:
+                
+                # temporary codes to generate missing items built-in Chinese translation
                 print(missingItems)
+
                 #try:
                 #    languages.writeMyTranslation(myTranslation.translation, myTranslation.translationLanguage)
                 #except:
@@ -313,7 +325,7 @@ class MainWindow(QMainWindow):
             text = config.mainText
 
         if self.textCommandParser.isDatabaseInstalled("bible"):
-            if config.controlPanel and not (self.controlPanel.isVisible() or self.controlPanel.isActiveWindow()):
+            if config.controlPanel and not (self.controlPanel.isVisible() and self.controlPanel.isActiveWindow()):
                 self.controlPanel.updateBCVText(b, c, v, text)
                 self.controlPanel.tabs.setCurrentIndex(index)
                 textCommandText = self.textCommandLineEdit.text()
@@ -325,8 +337,8 @@ class MainWindow(QMainWindow):
                 # The error message is received when QT_QPA_PLATFORM=wayland:
                 # qt.qpa.wayland: Wayland does not support QWindow::requestActivate()
                 # Therefore, we use hide and show methods instead with wayland.
-                #if self.controlPanel.isVisible() and not self.controlPanel.isActiveWindow():
-                self.controlPanel.hide()
+                if self.controlPanel.isVisible() and not self.controlPanel.isActiveWindow():
+                    self.controlPanel.hide()
                 self.controlPanel.show()
                 self.controlPanel.tabChanged(index)
                 self.controlPanel.activateWindow()
@@ -335,7 +347,6 @@ class MainWindow(QMainWindow):
                 if show:
                     self.controlPanel.show()
                     self.controlPanel.tabChanged(index)
-                    self.controlPanel.activateWindow()
                 if config.clearCommandEntry:
                     self.controlPanel.commandField.setText("")
                 else:
@@ -2636,17 +2647,18 @@ class MainWindow(QMainWindow):
         languages = Languages()
         if config.userLanguage:
             userLanguage = config.userLanguage
+        translator = Translator()
+        # Use IBM Watson service to translate text
+        if translator.language_translator is not None:
+            if not config.userLanguage or not config.userLanguage in config.toLanguageNames:
+                userLanguage = "English"
+            else:
+                userLanguage = config.userLanguage
+            item, ok = QInputDialog.getItem(self, "UniqueBible", config.thisTranslation["menu1_setMyLanguage"], config.toLanguageNames, config.toLanguageNames.index(userLanguage), False)
+            if ok and item:
+                config.userLanguage = item
         else:
-            userLanguage = "English"
-        items = [language for language in languages.codes.keys()]
-        item, ok = QInputDialog.getItem(self, "UniqueBible",
-                                        config.thisTranslation["menu1_setMyLanguage"], items, items.index(userLanguage),
-                                        False)
-        if ok and item:
-            config.userLanguage = item
-            if not config.googletransSupport:
-                self.displayMessage("{0}  'googletrans'\n{1}".format(config.thisTranslation["message_missing"],
-                                                                     config.thisTranslation["message_installFirst"]))
+            self.displayMessage(config.thisTranslation["ibmWatsonNotEnalbed"])
 
     # Set verse number single-click action (config.verseNoSingleClickAction)
     def selectSingleClickActionDialog(self):

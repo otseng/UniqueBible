@@ -64,5 +64,6 @@ if __name__ == "__main__":
     translator = Translator()
     # translator.identify("这是中文")
     #translator.getLanguageLists()
-    result = translator.translate("test", "en", "zh")
+    result = translator.translate("test", "en", "ko_KR")
     print(result)
+

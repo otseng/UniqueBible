@@ -4,6 +4,7 @@ import os
 import platform
 import sys
 import time
+from datetime import datetime
 from os import path, uname
 
 def printValue(object, attribute):
@@ -16,6 +17,12 @@ def printValue(object, attribute):
 print("==============================================================")
 print("Debugging Information")
 print("==============================================================")
+try:
+    print(datetime.now())
+except:
+    pass
+
+print("")
 print("# Platform")
 try:
     print("Python={0}".format(sys.version.split('\n')))

@@ -2,6 +2,8 @@ import os, pprint
 from platform import system
 
 import config
+from util.LanguageUtil import LanguageUtil
+
 
 class ConfigUtil:
 
@@ -461,6 +463,8 @@ class ConfigUtil:
         # flags=re.IGNORECASE will be applied only if config.regexCaseSensitive is set to False
         if not hasattr(config, "regexCaseSensitive"):
             config.regexCaseSensitive = False
+        if not hasattr(config, "displayLanguage"):
+            config.displayLanguage = LanguageUtil.determineDefaultLanguage()
 
         # Temporary configurations
         # Their values are not saved on exit.
@@ -685,7 +689,8 @@ class ConfigUtil:
             ("highlightLightThemeColours", config.highlightLightThemeColours),
             ("highlightDarkThemeColours", config.highlightDarkThemeColours),
             ("showHighlightMarkers", config.showHighlightMarkers),
-            ("menuShortcuts", config.menuShortcuts)
+            ("menuShortcuts", config.menuShortcuts),
+            ("displayLang", config.displayLanguage)
         )
         with open("config.py", "w", encoding="utf-8") as fileObj:
             for name, value in configs:

@@ -1,6 +1,7 @@
 import config, pprint, platform, myTranslation
-from translations import translations
 # [Optional] Google-translate
+from translations import translations
+
 try:
     from googletrans import Translator
     googletransInstall = True

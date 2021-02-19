@@ -40,6 +40,7 @@ from gui.CentralWidget import CentralWidget
 from gui.imports import *
 from ToolsSqlite import LexiconData
 from TtsLanguages import TtsLanguages
+from util.LanguageUtil import LanguageUtil
 from util.MacroParser import MacroParser
 from util.NoteService import NoteService
 from util.ShortcutUtil import ShortcutUtil
@@ -184,6 +185,10 @@ class MainWindow(QMainWindow):
             config.open = config.openWindows
 
     def setTranslation(self):
+        config.thisTranslation = LanguageUtil.loadTranslation(config.displayLanguage)
+
+
+    def setTranslationOld(self):
         updateNeeded = False
         languages = Languages()
         if config.userLanguageInterface and hasattr(myTranslation, "translation"):

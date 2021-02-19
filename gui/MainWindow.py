@@ -2620,8 +2620,19 @@ class MainWindow(QMainWindow):
         # self.morphDialog.setModal(True)
         self.morphDialog.show()
 
-    # Set my language (config.userLanguage)
     def openMyLanguageDialog(self):
+        userLanguage = Languages.decode[config.displayLanguage]
+        items = LanguageUtil.getNamesSupportedLanguages()
+        item, ok = QInputDialog.getItem(self, "UniqueBible",
+                                        config.thisTranslation["menu1_setMyLanguage"], items, items.index(userLanguage),
+                                        False)
+        if ok and item:
+            config.displayLanguage = Languages.code[item]
+            self.setTranslation()
+            self.setupMenuLayout(config.menuLayout)
+
+    # Set my language (config.userLanguage)
+    def openMyLanguageDialogOld(self):
         languages = Languages()
         if config.userLanguage:
             userLanguage = config.userLanguage

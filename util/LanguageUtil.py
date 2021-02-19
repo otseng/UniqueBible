@@ -3,14 +3,20 @@ import importlib
 import locale
 
 import config
+from Languages import Languages
 
 
 class LanguageUtil:
 
     @staticmethod
-    def getListSupportedLanguages():
+    def getCodesSupportedLanguages():
         files = sorted(glob.glob("lang/language_*.py"))
         return [file[-8:-3] for file in files]
+
+    @staticmethod
+    def getNamesSupportedLanguages():
+        codes = LanguageUtil.getCodesSupportedLanguages()
+        return [Languages.decode[code] for code in codes]
 
     @staticmethod
     def getSystemDefaultLanguage():
@@ -19,7 +25,7 @@ class LanguageUtil:
 
     @staticmethod
     def determineDefaultLanguage():
-        supportedLanguages = LanguageUtil.getListSupportedLanguages()
+        supportedLanguages = LanguageUtil.getCodesSupportedLanguages()
         if hasattr(config, "displayLanguage") and config.displayLanguage in supportedLanguages:
             return config.displayLanguage
         systemLang = LanguageUtil.getSystemDefaultLanguage()
@@ -36,8 +42,12 @@ class LanguageUtil:
 
 # Test code
 
-def test_getlistSupportedLanguages():
-    for lang in LanguageUtil.getListSupportedLanguages():
+def test_getCodesSupportedLanguages():
+    for lang in LanguageUtil.getCodesSupportedLanguages():
+        print(lang)
+
+def test_getNamesSupportedLanguages():
+    for lang in LanguageUtil.getNamesSupportedLanguages():
         print(lang)
 
 def test_defaultLanguage():
@@ -47,7 +57,7 @@ def test_loadTranslation():
     print(LanguageUtil.loadTranslation("en_US"))
 
 def validateLanguageFileSizes():
-    languages = LanguageUtil.getListSupportedLanguages()
+    languages = LanguageUtil.getCodesSupportedLanguages()
     for lang in languages:
         trans = LanguageUtil.loadTranslation(lang)
         print("{0} has size {1}".format(lang, len(trans)))
@@ -59,10 +69,11 @@ def compareLanguageFiles(lang1, lang2):
         if key1 not in trans2.keys():
             print("{0} not in {1} : {2}".format(key1, lang2, trans1[key1]))
 
+
 if __name__ == "__main__":
 
     # test_defaultLanguage()
-    # test_getlistSupportedLanguages()
+    test_getNamesSupportedLanguages()
     # test_loadTranslation()
     # validateLanguageFileSizes()
-    compareLanguageFiles("en_GB", "en_US")
+    # compareLanguageFiles("en_GB", "en_US")

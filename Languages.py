@@ -10,7 +10,21 @@ except:
 
 class Languages:
 
-    codes = {
+    code = {
+        "Chinese (Simplied)": "zh_CN",
+        "Chinese (Traditional)": "zh_TW",
+        "English (UK)": "en_GB",
+        "English (US)": "en_US",
+    }
+
+    decode = {
+        "zh_CN": "Chinese (Simplied)",
+        "zh_TW": "Chinese (Traditional)",
+        "en_GB": "English (UK)",
+        "en_US": "English (US)",
+    }
+
+    codesOld = {
         "Afrikaans": "af",
         "Albanian": "sq",
         "Amharic": "am",

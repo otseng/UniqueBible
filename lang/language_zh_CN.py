@@ -57,7 +57,6 @@ translation = {
     "html_openStudy": "在研究視窗打开",
     "html_overview": "概观",
     "html_searchBible2": "搜索圣经：",
-    "html_searchBibles": "搜索多个圣经",
     "html_searchBibles2": "搜索多个圣经：",
     "html_showCompare": "显示比较",
     "html_showDifference": "显示差别",
@@ -524,5 +523,5 @@ translation = {
     'message_macro_save_command': '输入档名以将现行指令储存为巨集档',
     'adjustSpeed': '调整速度',
     'ibmWatsonNotEnalbed': "使用 IBM Watson 的翻译服务功能未启用。  \n您需要安装 python 套件 'ibm-watson' ，并在 config.py 中输入有效的认证。您可以执行 ' pip3 install ibm-watson' 与终端机，来安装 'ibm-swatson' 。",
-
+    "menu1_programInterface": "用戶界面",
 }

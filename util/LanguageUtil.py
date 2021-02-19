@@ -53,15 +53,19 @@ class LanguageUtil:
 
     @staticmethod
     def compareLanguageFiles(lang1, lang2):
+        count = 0
         trans1 = LanguageUtil.loadTranslation(lang1)
         trans2 = LanguageUtil.loadTranslation(lang2)
         for key1 in trans1.keys():
             if key1 not in trans2.keys():
+                count += 1
                 print("{0} not in {1} : {2}".format(key1, lang2, trans1[key1]))
         for key2 in trans2.keys():
             if key2 not in trans1.keys():
+                count += 1
                 print("{0} not in {1} : {2}".format(key2, lang1, trans2[key2]))
-
+        if count == 0:
+            print("{0} and {1} contain same keys".format(lang1, lang2))
 
     @staticmethod
     def createNewLanguageFile(lang, force=False):
@@ -106,6 +110,7 @@ class LanguageUtil:
             for key in english.keys():
                 if key not in target.keys():
                     count += 1
+                    print(count)
                     text = english[key]
                     result = translator.translate(text, "en", lang[:2])
                     missing += '    "{0}": "{1}",\n'.format(key, result)
@@ -151,10 +156,13 @@ def updateLanguageFile(lang):
 if __name__ == "__main__":
 
     # test_defaultLanguage()
-    test_getNamesSupportedLanguages()
+    # test_getNamesSupportedLanguages()
     # test_loadTranslation()
     # validateLanguageFileSizes()
     # compareLanguageFiles("en_GB", "zh_TW")
-    # compareLanguageFiles("en_GB", "ko")
+    compareLanguageFiles("en_GB", "ko")
+    compareLanguageFiles("en_US", "ko")
+    compareLanguageFiles("en_GB", "zh_CN")
+    compareLanguageFiles("en_US", "zh_TW")
     # createNewLanguageFile("ko", True)
-    updateLanguageFile("ko")
+    # updateLanguageFile("ko")

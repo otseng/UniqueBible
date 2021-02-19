@@ -62,6 +62,7 @@ class Translator:
 
 if __name__ == "__main__":
     translator = Translator()
-    translator.identify("这是中文")
+    # translator.identify("这是中文")
     #translator.getLanguageLists()
-    #translator.translate("test", "en", "zh")
+    result = translator.translate("test", "en", "zh")
+    print(result)

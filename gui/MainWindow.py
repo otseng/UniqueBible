@@ -187,7 +187,7 @@ class MainWindow(QMainWindow):
         updateNeeded = False
         languages = Languages()
         if config.userLanguageInterface and hasattr(myTranslation, "translation"):
-            # Check for missing items. Use Google Translate to translate the missing items.  Or use default English translation to fill in missing items if internet connection is not available.
+            # Use translation API (Watson) for the missing items.  Or use default English translation to fill in missing items if internet connection is not available.
             missingItems = {}
             for key, value in languages.translation.items():
                 if not key in myTranslation.translation:

@@ -49,14 +49,16 @@ class LanguageUtil:
             print(filename + " already exists")
         else:
             print("Creating " + filename)
+            master = LanguageUtil.loadTranslation("en_US")
+            print("Translating {0} records...".format(len(master)))
             with open(filename, "w", encoding="utf-8") as fileObj:
                 fileObj.write("translation = {\n")
                 translator = Translator()
-                master = LanguageUtil.loadTranslation("en_US")
                 count = 0
                 for key in master.keys():
                     count += 1
-                    if count > 500:
+                    print(count)
+                    if count > 1000:
                         break
                     text = master[key]
                     if key in ["menu1_app"]:
@@ -67,6 +69,33 @@ class LanguageUtil:
                 fileObj.write("}\n")
                 fileObj.close()
                 print("{0} lines translated".format(count))
+
+    @staticmethod
+    def validateLanguageFileSizes():
+        languages = LanguageUtil.getCodesSupportedLanguages()
+        for lang in languages:
+            trans = LanguageUtil.loadTranslation(lang)
+            print("{0} has size {1}".format(lang, len(trans)))
+
+    @staticmethod
+    def compareLanguageFiles(lang1, lang2):
+        trans1 = LanguageUtil.loadTranslation(lang1)
+        trans2 = LanguageUtil.loadTranslation(lang2)
+        for key1 in trans1.keys():
+            if key1 not in trans2.keys():
+                print("{0} not in {1} : {2}".format(key1, lang2, trans1[key1]))
+        for key2 in trans2.keys():
+            if key2 not in trans1.keys():
+                print("{0} not in {1} : {2}".format(key2, lang1, trans2[key2]))
+
+    @staticmethod
+    def updateLanguageFile(lang):
+        filename = "lang/language_" + lang + ".py"
+        if not path.exists(filename):
+            print(filename + " does not exist")
+        else:
+            pass
+
 
 # Test code
 
@@ -85,17 +114,10 @@ def test_loadTranslation():
     print(LanguageUtil.loadTranslation("en_US"))
 
 def validateLanguageFileSizes():
-    languages = LanguageUtil.getCodesSupportedLanguages()
-    for lang in languages:
-        trans = LanguageUtil.loadTranslation(lang)
-        print("{0} has size {1}".format(lang, len(trans)))
+    LanguageUtil.validateLanguageFileSizes()
 
 def compareLanguageFiles(lang1, lang2):
-    trans1 = LanguageUtil.loadTranslation(lang1)
-    trans2 = LanguageUtil.loadTranslation(lang2)
-    for key1 in trans1.keys():
-        if key1 not in trans2.keys():
-            print("{0} not in {1} : {2}".format(key1, lang2, trans1[key1]))
+    LanguageUtil.compareLanguageFiles(lang1, lang2)
 
 def createNewLanguageFile(lang, force=False):
     LanguageUtil.createNewLanguageFile(lang, force)
@@ -105,6 +127,7 @@ if __name__ == "__main__":
     # test_defaultLanguage()
     # test_getNamesSupportedLanguages()
     # test_loadTranslation()
-    # validateLanguageFileSizes()
-    # compareLanguageFiles("en_GB", "en_US")
-    createNewLanguageFile("ko_KR", True)
+    validateLanguageFileSizes()
+    # compareLanguageFiles("en_GB", "zh_TW")
+    # compareLanguageFiles("en_GB", "ko_KR")
+    # createNewLanguageFile("ko_KR", True)

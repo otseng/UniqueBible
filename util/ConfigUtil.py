@@ -2,7 +2,6 @@ import os, pprint
 from platform import system
 
 import config
-from util.LanguageUtil import LanguageUtil
 
 
 class ConfigUtil:
@@ -456,7 +455,7 @@ class ConfigUtil:
         if not hasattr(config, "regexCaseSensitive"):
             config.regexCaseSensitive = False
         if not hasattr(config, "displayLanguage"):
-            config.displayLanguage = LanguageUtil.determineDefaultLanguage()
+            config.displayLanguage = 'en_US'
 
         # Temporary configurations
         # Their values are not saved on exit.

@@ -97,6 +97,23 @@ class LanguageUtil:
             print(filename + " does not exist")
         else:
             pass
+            english = LanguageUtil.loadTranslation("en_US")
+            target = LanguageUtil.loadTranslation(lang)
+            missing = ""
+            translator = Translator()
+            for key in english.keys():
+                if key not in target.keys():
+                    text = english[key]
+                    result = translator.translate(text, "en", lang[:2])
+                    missing += '    "{0}": "{1}",\n'.format(key, result)
+            targetFile = open(filename, "r")
+            contents = targetFile.readlines()
+            targetFile.close()
+            print(len(contents))
+            contents.insert(len(contents)-1, missing)
+            targetFile = open(filename, "w")
+            targetFile.writelines(contents)
+            targetFile.close()
 
 
 # Test code
@@ -124,6 +141,9 @@ def compareLanguageFiles(lang1, lang2):
 def createNewLanguageFile(lang, force=False):
     LanguageUtil.createNewLanguageFile(lang, force)
 
+def updateLanguageFile(lang):
+    LanguageUtil.updateLanguageFile(lang)
+
 if __name__ == "__main__":
 
     # test_defaultLanguage()
@@ -133,3 +153,4 @@ if __name__ == "__main__":
     # compareLanguageFiles("en_GB", "zh_TW")
     # compareLanguageFiles("en_GB", "ko")
     # createNewLanguageFile("ko", True)
+    updateLanguageFile("ko")

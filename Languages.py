@@ -1,28 +1,23 @@
-import config, pprint, platform, myTranslation
-# [Optional] Google-translate
+import config, pprint, myTranslation
 from translations import translations
 
-try:
-    from googletrans import Translator
-    googletransInstall = True
-except:
-    googletransInstall = False
 
 class Languages:
 
     code = {
-        "Chinese (Simplied)": "zh_CN",
-        "Chinese (Traditional)": "zh_TW",
+        "Chinese (Simplified) 中文": "zh_CN",
+        "Chinese (Traditional) 古文": "zh_TW",
         "English (UK)": "en_GB",
         "English (US)": "en_US",
+        "Korean 한국어": "ko",
     }
 
-    decode = {
-        "zh_CN": "Chinese (Simplied)",
-        "zh_TW": "Chinese (Traditional)",
-        "en_GB": "English (UK)",
-        "en_US": "English (US)",
-    }
+    @staticmethod
+    def decode(code):
+        for key in Languages.code.keys():
+            if code == Languages.code[key]:
+                return key
+        return "Unknown"
 
     codesOld = {
         "Afrikaans": "af",
@@ -707,4 +702,6 @@ class Languages:
 
 
 if __name__ == '__main__':
-    Languages().createTranslationTemplates()
+    # Languages().createTranslationTemplates()
+
+    print(Languages.decode("ko"))

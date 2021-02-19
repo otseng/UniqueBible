@@ -13,12 +13,14 @@ class LanguageUtil:
     @staticmethod
     def getCodesSupportedLanguages():
         files = sorted(glob.glob("lang/language_*.py"))
-        return [file[-8:-3] for file in files]
+        # for file in files:
+        #     print(file[14:-3])
+        return [file[14:-3] for file in files]
 
     @staticmethod
     def getNamesSupportedLanguages():
         codes = LanguageUtil.getCodesSupportedLanguages()
-        return [Languages.decode[code] for code in codes]
+        return [Languages.decode(code) for code in codes]
 
     @staticmethod
     def getSystemDefaultLanguage():
@@ -125,9 +127,9 @@ def createNewLanguageFile(lang, force=False):
 if __name__ == "__main__":
 
     # test_defaultLanguage()
-    # test_getNamesSupportedLanguages()
+    test_getNamesSupportedLanguages()
     # test_loadTranslation()
-    validateLanguageFileSizes()
+    # validateLanguageFileSizes()
     # compareLanguageFiles("en_GB", "zh_TW")
-    # compareLanguageFiles("en_GB", "ko_KR")
-    # createNewLanguageFile("ko_KR", True)
+    # compareLanguageFiles("en_GB", "ko")
+    # createNewLanguageFile("ko", True)

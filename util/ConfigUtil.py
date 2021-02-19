@@ -35,6 +35,13 @@ class ConfigUtil:
                 config.alwaysDisplayStaticMaps = False
             else:
                 config.alwaysDisplayStaticMaps = True
+        # IBM Watson service api key
+        if not hasattr(config, "enableIBMWatson"):
+            config.enableIBMWatson = True
+        if not hasattr(config, "myIBMWatsonApikey"):
+            config.myIBMWatsonApikey = ""
+        if not hasattr(config, "myIBMWatsonUrl"):
+            config.myIBMWatsonUrl = ""
         # Options to use control panel: True / False
         # This feature is created for use in church settings.
         # If True, users can use an additional command field, in an additional window, to control the content being displayed, even the main window of UniqueBible.app is displayed on extended screen.
@@ -80,6 +87,12 @@ class ConfigUtil:
                 config.espeak = True
             else:
                 config.espeak = False
+        # espeak speed
+        if not hasattr(config, "espeakSpeed"):
+            config.espeakSpeed = 160
+        # qtts speed
+        if not hasattr(config, "qttsSpeed"):
+            config.qttsSpeed = 0.0
         # tts language options
         if not hasattr(config, "ttsDefaultLangauge"):
             config.ttsDefaultLangauge = "en"
@@ -535,6 +548,9 @@ class ConfigUtil:
             ("developer", config.developer),
             ("myGoogleApiKey", config.myGoogleApiKey),
             ("alwaysDisplayStaticMaps", config.alwaysDisplayStaticMaps),
+            ("enableIBMWatson", config.enableIBMWatson),
+            ("myIBMWatsonApikey", config.myIBMWatsonApikey),
+            ("myIBMWatsonUrl", config.myIBMWatsonUrl),
             ("openWindows", config.openWindows),
             ("openMacos", config.openMacos),
             ("openLinux", config.openLinux),
@@ -542,6 +558,8 @@ class ConfigUtil:
             ("linuxStartFullScreen", config.linuxStartFullScreen),
             ("showTtsOnLinux", config.showTtsOnLinux),
             ("espeak", config.espeak),
+            ("espeakSpeed", config.espeakSpeed),
+            ("qttsSpeed", config.qttsSpeed),
             ("ttsDefaultLangauge", config.ttsDefaultLangauge),
             ("ttsChineseAlwaysCantonese", config.ttsChineseAlwaysCantonese),
             ("ttsChineseAlwaysMandarin", config.ttsChineseAlwaysMandarin),

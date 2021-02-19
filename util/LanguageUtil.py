@@ -2,6 +2,8 @@ import glob
 import importlib
 import locale
 
+import config
+
 
 class LanguageUtil:
 
@@ -17,8 +19,11 @@ class LanguageUtil:
 
     @staticmethod
     def determineDefaultLanguage():
+        supportedLanguages = LanguageUtil.getListSupportedLanguages()
+        if hasattr(config, "displayLanguage") and config.displayLanguage in supportedLanguages:
+            return config.displayLanguage
         systemLang = LanguageUtil.getSystemDefaultLanguage()
-        if systemLang in LanguageUtil.getListSupportedLanguages():
+        if systemLang in supportedLanguages:
             return systemLang
         else:
             return "en_US"
@@ -41,8 +46,16 @@ def test_defaultLanguage():
 def test_loadTranslation():
     print(LanguageUtil.loadTranslation("en_US"))
 
+def validateLanguageFileSizes():
+    languages = LanguageUtil.getListSupportedLanguages()
+    for lang in languages:
+        trans = LanguageUtil.loadTranslation(lang)
+        print("{0} has size {1}".format(lang, len(trans)))
+
+
 if __name__ == "__main__":
 
     # test_defaultLanguage()
-    test_getlistSupportedLanguages()
+    # test_getlistSupportedLanguages()
     # test_loadTranslation()
+    validateLanguageFileSizes()

@@ -187,7 +187,6 @@ class MainWindow(QMainWindow):
     def setTranslation(self):
         config.thisTranslation = LanguageUtil.loadTranslation(config.displayLanguage)
 
-
     def setTranslationOld(self):
         updateNeeded = False
         languages = Languages()

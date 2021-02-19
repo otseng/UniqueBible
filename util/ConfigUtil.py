@@ -690,7 +690,7 @@ class ConfigUtil:
             ("highlightDarkThemeColours", config.highlightDarkThemeColours),
             ("showHighlightMarkers", config.showHighlightMarkers),
             ("menuShortcuts", config.menuShortcuts),
-            ("displayLang", config.displayLanguage)
+            ("displayLanguage", config.displayLanguage)
         )
         with open("config.py", "w", encoding="utf-8") as fileObj:
             for name, value in configs:

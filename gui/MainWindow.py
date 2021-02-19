@@ -103,6 +103,8 @@ class MainWindow(QMainWindow):
         # setup user menu & toolbars
 
         # Setup menu layout
+        self.refreshing = False
+        self.versionCombo = None
         self.setupMenuLayout(config.menuLayout)
 
         # assign views
@@ -240,20 +242,21 @@ class MainWindow(QMainWindow):
             config.thisTranslation = languages.translation
 
     def translateInterface(self):
-        if config.googletransSupport:
-            if not config.userLanguage:
-                self.openMyLanguageDialog()
-                #self.displayMessage("{0}\n{1}".format(config.thisTranslation["message_run"], config.thisTranslation["message_setLanguage"]))
-            #else:
-            if Languages().translateInterface(config.userLanguage):
-                config.userLanguageInterface = True
-                self.displayMessage("{0}  {1} 'config.py'".format(config.thisTranslation["message_restart"], config.thisTranslation["message_improveTrans"]))
-            else:
-                config.userLanguageInterface = False
-                self.displayMessage("'{0}' translation have not been added yet.  You can send us an email to request a copy of your language.".format(config.userLanguage))
-        else:
-            self.displayMessage("{0} 'googletrans'\n{1}".format(config.thisTranslation["message_missing"],
-                                                                config.thisTranslation["message_installFirst"]))
+        pass
+#        if config.googletransSupport:
+#            if not config.userLanguage:
+#                self.openMyLanguageDialog()
+#                #self.displayMessage("{0}\n{1}".format(config.thisTranslation["message_run"], config.thisTranslation["message_setLanguage"]))
+#            #else:
+#            if Languages().translateInterface(config.userLanguage):
+#                config.userLanguageInterface = True
+#                self.displayMessage("{0}  {1} 'config.py'".format(config.thisTranslation["message_restart"], config.thisTranslation["message_improveTrans"]))
+#            else:
+#                config.userLanguageInterface = False
+#                self.displayMessage("'{0}' translation have not been added yet.  You can send us an email to request a copy of your language.".format(config.userLanguage))
+#        else:
+#            self.displayMessage("{0} 'googletrans'\n{1}".format(config.thisTranslation["message_missing"],
+#                                                                config.thisTranslation["message_installFirst"]))
 
     def isMyTranslationAvailable(self):
         if hasattr(myTranslation, "translation") and hasattr(myTranslation, "translationLanguage"):
@@ -1097,12 +1100,13 @@ class MainWindow(QMainWindow):
         return text
 
     def pasteFromClipboard(self):
-        clipboardText = QGuiApplication.instance().clipboard().text()
+        clipboardText = QApplication.clipboard().text()
+        #clipboardText = QGuiApplication.instance().clipboard().text()
         # note: can use QGuiApplication.instance().clipboard().setText to set text in clipboard
         self.openTextOnStudyView(self.htmlWrapper(clipboardText, True))
 
     def parseContentOnClipboard(self):
-        clipboardText = QGuiApplication.instance().clipboard().text()
+        clipboardText = QApplication.clipboard().text()
         self.textCommandLineEdit.setText(clipboardText)
         self.runTextCommand(clipboardText)
         self.manageControlPanel()
@@ -2252,12 +2256,23 @@ class MainWindow(QMainWindow):
             self.textCommandParser.databaseNotInstalled("commentary")
 
     def changeBibleVersion(self, index):
-        command = "TEXT:::{0}".format(self.bibleVersions[index])
-        self.runTextCommand(command)
+        if not self.refreshing:
+            command = "TEXT:::{0}".format(self.bibleVersions[index])
+            self.runTextCommand(command)
+
+    def updateVersionCombo(self):
+        if self.versionCombo is not None:
+            self.refreshing = True
+            textIndex = 0
+            if config.mainText in self.bibleVersions:
+                textIndex = self.bibleVersions.index(config.mainText)
+            self.versionCombo.setCurrentIndex(textIndex)
+            self.refreshing = False
 
     def updateMainRefButton(self):
-        text, verseReference = self.verseReference("main")
+        *_, verseReference = self.verseReference("main")
         self.mainRefButton.setText(self.verseReference("main")[-1])
+        self.updateVersionCombo()
         if config.syncStudyWindowBibleWithMainWindow and not config.openBibleInMainViewOnly and not self.syncingBibles:
             self.syncingBibles = True
             newTextCommand = "STUDY:::{0}".format(verseReference)
@@ -2649,6 +2664,7 @@ class MainWindow(QMainWindow):
             userLanguage = config.userLanguage
         translator = Translator()
         # Use IBM Watson service to translate text
+        translator = Translator()
         if translator.language_translator is not None:
             if not config.userLanguage or not config.userLanguage in config.toLanguageNames:
                 userLanguage = "English"

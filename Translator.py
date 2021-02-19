@@ -1,11 +1,11 @@
 import config
-from util.FileUtil import FileUtil
+from util.ConfigUtil import ConfigUtil
 try:
     from ibm_watson import LanguageTranslatorV3
     from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
     config.enableIBMWatson = True
 except:
-    FileUtil.messageFeatureNotEnabled("Translation Service", "ibm-watson")
+    ConfigUtil.messageFeatureNotEnabled("Translation Service", "ibm-watson")
     config.enableIBMWatson = False
 
 class Translator:
@@ -53,7 +53,9 @@ class Translator:
         #print(result["languages"][0]["language"])
         return result["languages"][0]["language"]
 
-    def translate(self, text, fromLanguage, toLanguage):
+    def translate(self, text, fromLanguage=None, toLanguage="en"):
+        if fromLanguage is None:
+            fromLanguage = self.identify(text)
         translation = self.language_translator.translate(
             text=text,
             model_id="{0}-{1}".format(fromLanguage, toLanguage)).get_result()

@@ -159,5 +159,5 @@ if __name__ == "__main__":
     # test_getNamesSupportedLanguages()
     # test_loadTranslation()
     # validateLanguageFileSizes()
-    # createNewLanguageFile("ru")
-    compareLanguageFiles("en_US", "ru")
+    # createNewLanguageFile("hi")
+    compareLanguageFiles("en_US", "hi")

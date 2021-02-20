@@ -15,6 +15,7 @@ class Languages:
         "English (UK)": "en_GB",
         "English (US)": "en_US",
         "Korean 한국어": "ko",
+        "Spanish Español": "es",
     }
 
     @staticmethod

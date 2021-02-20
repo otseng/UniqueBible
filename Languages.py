@@ -19,6 +19,7 @@ class Languages:
         "Korean 한국어": "ko",
         "Italian Italiano": "it",
         "Japanese 日本語": "ja",
+        "Russian Русский язык": "ru",
         "Spanish Español": "es",
     }
 

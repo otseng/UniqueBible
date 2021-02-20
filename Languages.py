@@ -14,8 +14,10 @@ class Languages:
         "Chinese (Traditional) 古文": "zh_TW",
         "English (UK)": "en_GB",
         "English (US)": "en_US",
+        "French Français": "fr",
         "German Deutsch": "de",
         "Korean 한국어": "ko",
+        "Italian Italiano": "it",
         "Spanish Español": "es",
     }
 

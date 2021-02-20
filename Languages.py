@@ -18,6 +18,7 @@ class Languages:
         "German Deutsch": "de",
         "Korean 한국어": "ko",
         "Italian Italiano": "it",
+        "Japanese 日本語": "ja",
         "Spanish Español": "es",
     }
 

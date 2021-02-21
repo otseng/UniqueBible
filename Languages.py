@@ -16,6 +16,7 @@ class Languages:
         "English (US)": "en_US",
         "French Français": "fr",
         "German Deutsch": "de",
+        "Greek Νέα Ελληνικά": "el",
         "Hindi हिन्दी": "hi",
         "Korean 한국어": "ko",
         "Italian Italiano": "it",

@@ -182,9 +182,7 @@ if __name__ == "__main__":
                     globals()[method](name1, name2)
             print("Done")
         except Exception as e:
-            print("Error: " + str(e))
+            print("Error executing: " + str(e))
     else:
-        pass
-        # printNamesSupportedLanguages()
         printCodesSupportedLanguages()
 

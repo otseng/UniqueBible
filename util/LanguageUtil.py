@@ -133,7 +133,7 @@ class LanguageUtil:
                     result = translator.translate(englishTranslation, "en", code[:2])
                 data = '    "{0}": "{1}",\n'.format(key, result)
                 FileUtil.insertStringIntoFile(filename, data, -1)
-                print("Inserted '{0}' into {1]".format(result, code))
+                print("Inserted '{0}' into {1}".format(result, code))
 
 
 # Test code

@@ -126,11 +126,14 @@ class LanguageUtil:
         for code in codes:
             translation = LanguageUtil.loadTranslation(code)
             if key not in translation.keys():
-                print("Inserting into " + key)
                 filename = "lang/language_" + code + ".py"
-                result = translator.translate(englishTranslation, "en", code[:2])
+                if code[:2] == "en":
+                    result = englishTranslation
+                else:
+                    result = translator.translate(englishTranslation, "en", code[:2])
                 data = '    "{0}": "{1}",\n'.format(key, result)
                 FileUtil.insertStringIntoFile(filename, data, -1)
+                print("Inserted '{0}' into {1]".format(result, code))
 
 
 # Test code

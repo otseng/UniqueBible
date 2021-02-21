@@ -7,6 +7,7 @@ import config
 
 from PySide2 import QtCore
 from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QTableView, QInputDialog, QLineEdit
+
 from util.ShortcutUtil import ShortcutUtil
 
 
@@ -20,6 +21,10 @@ class DisplayShortcutsWindow(QDialog):
         self.setMinimumWidth(360)
         self.setMinimumHeight(500)
         self.layout = QVBoxLayout()
+
+        self.filterEntry = QLineEdit()
+        self.filterEntry.textChanged.connect(self.filterChanged)
+        self.layout.addWidget(self.filterEntry)
 
         self.table = QTableView()
         self.model = DisplayShortcutsModel(self, shortcuts)
@@ -57,12 +62,24 @@ class DisplayShortcutsWindow(QDialog):
         if self.name not in ShortcutUtil.data.keys():
             ShortcutUtil.loadShortcutFile(self.name)
 
+    def filterChanged(self, text):
+        self.model.filter(text)
+
+
 class DisplayShortcutsModel(QAbstractTableModel):
 
-    def __init__(self, parent, list, *args):
+    def __init__(self, parent, data, *args):
         QAbstractTableModel.__init__(self, parent, *args)
-        self.list = list
+        self.fullList = data
+        self.list = data
         self.header = header = ['Keys', 'Action']
+        self.col = None
+        self.order = None
+
+    def filter(self, text):
+        for item in self.fullList:
+            pass
+        self.sort(self.cold, self.order)
 
     def rowCount(self, parent):
         return len(self.list)
@@ -90,19 +107,20 @@ class DisplayShortcutsModel(QAbstractTableModel):
 
     def sort(self, col, order):
         self.emit(SIGNAL("layoutAboutToBeChanged()"))
+        self.col = col
+        self.order = order
         self.list = sorted(self.list, key=operator.itemgetter(col))
         if order == Qt.DescendingOrder:
             self.list.reverse()
         self.emit(SIGNAL("layoutChanged()"))
 
 if __name__ == '__main__':
-    from Languages import Languages
-    config.thisTranslation = Languages.translation
+    from util.LanguageUtil import LanguageUtil
+
+    LanguageUtil.loadTranslation("en_US")
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
-    name = "test1"
-    ShortcutUtil.setup(name)
     shortcuts = ShortcutUtil.getAllShortcuts()
-    window = DisplayShortcutsWindow(name, shortcuts)
+    window = DisplayShortcutsWindow("test1", shortcuts)
     window.exec_()
     window.close()

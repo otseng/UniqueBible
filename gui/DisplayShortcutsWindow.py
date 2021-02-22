@@ -3,8 +3,6 @@ import sys
 
 from PySide2.QtCore import QAbstractTableModel, Qt, SIGNAL
 
-import config
-
 from PySide2 import QtCore
 from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QTableView, QInputDialog, QLineEdit
 
@@ -40,8 +38,8 @@ class DisplayShortcutsWindow(QDialog):
         else:
             buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
         self.buttonBox = QDialogButtonBox(buttons)
-        self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.accepted.connect(self.saveShortcut)
+        self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.rejected.connect(self.canceled)
         self.layout.addWidget(self.buttonBox)
@@ -49,14 +47,17 @@ class DisplayShortcutsWindow(QDialog):
 
     def clickedRow(self, index):
         row = self.model.getRow(index.row())
-        (key, action) = row
+        (action, key) = row
         newKey, ok = QInputDialog.getText(self, 'Shortcut', action, QLineEdit.Normal, key)
         if ok:
-            self.model.list[index.row()] = (newKey, action)
+            self.model.list[index.row()] = (action, newKey)
+            for item in self.model.fullList:
+                if item[0] == action:
+                    item[1] = newKey
 
     def saveShortcut(self):
         if self.name not in ShortcutUtil.data.keys():
-            ShortcutUtil.createShortcutFile(self.name, self.model.list)
+            ShortcutUtil.createShortcutFile(self.name, self.model.fullList)
 
     def canceled(self):
         if self.name not in ShortcutUtil.data.keys():
@@ -72,20 +73,26 @@ class DisplayShortcutsModel(QAbstractTableModel):
         QAbstractTableModel.__init__(self, parent, *args)
         self.fullList = data
         self.list = data
-        self.header = header = ['Keys', 'Action']
-        self.col = None
+        self.header = header = ['Action', 'Keys']
+        self.col = 0
         self.order = None
 
     def filter(self, text):
+        newList = []
         for item in self.fullList:
-            pass
-        self.sort(self.cold, self.order)
+            if (text in item[0]):
+                newList.append(item)
+        self.list = newList
+        self.sort(self.col, self.order)
 
     def rowCount(self, parent):
         return len(self.list)
 
     def columnCount(self, parent):
-        return len(self.list[0])
+        if len(self.list) == 0:
+            return 0
+        else:
+            return len(self.list[0])
 
     def data(self, index, role):
         if not index.isValid():

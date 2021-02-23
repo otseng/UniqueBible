@@ -20,7 +20,7 @@ class UpdateWindow(QDialog):
         self.currentVersion = UpdateUtil.getCurrentVersion()
         self.layout.addWidget(QLabel("Latest version: {0}".format(self.latestVersion)))
         self.layout.addWidget(QLabel("Current version: {0}".format(self.currentVersion)))
-        
+
         self.updateNowButton = QPushButton("Update now")
         self.updateNowButton.setEnabled(False)
         self.updateNowButton.clicked.connect(self.updateNow)

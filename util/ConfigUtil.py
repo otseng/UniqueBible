@@ -468,6 +468,11 @@ class ConfigUtil:
             config.regexCaseSensitive = False
         if not hasattr(config, "displayLanguage"):
             config.displayLanguage = 'en_US'
+        # App update check
+        if not hasattr(config, "lastAppUpdateCheckDate"):
+            config.lastAppUpdateCheckDate = ''
+        if not hasattr(config, "daysElapseForNextAppUpdateCheck"):
+            config.daysElapseForNextAppUpdateCheck = '14'
 
         # Temporary configurations
         # Their values are not saved on exit.
@@ -686,7 +691,9 @@ class ConfigUtil:
             ("highlightDarkThemeColours", config.highlightDarkThemeColours),
             ("showHighlightMarkers", config.showHighlightMarkers),
             ("menuShortcuts", config.menuShortcuts),
-            ("displayLanguage", config.displayLanguage)
+            ("displayLanguage", config.displayLanguage),
+            ("lastAppUpdateCheckDate", config.lastAppUpdateCheckDate),
+            ("daysElapseForNextAppUpdateCheck", config.daysElapseForNextAppUpdateCheck)
         )
         with open("config.py", "w", encoding="utf-8") as fileObj:
             for name, value in configs:

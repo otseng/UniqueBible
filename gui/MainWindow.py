@@ -45,6 +45,7 @@ from util.MacroParser import MacroParser
 from util.NoteService import NoteService
 from util.ShortcutUtil import ShortcutUtil
 import shortcut as sc
+from util.UpdateUtil import UpdateUtil
 
 
 class MainWindow(QMainWindow):
@@ -55,9 +56,6 @@ class MainWindow(QMainWindow):
 
         config.inBootupMode = True
         bootStartTime = datetime.now()
-        # Repository
-        # Read about downloading a raw github file: https://unix.stackexchange.com/questions/228412/how-to-wget-a-github-file
-        self.repository = "https://raw.githubusercontent.com/eliranwong/UniqueBible/master/"
         # delete old files
         for items in update.oldFiles:
             filePath = os.path.join(*items)
@@ -379,7 +377,7 @@ class MainWindow(QMainWindow):
                 rmtree(oldExlblFolder)
         try:
             # latest version number is indicated in file "UniqueBibleAppVersion.txt"
-            checkFile = "{0}UniqueBibleAppVersion.txt".format(self.repository)
+            checkFile = "{0}UniqueBibleAppVersion.txt".format(UpdateUtil.repository)
             request = requests.get(checkFile, timeout=5)
             if request.status_code == 200:
                 # tell the rest that internet connection is available
@@ -422,80 +420,7 @@ class MainWindow(QMainWindow):
                                          latestVersion, config.version),
                                      QMessageBox.Yes | QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.updateUniqueBibleApp()
-
-    # The following update method is used from version 11.9 onwards
-    # "patches.txt" from the repository is read for proceeding the update
-    def updateUniqueBibleApp(self):
-        requestObject = requests.get("{0}patches.txt".format(self.repository))
-        for line in requestObject.text.split("\n"):
-            if line:
-                try:
-                    version, contentType, filePath = literal_eval(line)
-                    if version > config.version:
-                        localPath = os.path.join(*filePath.split("/"))
-                        if contentType == "folder":
-                            if not os.path.isdir(localPath):
-                                os.makedirs(localPath)
-                        elif contentType == "file":
-                            requestObject2 = requests.get("{0}{1}".format(self.repository, filePath))
-                            with open(localPath, "wb") as fileObject:
-                                fileObject.write(requestObject2.content)
-                except:
-                    # message on failed item
-                    self.displayMessage("{0}\n{1}".format(config.thisTranslation["message_fail"], line))
-        # set executable files on macOS or Linux
-        if not platform.system() == "Windows":
-            for filename in ("main.py", "BibleVerseParser.py", "RegexSearch.py", "shortcut_uba_Windows_wsl2.sh",
-                             "shortcut_uba_macOS_Linux.sh", "shortcut_uba_chromeOS.sh"):
-                os.chmod(filename, 0o755)
-                # finish message
-        self.displayMessage(
-            "{0}  {1}".format(config.thisTranslation["message_done"], config.thisTranslation["message_restart"]))
-        self.openExternalFile("latest_changes.txt")
-
-    # old way to do the update, all content will be downloaded to overwrite all current files
-    def updateUniqueBibleAppOLD(self):
-        masterfile = "https://github.com/eliranwong/UniqueBible/archive/master.zip"
-        request = requests.get(masterfile)
-        if request.status_code == 200:
-            filename = masterfile.split("/")[-1]
-            with open(filename, "wb") as content:
-                content.write(request.content)
-            if filename.endswith(".zip"):
-                zipObject = zipfile.ZipFile(filename, "r")
-                zipObject.extractall(os.getcwd())
-                zipObject.close()
-                os.remove(filename)
-                # We use "distutils.dir_util.copy_tree" below instead of "shutil.copytree", as "shutil.copytree" does not overwrite old files.
-                try:
-                    # delete unwant files / folders first
-                    oldExlblFolder = os.path.join("htmlResources", "images", "EXLBL")
-                    if os.path.isdir(oldExlblFolder):
-                        rmtree(oldExlblFolder)
-                    # copy all new content
-                    copy_tree("UniqueBible-master", os.getcwd())
-                except:
-                    print("Failed to overwrite files.")
-                # set executable files on macOS or Linux
-                if not platform.system() == "Windows":
-                    for filename in ("main.py", "BibleVerseParser.py", "RegexSearch.py", "shortcut_uba_Windows_wsl2.sh",
-                                     "shortcut_uba_macOS_Linux.sh", "shortcut_uba_chromeOS.sh"):
-                        os.chmod(filename, 0o755)
-                # remove download files after upgrade
-                if config.removeBackup:
-                    try:
-                        rmtree("UniqueBible-master")
-                    except:
-                        print("Failed to remove downloaded files.")
-                # prompt a restart
-                self.displayMessage("{0}  {1}".format(config.thisTranslation["message_done"],
-                                                      config.thisTranslation["message_restart"]))
-                self.openExternalFile("latest_changes.txt")
-            else:
-                self.displayMessage(config.thisTranslation["message_fail"])
-        else:
-            self.displayMessage(config.thisTranslation["message_fail"])
+            UpdateUtil.updateUniqueBibleApp()
 
     # manage download helper
     def downloadHelper(self, databaseInfo):

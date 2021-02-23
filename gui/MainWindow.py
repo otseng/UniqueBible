@@ -44,6 +44,7 @@ from util.LanguageUtil import LanguageUtil
 from util.MacroParser import MacroParser
 from util.NoteService import NoteService
 from util.ShortcutUtil import ShortcutUtil
+from util.TextUtil import TextUtil
 import shortcut as sc
 from util.UpdateUtil import UpdateUtil
 
@@ -2351,6 +2352,7 @@ class MainWindow(QMainWindow):
             else:
                 activeBCVsettings = ""
                 if view == "main":
+                    content = self.instantHighlight(content)
                     activeBCVsettings = "<script>var activeText = '{0}'; var activeB = {1}; var activeC = {2}; var activeV = {3};</script>".format(
                         config.mainText, config.mainB, config.mainC, config.mainV)
                 elif view == "study":
@@ -2405,6 +2407,13 @@ class MainWindow(QMainWindow):
                 self.lastMainTextCommand = textCommand
             elif source == "study":
                 self.lastStudyTextCommand = textCommand
+
+    def instantHighlight(self, text):
+        if config.instantHighlightString:
+            text = re.sub(config.instantHighlightString, "<z>{0}</z>".format(config.instantHighlightString), text)
+            return TextUtil.fixTextHighlighting(text)
+        else:
+            return text
 
     def convertCrLink(self, match):
         *_, b, c, v = match.groups()

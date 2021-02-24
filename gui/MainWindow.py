@@ -1,6 +1,5 @@
-import os, sys, re, config, base64, webbrowser, platform, subprocess, zipfile, requests, update, logging
+import os, sys, re, config, base64, webbrowser, platform, subprocess, requests, update, logging
 from datetime import datetime
-from ast import literal_eval
 from distutils import util
 from functools import partial
 
@@ -26,8 +25,7 @@ from gui.ClassicMainWindow import ClassicMainWindow
 from gui.FocusMainWindow import FocusMainWindow
 from gui.DisplayShortcutsWindow import DisplayShortcutsWindow
 from gui.GistWindow import GistWindow
-from shutil import copyfile, rmtree
-from distutils.dir_util import copy_tree
+from shutil import copyfile
 from gui.Downloader import Downloader
 from gui.MoreConfigOptions import MoreConfigOptions
 from gui.ImportSettings import ImportSettings
@@ -37,8 +35,7 @@ from gui.MiniControl import MiniControl
 from gui.MorphDialog import MorphDialog
 from gui.MiniBrowser import MiniBrowser
 from gui.CentralWidget import CentralWidget
-from gui.UpdateWindow import UpdateWindow
-from gui.imports import *
+from gui.AppUpdateDialog import AppUpdateDialog
 from ToolsSqlite import LexiconData
 from TtsLanguages import TtsLanguages
 from util.DateUtil import DateUtil
@@ -722,7 +719,7 @@ class MainWindow(QMainWindow):
         self.setupMenuLayout(config.menuLayout)
 
     def showUpdateAppWindow(self):
-        updateAppWindow = UpdateWindow(self)
+        updateAppWindow = AppUpdateDialog(self)
         updateAppWindow.exec()
 
     def displayShortcuts(self):

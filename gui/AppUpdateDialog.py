@@ -1,22 +1,21 @@
 import sys
-
 import config
 
-from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QPushButton, QLineEdit
-
+from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QPushButton, QLineEdit, \
+    QHBoxLayout
 from util.DateUtil import DateUtil
 from util.LanguageUtil import LanguageUtil
+from util.TextUtil import TextUtil
 from util.UpdateUtil import UpdateUtil
 
 
-class UpdateWindow(QDialog):
+class AppUpdateDialog(QDialog):
 
     def __init__(self, parent):
-        super(UpdateWindow, self).__init__()
+        super(AppUpdateDialog, self).__init__()
 
         self.parent = parent
         self.setWindowTitle("UBA Update")
-        # self.setMinimumWidth(250)
         self.layout = QVBoxLayout()
 
         self.latestVersion = UpdateUtil.getLatestVersion()
@@ -47,11 +46,15 @@ class UpdateWindow(QDialog):
             DateUtil.formattedLocalDate(
                 DateUtil.addDays(UpdateUtil.lastAppUpdateCheckDateObject(), int(config.daysElapseForNextAppUpdateCheck)
                 )))))
-        self.layout.addWidget(QLabel("Day between checks:"))
+
+        row = QHBoxLayout()
+        row.addWidget(QLabel("Days between checks:"))
         self.daysInput = QLineEdit()
-        self.daysInput.setText(config.daysElapseForNextAppUpdateCheck)
+        self.daysInput.setText(str(config.daysElapseForNextAppUpdateCheck))
         self.daysInput.setMaxLength(3)
-        self.layout.addWidget(self.daysInput)
+        self.daysInput.setMaximumWidth(40)
+        row.addWidget(self.daysInput)
+        self.layout.addLayout(row)
 
         buttons = QDialogButtonBox.Ok
         self.buttonBox = QDialogButtonBox(buttons)
@@ -61,6 +64,15 @@ class UpdateWindow(QDialog):
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
 
+        self.updateNowButton.setFocus()
+
+        if self.uptodate:
+            self.daysInput.setFocus()
+        else:
+            self.setTabOrder(self.updateNowButton, self.daysInput)
+            self.setTabOrder(self.daysInput, self.updateNowButton)
+            self.updateNowButton.setFocus()
+
     def updateNow(self):
         debug = True
         self.updateNowButton.setText("Updating...")
@@ -69,10 +81,11 @@ class UpdateWindow(QDialog):
         self.updateNowButton.setText("Done!")
 
     def setDaysElapse(self):
-        config.daysElapseForNextAppUpdateCheck = self.daysInput.text()
+        config.daysElapseForNextAppUpdateCheck = TextUtil.getDigits(self.daysInput.text())
+
 
 if __name__ == '__main__':
     config.thisTranslation = LanguageUtil.loadTranslation("en_US")
     app = QApplication(sys.argv)
-    window = UpdateWindow()
+    window = AppUpdateDialog(None)
     window.exec_()

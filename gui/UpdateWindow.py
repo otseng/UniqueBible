@@ -53,7 +53,7 @@ class UpdateWindow(QDialog):
         self.daysInput.setMaxLength(3)
         self.layout.addWidget(self.daysInput)
 
-        buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        buttons = QDialogButtonBox.Ok
         self.buttonBox = QDialogButtonBox(buttons)
         self.buttonBox.accepted.connect(self.setDaysElapse)
         self.buttonBox.accepted.connect(self.accept)
@@ -62,7 +62,11 @@ class UpdateWindow(QDialog):
         self.setLayout(self.layout)
 
     def updateNow(self):
-        UpdateUtil.updateUniqueBibleApp(self)
+        debug = True
+        self.updateNowButton.setText("Updating...")
+        self.updateNowButton.setEnabled(False)
+        UpdateUtil.updateUniqueBibleApp(self.parent, debug)
+        self.updateNowButton.setText("Done!")
 
     def setDaysElapse(self):
         config.daysElapseForNextAppUpdateCheck = self.daysInput.text()

@@ -35,7 +35,7 @@ class UpdateWindow(QDialog):
         self.enableButtons()
 
     def enableButtons(self):
-        if UpdateUtil.checkCurrentIsLatest(self.currentVersion, self.latestVersion):
+        if UpdateUtil.currentIsLatest(self.currentVersion, self.latestVersion):
             self.updateNowButton.setEnabled(False)
         else:
             self.updateNowButton.setEnabled(True)

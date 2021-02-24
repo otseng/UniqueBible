@@ -1,6 +1,7 @@
 import os, pprint
 from platform import system
 import config
+from util.DateUtil import DateUtil
 
 
 class ConfigUtil:
@@ -476,7 +477,7 @@ class ConfigUtil:
             config.displayLanguage = 'en_US'
         # App update check
         if not hasattr(config, "lastAppUpdateCheckDate"):
-            config.lastAppUpdateCheckDate = ''
+            config.lastAppUpdateCheckDate = str(DateUtil.localDateNow())
         if not hasattr(config, "daysElapseForNextAppUpdateCheck"):
             config.daysElapseForNextAppUpdateCheck = '14'
 

@@ -5,11 +5,25 @@ import requests
 from PySide2.QtWidgets import QMessageBox
 
 import config
+from util.DateUtil import DateUtil
 
 
 class UpdateUtil:
 
     repository = "https://raw.githubusercontent.com/eliranwong/UniqueBible/master/"
+
+    @staticmethod
+    def checkIfShouldCheckForAppUpdate():
+        if config.lastAppUpdateCheckDate == '':
+            config.lastAppUpdateCheckDate = str(DateUtil.localDateNow())
+            return False
+        else:
+            compareDate = DateUtil.addDays(DateUtil.dateStringToObject(config.lastAppUpdateCheckDate),
+                                           int(config.daysElapseForNextAppUpdateCheck))
+            if compareDate <= DateUtil.localDateNow():
+                return True
+            else:
+                return False
 
     @staticmethod
     def getLatestVersion():
@@ -32,8 +46,9 @@ class UpdateUtil:
             return text.strip()
 
     @staticmethod
-    def checkCurrentIsLatest(current, latest):
-        return float(current) >= float(latest)
+    def currentIsLatest(current, latest):
+        res = float(current) >= float(latest)
+        return res
 
     @staticmethod
     def updateUniqueBibleApp(parent = None):
@@ -63,6 +78,7 @@ class UpdateUtil:
                              "shortcut_uba_macOS_Linux.sh", "shortcut_uba_chromeOS.sh"):
                 os.chmod(filename, 0o755)
                 # finish message
+        config.lastAppUpdateCheckDate = str(DateUtil.localDateNow())
         if parent is not None:
             parent.displayMessage(
                 "{0}  {1}".format(config.thisTranslation["message_done"], config.thisTranslation["message_restart"]))

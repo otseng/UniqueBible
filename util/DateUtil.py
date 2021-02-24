@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from babel.dates import format_date, parse_date
 
 import config
@@ -19,9 +19,20 @@ class DateUtil:
         # return int(time.mktime(time.gmtime()))
 
     # Return current local date
+    # 2021-02-23
     @staticmethod
     def localDateNow():
         return datetime.now().date()
+
+    # Return date object when string in format "2021-02-23"
+    @staticmethod
+    def dateStringToObject(d):
+        return datetime.strptime(d, '%Y-%m-%d').date()
+
+    # Add days to date object
+    @staticmethod
+    def addDays(date, days):
+        return date + timedelta(days=days)
 
     # Return current local date in current language format
     @staticmethod
@@ -82,5 +93,15 @@ def test_formats():
     print(DateUtil.localDateNow())
     # 2021-02-23
 
+def test_addDays():
+    now = DateUtil.localDateNow()
+    print(now)
+    later = DateUtil.addDays(now, 7)
+    print(later)
+
+def test_stringFormat():
+    dateObj = DateUtil.dateStringToObject('2021-02-23')
+    print(dateObj)
+
 if __name__ == "__main__":
-    test_formats()
+    test_stringFormat()

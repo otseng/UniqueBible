@@ -40,6 +40,7 @@ from gui.CentralWidget import CentralWidget
 from gui.imports import *
 from ToolsSqlite import LexiconData
 from TtsLanguages import TtsLanguages
+from util.DateUtil import DateUtil
 from util.LanguageUtil import LanguageUtil
 from util.MacroParser import MacroParser
 from util.NoteService import NoteService
@@ -371,24 +372,20 @@ class MainWindow(QMainWindow):
 
     # manage latest update
     def checkApplicationUpdate(self):
-        # delete unwanted old files / folders
-        if config.version < 11.6:
-            oldExlblFolder = os.path.join("htmlResources", "images", "EXLBL")
-            if os.path.isdir(oldExlblFolder):
-                rmtree(oldExlblFolder)
         try:
-            # latest version number is indicated in file "UniqueBibleAppVersion.txt"
             checkFile = "{0}UniqueBibleAppVersion.txt".format(UpdateUtil.repository)
-            request = requests.get(checkFile, timeout=5)
-            if request.status_code == 200:
-                # tell the rest that internet connection is available
-                config.internet = True
-                # compare with user's current version
-                if float(request.text) > config.version:
-                    self.promptUpdate(request.text)
-            else:
-                config.internet = False
-        except:
+            if UpdateUtil.checkIfShouldCheckForAppUpdate():
+                # latest version number is indicated in file "UniqueBibleAppVersion.txt"
+                request = requests.get(checkFile, timeout=5)
+                if request.status_code == 200:
+                    # tell the rest that internet connection is available
+                    config.internet = True
+                    # compare with user's current version
+                    if not UpdateUtil.currentIsLatest(config.version, request.text):
+                        self.promptUpdate(request.text)
+                else:
+                    config.internet = False
+        except Exception as e:
             config.internet = False
             print("Failed to read '{0}'.".format(checkFile))
 
@@ -416,6 +413,7 @@ class MainWindow(QMainWindow):
         return True
 
     def promptUpdate(self, latestVersion):
+        config.lastAppUpdateCheckDate = str(DateUtil.localDateNow())
         reply = QMessageBox.question(self, "Update is available ...",
                                      "Update is available ...\n\nLatest version: {0}\nInstalled version: {1}\n\nDo you want to proceed the update?".format(
                                          latestVersion, config.version),

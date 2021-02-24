@@ -722,7 +722,7 @@ class MainWindow(QMainWindow):
         self.setupMenuLayout(config.menuLayout)
 
     def showUpdateAppWindow(self):
-        updateAppWindow = UpdateWindow()
+        updateAppWindow = UpdateWindow(self)
         updateAppWindow.exec()
 
     def displayShortcuts(self):

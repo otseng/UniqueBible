@@ -55,7 +55,7 @@ class UpdateUtil:
         return res
 
     @staticmethod
-    def updateUniqueBibleApp(parent = None):
+    def updateUniqueBibleApp(parent=None):
         requestObject = requests.get("{0}patches.txt".format(UpdateUtil.repository))
         for line in requestObject.text.split("\n"):
             if line:

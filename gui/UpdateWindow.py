@@ -11,9 +11,10 @@ from util.UpdateUtil import UpdateUtil
 
 class UpdateWindow(QDialog):
 
-    def __init__(self):
+    def __init__(self, parent):
         super(UpdateWindow, self).__init__()
 
+        self.parent = parent
         self.setWindowTitle("UBA Update")
         # self.setMinimumWidth(250)
         self.layout = QVBoxLayout()
@@ -31,7 +32,7 @@ class UpdateWindow(QDialog):
         self.layout.addWidget(QLabel("Current version: {0}".format(self.currentVersion)))
 
         self.updateNowButton = QPushButton("Update now")
-        self.updateNowButton.setEnabled(False)
+        self.updateNowButton.setEnabled(True)
         self.updateNowButton.clicked.connect(self.updateNow)
         if self.uptodate:
             ubaUptodate = QLabel("UBA is up-to-date")
@@ -61,7 +62,7 @@ class UpdateWindow(QDialog):
         self.setLayout(self.layout)
 
     def updateNow(self):
-        pass
+        UpdateUtil.updateUniqueBibleApp(self)
 
     def setDaysElapse(self):
         config.daysElapseForNextAppUpdateCheck = self.daysInput.text()

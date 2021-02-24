@@ -50,6 +50,8 @@ class UpdateUtil:
 
     @staticmethod
     def currentIsLatest(current, latest):
+        if current == '' or latest == '':
+            return False
         res = float(current) >= float(latest)
         return res
 

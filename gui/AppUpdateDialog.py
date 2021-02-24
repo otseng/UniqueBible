@@ -74,7 +74,7 @@ class AppUpdateDialog(QDialog):
             self.updateNowButton.setFocus()
 
     def updateNow(self):
-        debug = True
+        debug = False
         self.updateNowButton.setText("Updating...")
         self.updateNowButton.setEnabled(False)
         UpdateUtil.updateUniqueBibleApp(self.parent, debug)

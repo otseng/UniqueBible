@@ -1,6 +1,5 @@
 import time
 from datetime import datetime, timedelta
-from babel.dates import format_date, parse_date
 
 import config
 
@@ -42,11 +41,15 @@ class DateUtil:
     # Return date in current language format
     @staticmethod
     def formattedLocalDate(date, format="short"):
+        from babel.dates import format_date
+
         return format_date(date, format=format, locale=config.displayLanguage[:2])
 
     # Parse date string in language format into date object
     @staticmethod
     def parseDate(date):
+        from babel.dates import parse_date
+
         return parse_date(date, locale=config.displayLanguage[:2])
 
     # Convert datetime to UTC epoch datetime

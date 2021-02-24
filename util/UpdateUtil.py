@@ -69,10 +69,10 @@ class UpdateUtil:
                                 if not os.path.isdir(localPath):
                                     os.makedirs(localPath)
                             elif contentType == "file":
-                                requestObject2 = requests.get("{0}{1}".format(config.repository, filePath))
+                                requestObject2 = requests.get("{0}{1}".format(UpdateUtil.repository, filePath))
                                 with open(localPath, "wb") as fileObject:
                                     fileObject.write(requestObject2.content)
-                except:
+                except Exception as e:
                     # message on failed item
                     if parent is not None:
                         parent.displayMessage("{0}\n{1}".format(config.thisTranslation["message_fail"], line))

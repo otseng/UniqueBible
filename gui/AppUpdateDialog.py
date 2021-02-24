@@ -15,7 +15,7 @@ class AppUpdateDialog(QDialog):
         super(AppUpdateDialog, self).__init__()
 
         self.parent = parent
-        self.setWindowTitle("UBA Update")
+        self.setWindowTitle("App Updater")
         self.layout = QVBoxLayout()
 
         self.latestVersion = UpdateUtil.getLatestVersion()

@@ -18,12 +18,16 @@ class UpdateUtil:
             config.lastAppUpdateCheckDate = str(DateUtil.localDateNow())
             return False
         else:
-            compareDate = DateUtil.addDays(DateUtil.dateStringToObject(config.lastAppUpdateCheckDate),
+            compareDate = DateUtil.addDays(UpdateUtil.lastAppUpdateCheckDateObject(),
                                            int(config.daysElapseForNextAppUpdateCheck))
             if compareDate <= DateUtil.localDateNow():
                 return True
             else:
                 return False
+
+    @staticmethod
+    def lastAppUpdateCheckDateObject():
+        return DateUtil.dateStringToObject(config.lastAppUpdateCheckDate)
 
     @staticmethod
     def getLatestVersion():

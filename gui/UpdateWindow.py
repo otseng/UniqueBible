@@ -2,7 +2,9 @@ import sys
 
 import config
 
-from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QPushButton
+from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QPushButton, QLineEdit
+
+from util.DateUtil import DateUtil
 from util.LanguageUtil import LanguageUtil
 from util.UpdateUtil import UpdateUtil
 
@@ -32,27 +34,37 @@ class UpdateWindow(QDialog):
         self.updateNowButton.setEnabled(False)
         self.updateNowButton.clicked.connect(self.updateNow)
         if self.uptodate:
-            self.layout.addWidget(QLabel("UBA is up-to-date"))
+            ubaUptodate = QLabel("UBA is up-to-date")
+            ubaUptodate.setStyleSheet("color: rgb(128, 255, 7);")
+            self.layout.addWidget(ubaUptodate)
         else:
             self.layout.addWidget(self.updateNowButton)
 
-        buttons = QDialogButtonBox.Ok
+        self.layout.addWidget(QLabel("Last check: {0}".format(
+            DateUtil.formattedLocalDate(UpdateUtil.lastAppUpdateCheckDateObject()))))
+        self.layout.addWidget(QLabel("Next check: {0}".format(
+            DateUtil.formattedLocalDate(
+                DateUtil.addDays(UpdateUtil.lastAppUpdateCheckDateObject(), int(config.daysElapseForNextAppUpdateCheck)
+                )))))
+        self.layout.addWidget(QLabel("Day between checks:"))
+        self.daysInput = QLineEdit()
+        self.daysInput.setText(config.daysElapseForNextAppUpdateCheck)
+        self.daysInput.setMaxLength(3)
+        self.layout.addWidget(self.daysInput)
+
+        buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
         self.buttonBox = QDialogButtonBox(buttons)
+        self.buttonBox.accepted.connect(self.setDaysElapse)
         self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
-
-        self.enableButtons()
-
-    def enableButtons(self):
-        if UpdateUtil.currentIsLatest(self.currentVersion, self.latestVersion):
-            self.updateNowButton.setEnabled(False)
-        else:
-            self.updateNowButton.setEnabled(True)
 
     def updateNow(self):
         pass
 
+    def setDaysElapse(self):
+        config.daysElapseForNextAppUpdateCheck = self.daysInput.text()
 
 if __name__ == '__main__':
     config.thisTranslation = LanguageUtil.loadTranslation("en_US")

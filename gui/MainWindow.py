@@ -37,6 +37,7 @@ from gui.MiniControl import MiniControl
 from gui.MorphDialog import MorphDialog
 from gui.MiniBrowser import MiniBrowser
 from gui.CentralWidget import CentralWidget
+from gui.UpdateWindow import UpdateWindow
 from gui.imports import *
 from ToolsSqlite import LexiconData
 from TtsLanguages import TtsLanguages
@@ -719,6 +720,10 @@ class MainWindow(QMainWindow):
         ShortcutUtil.setup(shortcut)
         ShortcutUtil.loadShortcutFile()
         self.setupMenuLayout(config.menuLayout)
+
+    def showUpdateAppWindow(self):
+        updateAppWindow = UpdateWindow()
+        updateAppWindow.exec()
 
     def displayShortcuts(self):
         shortcutWindow = DisplayShortcutsWindow(config.menuShortcuts, ShortcutUtil.getAllShortcuts())

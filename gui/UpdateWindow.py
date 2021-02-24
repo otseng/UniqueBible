@@ -18,13 +18,23 @@ class UpdateWindow(QDialog):
 
         self.latestVersion = UpdateUtil.getLatestVersion()
         self.currentVersion = UpdateUtil.getCurrentVersion()
-        self.layout.addWidget(QLabel("Latest version: {0}".format(self.latestVersion)))
+
+        if UpdateUtil.currentIsLatest(self.currentVersion, self.latestVersion):
+            self.uptodate = True
+        else:
+            self.uptodate = False
+
+        if not self.uptodate:
+            self.layout.addWidget(QLabel("Latest version: {0}".format(self.latestVersion)))
         self.layout.addWidget(QLabel("Current version: {0}".format(self.currentVersion)))
 
         self.updateNowButton = QPushButton("Update now")
         self.updateNowButton.setEnabled(False)
         self.updateNowButton.clicked.connect(self.updateNow)
-        self.layout.addWidget(self.updateNowButton)
+        if self.uptodate:
+            self.layout.addWidget(QLabel("UBA is up-to-date"))
+        else:
+            self.layout.addWidget(self.updateNowButton)
 
         buttons = QDialogButtonBox.Ok
         self.buttonBox = QDialogButtonBox(buttons)

@@ -606,4 +606,5 @@ translation = {
     "watsonTranslator": "Watson 转换程序",
     "version": "版本",
     "latest_changes": "最新更改",
+    "info": "资料",
 }

@@ -607,4 +607,5 @@ translation = {
     "watsonTranslator": "Watson Translator",
     "version": "版本",
     "latest_changes": "最新變更",
+    "info": "資訊",
 }

@@ -605,4 +605,5 @@ translation = {
     "watsonTranslator": "Watson Translator",
     "version": "Έκδοση:",
     "latest_changes": "Αλλαγές",
+    "info": "' Πληροφορίες",
 }

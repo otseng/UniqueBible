@@ -605,4 +605,5 @@ translation = {
     "watsonTranslator": "वाटसन अनुवादक",
     "version": "संस्करण",
     "latest_changes": "नवीनतम परिवर्तन",
+    "info": "सूचना",
 }

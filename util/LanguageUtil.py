@@ -222,5 +222,5 @@ if __name__ == "__main__":
             print("Error executing: " + str(e))
     else:
         # printCodesSupportedLanguages()
-        addLanguageStringToAllFiles("latest_changes", "Latest changes")
+        addLanguageStringToAllFiles("info", "Information")
 

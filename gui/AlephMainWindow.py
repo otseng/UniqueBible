@@ -276,7 +276,7 @@ class AlephMainWindow:
             build_macros_menu.addAction(QAction(config.thisTranslation["menu_highlight"], self, triggered=self.macroSaveHighlights))
 
         about_menu = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu_about"]))
-        about_menu.addAction(QAction(config.thisTranslation["menu_about"], self, triggered=self.showAbout))
+        about_menu.addAction(QAction(config.thisTranslation["info"], self, triggered=self.showInfo))
         subMenu = addSubMenu(about_menu, "menu_support")
         items = (
             ("menu1_wikiPages", self.openUbaWiki, sc.ubaWiki),

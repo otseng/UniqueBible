@@ -605,4 +605,5 @@ translation = {
     "watsonTranslator": "Traductor de Watson",
     "version": "Versión",
     "latest_changes": "Últimos cambios",
+    "info": "Información",
 }

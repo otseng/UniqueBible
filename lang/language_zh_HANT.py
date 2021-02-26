@@ -605,4 +605,6 @@ translation = {
     "searchPanel": "搜尋畫面",
     "languageSettings": "語言設定",
     "watsonTranslator": "Watson Translator",
+    "version": "版本",
+    "latest_changes": "最新變更",
 }

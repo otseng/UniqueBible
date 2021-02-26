@@ -603,4 +603,6 @@ translation = {
     "searchPanel": "Search Panel",
     "languageSettings": "Language Settings",
     "watsonTranslator": "Watson Translator",
+    "version": "Version",
+    "latest_changes": "Latest changes",
 }

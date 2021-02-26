@@ -604,4 +604,6 @@ translation = {
     "searchPanel": "搜索面板",
     "languageSettings": "语言设置",
     "watsonTranslator": "Watson 转换程序",
+    "version": "版本",
+    "latest_changes": "最新更改",
 }

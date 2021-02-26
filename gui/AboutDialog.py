@@ -24,7 +24,7 @@ class AboutDialog(QDialog):
         with open("latest_changes.txt", "r", encoding="utf-8") as fileObject:
             text = fileObject.read()
 
-        self.layout.addWidget(QLabel("{0}}:".format(config.thisTranslation["latest_changes"])))
+        self.layout.addWidget(QLabel("{0}:".format(config.thisTranslation["latest_changes"])))
         self.latestChanges = QPlainTextEdit()
         self.latestChanges.setPlainText(text)
         self.latestChanges.setReadOnly(True)
@@ -42,8 +42,11 @@ class AboutDialog(QDialog):
 
 if __name__ == '__main__':
     from util.ConfigUtil import ConfigUtil
+    from util.LanguageUtil import LanguageUtil
 
     ConfigUtil.setup()
+    config.thisTranslation = LanguageUtil.loadTranslation("en_US")
+
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
     window = AboutDialog()

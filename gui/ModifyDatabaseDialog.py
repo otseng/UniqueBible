@@ -6,6 +6,8 @@ from PySide2 import QtCore
 from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, \
     QComboBox
 
+from util.TextUtil import TextUtil
+
 
 class ModifyDatabaseDialog(QDialog):
 
@@ -22,47 +24,53 @@ class ModifyDatabaseDialog(QDialog):
         self.setMinimumWidth(300)
 
         if filetype == "bible":
-            bible = Bible(filename)
-            if not bible.checkColumnExists("Details", "Language"):
-                bible.addColumnToTable("Details", "Language", "NVARCHAR(10)")
-            if not bible.checkColumnExists("Details", "Font"):
-                bible.addColumnToTable("Details", "Font", "TEXT")
+            self.bible = Bible(filename)
+            self.bible.addMissingColumns()
 
             row = QHBoxLayout()
             row.addWidget(QLabel("Title: "))
             self.bibleTitle = QLineEdit()
-            self.bibleTitle.setText(bible.bibleInfo())
+            self.bibleTitle.setText(self.bible.bibleInfo())
+            self.bibleTitle.setMaxLength(100)
             row.addWidget(self.bibleTitle)
             self.layout.addLayout(row)
 
             row = QHBoxLayout()
-            row.addWidget(QLabel("Language: "))
-            self.bibleLanguage = QLineEdit()
-            self.bibleLanguage.setText(bible.getLanguage())
-            row.addWidget(self.bibleLanguage)
+            row.addWidget(QLabel("Font Size: "))
+            self.fontSize = QLineEdit()
+            self.fontSize.setText(str(self.bible.getFontSize()))
+            self.fontSize.setMaxLength(3)
+            row.addWidget(self.fontSize)
             self.layout.addLayout(row)
 
-            fonts = [''] + sorted(glob.glob("htmlResources/fonts/*.ttf"))
+            self.fonts = [''] + sorted(glob.glob("htmlResources/fonts/*.ttf"))
             try:
-                index = fonts.index(bible.getFont())
+                index = self.fonts.index(self.bible.getFontName())
             except:
                 index = 0
             row = QHBoxLayout()
-            row.addWidget(QLabel("Font: "))
+            row.addWidget(QLabel("Font Name: "))
             self.fontList = QComboBox()
-            self.fontList.addItems(fonts)
+            self.fontList.addItems(self.fonts)
             self.fontList.setCurrentIndex(index)
             row.addWidget(self.fontList)
             self.layout.addLayout(row)
         else:
             self.layout.addWidget(QLabel("{0} is not supported".format(filetype)))
 
-        buttons = QDialogButtonBox.Ok
+        buttons = QDialogButtonBox.Ok | QDialogButtonBox.Cancel
         self.buttonBox = QDialogButtonBox(buttons)
+        self.buttonBox.accepted.connect(self.save)
         self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
 
+    def save(self):
+        if self.filetype == "bible":
+            self.bible.updateTitleAndFontInfo(self.bibleTitle.text(),
+                                              TextUtil.getDigits(self.fontSize.text()),
+                                              self.fonts[self.fontList.currentIndex()])
 
 if __name__ == '__main__':
     from util.ConfigUtil import ConfigUtil

@@ -623,7 +623,7 @@ class MainWindow(QMainWindow):
                                         config.thisTranslation["menu8_fixDatabase"], items, 0, False)
         if ok and item:
             bible = Bible(item)
-            bible.fixDatabase()
+            bible.addMissingColumns()
             self.displayMessage(config.thisTranslation["message_done"])
 
     # convert bible references to string

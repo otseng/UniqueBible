@@ -838,7 +838,7 @@ class Bible:
     CREATE_DETAILS_TABLE = '''CREATE TABLE IF NOT EXISTS Details (Title NVARCHAR(100), 
                            Abbreviation NVARCHAR(50), Information TEXT, Version INT, OldTestament BOOL,
                            NewTestament BOOL, Apocrypha BOOL, Strongs BOOL, Language NVARCHAR(10),
-                           Font TEXT)'''
+                           FontSize INT, FontName NVARCHAR(100))'''
 
     CREATE_BIBLE_TABLE = "CREATE TABLE Bible (Book INT, Chapter INT, Scripture TEXT)"
 
@@ -892,8 +892,17 @@ class Bible:
         else:
             return ""
 
-    def getFont(self):
-        query = "SELECT Font FROM Details limit 1"
+    def getFontName(self):
+        query = "SELECT FontName FROM Details limit 1"
+        self.cursor.execute(query)
+        info = self.cursor.fetchone()
+        if info:
+            return info[0]
+        else:
+            return ""
+
+    def getFontSize(self):
+        query = "SELECT FontSize FROM Details limit 1"
         self.cursor.execute(query)
         info = self.cursor.fetchone()
         if info:
@@ -1035,6 +1044,15 @@ class Bible:
         sql = "ALTER TABLE " + table + " ADD COLUMN " + column + " " + column_type
         self.cursor.execute(sql)
 
+    def addLanguageColumn(self):
+        self.addColumnToTable("Details", "Language", "NVARCHAR(10)")
+
+    def addFontNameColumn(self):
+        self.addColumnToTable("Details", "FontName", "NVARCHAR(100)")
+
+    def addFontSizeColumn(self):
+        self.addColumnToTable("Details", "FontSize", "INT")
+
     def createDetailsTable(self):
         self.cursor.execute(Bible.CREATE_DETAILS_TABLE)
 
@@ -1050,6 +1068,11 @@ class Bible:
         sql = "UPDATE Details set Title = ?, Abbreviation = ?"
         self.cursor.execute(sql, (bibleFullname, bibleAbbrev))
 
+    def updateTitleAndFontInfo(self, bibleFullname, fontSize, fontName):
+        sql = "UPDATE Details set Title = ?, FontSize = ?, FontName = ?"
+        self.cursor.execute(sql, (bibleFullname, fontSize, fontName))
+        self.connection.commit()
+
     def deleteOldBibleInfo(self):
         query = "DELETE FROM Verses WHERE Book=0 AND Chapter=0 AND Verse=0"
         self.cursor.execute(query)
@@ -1059,11 +1082,15 @@ class Bible:
         count = self.cursor.fetchone()[0]
         return count
 
-    def fixDatabase(self):
+    def addMissingColumns(self):
         if not self.checkTableExists("Details"):
             self.createDetailsTable()
         if not self.checkColumnExists("Details", "Language"):
-            self.addColumnToTable("Details", "Language", "NVARCHAR(10)")
+            self.addLanguageColumn()
+        if not self.checkColumnExists("Details", "FontSize"):
+            self.addFontSizeColumn()
+        if not self.checkColumnExists("Details", "FontName"):
+            self.addFontNameColumn()
         if self.getCount("Details") == 0:
             self.insertDetailsTable(self.text, self.text)
 

@@ -773,7 +773,6 @@ class TextCommandParser:
             (fontFile, fontSize) = Bible(text).getFontInfo()
             fontFormat = ''
             if fontFile and len(fontFile) > 0:
-                fontFormat = ''
                 if ".ttf" in fontFile:
                     fontName = fontFile.replace(".ttf", "")
                     fontFormat = "font-family: '{0}'; src: url('htmlResources/fonts/{1}') format('truetype');".format(

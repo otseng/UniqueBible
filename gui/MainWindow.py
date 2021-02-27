@@ -2430,7 +2430,6 @@ class MainWindow(QMainWindow):
                         config.studyText, config.studyB, config.studyC, config.studyV)
                     if hasattr(config, "studyCssBibleFontStyle"):
                         bibleCss = config.studyCssBibleFontStyle
-                # !!!
                 html = ("<!DOCTYPE html><html><head><title>UniqueBible.app</title>"
                         "<style>body {2} font-size: {4}px; font-family:'{5}';{3} "
                         "zh {2} font-family:'{6}'; {3}"

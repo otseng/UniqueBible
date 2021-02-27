@@ -769,7 +769,7 @@ class TextCommandParser:
                 config.readFormattedBibles = False
                 self.parent.enableParagraphButtonAction(False)
 
-            # !!!
+            # Custom font file and size for Bible
             (fontFile, fontSize) = Bible(text).getFontInfo()
             css = ''
             if fontFile and len(fontFile) > 0:

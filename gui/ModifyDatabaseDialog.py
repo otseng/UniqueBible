@@ -9,20 +9,20 @@ from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayo
 
 class ModifyDatabaseDialog(QDialog):
 
-    def __init__(self, type, file):
+    def __init__(self, filetype, filename):
         super().__init__()
 
         from BiblesSqlite import Bible
 
-        self.type = type
-        self.file = file
+        self.filetype = filetype
+        self.filename = filename
 
         self.setWindowTitle("Update Database")
         self.layout = QVBoxLayout()
         self.setMinimumWidth(300)
 
-        if type == "bible":
-            bible = Bible(file)
+        if filetype == "bible":
+            bible = Bible(filename)
             if not bible.checkColumnExists("Details", "Language"):
                 bible.addColumnToTable("Details", "Language", "NVARCHAR(10)")
             if not bible.checkColumnExists("Details", "Font"):
@@ -54,6 +54,8 @@ class ModifyDatabaseDialog(QDialog):
             self.fontList.setCurrentIndex(index)
             row.addWidget(self.fontList)
             self.layout.addLayout(row)
+        else:
+            self.layout.addWidget(QLabel("{0} is not supported".format(filetype)))
 
         buttons = QDialogButtonBox.Ok
         self.buttonBox = QDialogButtonBox(buttons)

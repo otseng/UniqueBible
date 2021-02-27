@@ -19,7 +19,7 @@ class ModifyDatabaseDialog(QDialog):
         self.filetype = filetype
         self.filename = filename
 
-        self.setWindowTitle("Update Database")
+        self.setWindowTitle(config.thisTranslation["modify_database"])
         self.layout = QVBoxLayout()
         self.setMinimumWidth(300)
 
@@ -27,8 +27,10 @@ class ModifyDatabaseDialog(QDialog):
             self.bible = Bible(filename)
             self.bible.addMissingColumns()
 
+            self.layout.addWidget(QLabel("{0}: {1}".format(config.thisTranslation["name"], filename)))
+
             row = QHBoxLayout()
-            row.addWidget(QLabel("Title: "))
+            row.addWidget(QLabel("{0}: ".format(config.thisTranslation["title"])))
             self.bibleTitle = QLineEdit()
             self.bibleTitle.setText(self.bible.bibleInfo())
             self.bibleTitle.setMaxLength(100)
@@ -36,7 +38,7 @@ class ModifyDatabaseDialog(QDialog):
             self.layout.addLayout(row)
 
             row = QHBoxLayout()
-            row.addWidget(QLabel("Font Size: "))
+            row.addWidget(QLabel("{0}: ".format(config.thisTranslation["menu2_fontSize"])))
             self.fontSize = QLineEdit()
             self.fontSize.setText(str(self.bible.getFontSize()))
             self.fontSize.setMaxLength(3)
@@ -49,7 +51,7 @@ class ModifyDatabaseDialog(QDialog):
             except:
                 index = 0
             row = QHBoxLayout()
-            row.addWidget(QLabel("Font Name: "))
+            row.addWidget(QLabel("{0}: ".format(config.thisTranslation["font_name"])))
             self.fontList = QComboBox()
             self.fontList.addItems(self.fonts)
             self.fontList.setCurrentIndex(index)
@@ -77,7 +79,7 @@ if __name__ == '__main__':
     from util.LanguageUtil import LanguageUtil
 
     ConfigUtil.setup()
-    config.thisTranslation = LanguageUtil.loadTranslation("en_US")
+    config.thisTranslation = LanguageUtil.loadTranslation("en_GB")
 
     config.mainText = "KJV"
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)

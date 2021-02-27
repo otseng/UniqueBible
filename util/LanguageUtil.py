@@ -222,5 +222,5 @@ if __name__ == "__main__":
             print("Error executing: " + str(e))
     else:
         # printCodesSupportedLanguages()
-        addLanguageStringToAllFiles("modify_database", "Modify Database")
+        addLanguageStringToAllFiles("title", "Title")
 

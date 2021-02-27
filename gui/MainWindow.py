@@ -28,6 +28,7 @@ from gui.DisplayShortcutsWindow import DisplayShortcutsWindow
 from gui.GistWindow import GistWindow
 from shutil import copyfile
 from gui.Downloader import Downloader
+from gui.ModifyDatabaseDialog import ModifyDatabaseDialog
 from gui.WatsonCredentialWindow import WatsonCredentialWindow
 from gui.MoreConfigOptions import MoreConfigOptions
 from gui.ImportSettings import ImportSettings
@@ -620,11 +621,10 @@ class MainWindow(QMainWindow):
     def selectDatabaseToFix(self):
         items = BiblesSqlite().getFormattedBibleList()
         item, ok = QInputDialog.getItem(self, "UniqueBible",
-                                        config.thisTranslation["menu8_fixDatabase"], items, 0, False)
+                                        config.thisTranslation["modify_database"], items, 0, False)
         if ok and item:
-            bible = Bible(item)
-            bible.addMissingColumns()
-            self.displayMessage(config.thisTranslation["message_done"])
+            dialog = ModifyDatabaseDialog("bible", item)
+            dialog.exec_()
 
     # convert bible references to string
     def bcvToVerseReference(self, b, c, v):

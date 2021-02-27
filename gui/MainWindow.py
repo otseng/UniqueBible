@@ -617,8 +617,8 @@ class MainWindow(QMainWindow):
         if ok and item and not item == "[All Installed]":
             self.downloadHelper(datasets[item])
 
-    # Select database to fix
-    def selectDatabaseToFix(self):
+    # Select database to modify
+    def selectDatabaseToModify(self):
         items = BiblesSqlite().getFormattedBibleList()
         item, ok = QInputDialog.getItem(self, "UniqueBible",
                                         config.thisTranslation["modify_database"], items, 0, False)

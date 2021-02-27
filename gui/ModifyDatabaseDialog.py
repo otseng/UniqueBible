@@ -40,10 +40,13 @@ class ModifyDatabaseDialog(QDialog):
             row.addWidget(self.bibleTitle)
             self.layout.addLayout(row)
 
+            fontSize = self.bible.getFontSize()
+            if fontSize is None:
+                fontSize = 12
             row = QHBoxLayout()
             row.addWidget(QLabel("{0}: ".format(config.thisTranslation["menu2_fontSize"])))
             self.fontSize = QLineEdit()
-            self.fontSize.setText(str(self.bible.getFontSize()))
+            self.fontSize.setText(str(fontSize))
             self.fontSize.setMaxLength(3)
             self.fontSize.setMaximumWidth(50)
             row.addWidget(self.fontSize, alignment=Qt.AlignLeft)
@@ -87,7 +90,7 @@ if __name__ == '__main__':
     ConfigUtil.setup()
     config.thisTranslation = LanguageUtil.loadTranslation("en_GB")
 
-    config.mainText = "KJV"
+    config.mainText = "MOV"
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
     window = ModifyDatabaseDialog("bible", config.mainText)

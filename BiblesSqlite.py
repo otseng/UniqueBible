@@ -892,23 +892,17 @@ class Bible:
         else:
             return ""
 
-    def getFontName(self):
-        query = "SELECT FontName FROM Details limit 1"
-        self.cursor.execute(query)
-        info = self.cursor.fetchone()
-        if info:
-            return info[0]
-        else:
-            return ""
-
-    def getFontSize(self):
-        query = "SELECT FontSize FROM Details limit 1"
-        self.cursor.execute(query)
-        info = self.cursor.fetchone()
-        if info:
-            return info[0]
-        else:
-            return ""
+    def getFontInfo(self):
+        try:
+            query = "SELECT FontName, FontSize FROM Details limit 1"
+            self.cursor.execute(query)
+            info = self.cursor.fetchone()
+            if info:
+                return info
+            else:
+                return ("","")
+        except:
+            return ("", "")
 
     def bibleInfoOld(self):
         query = "SELECT Scripture FROM Verses WHERE Book=0 AND Chapter=0 AND Verse=0"

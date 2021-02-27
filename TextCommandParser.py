@@ -768,6 +768,17 @@ class TextCommandParser:
             elif (text in ("OHGBi", "OHGB") or not text in formattedBibles) and config.readFormattedBibles:
                 config.readFormattedBibles = False
                 self.parent.enableParagraphButtonAction(False)
+
+            # !!!
+            (fontFile, fontSize) = Bible(text).getFontInfo()
+            if fontFile and len(fontFile) > 0:
+                if ".ttf" in fontFile:
+                    fontName = fontFile.replace(".ttf", "")
+                    css = "{0} {1} font-family: '{2}'; {3}".format(text, "{", fontName, "}")
+                    if view == "main":
+                        config.mainCssBibleFontStyle = css
+                    elif view == "study":
+                        config.studyCssBibleFontStyle = css
             if (len(verseList) == 1) and (len(verseList[0]) == 3):
                 # i.e. only one verse reference is specified
                 bcvTuple = verseList[0]
@@ -775,7 +786,7 @@ class TextCommandParser:
                     chapters = ""
                 else:
                     chapters = self.getChaptersMenu(bcvTuple[0], bcvTuple[1], text)
-                content = "{0}<hr>{1}<hr>{0}".format(chapters, self.textFormattedBible(bcvTuple, text, view))
+                content = "<{2}>{0}<hr>{1}<hr>{0}</{2}>".format(chapters, self.textFormattedBible(bcvTuple, text, view), text)
             else:
                 # i.e. when more than one verse reference is found
                 content = self.textPlainBible(verseList, text)

@@ -1,4 +1,5 @@
 import glob
+import os
 import sys
 
 from PySide2.QtCore import Qt
@@ -40,7 +41,7 @@ class ModifyDatabaseDialog(QDialog):
             row.addWidget(self.bibleTitle)
             self.layout.addLayout(row)
 
-            fontSize = self.bible.getFontSize()
+            (fontName, fontSize) = self.bible.getFontInfo()
             if fontSize is None:
                 fontSize = 12
             row = QHBoxLayout()
@@ -54,9 +55,10 @@ class ModifyDatabaseDialog(QDialog):
             row.addItem(verticalSpacer)
             self.layout.addLayout(row)
 
-            self.fonts = [''] + sorted(glob.glob("htmlResources/fonts/*.ttf"))
+            fonts = sorted(glob.glob("htmlResources/fonts/*.ttf"))
+            self.fonts = [''] + [os.path.basename(font) for font in fonts]
             try:
-                index = self.fonts.index(self.bible.getFontName())
+                index = self.fonts.index(fontName)
             except:
                 index = 0
             row = QHBoxLayout()

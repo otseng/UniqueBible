@@ -1,7 +1,4 @@
 import config
-if config.isIbmWatsonInstalled:
-    from ibm_watson import LanguageTranslatorV3
-    from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
 class Translator:
 
@@ -15,6 +12,9 @@ class Translator:
 
     def __init__(self):
         if config.isIbmWatsonInstalled and config.myIBMWatsonApikey:
+            from ibm_watson import LanguageTranslatorV3
+            from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+
             self.authenticate()
             #if self.language_translator is not None and not hasattr(config, "fromLanguageCodes"):
             #    self.getLanguageLists()

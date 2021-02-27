@@ -16,8 +16,8 @@ import config
 # Setup config values
 from util.ConfigUtil import ConfigUtil
 ConfigUtil.setup()
-# Setup dependencies
-import util.setup
+# Check for dependencies and other essential elements
+from checkup import *
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -40,12 +40,10 @@ from PySide2.QtWidgets import QApplication, QStyleFactory
 from themes import Themes
 # [Optional] qt-material
 # qt-material have to be imported after PySide2
+if config.qtMaterial and not config.isQtMaterialInstalled:
+    config.qtMaterial = False
 if config.qtMaterial:
-    try:
-        from qt_material import apply_stylesheet
-    except:
-        config.qtMaterial = False
-        ConfigUtil.optionalFeatureNotEnabled("Qt Materials Themes", "qt-material")
+    from qt_material import apply_stylesheet
 
 # Set screen size at first launch
 def setupMainWindow(availableGeometry):

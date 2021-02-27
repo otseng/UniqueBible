@@ -771,14 +771,17 @@ class TextCommandParser:
 
             # !!!
             (fontFile, fontSize) = Bible(text).getFontInfo()
+            css = ''
             if fontFile and len(fontFile) > 0:
                 if ".ttf" in fontFile:
                     fontName = fontFile.replace(".ttf", "")
-                    css = "{0} {1} font-family: '{2}'; {3}".format(text, "{", fontName, "}")
-                    if view == "main":
-                        config.mainCssBibleFontStyle = css
-                    elif view == "study":
-                        config.studyCssBibleFontStyle = css
+                    css = ("{0} {1} font-family: '{2}'; "
+                           "src: url('htmlResources/fonts/{3}') format('truetype'); {4}").format(
+                            text, "{", fontName, fontFile, "}")
+            if view == "main":
+                config.mainCssBibleFontStyle = css
+            elif view == "study":
+                config.studyCssBibleFontStyle = css
             if (len(verseList) == 1) and (len(verseList[0]) == 3):
                 # i.e. only one verse reference is specified
                 bcvTuple = verseList[0]

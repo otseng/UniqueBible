@@ -1,10 +1,13 @@
 import glob
 import sys
+
+from PySide2.QtCore import Qt
+
 import config
 
 from PySide2 import QtCore
 from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, \
-    QComboBox
+    QComboBox, QSpacerItem, QSizePolicy
 
 from util.TextUtil import TextUtil
 
@@ -42,7 +45,10 @@ class ModifyDatabaseDialog(QDialog):
             self.fontSize = QLineEdit()
             self.fontSize.setText(str(self.bible.getFontSize()))
             self.fontSize.setMaxLength(3)
-            row.addWidget(self.fontSize)
+            self.fontSize.setMaximumWidth(50)
+            row.addWidget(self.fontSize, alignment=Qt.AlignLeft)
+            verticalSpacer = QSpacerItem(200, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+            row.addItem(verticalSpacer)
             self.layout.addLayout(row)
 
             self.fonts = [''] + sorted(glob.glob("htmlResources/fonts/*.ttf"))

@@ -837,7 +837,8 @@ class Bible:
 
     CREATE_DETAILS_TABLE = '''CREATE TABLE IF NOT EXISTS Details (Title NVARCHAR(100), 
                            Abbreviation NVARCHAR(50), Information TEXT, Version INT, OldTestament BOOL,
-                           NewTestament BOOL, Apocrypha BOOL, Strongs BOOL, Language NVARCHAR(10))'''
+                           NewTestament BOOL, Apocrypha BOOL, Strongs BOOL, Language NVARCHAR(10),
+                           Font TEXT)'''
 
     CREATE_BIBLE_TABLE = "CREATE TABLE Bible (Book INT, Chapter INT, Scripture TEXT)"
 
@@ -875,6 +876,24 @@ class Bible:
 
     def bibleInfo(self):
         query = "SELECT Title FROM Details limit 1"
+        self.cursor.execute(query)
+        info = self.cursor.fetchone()
+        if info:
+            return info[0]
+        else:
+            return ""
+
+    def getLanguage(self):
+        query = "SELECT Language FROM Details limit 1"
+        self.cursor.execute(query)
+        info = self.cursor.fetchone()
+        if info:
+            return info[0]
+        else:
+            return ""
+
+    def getFont(self):
+        query = "SELECT Font FROM Details limit 1"
         self.cursor.execute(query)
         info = self.cursor.fetchone()
         if info:

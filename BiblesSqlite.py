@@ -838,7 +838,7 @@ class Bible:
     CREATE_DETAILS_TABLE = '''CREATE TABLE IF NOT EXISTS Details (Title NVARCHAR(100), 
                            Abbreviation NVARCHAR(50), Information TEXT, Version INT, OldTestament BOOL,
                            NewTestament BOOL, Apocrypha BOOL, Strongs BOOL, Language NVARCHAR(10),
-                           FontSize INT, FontName NVARCHAR(100))'''
+                           FontSize NVARCHAR(20), FontName NVARCHAR(100))'''
 
     CREATE_BIBLE_TABLE = "CREATE TABLE Bible (Book INT, Chapter INT, Scripture TEXT)"
 
@@ -1045,7 +1045,7 @@ class Bible:
         self.addColumnToTable("Details", "FontName", "NVARCHAR(100)")
 
     def addFontSizeColumn(self):
-        self.addColumnToTable("Details", "FontSize", "INT")
+        self.addColumnToTable("Details", "FontSize", "NVARCHAR(20)")
 
     def createDetailsTable(self):
         self.cursor.execute(Bible.CREATE_DETAILS_TABLE)

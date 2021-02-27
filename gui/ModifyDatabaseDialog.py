@@ -42,17 +42,12 @@ class ModifyDatabaseDialog(QDialog):
             self.layout.addLayout(row)
 
             (fontName, fontSize) = self.bible.getFontInfo()
-            if fontSize is None:
-                fontSize = 12
             row = QHBoxLayout()
             row.addWidget(QLabel("{0}: ".format(config.thisTranslation["menu2_fontSize"])))
             self.fontSize = QLineEdit()
-            self.fontSize.setText(str(fontSize))
-            self.fontSize.setMaxLength(3)
-            self.fontSize.setMaximumWidth(50)
-            row.addWidget(self.fontSize, alignment=Qt.AlignLeft)
-            verticalSpacer = QSpacerItem(200, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
-            row.addItem(verticalSpacer)
+            self.fontSize.setText(fontSize)
+            self.fontSize.setMaxLength(20)
+            row.addWidget(self.fontSize)
             self.layout.addLayout(row)
 
             fonts = sorted(glob.glob("htmlResources/fonts/*.ttf"))
@@ -82,7 +77,7 @@ class ModifyDatabaseDialog(QDialog):
     def save(self):
         if self.filetype == "bible":
             self.bible.updateTitleAndFontInfo(self.bibleTitle.text(),
-                                              TextUtil.getDigits(self.fontSize.text()),
+                                              self.fontSize.text(),
                                               self.fonts[self.fontList.currentIndex()])
 
 if __name__ == '__main__':

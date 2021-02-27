@@ -769,18 +769,16 @@ class TextCommandParser:
                 config.readFormattedBibles = False
                 self.parent.enableParagraphButtonAction(False)
 
-            # Custom font file and size for Bible
+            # Custom font styling for Bible
             (fontFile, fontSize) = Bible(text).getFontInfo()
-            css = ''
+            fontFormat = ''
             if fontFile and len(fontFile) > 0:
                 fontFormat = ''
                 if ".ttf" in fontFile:
                     fontName = fontFile.replace(".ttf", "")
-                    fontFormat = 'truetype'
-                css = ("{0} {1} font-family: '{2}'; "
-                       "src: url('htmlResources/fonts/{3}') format('{4}'); "
-                       "font-size: {5}; {6}").format(
-                        text, "{", fontName, fontFile, fontFormat, fontSize, "}")
+                    fontFormat = "font-family: '{0}'; src: url('htmlResources/fonts/{1}') format('truetype');".format(
+                                 fontName, fontFile)
+            css = "{0} {1} {2} font-size: {3}; {4}".format(text, "{", fontFormat, fontSize, "}")
             if view == "main":
                 config.mainCssBibleFontStyle = css
             elif view == "study":
@@ -792,12 +790,14 @@ class TextCommandParser:
                     chapters = ""
                 else:
                     chapters = self.getChaptersMenu(bcvTuple[0], bcvTuple[1], text)
-                content = "<{2}>{0}<hr>{1}<hr>{0}</{2}>".format(chapters, self.textFormattedBible(bcvTuple, text, view), text)
+                content = "{0}<hr>{1}<hr>{0}".format(chapters, self.textFormattedBible(bcvTuple, text, view))
             else:
                 # i.e. when more than one verse reference is found
                 content = self.textPlainBible(verseList, text)
                 bcvTuple = verseList[-1]
             content = self.hideLexicalEntryInBible(content)
+            # Add text tag for custom font styling
+            content = "<{0}>{1}</{0}>".format(text, content)
             if config.openBibleInMainViewOnly:
                 self.setMainVerse(text, bcvTuple)
                 self.setStudyVerse(text, bcvTuple)

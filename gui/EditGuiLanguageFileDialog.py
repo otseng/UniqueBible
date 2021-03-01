@@ -62,7 +62,7 @@ class EditGuiLanguageFileDialog(QDialog):
                     item[1] = newValue
 
     def save(self):
-        LanguageUtil.saveLanguageFile(self.model.fullList)
+        LanguageUtil.saveLanguageFile(self.language, self.model.fullList)
 
     def filterChanged1(self, text):
         self.model.filter(0, text)

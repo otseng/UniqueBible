@@ -163,6 +163,7 @@ class LanguageUtil:
             for line in data:
                 key = line[0]
                 text = line[1]
+                text = text.replace("\n", "\\n")
                 fileObj.write('    "{0}": "{1}",\n'.format(key, text))
             fileObj.write("}")
             fileObj.close()

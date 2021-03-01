@@ -63,10 +63,10 @@ class EditGuiLanguageFileDialog(QDialog):
         print("Save it")
 
     def filterChanged1(self, text):
-        self.model.filter(text)
+        self.model.filter(0, text)
 
     def filterChanged2(self, text):
-        self.model.filter(text)
+        self.model.filter(1, text)
 
 class DisplayLanguagesModel(QAbstractTableModel):
 
@@ -78,10 +78,10 @@ class DisplayLanguagesModel(QAbstractTableModel):
         self.col = 0
         self.order = None
 
-    def filter(self, text):
+    def filter(self, col, text):
         newList = []
         for item in self.fullList:
-            if text.lower() in item[0].lower():
+            if text.lower() in item[col].lower():
                 newList.append(item)
         self.list = newList
         self.sort(self.col, self.order)

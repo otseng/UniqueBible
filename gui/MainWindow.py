@@ -626,7 +626,9 @@ class MainWindow(QMainWindow):
                                         config.thisTranslation["edit_language_file"], items, 0, False)
         if ok and item:
             dialog = EditGuiLanguageFileDialog(item)
-            dialog.exec_()
+            if dialog.exec_():
+                self.setTranslation()
+                self.setupMenuLayout(config.menuLayout)
 
     # convert bible references to string
     def bcvToVerseReference(self, b, c, v):

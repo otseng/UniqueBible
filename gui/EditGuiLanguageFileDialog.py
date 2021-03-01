@@ -81,9 +81,11 @@ class EditGuiLanguageFileDialog(QDialog):
 
     def filterChanged1(self, text):
         self.model.filter(0, text)
+        self.filterEntry2.setText("")
 
     def filterChanged2(self, text):
         self.model.filter(1, text)
+        self.filterEntry1.setText("")
 
 class DisplayLanguagesModel(QAbstractTableModel):
 

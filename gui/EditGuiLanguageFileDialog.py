@@ -6,6 +6,7 @@ from PySide2 import QtCore
 from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QTableView, QInputDialog, QLineEdit, \
     QHBoxLayout
 from Languages import Languages
+from util.LanguageUtil import LanguageUtil
 
 
 class EditGuiLanguageFileDialog(QDialog):
@@ -125,8 +126,6 @@ class DisplayLanguagesModel(QAbstractTableModel):
         self.emit(SIGNAL("layoutChanged()"))
 
 if __name__ == '__main__':
-    from util.LanguageUtil import LanguageUtil
-
     LanguageUtil.loadTranslation("en_US")
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)

@@ -616,4 +616,5 @@ translation = {
     "font_name": "അക്ഷരത്തിന്റെ പേരു്",
     "title": "തലക്കെട്ടു്",
     "individualBibles": "വ്യക്തിപരമായ ബൈബിളുകള്",
+    "edit_language_file": "ഭാഷ ഫയല് ചിട്ടപ്പെടുത്തുക",
 }

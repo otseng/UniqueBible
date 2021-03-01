@@ -19,6 +19,7 @@ from ThirdParty import Converter, ThirdPartyDictionary
 from Languages import Languages
 from ToolsSqlite import BookData, IndexesSqlite, Book
 from db.Highlight import Highlight
+from gui.EditGuiLanguageFileDialog import EditGuiLanguageFileDialog
 from gui.InfoDialog import InfoDialog
 # These "unused" window imports are actually used.  Do not delete these lines.
 from gui.AlephMainWindow import AlephMainWindow
@@ -616,6 +617,15 @@ class MainWindow(QMainWindow):
                                         config.thisTranslation["modify_database"], items, 0, False)
         if ok and item:
             dialog = ModifyDatabaseDialog("bible", item)
+            dialog.exec_()
+
+    # Select language file to edit
+    def selectLanguageFileToEdit(self):
+        items = LanguageUtil.getCodesSupportedLanguages()
+        item, ok = QInputDialog.getItem(self, "UniqueBible",
+                                        config.thisTranslation["edit_language_file"], items, 0, False)
+        if ok and item:
+            dialog = EditGuiLanguageFileDialog(item)
             dialog.exec_()
 
     # convert bible references to string

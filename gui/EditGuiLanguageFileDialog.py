@@ -70,13 +70,14 @@ class EditGuiLanguageFileDialog(QDialog):
 
     def save(self):
         LanguageUtil.saveLanguageFile(self.language, self.model.fullList)
-        if self.parent is not None:
-            for item in self.model.fullList:
-                key = item[0]
-                newValue = item[1]
-                config.thisTranslation[key] = newValue
-            self.parent.setupMenuLayout(config.menuLayout)
-            self.parent.reloadControlPanel(False)
+        if self.language == config.displayLanguage:
+            if self.parent is not None:
+                for item in self.model.fullList:
+                    key = item[0]
+                    newValue = item[1]
+                    config.thisTranslation[key] = newValue
+                self.parent.setupMenuLayout(config.menuLayout)
+                self.parent.reloadControlPanel(False)
 
     def filterChanged1(self, text):
         self.model.filter(0, text)

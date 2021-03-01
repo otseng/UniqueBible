@@ -53,8 +53,6 @@ class EditGuiLanguageFileDialog(QDialog):
         row = self.model.getRow(index.row())
         (key, value) = row
         width = len(value)
-        # if width > 300:
-        #     width = 300
         keyDisplay = key + ' ' * width + '    '
         newValue, ok = QInputDialog.getText(self, 'Translation', keyDisplay, QLineEdit.Normal, value)
         if ok:
@@ -64,7 +62,7 @@ class EditGuiLanguageFileDialog(QDialog):
                     item[1] = newValue
 
     def save(self):
-        print("Save it")
+        LanguageUtil.saveLanguageFile(self.model.fullList)
 
     def filterChanged1(self, text):
         self.model.filter(0, text)

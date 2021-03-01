@@ -80,8 +80,6 @@ class LanguageUtil:
                 for key in master.keys():
                     count += 1
                     print(count)
-                    if count > 1000:
-                        break
                     text = master[key]
                     if key in ["menu1_app"]:
                         result = text
@@ -156,6 +154,19 @@ class LanguageUtil:
                 print("Founded '{0}' in {1}".format(translation[key], code))
             else:
                 print("Not founded in {0}".format(code))
+
+    @staticmethod
+    def saveLanguageFile(lang, data):
+        filename = "lang/language_" + lang + ".py"
+        with open(filename, "w", encoding="utf-8") as fileObj:
+            fileObj.write("translation = {\n")
+            for line in data:
+                key = line[0]
+                text = line[1]
+                fileObj.write('    "{0}": "{1}",\n'.format(key, text))
+            fileObj.write("}")
+            fileObj.close()
+
 
 # Test code
 

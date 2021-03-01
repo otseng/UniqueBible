@@ -51,13 +51,17 @@ class EditGuiLanguageFileDialog(QDialog):
 
     def clickedRow(self, index):
         row = self.model.getRow(index.row())
-        (action, key) = row
-        newKey, ok = QInputDialog.getText(self, 'Shortcut', action, QLineEdit.Normal, key)
+        (key, value) = row
+        width = len(value)
+        # if width > 300:
+        #     width = 300
+        keyDisplay = key + ' ' * width + '    '
+        newValue, ok = QInputDialog.getText(self, 'Translation', keyDisplay, QLineEdit.Normal, value)
         if ok:
-            self.model.list[index.row()] = (action, newKey)
+            self.model.list[index.row()] = (key, newValue)
             for item in self.model.fullList:
-                if item[0] == action:
-                    item[1] = newKey
+                if item[0] == key:
+                    item[1] = newValue
 
     def save(self):
         print("Save it")

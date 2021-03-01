@@ -1,4 +1,4 @@
-import config, subprocess, os, zipfile
+import config, subprocess, os, zipfile, platform
 from platform import system
 
 def downloadFileIfNotFound(databaseInfo):
@@ -131,7 +131,7 @@ def isPypinyinInstalled():
         return False
 
 def isTtsInstalled():
-    if system() == "Linux" and config.espeak:
+    if platform.system() == "Linux" and config.espeak:
         espeakInstalled, _ = subprocess.Popen("which espeak", shell=True, stdout=subprocess.PIPE).communicate()
         if not espeakInstalled:
             config.espeak = False
@@ -219,6 +219,7 @@ if config.developer:
 files = (
     # Core bible functionality
     ((config.marvelData, "images.sqlite"), "1-aFEfnSiZSIjEPUQ2VIM75I4YRGIcy5-"),
+    ((config.marvelData, "commentaries", "cCBSC.commentary"), "1IxbscuAMZg6gQIjzMlVkLtJNDQ7IzTh6"),
 )
 for file in files:
     downloadFileIfNotFound(file)

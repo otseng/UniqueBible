@@ -5,15 +5,18 @@ from PySide2.QtCore import QAbstractTableModel, Qt, SIGNAL
 from PySide2 import QtCore
 from PySide2.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QTableView, QInputDialog, QLineEdit, \
     QHBoxLayout
+
+import config
 from Languages import Languages
 from util.LanguageUtil import LanguageUtil
 
 
 class EditGuiLanguageFileDialog(QDialog):
 
-    def __init__(self, language):
+    def __init__(self, parent, language):
         super(EditGuiLanguageFileDialog, self).__init__()
 
+        self.parent = parent
         self.language = language
         langDefinition = LanguageUtil.loadTranslation(language)
         self.languages = []
@@ -61,9 +64,17 @@ class EditGuiLanguageFileDialog(QDialog):
             for item in self.model.fullList:
                 if item[0] == key:
                     item[1] = newValue
+                    break
 
     def save(self):
         LanguageUtil.saveLanguageFile(self.language, self.model.fullList)
+        if self.parent is not None:
+            for item in self.model.fullList:
+                key = item[0]
+                newValue = item[1]
+                config.thisTranslation[key] = newValue
+            self.parent.setupMenuLayout(config.menuLayout)
+            self.parent.reloadControlPanel(False)
 
     def filterChanged1(self, text):
         self.model.filter(0, text)
@@ -129,6 +140,6 @@ if __name__ == '__main__':
     LanguageUtil.loadTranslation("en_US")
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
-    window = EditGuiLanguageFileDialog("en_US")
+    window = EditGuiLanguageFileDialog(None, "en_US")
     window.exec_()
     window.close()

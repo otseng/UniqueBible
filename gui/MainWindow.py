@@ -6,7 +6,7 @@ from functools import partial
 from PySide2.QtCore import QUrl, Qt, QEvent
 from PySide2.QtGui import QIcon, QGuiApplication, QFont
 from PySide2.QtWidgets import (QAction, QInputDialog, QLineEdit, QMainWindow, QMessageBox, QWidget, QFileDialog, QLabel,
-                               QFrame, QFontDialog, QApplication, QPushButton)
+                               QFrame, QFontDialog, QApplication, QPushButton, QDialog)
 
 import exlbl
 from BibleBooks import BibleBooks
@@ -622,13 +622,12 @@ class MainWindow(QMainWindow):
     # Select language file to edit
     def selectLanguageFileToEdit(self):
         items = LanguageUtil.getCodesSupportedLanguages()
+        index = items.index(config.displayLanguage)
         item, ok = QInputDialog.getItem(self, "UniqueBible",
-                                        config.thisTranslation["edit_language_file"], items, 0, False)
+                                        config.thisTranslation["edit_language_file"], items, index, False)
         if ok and item:
-            dialog = EditGuiLanguageFileDialog(item)
-            if dialog.exec_():
-                self.setTranslation()
-                self.setupMenuLayout(config.menuLayout)
+            dialog = EditGuiLanguageFileDialog(self, item)
+            dialog.exec_()
 
     # convert bible references to string
     def bcvToVerseReference(self, b, c, v):

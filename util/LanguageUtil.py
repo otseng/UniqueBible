@@ -6,13 +6,12 @@ from util.FileUtil import FileUtil
 
 config.isIbmWatsonInstalled = True
 
+
 class LanguageUtil:
 
     @staticmethod
     def getCodesSupportedLanguages():
         files = sorted(glob.glob("lang/language_*.py"))
-        # for file in files:
-        #     print(file[14:-3])
         return [file[14:-3] for file in files]
 
     @staticmethod

@@ -21,7 +21,9 @@ class EditGuiLanguageFileDialog(QDialog):
         langDefinition = LanguageUtil.loadTranslation(language)
         self.languages = []
         for key in langDefinition.keys():
-            self.languages.append([key, langDefinition[key]])
+            value = langDefinition[key]
+            value = value.replace("\n", "\\n")
+            self.languages.append([key, value])
 
         self.setWindowTitle("Edit GUI Language File")
         self.setMinimumWidth(1000)

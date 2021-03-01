@@ -218,5 +218,7 @@ if __name__ == "__main__":
             print("Error executing: " + str(e))
     else:
         # printCodesSupportedLanguages()
-        addLanguageStringToAllFiles("title", "Title")
+        # addLanguageStringToAllFiles("title", "Title")
+        # createNewLanguageFile("ml")
+        validateLanguageFileSizes()
 

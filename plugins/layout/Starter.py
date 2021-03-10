@@ -8,6 +8,9 @@ from util.LanguageUtil import LanguageUtil
 class Starter:
 
     def create_menu(self):
+
+        config.instantMode = 0
+
         menuBar = self.menuBar()
         # 1st column
         menu = addMenu(menuBar, "menu1_app")
@@ -125,8 +128,8 @@ class Starter:
             self.firstToolBar.addWidget(self.textCommandLineEdit)
             self.firstToolBar.addSeparator()
 
-        self.enableStudyBibleButton = QPushButton()
-        self.addStandardIconButton(self.getStudyBibleDisplayToolTip(), self.getStudyBibleDisplay(), self.enableStudyBibleButtonClicked, self.firstToolBar, self.enableStudyBibleButton, False)
+        # self.enableStudyBibleButton = QPushButton()
+        # self.addStandardIconButton(self.getStudyBibleDisplayToolTip(), self.getStudyBibleDisplay(), self.enableStudyBibleButtonClicked, self.firstToolBar, self.enableStudyBibleButton, False)
 
         # Toolbar height here is affected by the actual size of icon file used in a QAction
         if config.qtMaterial and config.qtMaterialTheme:
@@ -134,14 +137,14 @@ class Starter:
             self.firstToolBar.setIconSize(QSize(config.iconButtonWidth / 2, config.iconButtonWidth / 2))
         # QAction can use setVisible whereas QPushButton cannot when it is placed on a toolbar.
         self.studyRefButton = self.firstToolBar.addAction(":::".join(self.verseReference("study")), self.studyRefButtonClicked)
-        iconFile = os.path.join("htmlResources", self.getSyncStudyWindowBibleDisplay())
-        self.enableSyncStudyWindowBibleButton = self.firstToolBar.addAction(QIcon(iconFile), self.getSyncStudyWindowBibleDisplayToolTip(), self.enableSyncStudyWindowBibleButtonClicked)
-        if config.openBibleInMainViewOnly:
-            self.studyRefButton.setVisible(False)
-            self.enableSyncStudyWindowBibleButton.setVisible(False)
-        self.firstToolBar.addSeparator()
+        # iconFile = os.path.join("htmlResources", self.getSyncStudyWindowBibleDisplay())
+        # self.enableSyncStudyWindowBibleButton = self.firstToolBar.addAction(QIcon(iconFile), self.getSyncStudyWindowBibleDisplayToolTip(), self.enableSyncStudyWindowBibleButtonClicked)
+        # if config.openBibleInMainViewOnly:
+        #     self.studyRefButton.setVisible(False)
+        #     self.enableSyncStudyWindowBibleButton.setVisible(False)
+        # self.firstToolBar.addSeparator()
 
-        self.addStandardIconButton("bar1_toolbars", "toolbar.png", self.hideShowAdditionalToolBar, self.firstToolBar)
+        # self.addStandardIconButton("bar1_toolbars", "toolbar.png", self.hideShowAdditionalToolBar, self.firstToolBar)
 
         self.secondToolBar = QToolBar()
 

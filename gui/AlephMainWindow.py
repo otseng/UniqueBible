@@ -382,14 +382,26 @@ class AlephMainWindow:
         searchBibleButton.clicked.connect(self.displaySearchBibleMenu)
         self.firstToolBar.addWidget(searchBibleButton)
 
-        iconFile = os.path.join("htmlResources", "noteBook.png")
-        self.firstToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu_bookNote"], self.openMainBookNote)
+        button = QPushButton()
+        button.setToolTip(config.thisTranslation["menu_bookNote"])
+        buttonFile = os.path.join("htmlResources", "noteBook.png")
+        button.setIcon(QIcon(buttonFile))
+        button.clicked.connect(self.openMainBookNote)
+        self.firstToolBar.addWidget(button)
 
-        iconFile = os.path.join("htmlResources", "noteChapter.png")
-        self.firstToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu_chapterNote"], self.openMainChapterNote)
+        button = QPushButton()
+        button.setToolTip(config.thisTranslation["menu_chapterNote"])
+        buttonFile = os.path.join("htmlResources", "noteChapter.png")
+        button.setIcon(QIcon(buttonFile))
+        button.clicked.connect(self.openMainChapterNote)
+        self.firstToolBar.addWidget(button)
 
-        iconFile = os.path.join("htmlResources", "noteVerse.png")
-        self.firstToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu_verseNote"], self.openMainVerseNote)
+        button = QPushButton()
+        button.setToolTip(config.thisTranslation["menu_verseNote"])
+        buttonFile = os.path.join("htmlResources", "noteVerse.png")
+        button.setIcon(QIcon(buttonFile))
+        button.clicked.connect(self.openMainVerseNote)
+        self.firstToolBar.addWidget(button)
 
         # Version selection
         if self.textCommandParser.isDatabaseInstalled("bible"):

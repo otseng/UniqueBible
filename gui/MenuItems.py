@@ -27,5 +27,8 @@ def addMenuLayoutItems(parent, menu):
     )
     for feature, action in items:
         addMenuItem(menu, feature, parent, action)
-    for pluginLayout in PluginsUtil.getLayouts():
-        addMenuItem(menu, pluginLayout, parent, lambda: parent.setMenuLayout(pluginLayout), translation=False)
+    layouts = PluginsUtil.getLayouts()
+    if layouts:
+        menu.addSeparator()
+        for pluginLayout in PluginsUtil.getLayouts():
+            addMenuItem(menu, pluginLayout, parent, lambda: parent.setMenuLayout(pluginLayout), translation=False)

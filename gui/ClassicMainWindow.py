@@ -8,6 +8,9 @@ from util.FileUtil import FileUtil
 class ClassicMainWindow:
 
     def create_menu(self):
+
+        config.topToolBarOnly = False
+
         menuBar = self.menuBar()
         # 1st column
         menu = addMenu(menuBar, "menu1_app")

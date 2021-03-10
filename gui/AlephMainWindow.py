@@ -9,6 +9,9 @@ from util.FileUtil import FileUtil
 class AlephMainWindow:
 
     def create_menu(self):
+
+        config.topToolBarOnly = False
+
         menu1 = self.menuBar().addMenu("&{0}".format(config.thisTranslation["menu1_app"]))
         menu1_language = addSubMenu(menu1, "languageSettings")
         subMenu = addSubMenu(menu1_language, "menu1_programInterface")

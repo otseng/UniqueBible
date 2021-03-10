@@ -1,4 +1,3 @@
-from BibleBooks import BibleBooks
 from gui.MenuItems import *
 import shortcut as sc
 from BiblesSqlite import BiblesSqlite
@@ -11,10 +10,10 @@ class Starter:
 
         config.instantMode = 0
         config.parallelMode = 1
-        config.syncStudyWindowBibleWithMainWindow = False
+        config.syncStudyWindowBibleWithMainWindow = True
         config.syncCommentaryWithMainWindow = False
-        config.commentaryText = ""
         config.readFormattedBibles = True
+        config.topToolBarOnly = True
 
         menuBar = self.menuBar()
         menu = addMenu(menuBar, "menu1_app")
@@ -38,6 +37,7 @@ class Starter:
             ("menu_previous_book", self.previousMainBook),
             ("menu4_next", self.nextMainChapter),
             ("menu4_previous", self.previousMainChapter),
+            ("menu5_search", self.displaySearchBibleCommand),
         )
         for feature, action in items:
             addMenuItem(menu, feature, self, action)
@@ -93,7 +93,6 @@ class Starter:
         self.mainRefButton = QPushButton(self.verseReference("main")[-1])
         self.addStandardTextButton("bar1_reference", lambda: self.runTextCommand("_menu:::{0}.{1}".format(config.mainText, config.mainB)),
                                     self.firstToolBar, self.mainRefButton)
-        # self.addStandardTextButton("bar1_reference", self.mainRefButtonClicked, self.firstToolBar, self.mainRefButton)
         button = QPushButton(">")
         button.setFixedWidth(40)
         self.addStandardTextButton("menu_next_chapter", self.nextMainChapter, self.firstToolBar, button)
@@ -102,7 +101,6 @@ class Starter:
         self.addStandardTextButton("menu_next_book", self.nextMainBook, self.firstToolBar, button)
 
         self.addStandardIconButton("bar1_searchBible", "search.png", self.displaySearchBibleCommand, self.firstToolBar)
-        # self.addStandardIconButton("bar1_searchBibles", "search_plus.png", self.displaySearchBibleMenu, self.firstToolBar)
 
         self.firstToolBar.addSeparator()
 
@@ -111,43 +109,19 @@ class Starter:
         self.textCommandLineEdit.setToolTip(config.thisTranslation["bar1_command"])
         self.textCommandLineEdit.setMinimumWidth(100)
         self.textCommandLineEdit.returnPressed.connect(self.textCommandEntered)
-        if not config.preferControlPanelForCommandLineEntry:
-            self.firstToolBar.addWidget(self.textCommandLineEdit)
-            self.firstToolBar.addSeparator()
+        self.firstToolBar.addWidget(self.textCommandLineEdit)
 
-        # self.enableStudyBibleButton = QPushButton()
-        # self.addStandardIconButton(self.getStudyBibleDisplayToolTip(), self.getStudyBibleDisplay(), self.enableStudyBibleButtonClicked, self.firstToolBar, self.enableStudyBibleButton, False)
-
-        # Toolbar height here is affected by the actual size of icon file used in a QAction
-        # if config.qtMaterial and config.qtMaterialTheme:
-        #     self.firstToolBar.setFixedHeight(config.iconButtonWidth + 4)
-        #     self.firstToolBar.setIconSize(QSize(config.iconButtonWidth / 2, config.iconButtonWidth / 2))
-        # QAction can use setVisible whereas QPushButton cannot when it is placed on a toolbar.
-        self.studyRefButton = QPushButton() # self.firstToolBar.addAction(":::".join(self.verseReference("study")), self.studyRefButtonClicked)
-        # iconFile = os.path.join("htmlResources", self.getSyncStudyWindowBibleDisplay())
-        # self.enableSyncStudyWindowBibleButton = self.firstToolBar.addAction(QIcon(iconFile), self.getSyncStudyWindowBibleDisplayToolTip(), self.enableSyncStudyWindowBibleButtonClicked)
-        # if config.openBibleInMainViewOnly:
-        #     self.studyRefButton.setVisible(False)
-        #     self.enableSyncStudyWindowBibleButton.setVisible(False)
-        # self.firstToolBar.addSeparator()
-
-        # self.addStandardIconButton("bar1_toolbars", "toolbar.png", self.hideShowAdditionalToolBar, self.firstToolBar)
-
+        self.studyBibleToolBar = QToolBar()
+        self.studyRefButton = QPushButton()
         self.secondToolBar = QToolBar()
-
-        # Left tool bar
         self.leftToolBar = QToolBar()
-
-        # Right tool bar
         self.rightToolBar = QToolBar()
-
         self.commentaryRefButton = QPushButton(self.verseReference("commentary"))
 
 
     def setupToolBarFullIconSize(self):
 
+        self.studyBibleToolBar = QToolBar()
         self.leftToolBar = QToolBar()
-
         self.rightToolBar = QToolBar()
-
         self.commentaryRefButton = QPushButton(self.verseReference("commentary"))

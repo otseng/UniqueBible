@@ -1,4 +1,3 @@
-from qtpy.QtCore import QSize
 from gui.MenuItems import *
 import shortcut as sc
 from BiblesSqlite import BiblesSqlite
@@ -23,29 +22,30 @@ class Starter:
         for feature, action in items:
             addMenuItem(subMenu, feature, self, action)
         subMenu = addSubMenu(menu, "menu1_selectMenuLayout")
-        items = (
-            ("menu1_aleph_menu_layout", lambda: self.setMenuLayout("aleph")),
-            ("menu1_focus_menu_layout", lambda: self.setMenuLayout("focus")),
-            ("menu1_classic_menu_layout", lambda: self.setMenuLayout("classic")),
-        )
-        for feature, action in items:
-            addMenuItem(subMenu, feature, self, action)
+        # items = (
+        #     ("menu1_aleph_menu_layout", lambda: self.setMenuLayout("aleph")),
+        #     ("menu1_focus_menu_layout", lambda: self.setMenuLayout("focus")),
+        #     ("menu1_classic_menu_layout", lambda: self.setMenuLayout("classic")),
+        # )
+        # for feature, action in items:
+        #     addMenuItem(subMenu, feature, self, action)
+        addMenuLayoutItems(self, subMenu)
+
         subMenu = addSubMenu(menu, "languageSettings")
         for language in LanguageUtil.getNamesSupportedLanguages():
             addMenuItem(subMenu, language, self, lambda language=language: self.changeInterfaceLanguage(language), translation=False)
-        addMenuItem(menu, "menu1_update", self, self.showUpdateAppWindow)
         addIconMenuItem("UniqueBibleApp.png", menu, "menu1_exit", self, self.quitApp, sc.quitApp)
 
         # 2nd column
         menu = addMenu(menuBar, "menu_bible")
         items = (
-            ("menu_next_book", self.nextMainBook, sc.nextMainBook),
-            ("menu_previous_book", self.previousMainBook, sc.previousMainBook),
-            ("menu4_next", self.nextMainChapter, sc.nextMainChapter),
-            ("menu4_previous", self.previousMainChapter, sc.previousMainChapter),
+            ("menu_next_book", self.nextMainBook),
+            ("menu_previous_book", self.previousMainBook),
+            ("menu4_next", self.nextMainChapter),
+            ("menu4_previous", self.previousMainChapter),
         )
-        for feature, action, shortcut in items:
-            addMenuItem(menu, feature, self, action, shortcut)
+        for feature, action in items:
+            addMenuItem(menu, feature, self, action)
         menu.addSeparator()
         items = (
             ("add", self.installMarvelBibles),
@@ -53,34 +53,20 @@ class Starter:
         for feature, action in items:
             addMenuItem(menu, feature, self, action)
 
-        # information
-        if config.showInformation:
-            menu = addMenu(menuBar, "menu9_information")
-            addMenuItem(menu, "latestChanges", self, self.showInfo)
-            subMenu = addSubMenu(menu, "menu_support")
-            items = (
-                ("menu1_wikiPages", self.openUbaWiki, sc.ubaWiki),
-                ("menu_discussions", self.openUbaDiscussions, sc.ubaDiscussions),
-                ("report", self.reportAnIssue, None),
-            )
-            for feature, action, shortcut in items:
-                addMenuItem(subMenu, feature, self, action, shortcut)
-            subMenu = addSubMenu(menu, "websites")
-            items = (
-                ("BibleTools.app", self.openBibleTools),
-                ("UniqueBible.app", self.openUniqueBible),
-                ("Marvel.bible", self.openMarvelBible),
-                ("BibleBento.com", self.openBibleBento),
-                ("OpenGNT.com", self.openOpenGNT),
-            )
-            for feature, action in items:
-                addMenuItem(subMenu, feature, self, action, None, False)
-            items = (
-                ("menu9_contact", self.contactEliranWong),
-            )
-            for feature, action in items:
-                addMenuItem(menu, feature, self, action)
-            addMenuItem(menu, "menu9_donate", self, self.donateToUs)
+        menu = addMenu(menuBar, "menu9_information")
+        addMenuItem(menu, "latestChanges", self, self.showInfo)
+        menu.addSeparator()
+        addMenuItem(menu, "menu1_update", self, self.showUpdateAppWindow)
+        menu.addSeparator()
+        items = (
+            ("menu1_wikiPages", self.openUbaWiki),
+            ("menu_discussions", self.openUbaDiscussions),
+            ("report", self.reportAnIssue),
+            ("menu9_contact", self.contactEliranWong),
+            ("menu9_donate", self.donateToUs)
+        )
+        for feature, action in items:
+            addMenuItem(menu, feature, self, action)
 
     def setupToolBarStandardIconSize(self):
         
@@ -111,7 +97,7 @@ class Starter:
             self.firstToolBar.addWidget(self.versionCombo)
 
         self.addStandardIconButton("bar1_searchBible", "search.png", self.displaySearchBibleCommand, self.firstToolBar)
-        self.addStandardIconButton("bar1_searchBibles", "search_plus.png", self.displaySearchBibleMenu, self.firstToolBar)
+        # self.addStandardIconButton("bar1_searchBibles", "search_plus.png", self.displaySearchBibleMenu, self.firstToolBar)
 
         self.firstToolBar.addSeparator()
 
@@ -128,11 +114,11 @@ class Starter:
         # self.addStandardIconButton(self.getStudyBibleDisplayToolTip(), self.getStudyBibleDisplay(), self.enableStudyBibleButtonClicked, self.firstToolBar, self.enableStudyBibleButton, False)
 
         # Toolbar height here is affected by the actual size of icon file used in a QAction
-        if config.qtMaterial and config.qtMaterialTheme:
-            self.firstToolBar.setFixedHeight(config.iconButtonWidth + 4)
-            self.firstToolBar.setIconSize(QSize(config.iconButtonWidth / 2, config.iconButtonWidth / 2))
+        # if config.qtMaterial and config.qtMaterialTheme:
+        #     self.firstToolBar.setFixedHeight(config.iconButtonWidth + 4)
+        #     self.firstToolBar.setIconSize(QSize(config.iconButtonWidth / 2, config.iconButtonWidth / 2))
         # QAction can use setVisible whereas QPushButton cannot when it is placed on a toolbar.
-        self.studyRefButton = self.firstToolBar.addAction(":::".join(self.verseReference("study")), self.studyRefButtonClicked)
+        self.studyRefButton = QPushButton() # self.firstToolBar.addAction(":::".join(self.verseReference("study")), self.studyRefButtonClicked)
         # iconFile = os.path.join("htmlResources", self.getSyncStudyWindowBibleDisplay())
         # self.enableSyncStudyWindowBibleButton = self.firstToolBar.addAction(QIcon(iconFile), self.getSyncStudyWindowBibleDisplayToolTip(), self.enableSyncStudyWindowBibleButtonClicked)
         # if config.openBibleInMainViewOnly:

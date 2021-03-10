@@ -56,13 +56,14 @@ class ClassicMainWindow:
                 addMenuItem(subMenu, feature, self, action, shortcut)
         
         subMenu = addSubMenu(menu, "menu1_selectMenuLayout")
-        items = (
-            ("menu1_aleph_menu_layout", lambda: self.setMenuLayout("aleph"), None),
-            ("menu1_focus_menu_layout", lambda: self.setMenuLayout("focus"), None),
-            ("menu1_classic_menu_layout", lambda: self.setMenuLayout("classic"), None),
-        )
-        for feature, action, shortcut in items:
-            addMenuItem(subMenu, feature, self, action, shortcut)
+        # items = (
+        #     ("menu1_aleph_menu_layout", lambda: self.setMenuLayout("aleph"), None),
+        #     ("menu1_focus_menu_layout", lambda: self.setMenuLayout("focus"), None),
+        #     ("menu1_classic_menu_layout", lambda: self.setMenuLayout("classic"), None),
+        # )
+        # for feature, action, shortcut in items:
+        #     addMenuItem(subMenu, feature, self, action, shortcut)
+        addMenuLayoutItems(self, subMenu)
         subMenu.addSeparator()
         addMenuItem(subMenu, "refButtonAction", self, self.selectRefButtonSingleClickActionDialog)
         subMenu = addSubMenu(menu, "menu_shortcuts")

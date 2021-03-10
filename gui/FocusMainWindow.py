@@ -2,6 +2,7 @@ from qtpy.QtCore import QSize
 from gui.MenuItems import *
 import shortcut as sc
 from BiblesSqlite import BiblesSqlite
+from util.PluginUtil import PluginUtil
 from util.ShortcutUtil import ShortcutUtil
 from util.LanguageUtil import LanguageUtil
 from util.FileUtil import FileUtil
@@ -53,13 +54,17 @@ class FocusMainWindow:
             subMenu.addSeparator()
             addMenuItem(subMenu, "enableQtMaterial", self, lambda: self.enableQtMaterial(True))
         subMenu = addSubMenu(subMenu0, "menu1_selectMenuLayout")
-        items = (
-            ("menu1_aleph_menu_layout", lambda: self.setMenuLayout("aleph")),
-            ("menu1_focus_menu_layout", lambda: self.setMenuLayout("focus")),
-            ("menu1_classic_menu_layout", lambda: self.setMenuLayout("classic")),
-        )
-        for feature, action in items:
-            addMenuItem(subMenu, feature, self, action)
+        # items = (
+        #     ("menu1_aleph_menu_layout", lambda: self.setMenuLayout("aleph")),
+        #     ("menu1_focus_menu_layout", lambda: self.setMenuLayout("focus")),
+        #     ("menu1_classic_menu_layout", lambda: self.setMenuLayout("classic")),
+        # )
+        # for feature, action in items:
+        #     addMenuItem(subMenu, feature, self, action)
+        # for pluginLayout in PluginUtil.getLayouts():
+        #     addMenuItem(subMenu, pluginLayout, self, lambda: self.setMenuLayout(pluginLayout), translation=False)
+        addMenuLayoutItems(self, subMenu)
+
         subMenu.addSeparator()
         addMenuItem(subMenu, "refButtonAction", self, self.selectRefButtonSingleClickActionDialog)
         subMenu = addSubMenu(subMenu0, "menu_shortcuts")

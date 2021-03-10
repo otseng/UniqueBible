@@ -91,9 +91,9 @@ class Starter:
         button.setFixedWidth(40)
         self.addStandardTextButton("menu_previous_chapter", self.previousMainChapter, self.firstToolBar, button)
         self.mainRefButton = QPushButton(self.verseReference("main")[-1])
-        # self.addStandardTextButton("bar1_reference", self.mainRefButtonClicked, self.firstToolBar,
-        #                            lambda: self.runTextCommand("_menu"))
-        self.addStandardTextButton("bar1_reference", self.mainRefButtonClicked, self.firstToolBar, self.mainRefButton)
+        self.addStandardTextButton("bar1_reference", lambda: self.runTextCommand("_menu:::{0}.{1}".format(config.mainText, config.mainB)),
+                                    self.firstToolBar, self.mainRefButton)
+        # self.addStandardTextButton("bar1_reference", self.mainRefButtonClicked, self.firstToolBar, self.mainRefButton)
         button = QPushButton(">")
         button.setFixedWidth(40)
         self.addStandardTextButton("menu_next_chapter", self.nextMainChapter, self.firstToolBar, button)

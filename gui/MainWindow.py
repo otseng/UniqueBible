@@ -2,7 +2,6 @@ import os, sys, re, config, base64, webbrowser, platform, subprocess, requests, 
 from datetime import datetime
 from distutils import util
 from functools import partial
-
 from qtpy.QtCore import QUrl, Qt, QEvent
 from qtpy.QtGui import QIcon, QGuiApplication, QFont
 from qtpy.QtWidgets import (QAction, QInputDialog, QLineEdit, QMainWindow, QMessageBox, QWidget, QFileDialog, QLabel,
@@ -169,17 +168,25 @@ class MainWindow(QMainWindow):
             self.removeToolBar(self.studyBibleToolBar)
         except:
             pass
-        if layout not in ("classic", "focus", "aleph"):
-            raise Exception("{0} is not a valid menu layout")
-        else:
+
+        windowClass = None
+        if layout in ("classic", "focus", "aleph"):
             windowName = layout.capitalize() + "MainWindow"
             windowClass = getattr(sys.modules[__name__], windowName)
-            getattr(windowClass, 'create_menu')(self)
-            if config.toolBarIconFullSize:
-                getattr(windowClass, 'setupToolBarFullIconSize')(self)
-            else:
-                getattr(windowClass, 'setupToolBarStandardIconSize')(self)
-            self.setAdditionalToolBar()
+        elif config.enablePlugins:
+            file = os.path.join(os.getcwd(), "plugins", "layout", layout+".py")
+            if os.path.exists(file):
+                mod = __import__('plugins.layout.{0}'.format(layout), fromlist=[layout])
+                windowClass = getattr(mod, layout)
+        if windowClass is None:
+            config.menuLayout = "focus"
+            windowClass = getattr(sys.modules[__name__], "FocusMainWindow")
+        getattr(windowClass, 'create_menu')(self)
+        if config.toolBarIconFullSize:
+            getattr(windowClass, 'setupToolBarFullIconSize')(self)
+        else:
+            getattr(windowClass, 'setupToolBarStandardIconSize')(self)
+        self.setAdditionalToolBar()
 
     def setOsOpenCmd(self):
         if platform.system() == "Linux":
@@ -471,7 +478,7 @@ class MainWindow(QMainWindow):
         print("done")
 
     def setStudyBibleToolBar(self):
-        if not config.noStudyBibleToolbar:
+        if not config.noStudyBibleToolbar and hasattr(self, "studyBibleToolBar"):
             if config.openBibleInMainViewOnly:
                 self.studyBibleToolBar.hide()
             else:

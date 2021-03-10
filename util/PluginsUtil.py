@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 
-class PluginUtil:
+class PluginsUtil:
 
     @staticmethod
     def getLayouts():
@@ -12,6 +12,7 @@ class PluginUtil:
         files = [Path(file).stem for file in glob.glob(pattern)]
         return files
 
+
 if __name__ == '__main__':
 
-    print(PluginUtil.getLayouts())
+    print(PluginsUtil.getLayouts())

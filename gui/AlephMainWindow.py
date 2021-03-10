@@ -59,12 +59,6 @@ class AlephMainWindow:
                 addMenuItem(selectTheme, feature, self, action)
             addMenuItem(selectTheme, "enableQtMaterial", self, lambda: self.enableQtMaterial(True))
         layoutMenu = menu1_defaults.addMenu(config.thisTranslation["menu1_menuLayout"])
-        # layoutMenu.addAction(
-        #     QAction(config.thisTranslation["menu1_aleph_menu_layout"], self, triggered=lambda: self.setMenuLayout("aleph")))
-        # layoutMenu.addAction(
-        #     QAction(config.thisTranslation["menu1_focus_menu_layout"], self, triggered=lambda: self.setMenuLayout("focus")))
-        # layoutMenu.addAction(
-        #     QAction(config.thisTranslation["menu1_classic_menu_layout"], self, triggered=lambda: self.setMenuLayout("classic")))
         addMenuLayoutItems(self, layoutMenu)
 
         shortcutsMenu = menu1_defaults.addMenu(config.thisTranslation["menu_shortcuts"])

@@ -3,7 +3,7 @@ import os, config
 from qtpy.QtGui import QIcon, Qt
 from qtpy.QtWidgets import QAction, QToolBar, QPushButton, QLineEdit, QStyleFactory, QComboBox
 
-from util.PluginUtil import PluginUtil
+from util.PluginsUtil import PluginsUtil
 
 
 def addMenu(menuBar, translation):
@@ -27,5 +27,5 @@ def addMenuLayoutItems(parent, menu):
     )
     for feature, action in items:
         addMenuItem(menu, feature, parent, action)
-    for pluginLayout in PluginUtil.getLayouts():
+    for pluginLayout in PluginsUtil.getLayouts():
         addMenuItem(menu, pluginLayout, parent, lambda: parent.setMenuLayout(pluginLayout), translation=False)

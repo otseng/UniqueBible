@@ -12,7 +12,6 @@ class Starter:
         config.parallelMode = 0
 
         menuBar = self.menuBar()
-        # 1st column
         menu = addMenu(menuBar, "menu1_app")
         subMenu = addSubMenu(menu, "menu1_selectTheme")
         items = (
@@ -22,21 +21,12 @@ class Starter:
         for feature, action in items:
             addMenuItem(subMenu, feature, self, action)
         subMenu = addSubMenu(menu, "menu1_selectMenuLayout")
-        # items = (
-        #     ("menu1_aleph_menu_layout", lambda: self.setMenuLayout("aleph")),
-        #     ("menu1_focus_menu_layout", lambda: self.setMenuLayout("focus")),
-        #     ("menu1_classic_menu_layout", lambda: self.setMenuLayout("classic")),
-        # )
-        # for feature, action in items:
-        #     addMenuItem(subMenu, feature, self, action)
         addMenuLayoutItems(self, subMenu)
-
         subMenu = addSubMenu(menu, "languageSettings")
         for language in LanguageUtil.getNamesSupportedLanguages():
             addMenuItem(subMenu, language, self, lambda language=language: self.changeInterfaceLanguage(language), translation=False)
         addIconMenuItem("UniqueBibleApp.png", menu, "menu1_exit", self, self.quitApp, sc.quitApp)
 
-        # 2nd column
         menu = addMenu(menuBar, "menu_bible")
         items = (
             ("menu_next_book", self.nextMainBook),
@@ -47,11 +37,7 @@ class Starter:
         for feature, action in items:
             addMenuItem(menu, feature, self, action)
         menu.addSeparator()
-        items = (
-            ("add", self.installMarvelBibles),
-        )
-        for feature, action in items:
-            addMenuItem(menu, feature, self, action)
+        addMenuItem(menu, "add", self, self.installMarvelBibles)
 
         menu = addMenu(menuBar, "menu9_information")
         addMenuItem(menu, "latestChanges", self, self.showInfo)

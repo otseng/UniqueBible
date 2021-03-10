@@ -10,6 +10,7 @@ class Starter:
     def create_menu(self):
 
         config.instantMode = 0
+        config.parallelMode = 0
 
         menuBar = self.menuBar()
         # 1st column
@@ -40,7 +41,6 @@ class Starter:
 
         # 2nd column
         menu = addMenu(menuBar, "menu_bible")
-        subMenu = addSubMenu(menu, "menu_navigation")
         items = (
             ("menu_next_book", self.nextMainBook, sc.nextMainBook),
             ("menu_previous_book", self.previousMainBook, sc.previousMainBook),
@@ -48,7 +48,7 @@ class Starter:
             ("menu4_previous", self.previousMainChapter, sc.previousMainChapter),
         )
         for feature, action, shortcut in items:
-            addMenuItem(subMenu, feature, self, action, shortcut)
+            addMenuItem(menu, feature, self, action, shortcut)
         menu.addSeparator()
         subMenu = addSubMenu(menu, "add")
         items = (

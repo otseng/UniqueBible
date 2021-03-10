@@ -15,15 +15,14 @@ class Starter:
         menuBar = self.menuBar()
         # 1st column
         menu = addMenu(menuBar, "menu1_app")
-        subMenu0 = addSubMenu(menu, "menu1_preferences")
-        subMenu = addSubMenu(subMenu0, "menu1_selectTheme")
+        subMenu = addSubMenu(menu, "menu1_selectTheme")
         items = (
             ("menu_light_theme", self.setDefaultTheme),
             ("menu1_dark_theme", self.setDarkTheme),
         )
         for feature, action in items:
             addMenuItem(subMenu, feature, self, action)
-        subMenu = addSubMenu(subMenu0, "menu1_selectMenuLayout")
+        subMenu = addSubMenu(menu, "menu1_selectMenuLayout")
         items = (
             ("menu1_aleph_menu_layout", lambda: self.setMenuLayout("aleph")),
             ("menu1_focus_menu_layout", lambda: self.setMenuLayout("focus")),
@@ -31,11 +30,9 @@ class Starter:
         )
         for feature, action in items:
             addMenuItem(subMenu, feature, self, action)
-        subMenu0 = addSubMenu(menu, "languageSettings")
-        subMenu = addSubMenu(subMenu0, "menu1_programInterface")
+        subMenu = addSubMenu(menu, "languageSettings")
         for language in LanguageUtil.getNamesSupportedLanguages():
             addMenuItem(subMenu, language, self, lambda language=language: self.changeInterfaceLanguage(language), translation=False)
-        addMenuItem(menu, "menu_config_flags", self, self.moreConfigOptionsDialog)
         addMenuItem(menu, "menu1_update", self, self.showUpdateAppWindow)
         addIconMenuItem("UniqueBibleApp.png", menu, "menu1_exit", self, self.quitApp, sc.quitApp)
 
@@ -50,12 +47,11 @@ class Starter:
         for feature, action, shortcut in items:
             addMenuItem(menu, feature, self, action, shortcut)
         menu.addSeparator()
-        subMenu = addSubMenu(menu, "add")
         items = (
-            ("menu8_bibles", self.installMarvelBibles),
+            ("add", self.installMarvelBibles),
         )
         for feature, action in items:
-            addMenuItem(subMenu, feature, self, action)
+            addMenuItem(menu, feature, self, action)
 
         # information
         if config.showInformation:

@@ -1,3 +1,4 @@
+from BibleBooks import BibleBooks
 from gui.MenuItems import *
 import shortcut as sc
 from BiblesSqlite import BiblesSqlite
@@ -9,7 +10,11 @@ class Starter:
     def create_menu(self):
 
         config.instantMode = 0
-        config.parallelMode = 0
+        config.parallelMode = 1
+        config.syncStudyWindowBibleWithMainWindow = False
+        config.syncCommentaryWithMainWindow = False
+        config.commentaryText = ""
+        config.readFormattedBibles = True
 
         menuBar = self.menuBar()
         menu = addMenu(menuBar, "menu1_app")
@@ -61,26 +66,40 @@ class Starter:
         self.firstToolBar.setContextMenuPolicy(Qt.PreventContextMenu)
         self.addToolBar(self.firstToolBar)
 
+        self.versionCombo = QComboBox()
+        self.bibleVersions = BiblesSqlite().getBibleList()
+        self.versionCombo.addItems(self.bibleVersions)
+        initialIndex = 0
+        if config.mainText in self.bibleVersions:
+            initialIndex = self.bibleVersions.index(config.mainText)
+        self.versionCombo.setCurrentIndex(initialIndex)
+        self.versionCombo.currentIndexChanged.connect(self.changeBibleVersion)
+        self.firstToolBar.addWidget(self.versionCombo)
+
+        # books = BibleBooks.getStandardBookAbbreviations()
+        # self.bibleBookCombo = QComboBox()
+        # self.bibleBookCombo.addItems(books)
+        # self.bibleBookCombo.setCurrentIndex(config.mainB-1)
+        # self.bibleBookCombo.currentIndexChanged.connect(
+        #     lambda: self.runTextCommand("BIBLE:::{0}:::{1}".format(config.mainText, "Matt 1:1")))
+        # self.firstToolBar.addWidget(self.bibleBookCombo)
+
+        button = QPushButton("<<")
+        button.setFixedWidth(40)
+        self.addStandardTextButton("menu_previous_book", self.previousMainBook, self.firstToolBar, button)
         button = QPushButton("<")
         button.setFixedWidth(40)
         self.addStandardTextButton("menu_previous_chapter", self.previousMainChapter, self.firstToolBar, button)
         self.mainRefButton = QPushButton(self.verseReference("main")[-1])
+        # self.addStandardTextButton("bar1_reference", self.mainRefButtonClicked, self.firstToolBar,
+        #                            lambda: self.runTextCommand("_menu"))
         self.addStandardTextButton("bar1_reference", self.mainRefButtonClicked, self.firstToolBar, self.mainRefButton)
         button = QPushButton(">")
         button.setFixedWidth(40)
         self.addStandardTextButton("menu_next_chapter", self.nextMainChapter, self.firstToolBar, button)
-
-        # Version selection
-        if self.textCommandParser.isDatabaseInstalled("bible"):
-            self.versionCombo = QComboBox()
-            self.bibleVersions = BiblesSqlite().getBibleList()
-            self.versionCombo.addItems(self.bibleVersions)
-            initialIndex = 0
-            if config.mainText in self.bibleVersions:
-                initialIndex = self.bibleVersions.index(config.mainText)
-            self.versionCombo.setCurrentIndex(initialIndex)
-            self.versionCombo.currentIndexChanged.connect(self.changeBibleVersion)
-            self.firstToolBar.addWidget(self.versionCombo)
+        button = QPushButton(">>")
+        button.setFixedWidth(40)
+        self.addStandardTextButton("menu_next_book", self.nextMainBook, self.firstToolBar, button)
 
         self.addStandardIconButton("bar1_searchBible", "search.png", self.displaySearchBibleCommand, self.firstToolBar)
         # self.addStandardIconButton("bar1_searchBibles", "search_plus.png", self.displaySearchBibleMenu, self.firstToolBar)

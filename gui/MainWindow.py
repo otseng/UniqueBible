@@ -2679,13 +2679,11 @@ class MainWindow(QMainWindow):
     # switch between landscape / portrait mode
     def setFullIconSize(self, full):
         config.toolBarIconFullSize = full
-        self.displayMessage(
-            "{0}  {1}".format(config.thisTranslation["message_done"], config.thisTranslation["message_restart"]))
+        self.setupMenuLayout(config.menuLayout)
 
     def switchIconSize(self):
         config.toolBarIconFullSize = not config.toolBarIconFullSize
-        self.displayMessage(
-            "{0}  {1}".format(config.thisTranslation["message_done"], config.thisTranslation["message_restart"]))
+        self.setupMenuLayout(config.menuLayout)
 
     # switch between landscape / portrait mode
     def switchLandscapeMode(self):

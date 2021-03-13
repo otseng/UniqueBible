@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
         # Mini control
         self.miniControl = None
         # Used in pause() to pause macros
-        self.pauseMode = False
+        config.pauseMode = False
 
         # pre-load control panel
         #self.manageControlPanel(config.showControlPanelOnStartup)
@@ -357,8 +357,8 @@ class MainWindow(QMainWindow):
     # manage key capture
     def event(self, event):
         if event.type() == QEvent.KeyRelease:
-            if self.pauseMode:
-                self.pauseMode = False
+            if config.pauseMode:
+                config.pauseMode = False
             if event.key() == Qt.Key_Tab:
                 self.focusCommandLineField()
             elif event.key() == Qt.Key_Escape:
@@ -2754,13 +2754,13 @@ class MainWindow(QMainWindow):
 
     def pause(self, seconds=0):
         seconds = int(seconds)
-        self.pauseMode = True
+        config.pauseMode = True
         start = DateUtil.epoch()
-        while self.pauseMode:
+        while config.pauseMode:
             QApplication.processEvents()
             elapsedSecs = DateUtil.epoch() - start
             if (seconds > 0 and elapsedSecs > seconds) or config.quitMacro:
-                self.pauseMode = False
+                config.pauseMode = False
 
     def parallel(self):
         if config.parallelMode >= 3:

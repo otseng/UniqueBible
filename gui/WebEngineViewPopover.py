@@ -1,3 +1,5 @@
+from PySide2.QtGui import QKeySequence
+
 import config
 from qtpy.QtCore import Qt, QEvent
 from qtpy.QtWidgets import QAction, QWidget
@@ -40,6 +42,16 @@ class WebEngineViewPopover(QWebEngineView):
         runAsCommandLine.triggered.connect(self.runAsCommand)
         self.addAction(runAsCommandLine)
 
+        spaceBar = QAction(self)
+        spaceBar.setShortcut(QKeySequence(" "))
+        spaceBar.triggered.connect(self.spaceBarPressed)
+        self.addAction(spaceBar)
+
+        escKey = QAction(self)
+        escKey.setShortcut(QKeySequence(Qt.Key_Escape))
+        escKey.triggered.connect(self.escapeKeyPressed)
+        self.addAction(escKey)
+
     def messageNoSelection(self):
         self.parent.displayMessage("{0}\n{1}".format(config.thisTranslation["message_run"], config.thisTranslation["selectTextFirst"]))
 
@@ -56,8 +68,9 @@ class WebEngineViewPopover(QWebEngineView):
     def closeEvent(self, event):
         config.quitMacro = True
 
-    def event(self, event):
-        if event.type() == QEvent.KeyRelease:
-            if event.key() == Qt.Key_Escape:
-                config.quitMacro = True
-        return QWidget.event(self, event)
+    def spaceBarPressed(self):
+        config.pauseMode = False
+
+    def escapeKeyPressed(self):
+        self.close()
+

@@ -11,13 +11,13 @@ class MacroParser:
         self.parent = parent
 
     def parse(self, file):
-        config.macroIsRunning = True
-        config.quitMacro = False
         filename = os.path.join(MacroParser.macros_dir, file)
         if os.path.isfile(filename):
+            config.macroIsRunning = True
             file = open(filename, "r")
             self.lines = file.readlines()
             currentLine = 0
+            config.quitMacro = False
             while(currentLine < len(self.lines)) and not config.quitMacro:
                 currentLine = self.parseLine(currentLine)
             self.parent.closePopover()

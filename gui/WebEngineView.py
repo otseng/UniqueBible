@@ -1,9 +1,9 @@
 import config, os
 from functools import partial
-from qtpy.QtCore import Qt, QEvent
+from qtpy.QtCore import Qt
 #from qtpy.QtGui import QDesktopServices
 from qtpy.QtGui import QGuiApplication
-from qtpy.QtWidgets import QAction, QApplication, QDesktopWidget, QWidget
+from qtpy.QtWidgets import QAction, QApplication, QDesktopWidget
 from qtpy.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite

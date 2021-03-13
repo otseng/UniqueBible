@@ -28,7 +28,7 @@ class MacroParser:
             line = self.lines[currentLine].strip()
             if line.startswith("#") or line.startswith("!") or len(line) == 0:
                 pass
-            elif line.startswith("GOTO "):
+            elif line.lower().startswith("goto "):
                 num = self.findLabel(line[5:])
                 if num >= 0:
                     return num

@@ -42,15 +42,21 @@ class WebEngineViewPopover(QWebEngineView):
         runAsCommandLine.triggered.connect(self.runAsCommand)
         self.addAction(runAsCommandLine)
 
-        spaceBar = QAction(self)
-        spaceBar.setShortcut(QKeySequence(" "))
-        spaceBar.triggered.connect(self.spaceBarPressed)
-        self.addAction(spaceBar)
+        if config.macroIsRunning:
+            spaceBar = QAction(self)
+            spaceBar.setShortcut(QKeySequence(" "))
+            spaceBar.triggered.connect(self.spaceBarPressed)
+            self.addAction(spaceBar)
+    
+            escKey = QAction(self)
+            escKey.setShortcut(QKeySequence(Qt.Key_Escape))
+            escKey.triggered.connect(self.escKeyPressed)
+            self.addAction(escKey)
 
-        escKey = QAction(self)
-        escKey.setShortcut(QKeySequence(Qt.Key_Escape))
-        escKey.triggered.connect(self.escapeKeyPressed)
-        self.addAction(escKey)
+            qKey = QAction(self)
+            qKey.setShortcut(QKeySequence(Qt.Key_Q))
+            qKey.triggered.connect(self.escKeyPressed)
+            self.addAction(qKey)
 
     def messageNoSelection(self):
         self.parent.displayMessage("{0}\n{1}".format(config.thisTranslation["message_run"], config.thisTranslation["selectTextFirst"]))
@@ -66,12 +72,16 @@ class WebEngineViewPopover(QWebEngineView):
         self.parent.parent.parent.textCommandChanged(selectedText, "main")
 
     def closeEvent(self, event):
-        config.pauseMode = False
+        if config.macroIsRunning:
+            config.pauseMode = False
 
     def spaceBarPressed(self):
-        config.pauseMode = False
+        if config.macroIsRunning:
+            config.pauseMode = False
 
-    def escapeKeyPressed(self):
-        config.quitMacro = True
+    def escKeyPressed(self):
+        if config.macroIsRunning:
+            config.quitMacro = True
+            config.pauseMode = False
         self.close()
 

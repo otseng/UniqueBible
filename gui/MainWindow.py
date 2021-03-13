@@ -362,10 +362,8 @@ class MainWindow(QMainWindow):
             if event.key() == Qt.Key_Tab:
                 self.focusCommandLineField()
             elif event.key() == Qt.Key_Escape:
-                if config.macroIsRunning:
-                    config.quitMacro = True
-                else:
-                    self.setNoToolBar()
+                self.setNoToolBar()
+                config.quitMacro = True
                 return True
         return QWidget.event(self, event)
 
@@ -2757,13 +2755,12 @@ class MainWindow(QMainWindow):
     def pause(self, seconds=0):
         seconds = int(seconds)
         self.pauseMode = True
-        config.quitMacro = False
         start = DateUtil.epoch()
         while self.pauseMode:
             QApplication.processEvents()
             elapsedSecs = DateUtil.epoch() - start
             if (seconds > 0 and elapsedSecs > seconds) or config.quitMacro:
-                break
+                self.pauseMode = False
 
     def parallel(self):
         if config.parallelMode >= 3:

@@ -1,8 +1,8 @@
 from PySide2.QtGui import QKeySequence
 
 import config
-from qtpy.QtCore import Qt, QEvent
-from qtpy.QtWidgets import QAction, QWidget
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QAction
 from qtpy.QtWebEngineWidgets import QWebEngineView
 
 class WebEngineViewPopover(QWebEngineView):

@@ -362,8 +362,10 @@ class MainWindow(QMainWindow):
             if event.key() == Qt.Key_Tab:
                 self.focusCommandLineField()
             elif event.key() == Qt.Key_Escape:
-                self.setNoToolBar()
-                config.quitMacro = True
+                if config.macroIsRunning:
+                    config.quitMacro = True
+                else:
+                    self.setNoToolBar()
                 return True
         return QWidget.event(self, event)
 

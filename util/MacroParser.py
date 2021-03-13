@@ -11,6 +11,7 @@ class MacroParser:
         self.parent = parent
 
     def parse(self, file):
+        config.macroIsRunning = True
         config.quitMacro = False
         filename = os.path.join(MacroParser.macros_dir, file)
         if os.path.isfile(filename):
@@ -18,14 +19,19 @@ class MacroParser:
             self.lines = file.readlines()
             currentLine = 0
             while(currentLine < len(self.lines)) and not config.quitMacro:
-                currentLine = self.parse_line(currentLine)
+                currentLine = self.parseLine(currentLine)
             self.parent.closePopover()
+            config.macroIsRunning = False
 
-    def parse_line(self, currentLine):
+    def parseLine(self, currentLine):
         try:
             line = self.lines[currentLine].strip()
             if line.startswith("#") or line.startswith("!") or len(line) == 0:
                 pass
+            elif line.startswith("GOTO "):
+                num = self.findLabel(line[5:])
+                if num >= 0:
+                    return num
             elif line.startswith("config."):
                 exec(line)
                 pass
@@ -50,3 +56,10 @@ class MacroParser:
         currentLine += 1
         return currentLine
 
+    def findLabel(self, label):
+        index = 0
+        for line in self.lines:
+            if line.startswith(":"+label):
+                return index
+            index += 1
+        return -1

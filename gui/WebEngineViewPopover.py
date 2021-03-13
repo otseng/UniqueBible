@@ -53,6 +53,9 @@ class WebEngineViewPopover(QWebEngineView):
         selectedText = self.selectedText()
         self.parent.parent.parent.textCommandChanged(selectedText, "main")
 
+    def closeEvent(self, event):
+        config.quitMacro = True
+
     def event(self, event):
         if event.type() == QEvent.KeyRelease:
             if event.key() == Qt.Key_Escape:

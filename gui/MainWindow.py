@@ -359,12 +359,11 @@ class MainWindow(QMainWindow):
         if event.type() == QEvent.KeyRelease:
             if self.pauseMode:
                 self.pauseMode = False
-                if event.key() == Qt.Key_Escape or event.key() == Qt.Key_Q:
-                    config.quitMacro = True
             if event.key() == Qt.Key_Tab:
                 self.focusCommandLineField()
             elif event.key() == Qt.Key_Escape:
                 self.setNoToolBar()
+                config.quitMacro = True
                 return True
         return QWidget.event(self, event)
 
@@ -3032,7 +3031,7 @@ class MainWindow(QMainWindow):
         if config.enableMacros and len(file) > 0:
             if not ".ubam" in file:
                 file += ".ubam"
-            MacroParser().parse(self, file)
+            MacroParser(self).parse(file)
 
     def runPlugin(self, fileName):
         script = os.path.join(os.getcwd(), "plugins", "menu", "{0}.py".format(fileName))

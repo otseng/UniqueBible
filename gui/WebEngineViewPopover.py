@@ -1,6 +1,6 @@
 import config
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QAction
+from qtpy.QtCore import Qt, QEvent
+from qtpy.QtWidgets import QAction, QWidget
 from qtpy.QtWebEngineWidgets import QWebEngineView
 
 class WebEngineViewPopover(QWebEngineView):
@@ -53,3 +53,8 @@ class WebEngineViewPopover(QWebEngineView):
         selectedText = self.selectedText()
         self.parent.parent.parent.textCommandChanged(selectedText, "main")
 
+    def event(self, event):
+        if event.type() == QEvent.KeyRelease:
+            if event.key() == Qt.Key_Escape:
+                config.quitMacro = True
+        return QWidget.event(self, event)

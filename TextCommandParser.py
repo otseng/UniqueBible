@@ -758,6 +758,8 @@ class TextCommandParser:
             return self.textParallel("{0}{1}".format(parallelMatches.group(1), command), view)
         if config.useFastVerseParsing:
             verseList = self.extractAllVersesFast(command)
+            if verseList[0][0] == 0:
+                return "", "", {}
         else:
             verseList = self.extractAllVerses(command)
         if not verseList:

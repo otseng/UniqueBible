@@ -1,9 +1,9 @@
 import config, os
 from functools import partial
-from qtpy.QtCore import Qt
+from qtpy.QtCore import Qt, QEvent
 #from qtpy.QtGui import QDesktopServices
 from qtpy.QtGui import QGuiApplication
-from qtpy.QtWidgets import QAction, QApplication, QDesktopWidget
+from qtpy.QtWidgets import QAction, QApplication, QDesktopWidget, QWidget
 from qtpy.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
 from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite
@@ -618,6 +618,10 @@ class WebEngineView(QWebEngineView):
             self.popoverView.setMinimumHeight(config.popoverWindowHeight)
         self.popoverView.show()
 
+    def closePopover(self):
+        if hasattr(self, "popoverView"):
+            self.popoverView.close()
+
 class WebEnginePage(QWebEnginePage):
 
     def __init__(self, parent):
@@ -635,3 +639,4 @@ class WebEnginePage(QWebEnginePage):
             self.setUrl(url)
             return False
         return True
+

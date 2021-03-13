@@ -1,21 +1,25 @@
 import os
 
-
 class MacroParser:
 
     macros_dir = "macros"
 
-    def parse(main, file):
+    def __init__(self):
+        self.lines = None
+
+    def parse(self, main, file):
         filename = os.path.join(MacroParser.macros_dir, file)
         if os.path.isfile(filename):
             file = open(filename, "r")
-            lines = file.readlines()
-            for line in lines:
-                line = line.strip()
-                MacroParser.parse_line(main, line)
+            self.lines = file.readlines()
+            currentLine = 0
+            while(currentLine < len(self.lines)):
+                currentLine = self.parse_line(main, currentLine)
+            main.closePopover()
 
-    def parse_line(main, line):
+    def parse_line(self, main, currentLine):
         try:
+            line = self.lines[currentLine].strip()
             if line.startswith("#") or line.startswith("!") or len(line) == 0:
                 pass
             elif line.startswith("."):
@@ -33,5 +37,9 @@ class MacroParser:
             else:
                 main.textCommandLineEdit.setText(line)
                 main.runTextCommand(line, forceExecute=True)
-        except:
+        except Exception as e:
             print("Error running line: {0}".format(line))
+            print("{0}".format(e))
+        currentLine += 1
+        return currentLine
+

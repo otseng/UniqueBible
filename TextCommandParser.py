@@ -1640,6 +1640,7 @@ class TextCommandParser:
                 "COMBO": self.textCombo,
                 "INDEX": self.textIndex,
                 "COMMENTARY": self.textCommentary,
+                "_noAction": self.noAction,
             }
             return actionMap[keyword](verseReference, source)
         else:
@@ -2381,6 +2382,9 @@ class TextCommandParser:
     def adjustDarkThemeColorsForExternalBook(self, content):
         content = content.replace("background-color:#FFFFFF", "background-color:#323232")
         return content
+
+    def noAction(self):
+        pass
 
 if __name__ == "__main__":
     from Languages import Languages

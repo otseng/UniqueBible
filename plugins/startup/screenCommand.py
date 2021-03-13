@@ -13,7 +13,10 @@ def presentReferenceOnFullScreen(command, source):
         #config.mainWindow.displayMessage(config.thisTranslation["message_noReference"])
         return (source, "INVALID_COMMAND_ENTERED", {})
     else:
-        style = "font-size:{0}em;margin-left:{1}px;margin-right:{1}px;color:{2}".format(config.presentationFontSize, config.presentationMargin, config.presentationColorOnDarkTheme if config.theme == "dark" else config.presentationColorOnLightTheme)
+        if command.count(":::") == 2:
+            style = command.split(":::")[2]
+        else:
+            style = "font-size:{0}em;margin-left:{1}px;margin-right:{1}px;color:{2}".format(config.presentationFontSize, config.presentationMargin, config.presentationColorOnDarkTheme if config.theme == "dark" else config.presentationColorOnLightTheme)
         biblesSqlite = BiblesSqlite()
         verses = biblesSqlite.readMultipleVerses(config.mainText, verseList, options={"presentMode": True, "style": style})
         del biblesSqlite

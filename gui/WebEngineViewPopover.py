@@ -66,11 +66,12 @@ class WebEngineViewPopover(QWebEngineView):
         self.parent.parent.parent.textCommandChanged(selectedText, "main")
 
     def closeEvent(self, event):
-        config.quitMacro = True
+        config.pauseMode = False
 
     def spaceBarPressed(self):
         config.pauseMode = False
 
     def escapeKeyPressed(self):
+        config.quitMacro = True
         self.close()
 

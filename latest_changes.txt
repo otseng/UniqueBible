@@ -1,3 +1,19 @@
+Major change in version 22.74:
+* Strip white spaces of selected text for context menu actions.
+
+Major changes in version 22.73:
+* Added config.presentationScreenNo - default screen number if users does not specify one; -1 by default; 0 = 1st screen, 1 = 2nd screen, 3 = 3rd screen, etc.
+* Revised documentation on command keyword "SCREEN:::"
+* Added a context plugin "Go to Presentation".
+    This displays bible verse(s) in presentation mode if the selected text contains bible reference(s).
+    If the selected text does not contain a bible reference, selected text is displayed in presentation mode.
+
+Major change in version 22.72:
+* Fixed an issue multiple references overlaps on presentation mode.
+
+Major changes in version 22.71:
+* Renamed a config variable from "presentationVerticalTopPosition" to "presentationVerticalPosition"
+
 Major changes in version 22.70:
 * Fixed an issue config values "presentationColorOnDarkTheme" and "presentationColorOnLightTheme" were ignored.
 
@@ -11,7 +27,7 @@ Major changes in version 22.69:
     presentationMargin - left and right margins of displayed text; 50 by default
     presentationColorOnLightTheme - text color applied when light theme is used; 'magenta' by default 
     presentationColorOnDarkTheme - text color applied when dark theme is used; 'black' by default
-    presentationVerticalTopPosition - the top position where text starts to be displayed; 50 by default
+    presentationVerticalPosition - the position where text is displayed vertically; 50 by default placing the text in the centre
 * TODO: a gui window to change these values when UBA is running.
 
 Major changes in version 22.68:

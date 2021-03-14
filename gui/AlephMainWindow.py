@@ -380,6 +380,13 @@ class AlephMainWindow:
         self.firstToolBar.setContextMenuPolicy(Qt.PreventContextMenu)
         self.addToolBar(self.firstToolBar)
 
+        openFileButton = QPushButton()
+        openFileButton.setToolTip(config.thisTranslation["cp0"])
+        openFileButtonFile = os.path.join("htmlResources", "open.png")
+        openFileButton.setIcon(QIcon(openFileButtonFile))
+        openFileButton.clicked.connect(lambda: self.openControlPanelTab(0))
+        self.firstToolBar.addWidget(openFileButton)
+
         self.mainRefButton = QPushButton(":::".join(self.verseReference("main")))
         self.mainRefButton.setToolTip(config.thisTranslation["bar1_reference"])
         self.mainRefButton.setStyleSheet(textButtonStyle)
@@ -479,6 +486,13 @@ class AlephMainWindow:
         self.studyBibleToolBar.setContextMenuPolicy(Qt.PreventContextMenu)
         self.addToolBar(self.studyBibleToolBar)
 
+        openFileButton = QPushButton()
+        openFileButton.setToolTip(config.thisTranslation["cp0"])
+        openFileButtonFile = os.path.join("htmlResources", "open.png")
+        openFileButton.setIcon(QIcon(openFileButtonFile))
+        openFileButton.clicked.connect(lambda: self.openControlPanelTab(0))
+        self.studyBibleToolBar.addWidget(openFileButton)
+
         self.studyRefButton = QPushButton(":::".join(self.verseReference("study")))
         self.studyRefButton.setToolTip(config.thisTranslation["bar2_reference"])
         self.studyRefButton.setStyleSheet(textButtonStyle)
@@ -536,6 +550,13 @@ class AlephMainWindow:
         self.secondToolBar.addWidget(self.enableStudyBibleButton)
 
         self.secondToolBar.addSeparator()
+
+        openFileButton = QPushButton()
+        openFileButton.setToolTip(config.thisTranslation["cp1"])
+        openFileButtonFile = os.path.join("htmlResources", "open.png")
+        openFileButton.setIcon(QIcon(openFileButtonFile))
+        openFileButton.clicked.connect(lambda: self.openControlPanelTab(1))
+        self.secondToolBar.addWidget(openFileButton)
 
         self.commentaryRefButton = QPushButton(self.verseReference("commentary"))
         self.commentaryRefButton.setToolTip(config.thisTranslation["menu4_commentary"])
@@ -909,6 +930,9 @@ class AlephMainWindow:
         self.firstToolBar.setContextMenuPolicy(Qt.PreventContextMenu)
         self.addToolBar(self.firstToolBar)
 
+        iconFile = os.path.join("htmlResources", "open.png")
+        self.firstToolBar.addAction(QIcon(iconFile), config.thisTranslation["cp0"], lambda: self.openControlPanelTab(0))
+
         self.mainRefButton = QPushButton(":::".join(self.verseReference("main")))
         self.mainRefButton.setToolTip(config.thisTranslation["bar1_reference"])
         self.mainRefButton.setStyleSheet(textButtonStyle)
@@ -975,20 +999,23 @@ class AlephMainWindow:
         self.studyBibleToolBar.setContextMenuPolicy(Qt.PreventContextMenu)
         self.addToolBar(self.studyBibleToolBar)
 
+        iconFile = os.path.join("htmlResources", "open.png")
+        self.studyBibleToolBar.addAction(QIcon(iconFile), config.thisTranslation["cp0"], lambda: self.openControlPanelTab(0))
+
         self.studyRefButton = QPushButton(self.verseReference("study")[1])
         self.studyRefButton.setToolTip(config.thisTranslation["bar2_reference"])
         self.studyRefButton.setStyleSheet(textButtonStyle)
         self.studyRefButton.clicked.connect(self.studyRefButtonClicked)
         self.studyBibleToolBar.addWidget(self.studyRefButton)
 
-        iconFile = os.path.join("htmlResources", "noteChapter.png")
-        self.studyBibleToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar2_chapterNotes"], self.openStudyChapterNote)
-
-        iconFile = os.path.join("htmlResources", "noteVerse.png")
-        self.studyBibleToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar2_verseNotes"], self.openStudyVerseNote)
-
-        iconFile = os.path.join("htmlResources", "search.png")
-        self.studyBibleToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar2_searchBible"], self.displaySearchStudyBibleCommand)
+        # iconFile = os.path.join("htmlResources", "noteChapter.png")
+        # self.studyBibleToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar2_chapterNotes"], self.openStudyChapterNote)
+        #
+        # iconFile = os.path.join("htmlResources", "noteVerse.png")
+        # self.studyBibleToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar2_verseNotes"], self.openStudyVerseNote)
+        #
+        # iconFile = os.path.join("htmlResources", "search.png")
+        # self.studyBibleToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar2_searchBible"], self.displaySearchStudyBibleCommand)
 
         iconFile = os.path.join("htmlResources", "search_plus.png")
         self.studyBibleToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar2_searchBibles"], self.displaySearchBibleMenu)
@@ -1008,6 +1035,9 @@ class AlephMainWindow:
         self.enableStudyBibleButton = self.secondToolBar.addAction(QIcon(iconFile), self.getStudyBibleDisplayToolTip(), self.enableStudyBibleButtonClicked)
 
         self.secondToolBar.addSeparator()
+
+        iconFile = os.path.join("htmlResources", "open.png")
+        self.secondToolBar.addAction(QIcon(iconFile), config.thisTranslation["cp1"], lambda: self.openControlPanelTab(1))
 
         self.commentaryRefButton = QPushButton(self.verseReference("commentary"))
         self.commentaryRefButton.setToolTip(config.thisTranslation["menu4_commentary"])

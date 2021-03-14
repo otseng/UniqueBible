@@ -525,6 +525,8 @@ class ConfigUtil:
             config.presentationColorOnDarkTheme = "magenta"
         if not hasattr(config, "presentationVerticalPosition"):
             config.presentationVerticalPosition = 50
+        if not hasattr(config, "presentationHorizontalPosition"):
+            config.presentationHorizontalPosition = 50
 
         # Temporary configurations
         # Their values are not saved on exit.
@@ -538,6 +540,7 @@ class ConfigUtil:
         config.pipIsUpdated = False
         config.bibleWindowContentTransformers = []
         config.studyWindowContentTransformers = []
+        config.macroIsRunning = False
 
     # Save configurations on exit
     @staticmethod
@@ -717,6 +720,7 @@ class ConfigUtil:
             ("presentationColorOnLightTheme", config.presentationColorOnLightTheme),
             ("presentationColorOnDarkTheme", config.presentationColorOnDarkTheme),
             ("presentationVerticalPosition", config.presentationVerticalPosition),
+            ("presentationHorizontalPosition", config.presentationHorizontalPosition),
         )
         with open("config.py", "w", encoding="utf-8") as fileObj:
             for name, value in configs:

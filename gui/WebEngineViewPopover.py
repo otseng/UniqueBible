@@ -1,6 +1,5 @@
-from PySide2.QtGui import QKeySequence
-
 import config
+from qtpy.QtGui import QKeySequence
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QAction
 from qtpy.QtWebEngineWidgets import QWebEngineView

@@ -41,7 +41,7 @@ class WebEngineViewPopover(QWebEngineView):
         runAsCommandLine.triggered.connect(self.runAsCommand)
         self.addAction(runAsCommandLine)
 
-        if config.macroIsRunning:
+        if hasattr(config, "macroIsRunning") and config.macroIsRunning:
             spaceBar = QAction(self)
             spaceBar.setShortcut(QKeySequence(" "))
             spaceBar.triggered.connect(self.spaceBarPressed)
@@ -71,15 +71,15 @@ class WebEngineViewPopover(QWebEngineView):
         self.parent.parent.parent.textCommandChanged(selectedText, "main")
 
     def closeEvent(self, event):
-        if config.macroIsRunning:
+        if hasattr(config, "macroIsRunning") and config.macroIsRunning:
             config.pauseMode = False
 
     def spaceBarPressed(self):
-        if config.macroIsRunning:
+        if hasattr(config, "macroIsRunning") and config.macroIsRunning:
             config.pauseMode = False
 
     def escKeyPressed(self):
-        if config.macroIsRunning:
+        if hasattr(config, "macroIsRunning") and config.macroIsRunning:
             config.quitMacro = True
             config.pauseMode = False
         self.close()

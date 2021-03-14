@@ -798,6 +798,15 @@ class AlephMainWindow:
         self.rightToolBar.addSeparator()
 
         actionButton = QPushButton()
+        actionButton.setToolTip("Marvel Interlinear Bible")
+        actionButtonFile = os.path.join("htmlResources", "interlinear.png")
+        actionButton.setIcon(QIcon(actionButtonFile))
+        actionButton.clicked.connect(self.runMIBStudy)
+        self.rightToolBar.addWidget(actionButton)
+
+        self.rightToolBar.addSeparator()
+
+        actionButton = QPushButton()
         actionButton.setToolTip(config.thisTranslation["menu4_indexes"])
         actionButtonFile = os.path.join("htmlResources", "indexes.png")
         actionButton.setIcon(QIcon(actionButtonFile))
@@ -829,12 +838,12 @@ class AlephMainWindow:
 
         self.rightToolBar.addSeparator()
 
-        actionButton = QPushButton()
-        actionButton.setToolTip(config.thisTranslation["menu4_traslations"])
-        actionButtonFile = os.path.join("htmlResources", "translations.png")
-        actionButton.setIcon(QIcon(actionButtonFile))
-        actionButton.clicked.connect(self.runTRANSLATION)
-        self.rightToolBar.addWidget(actionButton)
+        # actionButton = QPushButton()
+        # actionButton.setToolTip(config.thisTranslation["menu4_traslations"])
+        # actionButtonFile = os.path.join("htmlResources", "translations.png")
+        # actionButton.setIcon(QIcon(actionButtonFile))
+        # actionButton.clicked.connect(self.runTRANSLATION)
+        # self.rightToolBar.addWidget(actionButton)
 
         actionButton = QPushButton()
         actionButton.setToolTip(config.thisTranslation["menu4_discourse"])
@@ -1154,6 +1163,11 @@ class AlephMainWindow:
 
         self.rightToolBar.addSeparator()
 
+        iconFile = os.path.join("htmlResources", "interlinear.png")
+        self.rightToolBar.addAction(QIcon(iconFile), "Marvel Interlinear Bible", self.runMIBStudy)
+
+        self.rightToolBar.addSeparator()
+
         iconFile = os.path.join("htmlResources", "indexes.png")
         self.rightToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu4_indexes"], self.runINDEX)
 
@@ -1170,8 +1184,8 @@ class AlephMainWindow:
 
         self.rightToolBar.addSeparator()
 
-        iconFile = os.path.join("htmlResources", "translations.png")
-        self.rightToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu4_traslations"], self.runTRANSLATION)
+        # iconFile = os.path.join("htmlResources", "translations.png")
+        # self.rightToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu4_traslations"], self.runTRANSLATION)
 
         iconFile = os.path.join("htmlResources", "discourse.png")
         self.rightToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu4_discourse"], self.runDISCOURSE)

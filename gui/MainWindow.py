@@ -2457,6 +2457,10 @@ class MainWindow(QMainWindow):
     def runMIB(self):
         self.runFeature("BIBLE:::MIB")
 
+    def runMIBStudy(self):
+        mainVerseReference = self.bcvToVerseReference(config.mainB, config.mainC, config.mainV)
+        self.runTextCommand("STUDY:::MIB:::{0}".format(mainVerseReference), addRecord=True, source="study", forceExecute=True)
+
     def runMAB(self):
         self.runFeature("BIBLE:::MAB")
 

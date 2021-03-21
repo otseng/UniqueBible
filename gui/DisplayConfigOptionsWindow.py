@@ -22,68 +22,68 @@ class DisplayConfigOptionsWindow(QDialog):
         self.setMinimumHeight(600)
 
         options = [
-            ("showControlPanelOnStartup", config.showControlPanelOnStartup, self.showControlPanelOnStartupChanged, self.flagToolTip(False, "showControlPanelOnStartup")),
-            ("preferControlPanelForCommandLineEntry", config.preferControlPanelForCommandLineEntry, self.preferControlPanelForCommandLineEntryChanged, self.flagToolTip(False, "preferControlPanelForCommandLineEntry")),
-            ("closeControlPanelAfterRunningCommand", config.closeControlPanelAfterRunningCommand, self.closeControlPanelAfterRunningCommandChanged, self.flagToolTip(True, "closeControlPanelAfterRunningCommand")),
-            ("restrictControlPanelWidth", config.restrictControlPanelWidth, self.restrictControlPanelWidthChanged, self.flagToolTip(False, "restrictControlPanelWidth")),
-            ("clearCommandEntry", config.clearCommandEntry, self.clearCommandEntryChanged, self.flagToolTip(False, "clearCommandEntry")),
-            ("openBibleWindowContentOnNextTab", config.openBibleWindowContentOnNextTab, self.openBibleWindowContentOnNextTabChanged, self.flagToolTip(False, "openBibleWindowContentOnNextTab")),
-            ("openStudyWindowContentOnNextTab", config.openStudyWindowContentOnNextTab, self.openStudyWindowContentOnNextTabChanged, self.flagToolTip(True, "openStudyWindowContentOnNextTab")),
-            ("populateTabsOnStartup", config.populateTabsOnStartup, self.populateTabsOnStartupChanged, self.flagToolTip(False, "populateTabsOnStartup")),
-            ("qtMaterial", config.qtMaterial, self.qtMaterialChanged, self.flagToolTip(False, "qtMaterial")),
-            ("addBreakAfterTheFirstToolBar", config.addBreakAfterTheFirstToolBar, self.addBreakAfterTheFirstToolBarChanged, self.flagToolTip(True, "addBreakAfterTheFirstToolBar")),
-            ("addBreakBeforeTheLastToolBar", config.addBreakBeforeTheLastToolBar, self.addBreakBeforeTheLastToolBarChanged, self.flagToolTip(False, "addBreakBeforeTheLastToolBar")),
-            ("parserStandarisation", (config.parserStandarisation == "YES"), self.parserStandarisationChanged, self.flagToolTip(False, "parserStandarisation")),
-            ("useFastVerseParsing", config.useFastVerseParsing, self.useFastVerseParsingChanged, self.flagToolTip(False, "useFastVerseParsing")),
-            ("preferHtmlMenu", config.preferHtmlMenu, self.preferHtmlMenuChanged, self.flagToolTip(False, "preferHtmlMenu")),
-            ("showVerseNumbersInRange", config.showVerseNumbersInRange, self.showVerseNumbersInRangeChanged, self.flagToolTip(True, "showVerseNumbersInRange")),
-            ("addFavouriteToMultiRef", config.addFavouriteToMultiRef, self.addFavouriteToMultiRefChanged, self.flagToolTip(False, "addFavouriteToMultiRef")),
-            ("enableVerseHighlighting", config.enableVerseHighlighting, self.enableVerseHighlightingChanged, self.flagToolTip(False, "enableVerseHighlighting")),
-            ("regexCaseSensitive", config.regexCaseSensitive, self.regexCaseSensitiveChanged, self.flagToolTip(False, "regexCaseSensitive")),
-            ("alwaysDisplayStaticMaps", config.alwaysDisplayStaticMaps, self.alwaysDisplayStaticMapsChanged, self.flagToolTip(False, "alwaysDisplayStaticMaps")),
-            ("exportEmbeddedImages", config.exportEmbeddedImages, self.exportEmbeddedImagesChanged, self.flagToolTip(True, "exportEmbeddedImages")),
-            ("clickToOpenImage", config.clickToOpenImage, self.clickToOpenImageChanged, self.flagToolTip(True, "clickToOpenImage")),
-            ("showNoteIndicatorOnBibleChapter", config.showNoteIndicatorOnBibleChapter, self.parent.enableNoteIndicatorButtonClicked, self.flagToolTip(True, "showNoteIndicatorOnBibleChapter")),
-            ("openBibleNoteAfterSave", config.openBibleNoteAfterSave, self.openBibleNoteAfterSaveChanged, self.flagToolTip(False, "openBibleNoteAfterSave")),
-            ("openBibleNoteAfterEditorClosed", config.openBibleNoteAfterEditorClosed, self.openBibleNoteAfterEditorClosedChanged, self.flagToolTip(False, "openBibleNoteAfterEditorClosed")),
-            ("hideNoteEditorStyleToolbar", config.hideNoteEditorStyleToolbar, self.hideNoteEditorStyleToolbarChanged, self.flagToolTip(False, "hideNoteEditorStyleToolbar")),
-            ("hideNoteEditorTextUtility", config.hideNoteEditorTextUtility, self.hideNoteEditorTextUtilityChanged, self.flagToolTip(True, "hideNoteEditorTextUtility")),
-            ("overwriteNoteFont", config.overwriteNoteFont, self.overwriteNoteFontChanged, self.flagToolTip(True, "overwriteNoteFont")),
-            ("overwriteNoteFontSize", config.overwriteNoteFontSize, self.overwriteNoteFontSizeChanged, self.flagToolTip(True, "overwriteNoteFontSize")),
-            ("overwriteBookFont", config.overwriteBookFont, self.overwriteBookFontChanged, self.flagToolTip(True, "overwriteBookFont")),
-            ("overwriteBookFontSize", config.overwriteBookFontSize, self.overwriteBookFontSizeChanged, self.flagToolTip(True, "overwriteBookFontSize")),
-            ("bookOnNewWindow", config.bookOnNewWindow, self.bookOnNewWindowChanged, self.flagToolTip(False, "bookOnNewWindow")),
-            ("virtualKeyboard", config.virtualKeyboard, self.virtualKeyboardChanged, self.flagToolTip(False, "virtualKeyboard")),
-            ("useWebbrowser", config.useWebbrowser, self.useWebbrowserChanged, self.flagToolTip(True, "useWebbrowser")),
-            ("removeHighlightOnExit", config.removeHighlightOnExit, self.removeHighlightOnExitChanged, self.flagToolTip(False, "removeHighlightOnExit")),
-            ("disableModulesUpdateCheck", config.disableModulesUpdateCheck, self.disableModulesUpdateCheckChanged, self.flagToolTip(True, "disableModulesUpdateCheck")),
-            ("enableGist", config.enableGist, self.enableGistChanged, self.flagToolTip(False, "enableGist")),
-            ("enableMacros", config.enableMacros, self.enableMacrosChanged, self.flagToolTip(False, "enableMacros")),
-            ("enablePlugins", config.enablePlugins, self.enablePluginsChanged, self.flagToolTip(True, "enablePlugins")),
-            #("customPythonOnStartup", config.customPythonOnStartup, self.customPythonOnStartupChanged, self.flagToolTip(False, "customPythonOnStartup")),
-            ("hideBlankVerseCompare", config.hideBlankVerseCompare, self.hideBlankVerseCompareChanged, self.flagToolTip(False, "hideBlankVerseCompare"))
+            ["showControlPanelOnStartup", config.showControlPanelOnStartup, self.showControlPanelOnStartupChanged, self.flagToolTip(False, "showControlPanelOnStartup")],
+            ["preferControlPanelForCommandLineEntry", config.preferControlPanelForCommandLineEntry, self.preferControlPanelForCommandLineEntryChanged, self.flagToolTip(False, "preferControlPanelForCommandLineEntry")],
+            ["closeControlPanelAfterRunningCommand", config.closeControlPanelAfterRunningCommand, self.closeControlPanelAfterRunningCommandChanged, self.flagToolTip(True, "closeControlPanelAfterRunningCommand")],
+            ["restrictControlPanelWidth", config.restrictControlPanelWidth, self.restrictControlPanelWidthChanged, self.flagToolTip(False, "restrictControlPanelWidth")],
+            ["clearCommandEntry", config.clearCommandEntry, self.clearCommandEntryChanged, self.flagToolTip(False, "clearCommandEntry")],
+            ["openBibleWindowContentOnNextTab", config.openBibleWindowContentOnNextTab, self.openBibleWindowContentOnNextTabChanged, self.flagToolTip(False, "openBibleWindowContentOnNextTab")],
+            ["openStudyWindowContentOnNextTab", config.openStudyWindowContentOnNextTab, self.openStudyWindowContentOnNextTabChanged, self.flagToolTip(True, "openStudyWindowContentOnNextTab")],
+            ["populateTabsOnStartup", config.populateTabsOnStartup, self.populateTabsOnStartupChanged, self.flagToolTip(False, "populateTabsOnStartup")],
+            ["qtMaterial", config.qtMaterial, self.qtMaterialChanged, self.flagToolTip(False, "qtMaterial")],
+            ["addBreakAfterTheFirstToolBar", config.addBreakAfterTheFirstToolBar, self.addBreakAfterTheFirstToolBarChanged, self.flagToolTip(True, "addBreakAfterTheFirstToolBar")],
+            ["addBreakBeforeTheLastToolBar", config.addBreakBeforeTheLastToolBar, self.addBreakBeforeTheLastToolBarChanged, self.flagToolTip(False, "addBreakBeforeTheLastToolBar")],
+            ["parserStandarisation", (config.parserStandarisation == "YES"), self.parserStandarisationChanged, self.flagToolTip(False, "parserStandarisation")],
+            ["useFastVerseParsing", config.useFastVerseParsing, self.useFastVerseParsingChanged, self.flagToolTip(False, "useFastVerseParsing")],
+            ["preferHtmlMenu", config.preferHtmlMenu, self.preferHtmlMenuChanged, self.flagToolTip(False, "preferHtmlMenu")],
+            ["showVerseNumbersInRange", config.showVerseNumbersInRange, self.showVerseNumbersInRangeChanged, self.flagToolTip(True, "showVerseNumbersInRange")],
+            ["addFavouriteToMultiRef", config.addFavouriteToMultiRef, self.addFavouriteToMultiRefChanged, self.flagToolTip(False, "addFavouriteToMultiRef")],
+            ["enableVerseHighlighting", config.enableVerseHighlighting, self.enableVerseHighlightingChanged, self.flagToolTip(False, "enableVerseHighlighting")],
+            ["regexCaseSensitive", config.regexCaseSensitive, self.regexCaseSensitiveChanged, self.flagToolTip(False, "regexCaseSensitive")],
+            ["alwaysDisplayStaticMaps", config.alwaysDisplayStaticMaps, self.alwaysDisplayStaticMapsChanged, self.flagToolTip(False, "alwaysDisplayStaticMaps")],
+            ["exportEmbeddedImages", config.exportEmbeddedImages, self.exportEmbeddedImagesChanged, self.flagToolTip(True, "exportEmbeddedImages")],
+            ["clickToOpenImage", config.clickToOpenImage, self.clickToOpenImageChanged, self.flagToolTip(True, "clickToOpenImage")],
+            ["showNoteIndicatorOnBibleChapter", config.showNoteIndicatorOnBibleChapter, self.parent.enableNoteIndicatorButtonClicked, self.flagToolTip(True, "showNoteIndicatorOnBibleChapter")],
+            ["openBibleNoteAfterSave", config.openBibleNoteAfterSave, self.openBibleNoteAfterSaveChanged, self.flagToolTip(False, "openBibleNoteAfterSave")],
+            ["openBibleNoteAfterEditorClosed", config.openBibleNoteAfterEditorClosed, self.openBibleNoteAfterEditorClosedChanged, self.flagToolTip(False, "openBibleNoteAfterEditorClosed")],
+            ["hideNoteEditorStyleToolbar", config.hideNoteEditorStyleToolbar, self.hideNoteEditorStyleToolbarChanged, self.flagToolTip(False, "hideNoteEditorStyleToolbar")],
+            ["hideNoteEditorTextUtility", config.hideNoteEditorTextUtility, self.hideNoteEditorTextUtilityChanged, self.flagToolTip(True, "hideNoteEditorTextUtility")],
+            ["overwriteNoteFont", config.overwriteNoteFont, self.overwriteNoteFontChanged, self.flagToolTip(True, "overwriteNoteFont")],
+            ["overwriteNoteFontSize", config.overwriteNoteFontSize, self.overwriteNoteFontSizeChanged, self.flagToolTip(True, "overwriteNoteFontSize")],
+            ["overwriteBookFont", config.overwriteBookFont, self.overwriteBookFontChanged, self.flagToolTip(True, "overwriteBookFont")],
+            ["overwriteBookFontSize", config.overwriteBookFontSize, self.overwriteBookFontSizeChanged, self.flagToolTip(True, "overwriteBookFontSize")],
+            ["bookOnNewWindow", config.bookOnNewWindow, self.bookOnNewWindowChanged, self.flagToolTip(False, "bookOnNewWindow")],
+            ["virtualKeyboard", config.virtualKeyboard, self.virtualKeyboardChanged, self.flagToolTip(False, "virtualKeyboard")],
+            ["useWebbrowser", config.useWebbrowser, self.useWebbrowserChanged, self.flagToolTip(True, "useWebbrowser")],
+            ["removeHighlightOnExit", config.removeHighlightOnExit, self.removeHighlightOnExitChanged, self.flagToolTip(False, "removeHighlightOnExit")],
+            ["disableModulesUpdateCheck", config.disableModulesUpdateCheck, self.disableModulesUpdateCheckChanged, self.flagToolTip(True, "disableModulesUpdateCheck")],
+            ["enableGist", config.enableGist, self.enableGistChanged, self.flagToolTip(False, "enableGist")],
+            ["enableMacros", config.enableMacros, self.enableMacrosChanged, self.flagToolTip(False, "enableMacros")],
+            ["enablePlugins", config.enablePlugins, self.enablePluginsChanged, self.flagToolTip(True, "enablePlugins")],
+            #["customPythonOnStartup", config.customPythonOnStartup, self.customPythonOnStartupChanged, self.flagToolTip(False, "customPythonOnStartup")],
+            ["hideBlankVerseCompare", config.hideBlankVerseCompare, self.hideBlankVerseCompareChanged, self.flagToolTip(False, "hideBlankVerseCompare")]
         ]
         if config.isTtsInstalled:
             options += [
-                ("useLangDetectOnTts", config.useLangDetectOnTts, self.useLangDetectOnTtsChanged, self.flagToolTip(False, "useLangDetectOnTts")),
-                ("ttsEnglishAlwaysUS", config.ttsEnglishAlwaysUS, self.ttsEnglishAlwaysUSChanged, self.flagToolTip(False, "ttsEnglishAlwaysUS")),
-                ("ttsEnglishAlwaysUK", config.ttsEnglishAlwaysUK, self.ttsEnglishAlwaysUKChanged, self.flagToolTip(False, "ttsEnglishAlwaysUK")),
-                ("ttsChineseAlwaysMandarin", config.ttsChineseAlwaysMandarin, self.ttsChineseAlwaysMandarinChanged, self.flagToolTip(False, "ttsChineseAlwaysMandarin")),
-                ("ttsChineseAlwaysCantonese", config.ttsChineseAlwaysCantonese, self.ttsChineseAlwaysCantoneseChanged, self.flagToolTip(False, "ttsChineseAlwaysCantonese")),
+                ["useLangDetectOnTts", config.useLangDetectOnTts, self.useLangDetectOnTtsChanged, self.flagToolTip(False, "useLangDetectOnTts")],
+                ["ttsEnglishAlwaysUS", config.ttsEnglishAlwaysUS, self.ttsEnglishAlwaysUSChanged, self.flagToolTip(False, "ttsEnglishAlwaysUS")],
+                ["ttsEnglishAlwaysUK", config.ttsEnglishAlwaysUK, self.ttsEnglishAlwaysUKChanged, self.flagToolTip(False, "ttsEnglishAlwaysUK")],
+                ["ttsChineseAlwaysMandarin", config.ttsChineseAlwaysMandarin, self.ttsChineseAlwaysMandarinChanged, self.flagToolTip(False, "ttsChineseAlwaysMandarin")],
+                ["ttsChineseAlwaysCantonese", config.ttsChineseAlwaysCantonese, self.ttsChineseAlwaysCantoneseChanged, self.flagToolTip(False, "ttsChineseAlwaysCantonese")],
             ]
 
         if platform.system() == "Linux":
             options += [
-                ("linuxStartFullScreen", config.linuxStartFullScreen, self.linuxStartFullScreenChanged, self.flagToolTip(False, "linuxStartFullScreen")),
-                ("fcitx", config.fcitx, self.fcitxChanged, self.flagToolTip(False, "fcitx")),
-                ("ibus", config.ibus, self.ibusChanged, self.flagToolTip(False, "ibus")),
-                ("espeak", config.espeak, self.espeakChanged, self.flagToolTip(False, "espeak")),
+                ["linuxStartFullScreen", config.linuxStartFullScreen, self.linuxStartFullScreenChanged, self.flagToolTip(False, "linuxStartFullScreen")],
+                ["fcitx", config.fcitx, self.fcitxChanged, self.flagToolTip(False, "fcitx")],
+                ["ibus", config.ibus, self.ibusChanged, self.flagToolTip(False, "ibus")],
+                ["espeak", config.espeak, self.espeakChanged, self.flagToolTip(False, "espeak")],
             ]
         if config.developer:
             options += [
-                ("forceGenerateHtml", config.forceGenerateHtml, self.forceGenerateHtmlChanged, self.flagToolTip(False, "forceGenerateHtml")),
-                ("enableLogging", config.enableLogging, self.enableLoggingChanged, self.flagToolTip(False, "enableLogging")),
-                ("logCommands", config.logCommands, self.logCommandsChanged, self.flagToolTip(False, "logCommands")),
+                ["forceGenerateHtml", config.forceGenerateHtml, self.forceGenerateHtmlChanged, self.flagToolTip(False, "forceGenerateHtml")],
+                ["enableLogging", config.enableLogging, self.enableLoggingChanged, self.flagToolTip(False, "enableLogging")],
+                ["logCommands", config.logCommands, self.logCommandsChanged, self.flagToolTip(False, "logCommands")],
             ]
 
         self.wikiLink = "https://github.com/eliranwong/UniqueBible/wiki/Config-file-reference"
@@ -408,8 +408,7 @@ class CheckBoxDelegate(QtWidgets.QItemDelegate):
         rowData[2]()
         for item in model.fullList:
             if item[0] == rowData[0]:
-#                item[1] = getattr(config, rowData[0])
-                pass
+               item[1] = getattr(config, rowData[0])
 
 class DummyParent:
 

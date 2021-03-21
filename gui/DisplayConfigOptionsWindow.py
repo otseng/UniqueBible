@@ -1,11 +1,14 @@
 import operator
 import sys
+import webbrowser
+
 import config
 import platform
 
 from qtpy.QtCore import QAbstractTableModel, Qt
 from qtpy import QtCore
-from qtpy.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QTableView, QInputDialog, QLineEdit
+from qtpy.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QTableView, QInputDialog, QLineEdit, \
+    QLabel
 
 
 class DisplayConfigOptionsWindow(QDialog):
@@ -14,6 +17,8 @@ class DisplayConfigOptionsWindow(QDialog):
         super(DisplayConfigOptionsWindow, self).__init__()
 
         self.parent = parent
+        self.setWindowTitle(config.thisTranslation["menu_config_flags"])
+        self.setMinimumHeight(600)
 
         options = [
             ("showControlPanelOnStartup", config.showControlPanelOnStartup, self.showControlPanelOnStartupChanged, self.flagToolTip(False, "showControlPanelOnStartup")),
@@ -80,10 +85,13 @@ class DisplayConfigOptionsWindow(QDialog):
                 ("logCommands", config.logCommands, self.logCommandsChanged, self.flagToolTip(False, "logCommands")),
             ]
 
-        self.setWindowTitle(config.thisTranslation["menu_config_flags"])
-        self.setMinimumWidth(1000)
-        self.setMinimumHeight(500)
+        self.wikiLink = "https://github.com/eliranwong/UniqueBible/wiki/Config-file-reference"
+
         self.layout = QVBoxLayout()
+
+        readWiki = QLabel(self.wikiLink)
+        readWiki.mouseReleaseEvent = self.openWiki
+        self.layout.addWidget(readWiki)
 
         self.filterEntry = QLineEdit()
         self.filterEntry.textChanged.connect(self.filterChanged)
@@ -99,36 +107,29 @@ class DisplayConfigOptionsWindow(QDialog):
 
         buttons = QDialogButtonBox.Ok
         self.buttonBox = QDialogButtonBox(buttons)
-        self.buttonBox.accepted.connect(self.saveShortcut)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        self.buttonBox.rejected.connect(self.canceled)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
 
     def clickedRow(self, index):
         row = self.model.getRow(index.row())
         (action, key) = row
-        newKey, ok = QInputDialog.getText(self, 'Shortcut', action, QLineEdit.Normal, key)
+        newKey, ok = QInputDialog.getText(self, 'Config', action, QLineEdit.Normal, key)
         if ok:
             self.model.list[index.row()] = (action, newKey)
             for item in self.model.fullList:
                 if item[0] == action:
                     item[1] = newKey
 
-    def saveShortcut(self):
-        if self.name not in ShortcutUtil.data.keys():
-            ShortcutUtil.createShortcutFile(self.name, self.model.fullList)
-
-    def canceled(self):
-        if self.name not in ShortcutUtil.data.keys():
-            ShortcutUtil.loadShortcutFile(self.name)
-
     def filterChanged(self, text):
         self.model.filter(text)
 
     def flagToolTip(self, default, toolTip):
         return "{0} {1}\n{2}".format(config.thisTranslation["default"], default, config.thisTranslation[toolTip])
+
+    def openWiki(self, event):
+        webbrowser.open(self.wikiLink)
 
     def ibusChanged(self):
         config.ibus = not config.ibus
@@ -338,7 +339,7 @@ class DisplayConfigOptionsModel(QAbstractTableModel):
         QAbstractTableModel.__init__(self, parent, *args)
         self.fullList = data
         self.list = data
-        self.header = header = ['Flag', 'Config']
+        self.header = header = ['Config', 'Value']
         self.col = 0
         self.order = None
 
@@ -357,7 +358,7 @@ class DisplayConfigOptionsModel(QAbstractTableModel):
         if len(self.list) == 0:
             return 0
         else:
-            return len(self.list[0])
+            return 2
 
     def data(self, index, role):
         if not index.isValid():

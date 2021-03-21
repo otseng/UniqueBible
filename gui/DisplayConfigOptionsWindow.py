@@ -394,9 +394,6 @@ class CheckBoxDelegate(QtWidgets.QItemDelegate):
         self.drawCheck(painter, option, option.rect, QtCore.Qt.Unchecked if int(index.data()) == 0 else QtCore.Qt.Checked)
 
     def editorEvent(self, event, model, option, index):
-        # if not int(index.flags() & QtCore.Qt.ItemIsEditable) > 0:
-        #     return False
-        # if event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
         if event.type() == QtCore.QEvent.MouseButtonRelease:
             self.setModelData(None, model, index)
             return True

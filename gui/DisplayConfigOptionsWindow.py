@@ -6,7 +6,7 @@ import config
 import platform
 
 from qtpy.QtCore import QAbstractTableModel, Qt
-from qtpy import QtCore
+from qtpy import QtCore, QtWidgets
 from qtpy.QtWidgets import QApplication, QDialog, QDialogButtonBox, QVBoxLayout, QTableView, QInputDialog, QLineEdit, \
     QLabel
 
@@ -102,7 +102,8 @@ class DisplayConfigOptionsWindow(QDialog):
         self.table.setModel(self.model)
         self.table.resizeColumnsToContents()
         self.table.setSortingEnabled(True)
-        self.table.doubleClicked.connect(self.clickedRow)
+        checkBoxDelegate = CheckBoxDelegate(None)
+        self.table.setItemDelegateForColumn(1, checkBoxDelegate)
         self.layout.addWidget(self.table)
 
         buttons = QDialogButtonBox.Ok
@@ -111,16 +112,6 @@ class DisplayConfigOptionsWindow(QDialog):
         self.buttonBox.rejected.connect(self.reject)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
-
-    def clickedRow(self, index):
-        row = self.model.getRow(index.row())
-        (action, key) = row
-        newKey, ok = QInputDialog.getText(self, 'Config', action, QLineEdit.Normal, key)
-        if ok:
-            self.model.list[index.row()] = (action, newKey)
-            for item in self.model.fullList:
-                if item[0] == action:
-                    item[1] = newKey
 
     def filterChanged(self, text):
         self.model.filter(text)
@@ -363,6 +354,8 @@ class DisplayConfigOptionsModel(QAbstractTableModel):
     def data(self, index, role):
         if not index.isValid():
             return None
+        elif role == Qt.ToolTipRole:
+            return self.list[index.row()][3]
         elif role != Qt.DisplayRole:
             return None
         return self.list[index.row()][index.column()]
@@ -386,6 +379,27 @@ class DisplayConfigOptionsModel(QAbstractTableModel):
         if order == Qt.DescendingOrder:
             self.list.reverse()
         self.layoutChanged.emit()
+
+class CheckBoxDelegate(QtWidgets.QItemDelegate):
+    def __init__(self, parent):
+        QtWidgets.QItemDelegate.__init__(self, parent)
+
+    def createEditor(self, parent, option, index):
+        return None
+
+    def paint(self, painter, option, index):
+        self.drawCheck(painter, option, option.rect, QtCore.Qt.Unchecked if int(index.data()) == 0 else QtCore.Qt.Checked)
+
+    def editorEvent(self, event, model, option, index):
+        if not int(index.flags() & QtCore.Qt.ItemIsEditable) > 0:
+            return False
+        if event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
+            self.setModelData(None, model, index)
+            return True
+        return False
+
+    def setModelData (self, editor, model, index):
+        model.setData(index, 1 if int(index.data()) == 0 else 0, QtCore.Qt.EditRole)
 
 
 class DummyParent:

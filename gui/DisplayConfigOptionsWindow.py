@@ -18,6 +18,7 @@ class DisplayConfigOptionsWindow(QDialog):
 
         self.parent = parent
         self.setWindowTitle(config.thisTranslation["menu_config_flags"])
+        self.setMinimumWidth(370)
         self.setMinimumHeight(600)
 
         options = [
@@ -89,7 +90,7 @@ class DisplayConfigOptionsWindow(QDialog):
 
         self.layout = QVBoxLayout()
 
-        readWiki = QLabel(self.wikiLink)
+        readWiki = QLabel(config.thisTranslation["menu_config_flags"])
         readWiki.mouseReleaseEvent = self.openWiki
         self.layout.addWidget(readWiki)
 
@@ -102,7 +103,7 @@ class DisplayConfigOptionsWindow(QDialog):
         self.table.setModel(self.model)
         self.table.resizeColumnsToContents()
         self.table.setSortingEnabled(True)
-        checkBoxDelegate = CheckBoxDelegate(None)
+        checkBoxDelegate = CheckBoxDelegate(self)
         self.table.setItemDelegateForColumn(1, checkBoxDelegate)
         self.layout.addWidget(self.table)
 
@@ -380,9 +381,11 @@ class DisplayConfigOptionsModel(QAbstractTableModel):
             self.list.reverse()
         self.layoutChanged.emit()
 
+# https://stackoverflow.com/questions/17748546/pyqt-column-of-checkboxes-in-a-qtableview/17788371
 class CheckBoxDelegate(QtWidgets.QItemDelegate):
     def __init__(self, parent):
         QtWidgets.QItemDelegate.__init__(self, parent)
+        self.parent = parent
 
     def createEditor(self, parent, option, index):
         return None
@@ -391,16 +394,22 @@ class CheckBoxDelegate(QtWidgets.QItemDelegate):
         self.drawCheck(painter, option, option.rect, QtCore.Qt.Unchecked if int(index.data()) == 0 else QtCore.Qt.Checked)
 
     def editorEvent(self, event, model, option, index):
-        if not int(index.flags() & QtCore.Qt.ItemIsEditable) > 0:
-            return False
-        if event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
+        # if not int(index.flags() & QtCore.Qt.ItemIsEditable) > 0:
+        #     return False
+        # if event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
+        if event.type() == QtCore.QEvent.MouseButtonRelease:
             self.setModelData(None, model, index)
             return True
         return False
 
     def setModelData (self, editor, model, index):
-        model.setData(index, 1 if int(index.data()) == 0 else 0, QtCore.Qt.EditRole)
-
+        rowIndex = index.row()
+        rowData = model.list[rowIndex]
+        rowData[2]()
+        for item in model.fullList:
+            if item[0] == rowData[0]:
+#                item[1] = getattr(config, rowData[0])
+                pass
 
 class DummyParent:
 

@@ -13,9 +13,14 @@ from util.TextUtil import TextUtil
 
 class BiblesSqlite:
 
-    def __init__(self):
+    def __init__(self, language=""):
         # connect bibles.sqlite
-        self.database = os.path.join(config.marvelData, "bibles.sqlite")
+        if language == "":
+            self.database = os.path.join(config.marvelData, "bibles.sqlite")
+        else:
+                self.database = os.path.join(config.marvelData, "bibles_{0}.sqlite".format(language))
+            if not os.path.exists(self.database):
+                self.database = os.path.join(config.marvelData, "bibles.sqlite")
         self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
         self.marvelBibles = ("MOB", "MIB", "MAB", "MPB", "MTB", "LXX1", "LXX1i", "LXX2", "LXX2i")
@@ -400,7 +405,7 @@ input.addEventListener('keyup', function(event) {0}
         self.cursor.execute(query, (b, c))
         return "<br>".join(['<ref onclick="bcv({0},{1},{2})">[{1}:{2}]</ref> {3}'.format(b, c, v, text.replace("<br>", " ")) for b, c, v, text in self.cursor.fetchall()])
 
-    def getVerseList(self, b, c, text=config.mainText):
+    def getVerseList(self, b, c, text=config.mainText, language=""):
         plainBibleList, formattedBibleList = self.getTwoBibleLists()
         if text in plainBibleList or text in ("kjvbcv", "title"):
             query = "SELECT DISTINCT Verse FROM {0} WHERE Book=? AND Chapter=? ORDER BY Verse".format(text)

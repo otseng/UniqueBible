@@ -18,7 +18,7 @@ class BiblesSqlite:
         if language == "":
             self.database = os.path.join(config.marvelData, "bibles.sqlite")
         else:
-                self.database = os.path.join(config.marvelData, "bibles_{0}.sqlite".format(language))
+            self.database = os.path.join(config.marvelData, "bibles_{0}.sqlite".format(language))
             if not os.path.exists(self.database):
                 self.database = os.path.join(config.marvelData, "bibles.sqlite")
         self.connection = sqlite3.connect(self.database)

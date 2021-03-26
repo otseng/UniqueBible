@@ -894,12 +894,15 @@ class Bible:
             return self.text
 
     def getLanguage(self):
-        query = "SELECT Language FROM Details limit 1"
-        self.cursor.execute(query)
-        info = self.cursor.fetchone()
-        if info:
-            return info[0]
-        else:
+        try:
+            query = "SELECT Language FROM Details limit 1"
+            self.cursor.execute(query)
+            info = self.cursor.fetchone()
+            if info and info[0] is not None:
+                return info[0]
+            else:
+                return ""
+        except:
             return ""
 
     def getFontInfo(self):
@@ -1075,6 +1078,11 @@ class Bible:
     def updateTitleAndFontInfo(self, bibleFullname, fontSize, fontName):
         sql = "UPDATE Details set Title = ?, FontSize = ?, FontName = ?"
         self.cursor.execute(sql, (bibleFullname, fontSize, fontName))
+        self.connection.commit()
+
+    def updateLanguage(self, language):
+        sql = "UPDATE Details set Language = ?"
+        self.cursor.execute(sql, (language,))
         self.connection.commit()
 
     def deleteOldBibleInfo(self):

@@ -325,7 +325,7 @@ translation = {
     "message_improveTrans": "Pentru a îmbunătăţi calitatea translatării interfeţei, puteţi închide această aplicaţie mai întâi şi puteţi edita manual acest fişier:",
     "message_newInterfaceItems": "Articole de translatare lipsă:",
     "message_migration": "Unele dintre fişierele dumneavoastră sunt vechi.  Vă ajutăm să modernizaţi acele fişiere.",
-    "message_noReference": "Nu a fost găsită nicio referinţă biblică",
+    "message_noReference": "Nu se găseşte nici o referinţă verse verset!",
     "message_noSupport": "Caracteristica selectată nu este activată!",
     "message_noTtsVoice": "Nici o voce nu este instalată pentru limba selectată.",
     "message_noEspeak": "Pachetul 'espak' nu este instalat.  Pentru a instala espak, citiţi https://github.com/eliranwong/ChromeOSLinux/blob/main/multimedia/espeak.md",
@@ -659,4 +659,8 @@ translation = {
     "notStrongNumber": "Textul selectat nu este un număr puternic!",
     "all": "TOATE",
     "enableMenuUnderline": "Activare subliniere scurtătură meniu",
+    "bibleBook": "Cartea Bibliei",
+    "bibleVersion": "Versiune biblică",
+    "bibleConcordance": "Biblia Concordany",
+    "openReferences": "Deschidere referinţe",
 }

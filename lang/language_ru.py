@@ -325,7 +325,7 @@ translation = {
     "message_improveTrans": "Чтобы повысить качество преобразования интерфейса, можно сначала закрыть это приложение и вручную отредактировать этот файл:",
     "message_newInterfaceItems": "Отсутствующие элементы перевода:",
     "message_migration": "Некоторые из ваших файлов устарели.  Мы помогаем вам обновить эти файлы.",
-    "message_noReference": "Не нашел Библию.",
+    "message_noReference": "Не найдена ни одна библевая обратная ссылка!",
     "message_noSupport": "<Translator not enabled>",
     "message_noTtsVoice": "Для выбранного языка не установлен голос.",
     "message_noEspeak": "Пакет 'espackage' не установлен.  Для установки espпик читать на https://github.com/eliranwong/ChromeOSLinux/blob/main/multimedia/espeak.md",
@@ -659,4 +659,8 @@ translation = {
     "notStrongNumber": "Выбранный текст не является номером сильного!",
     "all": "ВСЕ",
     "enableMenuUnderline": "Включить контекстное подчеркивание меню",
+    "bibleBook": "Библия",
+    "bibleVersion": "Библия",
+    "bibleConcordance": "Библия",
+    "openReferences": "Открыть ссылки",
 }

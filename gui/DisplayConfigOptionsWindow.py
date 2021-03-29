@@ -332,6 +332,7 @@ class DisplayConfigOptionsWindow(QDialog):
             config.menuUnderline = "&"
         else:
             config.menuUnderline = ""
+        self.parent.setMenuLayout(config.menuLayout)
 
 class DisplayConfigOptionsModel(QAbstractTableModel):
 

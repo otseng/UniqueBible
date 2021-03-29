@@ -658,4 +658,5 @@ translation = {
     "bibleStrongNumber": "성경 스트롱의 수",
     "notStrongNumber": "선택한 텍스트가 강력한 숫자가 아닙니다!",
     "all": "모든",
+    "enableMenuUnderline": "메뉴 바로 가기 밑줄 사용 가능",
 }

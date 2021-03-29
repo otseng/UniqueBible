@@ -658,4 +658,5 @@ translation = {
     "bibleStrongNumber": "Número Fuerte de la Biblia",
     "notStrongNumber": "¡El texto seleccionado no es el número de Strong!",
     "all": "TODOS",
+    "enableMenuUnderline": "Habilitar el acceso directo del menú",
 }

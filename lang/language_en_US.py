@@ -658,4 +658,5 @@ translation = {
     "bibleStrongNumber": "Bible Strong's Number",
     "notStrongNumber": "Selected text is not a Strong's number!",
     "all": "ALL",
+    "enableMenuUnderline": "Enable menu shortcut underline",
 }

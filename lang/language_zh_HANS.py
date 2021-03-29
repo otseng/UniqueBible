@@ -658,4 +658,5 @@ translation = {
     "bibleStrongNumber": "圣经原文编号",
     "notStrongNumber": "选取的文字不是一个原文编号！",
     "all": "全部",
+    "enableMenuUnderline": "启用菜单快捷方式下划线",
 }

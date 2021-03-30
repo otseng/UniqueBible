@@ -543,7 +543,10 @@ class ConfigUtil:
         config.bibleWindowContentTransformers = []
         config.studyWindowContentTransformers = []
         config.shortcutList = []
-        config.menuUnderline = "&"
+        if config.enableMenuUnderline:
+            config.menuUnderline = "&"
+        else:
+            config.menuUnderline = ""
 
     # Save configurations on exit
     @staticmethod

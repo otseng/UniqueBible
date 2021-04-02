@@ -1028,9 +1028,7 @@ class Converter:
         elif len(doc.getElementsByTagName("osis")) > 0:
             self.importOsisBible(filename, doc)
         else:
-            QMessageBox.information(self, "Error",
-                                    "Unknown XML Format", QMessageBox.Ok,
-                                    QMessageBox.Ok)
+            self.logger.error("Cannot process XML file {0}".format(filename))
 
     # Import OSIS XML Bibles
     # https://github.com/gratis-bible/bible/tree/master/en

@@ -681,4 +681,6 @@ translation = {
     "compareReferences": "Σύγκριση στίχων με",
     "parallelReferences": "Παράλληλες εκδόσεις με",
     "githubBibles": "Βίβλους Github",
+    "githubCommentaries": "Σχόλια Github",
+    "githubBooks": "Βιβλία Github",
 }

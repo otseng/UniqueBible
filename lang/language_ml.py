@@ -681,4 +681,6 @@ translation = {
     "compareReferences": "à '- à', à ', à', à ' à '",
     "parallelReferences": "സാമാന്യ വേര്സുകള്",
     "githubBibles": "ഗിറ്റബ് ബൈബിള്സ്",
+    "githubCommentaries": "Github Commentaries",
+    "githubBooks": "ഗിറ്റബ് ബുക്സ്",
 }

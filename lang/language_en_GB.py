@@ -681,4 +681,6 @@ translation = {
     "compareReferences": "Compare Verses with",
     "parallelReferences": "Parallel Verses with",
     "githubBibles": "Github Bibles",
+    "githubCommentaries": "Github Commentaries",
+    "githubBooks": "Github Books",
 }

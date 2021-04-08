@@ -276,8 +276,14 @@ class AlephMainWindow:
         for feature, action in items:
             addMenuItem(subMenu, feature, self, action)
         if isGithubInstalled:
-            subMenu.addAction(
-                QAction(config.thisTranslation["githubBibles"], self, triggered=self.installGithubBibles))
+            subMenu.addSeparator()
+            items = (
+                ("githubBibles", self.installGithubBibles),
+                ("githubCommentaries", self.installGithubCommentaries),
+                ("githubBooks", self.installGithubBooks),
+            )
+            for feature, action in items:
+                addMenuItem(subMenu, feature, self, action)
         subMenu = addSubMenu(menu_data, "import")
         items = (
             ("menu8_3rdParty", self.importModules),

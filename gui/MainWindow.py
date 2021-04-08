@@ -748,23 +748,33 @@ class MainWindow(QMainWindow):
             self.downloadHelper(datasets[item])
 
     def installGithubBibles(self):
+        self.installFromGitHub("otseng/UniqueBible_Bibles", "bibles", "githubBibles")
+
+    def installGithubCommentaries(self):
+        self.installFromGitHub("darrelwright/UniqueBible_Commentaries", "commentaries", "githubCommentaries")
+
+    def installGithubBooks(self):
+        self.installFromGitHub("darrelwright/UniqueBible_Books", "books", "githubBooks")
+
+    def installFromGitHub(self, repo, directory, title):
         from util.GithubUtil import GithubUtil
 
-        github = GithubUtil("otseng/UniqueBible_Bibles")
+        github = GithubUtil(repo)
         repoData = github.getRepoData()
-        folder = os.path.join(config.marvelData, "bibles")
+        folder = os.path.join(config.marvelData, directory)
         items = [item for item in repoData.keys() if
                  not os.path.isfile(os.path.join(folder, item))]
         if not items:
             items = ["[All Installed]"]
         item, ok = QInputDialog.getItem(self, "UniqueBible",
-                                        config.thisTranslation["githubBibles"], items, 0, False)
+                                        config.thisTranslation[title], items, 0, False)
         if ok and item and not item in ("[All Installed]"):
             file = os.path.join(folder, item+".zip")
             github.downloadFile(file, repoData[item])
             with zipfile.ZipFile(file, 'r') as zipped:
                 zipped.extractall(folder)
             os.remove(file)
+            self.reloadControlPanel(False)
             self.displayMessage(item + " " + config.thisTranslation["message_installed"])
 
     # Select database to modify

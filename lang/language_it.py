@@ -680,4 +680,5 @@ translation = {
     "shutdown": "Chiusura",
     "compareReferences": "Confronta Verses con",
     "parallelReferences": "Versetti paralleli con",
+    "githubBibles": "Bibbie Github",
 }

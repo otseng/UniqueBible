@@ -202,7 +202,10 @@ def isTtsInstalled():
 def isGithubInstalled():
     try:
         from github import Github
-        return True
+        if len(config.githubAccessToken) > 0:
+            return True
+        else:
+            return False
     except:
         return False
 

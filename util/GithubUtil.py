@@ -23,25 +23,34 @@ class GithubUtil:
         for branch in branches:
             print(branch)
 
-    def printContentsOfRepo(self):
+    def getRepoData(self):
         branch = self.repo.get_branch(self.repo.default_branch)
         sha = branch.commit.sha
         tree = self.repo.get_git_tree(sha)
+        data = {}
         for element in tree.tree:
-            print("{0}:{1}".format(element.path, element.sha))
+            if ".zip" in element.path:
+                file = element.path.replace(".zip", "")
+                data[file] = element.sha
+        return data
 
-    def downloadFile(self, dir, filename, sha):
+    def printContentsOfRepo(self):
+        data = self.getRepoData()
+        for key in data.keys():
+            print("{0}:{1}".format(key, data[key]))
+
+    def downloadFile(self, filename, sha):
         file = self.repo.get_git_blob(sha)
         decoded = base64.b64decode(file.content)
-        with open(dir + "/" + filename, 'wb') as zipfile:
+        with open(filename, 'wb') as zipfile:
             zipfile.write(decoded)
 
 
 if __name__ == "__main__":
-    # github = GithubUtil("otseng/UniqueBible_Bibles")
-    # github.printContentsOfRepo()
-
-    github = GithubUtil("darrelwright/UniqueBible_Commentaries")
+    github = GithubUtil("otseng/UniqueBible_Bibles")
     github.printContentsOfRepo()
-    github.downloadFile("output", "test.zip", "1274eccd33476b0e4716b41e292d50ad601715c8")
+
+    # github = GithubUtil("darrelwright/UniqueBible_Commentaries")
+    # github.printContentsOfRepo()
+    # github.downloadFile("test.zip", "1274eccd33476b0e4716b41e292d50ad601715c8")
 

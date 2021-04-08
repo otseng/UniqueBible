@@ -51,6 +51,7 @@ from util.TextUtil import TextUtil
 import shortcut as sc
 from util.UpdateUtil import UpdateUtil
 from util.DateUtil import DateUtil
+import zipfile
 
 
 class MainWindow(QMainWindow):
@@ -745,6 +746,26 @@ class MainWindow(QMainWindow):
                                         config.thisTranslation["menu8_datasets"], items, 0, False)
         if ok and item and not item == "[All Installed]":
             self.downloadHelper(datasets[item])
+
+    def installGithubBibles(self):
+        from util.GithubUtil import GithubUtil
+
+        github = GithubUtil("otseng/UniqueBible_Bibles")
+        repoData = github.getRepoData()
+        folder = os.path.join(config.marvelData, "bibles")
+        items = [item for item in repoData.keys() if
+                 not os.path.isfile(os.path.join(folder, item))]
+        if not items:
+            items = ["[All Installed]"]
+        item, ok = QInputDialog.getItem(self, "UniqueBible",
+                                        config.thisTranslation["githubBibles"], items, 0, False)
+        if ok and item and not item in ("[All Installed]"):
+            file = os.path.join(folder, item+".zip")
+            github.downloadFile(file, repoData[item])
+            with zipfile.ZipFile(file, 'r') as zipped:
+                zipped.extractall(folder)
+            os.remove(file)
+            self.displayMessage(item + " " + config.thisTranslation["message_installed"])
 
     # Select database to modify
     def selectDatabaseToModify(self):

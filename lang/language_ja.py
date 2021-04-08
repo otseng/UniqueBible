@@ -680,4 +680,5 @@ translation = {
     "shutdown": "シャットダウン",
     "compareReferences": "Verses との比較",
     "parallelReferences": "パラレル・バージョン",
+    "githubBibles": "ギスブ・ビーブルズ",
 }

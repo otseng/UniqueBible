@@ -1,6 +1,6 @@
 import config
 import sys
-from qtpy.QtWidgets import QWidget, QApplication, QRadioButton
+from qtpy.QtWidgets import QWidget, QApplication, QRadioButton, QVBoxLayout
 
 
 class ConfigurePresentationWindow(QWidget):
@@ -22,7 +22,6 @@ class ConfigurePresentationWindow(QWidget):
 
         from qtpy.QtCore import Qt
         from qtpy.QtWidgets import QHBoxLayout, QFormLayout, QSlider, QPushButton, QPlainTextEdit, QCheckBox, QComboBox
-        from BiblesSqlite import BiblesSqlite
 
         layout = QHBoxLayout()
 
@@ -85,16 +84,19 @@ class ConfigurePresentationWindow(QWidget):
         self.showHymnsSelection.clicked.connect(lambda: self.selectRadio("hymns"))
         layout1.addRow("Hymns", self.showHymnsSelection)
 
+        # Second column
 
-        # !!!
-        layout2 = QFormLayout()
+        layout2 = QVBoxLayout()
+
+        self.bibleWidget = QWidget()
+        self.bibleLayout = QFormLayout()
 
         checkbox = QCheckBox()
         checkbox.setText("")
         checkbox.setChecked(config.presentationParser)
         checkbox.stateChanged.connect(self.presentationParserChanged)
         checkbox.setToolTip("Parse bible verse reference in the entered text")
-        layout2.addRow("Bible Reference", checkbox)
+        self.bibleLayout.addRow("Bible Reference", checkbox)
 
         versionCombo = QComboBox()
         self.bibleVersions = self.parent.textList
@@ -104,10 +106,26 @@ class ConfigurePresentationWindow(QWidget):
             initialIndex = self.bibleVersions.index(config.mainText)
         versionCombo.setCurrentIndex(initialIndex)
         versionCombo.currentIndexChanged.connect(self.changeBibleVersion)
-        layout2.addRow("Bible Version", versionCombo)
+        self.bibleLayout.addRow("Bible Version", versionCombo)
 
         self.textEntry = QPlainTextEdit("John 3:16; Rm 5:8")
-        layout2.addWidget(self.textEntry)
+        self.bibleLayout.addWidget(self.textEntry)
+
+        self.bibleWidget.setLayout(self.bibleLayout)
+
+        self.hymnWidget = QWidget()
+        self.hymnLayout = QFormLayout()
+
+        checkbox = QCheckBox()
+        checkbox.setText("")
+        checkbox.setChecked(config.presentationParser)
+        checkbox.stateChanged.connect(self.presentationParserChanged)
+        self.hymnLayout.addRow("Hymn", checkbox)
+
+        self.hymnWidget.setLayout(self.hymnLayout)
+
+        layout2.addWidget(self.bibleWidget)
+        layout2.addWidget(self.hymnWidget)
 
         button = QPushButton("Presentation")
         button.setToolTip("Go to Presentation")
@@ -118,9 +136,15 @@ class ConfigurePresentationWindow(QWidget):
         layout.addLayout(layout2)
         self.setLayout(layout)
 
+        self.hymnWidget.hide()
+
     def selectRadio(self, option):
         if option == "bible":
-            pass
+            self.bibleWidget.show()
+            self.hymnWidget.hide()
+        elif option == "hymns":
+            self.bibleWidget.hide()
+            self.hymnWidget.show()
 
     def goToPresentation(self):
         command = "SCREEN:::{0}".format(self.textEntry.toPlainText())

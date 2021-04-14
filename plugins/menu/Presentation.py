@@ -1,5 +1,6 @@
 import config
-from qtpy.QtWidgets import QWidget
+import sys
+from qtpy.QtWidgets import QWidget, QApplication
 
 
 class ConfigurePresentationWindow(QWidget):
@@ -144,9 +145,28 @@ class ConfigurePresentationWindow(QWidget):
         config.presentationParser = not config.presentationParser
 
     def changeBibleVersion(self, index):
-        command = "TEXT:::{0}".format(self.bibleVersions[index])
-        self.parent.runTextCommand(command)
+        if __name__ == '__main__':
+            config.mainText = self.bibleVersions[index]
+        else:
+            command = "TEXT:::{0}".format(self.bibleVersions[index])
+            self.parent.runTextCommand(command)
 
+
+# Standalone development
+if __name__ == '__main__':
+    import checkup
+    from util.ConfigUtil import ConfigUtil
+    ConfigUtil.setup()
+    config.activeVerseNoColour = "white"
+    from gui.MainWindow import MainWindow
+    app = QApplication(sys.argv)
+    config.mainWindow = MainWindow()
+    config.presentationParser = True
+    from plugins.startup.screenCommand import presentReferenceOnFullScreen
+    config.mainWindow.textCommandParser.interpreters["screen"] = (presentReferenceOnFullScreen, "")
 
 config.mainWindow.configurePresentationWindow = ConfigurePresentationWindow(config.mainWindow)
 config.mainWindow.configurePresentationWindow.show()
+
+if __name__ == '__main__':
+    sys.exit(app.exec_())

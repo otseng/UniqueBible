@@ -1,6 +1,6 @@
 import config
 import sys
-from qtpy.QtWidgets import QWidget, QApplication
+from qtpy.QtWidgets import QWidget, QApplication, QRadioButton
 
 
 class ConfigurePresentationWindow(QWidget):
@@ -75,12 +75,26 @@ class ConfigurePresentationWindow(QWidget):
         self.horizontalpositionslider.valueChanged.connect(self.presentationHorizontalPositionChanged)
         layout1.addRow("Horizontal Position", self.horizontalpositionslider)
 
+        self.showBibleSelection = QRadioButton()
+        self.showBibleSelection.setChecked(True)
+        self.showBibleSelection.clicked.connect(lambda: self.selectRadio("bible"))
+        layout1.addRow("Bible", self.showBibleSelection)
+
+        self.showHymnsSelection = QRadioButton()
+        self.showHymnsSelection.setChecked(False)
+        self.showHymnsSelection.clicked.connect(lambda: self.selectRadio("hymns"))
+        layout1.addRow("Hymns", self.showHymnsSelection)
+
+
+        # !!!
+        layout2 = QFormLayout()
+
         checkbox = QCheckBox()
         checkbox.setText("")
         checkbox.setChecked(config.presentationParser)
         checkbox.stateChanged.connect(self.presentationParserChanged)
         checkbox.setToolTip("Parse bible verse reference in the entered text")
-        layout1.addRow("Bible Reference", checkbox)
+        layout2.addRow("Bible Reference", checkbox)
 
         versionCombo = QComboBox()
         self.bibleVersions = self.parent.textList
@@ -90,9 +104,7 @@ class ConfigurePresentationWindow(QWidget):
             initialIndex = self.bibleVersions.index(config.mainText)
         versionCombo.setCurrentIndex(initialIndex)
         versionCombo.currentIndexChanged.connect(self.changeBibleVersion)
-        layout1.addRow("Bible Version", versionCombo)
-
-        layout2 = QFormLayout()
+        layout2.addRow("Bible Version", versionCombo)
 
         self.textEntry = QPlainTextEdit("John 3:16; Rm 5:8")
         layout2.addWidget(self.textEntry)
@@ -105,6 +117,10 @@ class ConfigurePresentationWindow(QWidget):
         layout.addLayout(layout1)
         layout.addLayout(layout2)
         self.setLayout(layout)
+
+    def selectRadio(self, option):
+        if option == "bible":
+            pass
 
     def goToPresentation(self):
         command = "SCREEN:::{0}".format(self.textEntry.toPlainText())
@@ -152,7 +168,6 @@ class ConfigurePresentationWindow(QWidget):
             self.parent.runTextCommand(command)
 
 
-# Standalone development
 if __name__ == '__main__':
     import checkup
     from util.ConfigUtil import ConfigUtil

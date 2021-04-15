@@ -126,7 +126,6 @@ class ConfigurePresentationWindow(QWidget):
         self.bibleWidget.setLayout(self.bibleLayout)
 
         self.hymnWidget = QWidget()
-        # self.hymnLayout = QVBoxLayout()
         self.hymnLayout = QFormLayout()
 
         selected = 0
@@ -139,22 +138,14 @@ class ConfigurePresentationWindow(QWidget):
         self.bookList.currentIndexChanged.connect(self.selectHymnBook)
         self.hymnLayout.addWidget(self.bookList)
 
-        self.hymns = []
-
-        # self.hymnList = QComboBox()
-        # self.hymnList.setCurrentIndex(selected)
-        # self.hymnList.currentIndexChanged.connect(self.selectHymn)
-        # self.hymnLayout.addWidget(self.hymnList)
-
         self.chapterlist = QListView()
         self.chapterlist.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.selectHymnBook(selected)
-        # self.scrollChapterList(topicList)
         self.hymnLayout.addWidget(self.chapterlist)
 
         self.hymnLayout.addItem(QSpacerItem(250, 1))
-
         self.hymnWidget.setLayout(self.hymnLayout)
+        self.hymnWidget.hide()
 
         layout2.addWidget(self.bibleWidget)
         layout2.addWidget(self.hymnWidget)
@@ -163,7 +154,6 @@ class ConfigurePresentationWindow(QWidget):
         layout.addLayout(layout2)
         self.setLayout(layout)
 
-        self.hymnWidget.hide()
 
     def selectRadio(self, option):
         if option == "bible":

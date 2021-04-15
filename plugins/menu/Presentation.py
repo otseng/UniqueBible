@@ -1,9 +1,10 @@
 import glob
+
 import config
 import sys
 from pathlib import Path
 from qtpy.QtCore import QStringListModel
-from qtpy.QtWidgets import QWidget, QApplication, QRadioButton, QVBoxLayout, QSpacerItem, QListView
+from qtpy.QtWidgets import QWidget, QApplication, QRadioButton, QVBoxLayout, QPushButton, QListView
 from ToolsSqlite import Book
 
 
@@ -18,6 +19,7 @@ class ConfigurePresentationWindow(QWidget):
         self.setupVariables()
         # setup interface
         self.setupUI()
+        self.sectionButtons = None
 
     def setupVariables(self):
         pass
@@ -139,14 +141,16 @@ class ConfigurePresentationWindow(QWidget):
         self.hymnLayout.addWidget(self.bookList)
 
         self.chapterlist = QListView()
-        self.selectHymnBook(selected)
         self.chapterlist.clicked.connect(self.selectHymn)
         # self.chapterlist.selectionModel().selectionChanged.connect(self.selectHymn)
         self.hymnLayout.addWidget(self.chapterlist)
 
-        self.hymnLayout.addItem(QSpacerItem(250, 1))
-        self.hymnWidget.setLayout(self.hymnLayout)
+        self.sectionButtons = QWidget()
+        self.hymnLayout.addWidget(self.sectionButtons)
 
+        self.selectHymnBook(selected)
+
+        self.hymnWidget.setLayout(self.hymnLayout)
         self.hymnWidget.hide()
 
         layout2.addWidget(self.bibleWidget)
@@ -173,7 +177,27 @@ class ConfigurePresentationWindow(QWidget):
     def selectHymn(self, option):
         row = option.row()
         self.hymn = self.hymns[row]
-        command = "SCREENBOOK:::{0}:::{1}:::1".format(self.hymnBook, self.hymn)
+        book = Book(self.hymnBook)
+        sections = book.getParagraphSectionsByChapter(self.hymn)
+        if self.sectionButtons is not None:
+            self.hymnLayout.removeWidget(self.sectionButtons)
+        self.sectionButtons = QWidget()
+        layout = QVBoxLayout()
+        count = 0
+        for section in sections:
+            hymnButton = QPushButton()
+            hymnButton.setText(str(count))
+            hymnButton.clicked.connect(lambda: self.selectParagraph(count))
+            layout.addWidget(hymnButton)
+            self.sectionButtons.setLayout(layout)
+            self.hymnLayout.addWidget(self.sectionButtons)
+            count += 1
+
+        # command = "SCREENBOOK:::{0}:::{1}:::1".format(self.hymnBook, self.hymn)
+        # self.parent.runTextCommand(command)
+
+    def selectParagraph(self, paragraph):
+        command = "SCREENBOOK:::{0}:::{1}:::{2}".format(self.hymnBook, self.hymn, paragraph)
         self.parent.runTextCommand(command)
 
     def goToPresentation(self):

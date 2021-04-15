@@ -140,7 +140,8 @@ class ConfigurePresentationWindow(QWidget):
 
         self.chapterlist = QListView()
         self.selectHymnBook(selected)
-        self.chapterlist.selectionModel().selectionChanged.connect(self.selectHymn)
+        self.chapterlist.clicked.connect(self.selectHymn)
+        # self.chapterlist.selectionModel().selectionChanged.connect(self.selectHymn)
         self.hymnLayout.addWidget(self.chapterlist)
 
         self.hymnLayout.addItem(QSpacerItem(250, 1))
@@ -170,7 +171,7 @@ class ConfigurePresentationWindow(QWidget):
         self.chapterlist.setModel(self.chapterModel)
 
     def selectHymn(self, option):
-        row = option.indexes()[0].row()
+        row = option.row()
         self.hymn = self.hymns[row]
         command = "SCREENBOOK:::{0}:::{1}:::1".format(self.hymnBook, self.hymn)
         self.parent.runTextCommand(command)

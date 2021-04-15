@@ -1,6 +1,7 @@
 import config, re
 from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite
+from ToolsSqlite import Book
 
 config.presentationParser = True
 
@@ -55,3 +56,20 @@ config.mainWindow.textCommandParser.interpreters["screen"] = (presentReferenceOn
 #    presentationColorOnDarkTheme - text color applied when dark theme is used; 'black' by default
 #    presentationVerticalPosition - the position where text is displayed vertically; 50 by default placing the text in the centre
 #    presentationHorizontalPosition - the position where text is displayed horizontally; 50 by default placing the text in the centre""")
+
+def presentBookOnFullScreen(command, source):
+    bookName, chapter, paragraph = command.split(":::")
+    fontSize = config.presentationFontSize * .8
+    style = "font-size:{0}em;margin-left:{1}px;margin-right:{1}px;color:{2}".format(fontSize, config.presentationMargin, config.presentationColorOnDarkTheme if config.theme == "dark" else config.presentationColorOnLightTheme)
+    book = Book(bookName)
+    content = book.getContentByChapter(chapter)
+    screenNo = 0
+    content = "<div style='{1}'>{0}</div></div>".format(re.sub("\n", "<br>", content), style)
+    return ("popover.fullscreen".format(screenNo), content, {})
+
+config.mainWindow.textCommandParser.interpreters["screenbook"] = (presentBookOnFullScreen, """
+# [KEYWORD] SCREENBOOK
+# Shows book chapter in a new window for presentation purposes.  
+# Typically used for Hymn Lyrics
+# Usage - SCREENBOOK:::[BOOK]:::[CHAPTER]:::[PARAGRAPH]
+""")

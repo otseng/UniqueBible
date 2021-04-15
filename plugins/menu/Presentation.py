@@ -3,7 +3,7 @@ import config
 import sys
 from pathlib import Path
 from qtpy.QtCore import QStringListModel
-from qtpy.QtWidgets import QWidget, QApplication, QRadioButton, QVBoxLayout, QSpacerItem, QListView, QAbstractItemView
+from qtpy.QtWidgets import QWidget, QApplication, QRadioButton, QVBoxLayout, QSpacerItem, QListView
 from ToolsSqlite import Book
 
 
@@ -139,7 +139,6 @@ class ConfigurePresentationWindow(QWidget):
         self.hymnLayout.addWidget(self.bookList)
 
         self.chapterlist = QListView()
-        # self.chapterlist.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.selectHymnBook(selected)
         self.chapterlist.selectionModel().selectionChanged.connect(self.selectHymn)
         self.hymnLayout.addWidget(self.chapterlist)
@@ -171,11 +170,9 @@ class ConfigurePresentationWindow(QWidget):
         self.chapterlist.setModel(self.chapterModel)
 
     def selectHymn(self, option):
-        print(option)
         row = option.indexes()[0].row()
-        hymn = self.hymns[row]
-        print(hymn)
-        command = "SCREENBOOK:::{0}:::{1}:::1".format(self.hymnBook, hymn)
+        self.hymn = self.hymns[row]
+        command = "SCREENBOOK:::{0}:::{1}:::1".format(self.hymnBook, self.hymn)
         self.parent.runTextCommand(command)
 
     def goToPresentation(self):

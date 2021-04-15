@@ -59,13 +59,14 @@ config.mainWindow.textCommandParser.interpreters["screen"] = (presentReferenceOn
 
 def presentBookOnFullScreen(command, source):
     bookName, chapter, paragraph = command.split(":::")
-    fontSize = config.presentationFontSize * .8
+    fontSize = config.presentationFontSize
     style = "font-size:{0}em;margin-left:{1}px;margin-right:{1}px;color:{2}".format(fontSize, config.presentationMargin, config.presentationColorOnDarkTheme if config.theme == "dark" else config.presentationColorOnLightTheme)
     book = Book(bookName)
-    sections = book.getHymnsLyricsContentByChapter(chapter)
+    sections = book.getParagraphSectionsByChapter(chapter)
     content = sections[int(paragraph)]
     screenNo = 0
-    content = "<div style='{2}'>{0}</div><div style='{2}'>{1}</div>".format(chapter, content, style)
+    marginTop = config.presentationVerticalPosition
+    content = "<div style='margin-top: {3}px'><div style='{2}'>{0}</div><div style='{2}'>{1}</div></div>".format(chapter, content, style, marginTop)
     return ("popover.fullscreen".format(screenNo), content, {})
 
 config.mainWindow.textCommandParser.interpreters["screenbook"] = (presentBookOnFullScreen, """

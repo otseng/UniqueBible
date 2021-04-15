@@ -62,9 +62,10 @@ def presentBookOnFullScreen(command, source):
     fontSize = config.presentationFontSize * .8
     style = "font-size:{0}em;margin-left:{1}px;margin-right:{1}px;color:{2}".format(fontSize, config.presentationMargin, config.presentationColorOnDarkTheme if config.theme == "dark" else config.presentationColorOnLightTheme)
     book = Book(bookName)
-    content = book.getContentByChapter(chapter)
+    sections = book.getHymnsLyricsContentByChapter(chapter)
+    content = sections[int(paragraph)]
     screenNo = 0
-    content = "<div style='{1}'>{0}</div></div>".format(re.sub("\n", "<br>", content), style)
+    content = "<div style='{2}'>{0}</div><div style='{2}'>{1}</div>".format(chapter, content, style)
     return ("popover.fullscreen".format(screenNo), content, {})
 
 config.mainWindow.textCommandParser.interpreters["screenbook"] = (presentBookOnFullScreen, """

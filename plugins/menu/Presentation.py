@@ -139,12 +139,14 @@ class ConfigurePresentationWindow(QWidget):
         self.hymnLayout.addWidget(self.bookList)
 
         self.chapterlist = QListView()
-        self.chapterlist.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        # self.chapterlist.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.selectHymnBook(selected)
+        self.chapterlist.selectionModel().selectionChanged.connect(self.selectHymn)
         self.hymnLayout.addWidget(self.chapterlist)
 
         self.hymnLayout.addItem(QSpacerItem(250, 1))
         self.hymnWidget.setLayout(self.hymnLayout)
+
         self.hymnWidget.hide()
 
         layout2.addWidget(self.bibleWidget)
@@ -153,7 +155,6 @@ class ConfigurePresentationWindow(QWidget):
         layout.addLayout(layout1)
         layout.addLayout(layout2)
         self.setLayout(layout)
-
 
     def selectRadio(self, option):
         if option == "bible":
@@ -164,15 +165,18 @@ class ConfigurePresentationWindow(QWidget):
             self.hymnWidget.show()
 
     def selectHymnBook(self, option):
-        book = self.books[option]
-        self.hymns = sorted(Book(book).getTopicList())
+        self.hymnBook = self.books[option]
+        self.hymns = sorted(Book(self.hymnBook).getTopicList())
         self.chapterModel = QStringListModel(self.hymns)
         self.chapterlist.setModel(self.chapterModel)
 
     def selectHymn(self, option):
         print(option)
-        hymn = self.hymns[option]
+        row = option.indexes()[0].row()
+        hymn = self.hymns[row]
         print(hymn)
+        command = "SCREENBOOK:::{0}:::{1}:::1".format(self.hymnBook, hymn)
+        self.parent.runTextCommand(command)
 
     def goToPresentation(self):
         command = "SCREEN:::{0}".format(self.textEntry.toPlainText())

@@ -1,4 +1,5 @@
 import glob
+from functools import partial
 
 import config
 import sys
@@ -186,15 +187,13 @@ class ConfigurePresentationWindow(QWidget):
         count = 0
         for section in sections:
             hymnButton = QPushButton()
-            hymnButton.setText(str(count))
-            hymnButton.clicked.connect(lambda: self.selectParagraph(count))
+            text = section.replace("<br>", "")[:30]
+            hymnButton.setText(text)
+            hymnButton.clicked.connect(partial(self.selectParagraph, count))
             layout.addWidget(hymnButton)
             self.sectionButtons.setLayout(layout)
             self.hymnLayout.addWidget(self.sectionButtons)
             count += 1
-
-        # command = "SCREENBOOK:::{0}:::{1}:::1".format(self.hymnBook, self.hymn)
-        # self.parent.runTextCommand(command)
 
     def selectParagraph(self, paragraph):
         command = "SCREENBOOK:::{0}:::{1}:::{2}".format(self.hymnBook, self.hymn, paragraph)

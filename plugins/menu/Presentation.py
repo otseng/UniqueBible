@@ -5,7 +5,7 @@ import config
 import sys
 from pathlib import Path
 from qtpy.QtCore import QStringListModel
-from qtpy.QtWidgets import QWidget, QApplication, QRadioButton, QVBoxLayout, QPushButton, QListView
+from qtpy.QtWidgets import QWidget, QApplication, QRadioButton, QVBoxLayout, QPushButton, QListView, QSpacerItem, QSizePolicy
 from ToolsSqlite import Book
 
 
@@ -20,7 +20,7 @@ class ConfigurePresentationWindow(QWidget):
         self.setupVariables()
         # setup interface
         self.setupUI()
-        self.sectionButtons = None
+        self.setMinimumHeight(550)
 
     def setupVariables(self):
         pass
@@ -126,6 +126,8 @@ class ConfigurePresentationWindow(QWidget):
         button.clicked.connect(self.goToPresentation)
         self.bibleLayout.addWidget(button)
 
+        self.bibleLayout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
         self.bibleWidget.setLayout(self.bibleLayout)
 
         self.hymnWidget = QWidget()
@@ -146,8 +148,14 @@ class ConfigurePresentationWindow(QWidget):
         # self.chapterlist.selectionModel().selectionChanged.connect(self.selectHymn)
         self.hymnLayout.addWidget(self.chapterlist)
 
-        self.sectionButtons = QWidget()
-        self.hymnLayout.addWidget(self.sectionButtons)
+        self.buttons = []
+        for count in range(0, 10):
+            hymnButton = QPushButton()
+            hymnButton.setText(" ")
+            hymnButton.setEnabled(False)
+            hymnButton.clicked.connect(partial(self.selectParagraph, count))
+            self.hymnLayout.addWidget(hymnButton)
+            self.buttons.append(hymnButton)
 
         self.selectHymnBook(selected)
 
@@ -180,19 +188,16 @@ class ConfigurePresentationWindow(QWidget):
         self.hymn = self.hymns[row]
         book = Book(self.hymnBook)
         sections = book.getParagraphSectionsByChapter(self.hymn)
-        if self.sectionButtons is not None:
-            self.hymnLayout.removeWidget(self.sectionButtons)
-        self.sectionButtons = QWidget()
-        layout = QVBoxLayout()
         count = 0
-        for section in sections:
-            hymnButton = QPushButton()
-            text = section.replace("<br>", "")[:30]
-            hymnButton.setText(text)
-            hymnButton.clicked.connect(partial(self.selectParagraph, count))
-            layout.addWidget(hymnButton)
-            self.sectionButtons.setLayout(layout)
-            self.hymnLayout.addWidget(self.sectionButtons)
+        for button in self.buttons:
+            if count < len(sections):
+                section = sections[count]
+                text = section.replace("<br>", "")[:30]
+                button.setText(text)
+                button.setEnabled(True)
+            else:
+                button.setText(" ")
+                button.setEnabled(False)
             count += 1
 
     def selectParagraph(self, paragraph):

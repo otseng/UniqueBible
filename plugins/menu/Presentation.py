@@ -1,12 +1,6 @@
-import glob
-from functools import partial
-
 import config
 import sys
-from pathlib import Path
-from qtpy.QtCore import QStringListModel
-from qtpy.QtWidgets import QWidget, QApplication, QRadioButton, QVBoxLayout, QPushButton, QListView, QSpacerItem, QSizePolicy
-from ToolsSqlite import Book
+from qtpy.QtWidgets import QApplication, QWidget
 
 
 class ConfigurePresentationWindow(QWidget):
@@ -18,19 +12,24 @@ class ConfigurePresentationWindow(QWidget):
         self.setWindowTitle("Configure Presentation")
         # set variables
         self.setupVariables()
+        # setup Hymn Lyrics
+        from glob import glob
+        from pathlib import Path
+        self.books = sorted([Path(filename).stem for filename in glob(r"./marvelData/books/Hymn Lyrics*.book")])
+        if len(self.books) > 0:
+            self.setMinimumHeight(550)
         # setup interface
         self.setupUI()
-        self.setMinimumHeight(550)
 
     def setupVariables(self):
         pass
 
     def setupUI(self):
 
+        from functools import partial
         from qtpy.QtCore import Qt
         from qtpy.QtWidgets import QHBoxLayout, QFormLayout, QSlider, QPushButton, QPlainTextEdit, QCheckBox, QComboBox
-
-        self.books = sorted([Path(filename).stem for filename in glob.glob(r"./marvelData/books/Hymn Lyrics*.book")])
+        from qtpy.QtWidgets import QRadioButton, QWidget, QVBoxLayout, QListView, QSpacerItem, QSizePolicy
 
         layout = QHBoxLayout()
 
@@ -163,7 +162,8 @@ class ConfigurePresentationWindow(QWidget):
         self.hymnWidget.hide()
 
         layout2.addWidget(self.bibleWidget)
-        layout2.addWidget(self.hymnWidget)
+        if len(self.books) > 0:
+            layout2.addWidget(self.hymnWidget)
 
         layout.addLayout(layout1)
         layout.addLayout(layout2)
@@ -172,18 +172,24 @@ class ConfigurePresentationWindow(QWidget):
     def selectRadio(self, option):
         if option == "bible":
             self.bibleWidget.show()
-            self.hymnWidget.hide()
+            if len(self.books) > 0:
+                self.hymnWidget.hide()
         elif option == "hymns":
             self.bibleWidget.hide()
-            self.hymnWidget.show()
+            if len(self.books) > 0:
+                self.hymnWidget.show()
 
     def selectHymnBook(self, option):
-        self.hymnBook = self.books[option]
-        self.hymns = sorted(Book(self.hymnBook).getTopicList())
-        self.chapterModel = QStringListModel(self.hymns)
-        self.chapterlist.setModel(self.chapterModel)
+        from ToolsSqlite import Book
+        from qtpy.QtCore import QStringListModel
+        if len(self.books) > 0:
+            self.hymnBook = self.books[option]
+            self.hymns = sorted(Book(self.hymnBook).getTopicList())
+            self.chapterModel = QStringListModel(self.hymns)
+            self.chapterlist.setModel(self.chapterModel)
 
     def selectHymn(self, option):
+        from ToolsSqlite import Book
         row = option.row()
         self.hymn = self.hymns[row]
         book = Book(self.hymnBook)

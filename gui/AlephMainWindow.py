@@ -661,6 +661,17 @@ class AlephMainWindow:
         editExternalFileButton.clicked.connect(self.editExternalFileButtonClicked)
         self.secondToolBar.addWidget(editExternalFileButton)
 
+        self.secondToolBar.addSeparator()
+
+        openPdfButton = QPushButton()
+        openPdfButton.setToolTip(config.thisTranslation["pdfDocument"])
+        openPdfButtonFile = os.path.join("htmlResources", "pdfOpen.png")
+        openPdfButton.setIcon(QIcon(openPdfButtonFile))
+        openPdfButton.clicked.connect(self.openPdfFileDialog)
+        self.secondToolBar.addWidget(openPdfButton)
+
+        self.secondToolBar.addSeparator()
+
         reloadButton = QPushButton()
         reloadButton.setToolTip(config.thisTranslation["menu1_reload"])
         reloadButtonFile = os.path.join("htmlResources", "reload.png")
@@ -1117,6 +1128,11 @@ class AlephMainWindow:
 
         iconFile = os.path.join("htmlResources", "edit.png")
         self.secondToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu7_edit"], self.editExternalFileButtonClicked)
+
+        self.secondToolBar.addSeparator()
+
+        iconFile = os.path.join("htmlResources", "pdfOpen.png")
+        self.secondToolBar.addAction(QIcon(iconFile), config.thisTranslation["pdfDocument"], self.openPdfFileDialog)
 
         self.secondToolBar.addSeparator()
 

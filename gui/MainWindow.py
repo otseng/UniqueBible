@@ -1373,14 +1373,14 @@ class MainWindow(QMainWindow):
             self.displayMessage(config.thisTranslation["message_noSupport"])
 
     def getPdfFileList(self):
-        return [os.path.basename(file) for file in glob.glob(r"marvelData/pdf/*.pdf")]
+        return sorted([os.path.basename(file) for file in glob.glob(r"marvelData/pdf/*.pdf")])
 
     def openPdfFileDialog(self):
         items = self.getPdfFileList()
         item, ok = QInputDialog.getItem(self, "UniqueBible", config.thisTranslation["pdfDocument"], items,
                                         0, False)
         fileName = item
-        if fileName:
+        if fileName and ok:
             command = "PDF:::{0}".format(fileName)
             self.textCommandLineEdit.setText(command)
             self.runTextCommand(command)

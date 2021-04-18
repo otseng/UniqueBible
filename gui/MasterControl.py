@@ -1,13 +1,11 @@
 import config
-from BiblesSqlite import BiblesSqlite, Bible
 from gui.BibleExplorer import BibleExplorer
+from gui.PdfLauncher import PdfLauncher
 from gui.SearchLauncher import SearchLauncher
 from gui.LibraryLauncher import LibraryLauncher
 from gui.HistoryLauncher import HistoryLauncher
 from gui.MiscellaneousLauncher import MiscellaneousLauncher
 from qtpy.QtWidgets import QMessageBox, QGridLayout, QBoxLayout, QHBoxLayout, QVBoxLayout, QPushButton, QWidget, QTabWidget, QLineEdit, QCheckBox
-from ThirdParty import ThirdPartyDictionary
-from ToolsSqlite import Commentary, LexiconData, BookData, IndexesSqlite
 from qtpy.QtCore import Qt, QEvent
 
 class MasterControl(QWidget):
@@ -166,6 +164,10 @@ class MasterControl(QWidget):
         libraryTab = LibraryLauncher(self)
         self.tabs.addTab(libraryTab, config.thisTranslation["cp1"])
         self.tabs.setTabToolTip(1, config.thisTranslation["cp1Tip"])
+        # 2
+        self.toolTab = PdfLauncher(self)
+        self.tabs.addTab(self.toolTab, "PDF")
+        self.tabs.setTabToolTip(2, "Keyboard shortcut: Ctrl+P")
         # 2
         self.toolTab = SearchLauncher(self)
         self.tabs.addTab(self.toolTab, config.thisTranslation["cp2"])

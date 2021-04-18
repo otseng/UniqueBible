@@ -760,6 +760,9 @@ class MainWindow(QMainWindow):
     def installGithubMaps(self):
         self.installFromGitHub("darrelwright/UniqueBible_Maps-Charts", "books", "githubMaps")
 
+    def installGithubPdf(self):
+        self.installFromGitHub("otseng/UniqueBible_PDF", "pdf", "githubPdf")
+
     def installFromGitHub(self, repo, directory, title):
         from util.GithubUtil import GithubUtil
 
@@ -1369,9 +1372,11 @@ class MainWindow(QMainWindow):
         else:
             self.displayMessage(config.thisTranslation["message_noSupport"])
 
-    # !!!!
+    def getPdfFileList(self):
+        return [os.path.basename(file) for file in glob.glob(r"marvelData/pdf/*.pdf")]
+
     def openPdfFileDialog(self):
-        items = [os.path.basename(file) for file in glob.glob(r"pdf/*.pdf")]
+        items = self.getPdfFileList()
         item, ok = QInputDialog.getItem(self, "UniqueBible", config.thisTranslation["pdfDocument"], items,
                                         0, False)
         fileName = item
@@ -1381,7 +1386,7 @@ class MainWindow(QMainWindow):
     def openPdfReader(self, file):
         if file:
             pdfViewer = 'file://' + os.path.join(os.getcwd(), 'htmlResources', 'lib/pdfjs-2.7.570-dist/web/viewer.html')
-            fileName = os.path.join(os.getcwd(), 'pdf', file)
+            fileName = os.path.join(os.getcwd(), 'marvelData', 'pdf', file)
             self.studyView.load(QUrl.fromUserInput('{0}?file={1}'.format(pdfViewer, fileName)))
             self.studyView.setTabText(self.studyView.currentIndex(), file[:20])
             self.studyView.setTabToolTip(self.studyView.currentIndex(), file)

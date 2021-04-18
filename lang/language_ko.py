@@ -684,4 +684,5 @@ translation = {
     "githubCommentaries": "지투브 컴멘터리",
     "githubBooks": "지투브 북스",
     "githubMaps": "지투브 맵",
+    "githubPdf": "Github PDF",
 }

@@ -684,4 +684,5 @@ translation = {
     "githubCommentaries": "Github 聖經註釋",
     "githubBooks": "Github 參考書",
     "githubMaps": "Github 地圖",
+    "githubPdf": "Github PDF",
 }

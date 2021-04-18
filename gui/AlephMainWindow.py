@@ -242,6 +242,9 @@ class AlephMainWindow:
         library_menu.addAction(QAction(config.thisTranslation["menu4_words"], self, shortcut=sc.runWORDS, triggered=self.runWORDS))
         library_menu.addAction(QAction(config.thisTranslation["menu4_discourse"], self, shortcut=sc.runDISCOURSE, triggered=self.runDISCOURSE))
         library_menu.addAction(QAction(config.thisTranslation["menu4_tdw"], self, shortcut=sc.runCOMBO, triggered=self.runCOMBO))
+        library_menu.addSeparator()
+        library_menu.addAction(
+            QAction(config.thisTranslation["pdfDocument"], self, triggered=self.openPdfFileDialog))
 
         annotate_menu = self.menuBar().addMenu("{0}{1}".format(config.menuUnderline, config.thisTranslation["menu_annotate"]))
         if config.enableVerseHighlighting:

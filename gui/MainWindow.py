@@ -1,3 +1,4 @@
+import glob
 import os, sys, re, config, base64, webbrowser, platform, subprocess, requests, update, logging
 from datetime import datetime
 from distutils import util
@@ -1368,6 +1369,25 @@ class MainWindow(QMainWindow):
         else:
             self.displayMessage(config.thisTranslation["message_noSupport"])
 
+    # !!!!
+    def openPdfFileDialog(self):
+        items = [os.path.basename(file) for file in glob.glob(r"pdf/*.pdf")]
+        item, ok = QInputDialog.getItem(self, "UniqueBible", config.thisTranslation["pdfDocument"], items,
+                                        0, False)
+        fileName = item
+        if fileName:
+            self.openPdfReader(fileName)
+
+    def openPdfReader(self, file):
+        if file:
+            pdfViewer = 'file://' + os.path.join(os.getcwd(), 'htmlResources', 'lib/pdfjs-2.7.570-dist/web/viewer.html')
+            fileName = os.path.join(os.getcwd(), 'pdf', file)
+            self.studyView.load(QUrl.fromUserInput('{0}?file={1}'.format(pdfViewer, fileName)))
+            self.studyView.setTabText(self.studyView.currentIndex(), file[:20])
+            self.studyView.setTabToolTip(self.studyView.currentIndex(), file)
+        else:
+            self.displayMessage(config.thisTranslation["message_noSupportedFile"])
+
     # Actions - export to pdf
     def printMainPage(self):
         filename = "UniqueBible.app.pdf"
@@ -2667,7 +2687,7 @@ class MainWindow(QMainWindow):
 
     def studyTextCommandChanged(self, newTextCommand):
         if newTextCommand not in ("main.html", "UniqueBible.app") \
-                and not newTextCommand.endswith("UniqueBibleApp.png"):
+                and not newTextCommand.endswith("UniqueBibleApp.png") and not newTextCommand.startswith("viewer.html"):
             self.textCommandChanged(newTextCommand, "study")
 
     def instantTextCommandChanged(self, newTextCommand):

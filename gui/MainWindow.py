@@ -1377,13 +1377,14 @@ class MainWindow(QMainWindow):
 
     def openPdfFileDialog(self):
         items = self.getPdfFileList()
-        item, ok = QInputDialog.getItem(self, "UniqueBible", config.thisTranslation["pdfDocument"], items,
-                                        0, False)
-        fileName = item
-        if fileName and ok:
-            command = "PDF:::{0}".format(fileName)
-            self.textCommandLineEdit.setText(command)
-            self.runTextCommand(command)
+        if items:
+            item, ok = QInputDialog.getItem(self, "UniqueBible", config.thisTranslation["pdfDocument"], items,
+                                            0, False)
+            fileName = item
+            if fileName and ok:
+                command = "PDF:::{0}".format(fileName)
+                self.textCommandLineEdit.setText(command)
+                self.runTextCommand(command)
 
     def openPdfReader(self, file, page=1):
         if file:

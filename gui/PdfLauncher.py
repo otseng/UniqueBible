@@ -1,6 +1,6 @@
 import config
 from qtpy.QtGui import QStandardItemModel, QStandardItem
-from qtpy.QtWidgets import (QPushButton, QListView, QAbstractItemView, QGroupBox, QHBoxLayout, QGridLayout, QVBoxLayout, QWidget)
+from qtpy.QtWidgets import (QPushButton, QListView, QAbstractItemView, QGroupBox, QHBoxLayout, QVBoxLayout, QWidget)
 
 class PdfLauncher(QWidget):
 
@@ -13,7 +13,6 @@ class PdfLauncher(QWidget):
         self.pdfList = self.parent.parent.getPdfFileList()
         # setup interface
         self.setupUI()
-        self.setMinimumWidth(700)
 
     def setupUI(self):
         mainLayout = QHBoxLayout()
@@ -27,7 +26,6 @@ class PdfLauncher(QWidget):
         leftColumnWidget.setLayout(pdfLayout)
 
         mainLayout.addWidget(leftColumnWidget)
-        # mainLayout.setColumnStretch(1, 1)
         self.setLayout(mainLayout)
 
     def pdfListView(self):

@@ -42,6 +42,8 @@ class MasterControl(QWidget):
                     self.tabs.setCurrentIndex(3)
                 elif event.key() == Qt.Key_M:
                     self.tabs.setCurrentIndex(4)
+                elif event.key() == Qt.Key_P:
+                    self.tabs.setCurrentIndex(5)
             elif event.key() == Qt.Key_Escape:
                 self.hide()
         return QWidget.event(self, event)
@@ -165,10 +167,6 @@ class MasterControl(QWidget):
         self.tabs.addTab(libraryTab, config.thisTranslation["cp1"])
         self.tabs.setTabToolTip(1, config.thisTranslation["cp1Tip"])
         # 2
-        self.toolTab = PdfLauncher(self)
-        self.tabs.addTab(self.toolTab, "PDF")
-        self.tabs.setTabToolTip(2, "Keyboard shortcut: Ctrl+P")
-        # 2
         self.toolTab = SearchLauncher(self)
         self.tabs.addTab(self.toolTab, config.thisTranslation["cp2"])
         self.tabs.setTabToolTip(2, config.thisTranslation["cp2Tip"])
@@ -180,6 +178,10 @@ class MasterControl(QWidget):
         self.miscellaneousTab = MiscellaneousLauncher(self)
         self.tabs.addTab(self.miscellaneousTab, config.thisTranslation["cp4"])
         self.tabs.setTabToolTip(4, config.thisTranslation["cp4Tip"])
+        # 5
+        self.toolTab = PdfLauncher(self)
+        self.tabs.addTab(self.toolTab, "PDF")
+        self.tabs.setTabToolTip(2, "Keyboard shortcut: Ctrl+P")
         # set action with changing tabs
         self.tabs.currentChanged.connect(self.tabChanged)
         # set initial tab

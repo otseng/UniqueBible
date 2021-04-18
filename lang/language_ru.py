@@ -457,6 +457,7 @@ translation = {
     "cp2": "Поиск",
     "cp3": "История",
     "cp4": "Разное",
+    "cp5": "PDF",
     "edit": "EDIT",
     "remote_control": "мини-контроль",
     "bible": "Библия",

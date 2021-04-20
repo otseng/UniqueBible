@@ -231,7 +231,7 @@ class FocusMainWindow:
         if hasattr(config, "cli"):
             addMenuItem(menu, "cli", self, lambda: self.mainView.currentWidget().switchToCli(), sc.commandLineInterface)
             menu.addSeparator()
-        for index, shortcut in enumerate((sc.openControlPanelTab0, sc.openControlPanelTab1, sc.openControlPanelTab2, sc.openControlPanelTab3, sc.openControlPanelTab4)):
+        for index, shortcut in enumerate((sc.openControlPanelTab0, sc.openControlPanelTab1, sc.openControlPanelTab2, sc.openControlPanelTab3, sc.openControlPanelTab4, sc.openControlPanelTab5)):
             addMenuItem(menu, "cp{0}".format(index), self, lambda index=index, shortcut=shortcut: self.openControlPanelTab(index), shortcut)
         menu.addSeparator()
         addMenuItem(menu, "menu1_miniControl", self, self.manageMiniControl, sc.manageMiniControl)
@@ -496,6 +496,7 @@ class FocusMainWindow:
 
         self.addStandardIconButton("menu2_larger", "fontPlus.png", self.largerFont, self.secondToolBar)
         self.secondToolBar.addSeparator()
+        self.addStandardIconButton("pdfDocument", "pdfOpen.png", self.openPdfDialog, self.secondToolBar)
         self.addStandardIconButton("menu11_youtube", "youtube.png", self.openYouTube, self.secondToolBar)
         self.secondToolBar.addSeparator()
         self.addStandardIconButton("menu1_reload", "reload.png", self.reloadCurrentRecord, self.secondToolBar)
@@ -708,6 +709,8 @@ class FocusMainWindow:
 
         self.secondToolBar.addSeparator()
 
+        iconFile = os.path.join("htmlResources", "pdfOpen.png")
+        self.secondToolBar.addAction(QIcon(iconFile), config.thisTranslation["pdfDocument"], self.openPdfDialog)
         iconFile = os.path.join("htmlResources", "youtube.png")
         self.secondToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu11_youtube"], self.openYouTube)
 

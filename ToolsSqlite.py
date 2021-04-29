@@ -750,14 +750,17 @@ class Book:
         return [topic[0] for topic in self.cursor.fetchall()]
 
     def getSearchedTopicList(self, searchString, chapterOnly=False):
-        searchString = "%{0}%".format(searchString)
-        if chapterOnly:
-            query = "SELECT DISTINCT Chapter FROM Reference WHERE Chapter LIKE ? ORDER BY ROWID"
-            self.cursor.execute(query, (searchString,))
-        else:
-            query = "SELECT DISTINCT Chapter FROM Reference WHERE Chapter LIKE ? OR Content LIKE ? ORDER BY ROWID"
-            self.cursor.execute(query, (searchString, searchString))
-        return [topic[0] for topic in self.cursor.fetchall()]
+        try:
+            searchString = "%{0}%".format(searchString)
+            if chapterOnly:
+                query = "SELECT DISTINCT Chapter FROM Reference WHERE Chapter LIKE ? ORDER BY ROWID"
+                self.cursor.execute(query, (searchString,))
+            else:
+                query = "SELECT DISTINCT Chapter FROM Reference WHERE Chapter LIKE ? OR Content LIKE ? ORDER BY ROWID"
+                self.cursor.execute(query, (searchString, searchString))
+            return [topic[0] for topic in self.cursor.fetchall()]
+        except:
+            return []
 
     def getChapterCount(self):
         query = "SELECT MAX(ROWID) from Reference"

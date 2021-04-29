@@ -1,3 +1,4 @@
+import logging
 import os, sqlite3, re, config
 from BiblesSqlite import BiblesSqlite
 from BibleVerseParser import BibleVerseParser
@@ -734,6 +735,7 @@ class BookData:
 class Book:
 
     def __init__(self, module):
+        self.logger = logging.getLogger('uba')
         # connect book module
         self.module = module
 
@@ -760,6 +762,7 @@ class Book:
                 self.cursor.execute(query, (searchString, searchString))
             return [topic[0] for topic in self.cursor.fetchall()]
         except:
+            self.logger.error("Could not search {0}".format(self.module))
             return []
 
     def getChapterCount(self):

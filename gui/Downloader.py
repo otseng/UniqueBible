@@ -31,7 +31,7 @@ class DownloadProcess(QObject):
 
 class Downloader(QDialog):
 
-    def __init__(self, parent, databaseInfo):
+    def __init__(self, parent, databaseInfo, autoStart=False):
         super().__init__()
         self.parent = parent
         self.setWindowTitle(config.thisTranslation["message_downloadHelper"])
@@ -42,6 +42,9 @@ class Downloader(QDialog):
         self.filename = fileItems[-1]
 
         self.setupLayout()
+
+        if autoStart:
+            self.startDownloadFile()
 
     def setupLayout(self):
 

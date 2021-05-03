@@ -13,7 +13,11 @@ from Translator import Translator
 from db.Highlight import Highlight
 from TtsLanguages import TtsLanguages
 from qtpy.QtWidgets import QApplication
+
+from gui.Downloader import Downloader
 from install.module import *
+from util.DatafileLocation import DatafileLocation
+
 try:
     # Note: qtpy.QtTextToSpeech is not found!
     from PySide2.QtTextToSpeech import QTextToSpeech
@@ -431,6 +435,13 @@ class TextCommandParser:
             "searchversenote": (self.textSearchVerseNote, """
             # [KEYWORD] SEARCHVERSENOTE
             # e.g. SEARCHVERSENOTE:::faith"""),
+            "download": (self.download, """
+            # [KEYWORD] DOWNLOAD
+            # Feature - Download marvel data, github files
+            # Usage - DOWNLOAD:::[source]:::[file]
+            # source can be MarvelData, HymnLyrics, GitHubBible, GitHubBook, GitHubCommentary
+            # e.g. DOWNLOAD:::MarvelBible:::KJV
+            """),
             #
             # Keywords starting with "_" are mainly internal commands for GUI operations
             # They are not recorded in history records.
@@ -2549,6 +2560,25 @@ class TextCommandParser:
         self.parent.addHistoryRecord("study", command)
         self.parent.displayMessage(config.thisTranslation["saved"])
         return ("", "", {})
+
+    # DOWNLOAD:::
+    def download(self, command, source):
+        action, file = self.splitCommand(command)
+        action = action.lower()
+        if action == 'marvelbible':
+            if file in DatafileLocation.marvelBibles.keys():
+                databaseInfo = DatafileLocation.marvelBibles[file]
+                if os.path.isfile(os.path.join(*databaseInfo[0])):
+                    self.parent.displayMessage("{0} already exists".format(file))
+                else:
+                    # self.parent.downloader = Downloader(self, databaseInfo, True)
+                    # self.downloader.show()
+                    self.parent.downloadFile(databaseInfo, False)
+                    self.parent.displayMessage("{0} downloaded".format(file))
+            else:
+                self.parent.displayMessage("{0} not found".format(file))
+        return ("", "", {})
+
 
     def noAction(self, command, source):
         return ("", "", {})

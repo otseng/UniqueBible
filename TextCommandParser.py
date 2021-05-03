@@ -2594,13 +2594,23 @@ class TextCommandParser:
                 self.parent.displayMessage("{0} {1}".format(filename, config.thisTranslation["notFound"]))
         elif action.startswith("github"):
             if action == "githubbible":
-                repo, directory, title, extension = ("otseng/UniqueBible_Bibles", "bibles", "githubBibles", "bible")
-                github = GithubUtil(repo)
-                repoData = github.getRepoData()
-                folder = os.path.join(config.marvelData, directory)
+                repo, directory, extension = ("otseng/UniqueBible_Bibles", "bibles", "bible")
+            elif action == "githubcommentary":
+                repo, directory, extension = ("darrelwright/UniqueBible_Commentaries", "commentaries", "commentary")
+            elif action == "githubbook":
+                repo, directory, extension = ("darrelwright/UniqueBible_Books", "books", "book")
+            elif action == "githubmap":
+                repo, directory, extension = ("darrelwright/UniqueBible_Maps-Charts", "books", "book")
+            elif action == "githubpdf":
+                repo, directory, extension = ("otseng/UniqueBible_PDF", "pdf", "pdf")
+            elif action == "githubepub":
+                repo, directory, extension = ("otseng/UniqueBible_EPUB", "epub", "epub")
             else:
                 self.parent.displayMessage("{0} {1}".format(action, config.thisTranslation["unknown"]))
                 return ("", "", {})
+            github = GithubUtil(repo)
+            repoData = github.getRepoData()
+            folder = os.path.join(config.marvelData, directory)
             filename += "." + extension
             if os.path.isfile(os.path.join(folder, filename)):
                 self.parent.displayMessage("{0} {1}".format(filename, config.thisTranslation["alreadyExists"]))

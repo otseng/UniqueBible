@@ -2573,8 +2573,6 @@ class TextCommandParser:
                 dataset = DatafileLocation.marvelBibles
             elif action == "marvelcommentary":
                 dataset = DatafileLocation.marvelCommentaries
-            elif action == "marveldata":
-                dataset = DatafileLocation.marvelData
             elif action == "hymnlyrics":
                 dataset = DatafileLocation.hymnLyrics
             else:

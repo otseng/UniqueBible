@@ -3204,28 +3204,43 @@ class MainWindow(QMainWindow):
     def macroGenerateDownload(self):
         filename, ok = self.openSaveMacroDialog(config.thisTranslation["message_macro_save_command"])
         if ok:
+            bibleList = [os.path.basename(file) for file in glob.glob(r"{0}/bibles/*.bible".format(config.marvelData))]
+            commentaryList = [os.path.basename(file) for file in glob.glob(r"{0}/commentaries/*.commentary".format(config.marvelData))]
+            bookList = [os.path.basename(file) for file in glob.glob(r"{0}/books/*.book".format(config.marvelData))]
+            pdfList = [os.path.basename(file) for file in glob.glob(r"{0}/pdf/*.pdf".format(config.marvelData))]
+            epubList = [os.path.basename(file) for file in glob.glob(r"{0}/epub/*.epub".format(config.marvelData))]
+
             file = os.path.join(MacroParser.macros_dir, filename)
             outfile = open(file, "w")
             for key in DatafileLocation.marvelBibles.keys():
-                outfile.write("DOWNLOAD:::MarvelBible:::{0}\n".format(key))
+                if (key+".bible") not in bibleList:
+                    outfile.write("DOWNLOAD:::MarvelBible:::{0}\n".format(key))
             for key in DatafileLocation.marvelCommentaries.keys():
-                outfile.write("DOWNLOAD:::MarvelCommentary:::{0}\n".format(key))
-            for key in DatafileLocation.marvelData.keys():
-                outfile.write("DOWNLOAD:::MarvelData:::{0}\n".format(key))
+                value = DatafileLocation.marvelCommentaries[key]
+                if (value[0][2]) not in commentaryList:
+                    outfile.write("DOWNLOAD:::MarvelCommentary:::{0}\n".format(key))
             for key in DatafileLocation.hymnLyrics.keys():
-                outfile.write("DOWNLOAD:::HymnLyrics:::{0}\n".format(key))
+                value = DatafileLocation.hymnLyrics[key]
+                if (value[0][2]) not in bookList:
+                    outfile.write("DOWNLOAD:::HymnLyrics:::{0}\n".format(key))
             for file in GithubUtil("otseng/UniqueBible_Bibles").getRepoData():
-                outfile.write("DOWNLOAD:::GitHubBible:::{0}\n".format(file.replace(".bible", "")))
+                if (file+".bible") not in bibleList:
+                    outfile.write("DOWNLOAD:::GitHubBible:::{0}\n".format(file.replace(".bible", "")))
             for file in GithubUtil("darrelwright/UniqueBible_Commentaries").getRepoData():
-                outfile.write("DOWNLOAD:::GitHubCommentary:::{0}\n".format(file.replace(".commentary", "")))
+                if (file+".commentary") not in commentaryList:
+                    outfile.write("DOWNLOAD:::GitHubCommentary:::{0}\n".format(file.replace(".commentary", "")))
             for file in GithubUtil("darrelwright/UniqueBible_Books").getRepoData():
-                outfile.write("DOWNLOAD:::GitHubBook:::{0}\n".format(file.replace(".book", "")))
+                if (file+".book") not in bookList:
+                    outfile.write("DOWNLOAD:::GitHubBook:::{0}\n".format(file.replace(".book", "")))
             for file in GithubUtil("darrelwright/UniqueBible_Maps-Charts").getRepoData():
-                outfile.write("DOWNLOAD:::GitHubMap:::{0}\n".format(file.replace(".book", "")))
+                if (file+".book") not in bookList:
+                    outfile.write("DOWNLOAD:::GitHubMap:::{0}\n".format(file.replace(".book", "")))
             for file in GithubUtil("otseng/UniqueBible_PDF").getRepoData():
-                outfile.write("DOWNLOAD:::GitHubPdf:::{0}\n".format(file.replace(".pdf", "")))
+                if (file+".pdf") not in pdfList:
+                    outfile.write("DOWNLOAD:::GitHubPdf:::{0}\n".format(file.replace(".pdf", "")))
             for file in GithubUtil("otseng/UniqueBible_EPUB").getRepoData():
-                outfile.write("DOWNLOAD:::GitHubEpub:::{0}\n".format(file.replace(".epub", "")))
+                if (file+".epub") not in epubList:
+                    outfile.write("DOWNLOAD:::GitHubEpub:::{0}\n".format(file.replace(".epub", "")))
             outfile.close()
             self.displayMessage("Command saved to {0}".format(filename))
 

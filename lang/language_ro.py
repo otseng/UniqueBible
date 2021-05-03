@@ -707,4 +707,5 @@ translation = {
     "alreadyExists": "există deja",
     "downloadMissingFiles": "Descărcare fişiere lipsă",
     "downloadExistingFiles": "Descărcare fişiere existente",
+    "parseBooklessReferences": "Analizaţi referinţele mai puţine în textul selectat.",
 }

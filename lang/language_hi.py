@@ -707,4 +707,5 @@ translation = {
     "alreadyExists": "पहले ही",
     "downloadMissingFiles": "गुम फ़ाइलों को डाउनलोड करें",
     "downloadExistingFiles": "मौजूदा फ़ाइल डाउनलोड करें",
+    "parseBooklessReferences": "चुने गए पाठ में बुकलेस संदर्भों का विश्लेषण करें.",
 }

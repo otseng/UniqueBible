@@ -707,4 +707,5 @@ translation = {
     "alreadyExists": "既に存在する",
     "downloadMissingFiles": "欠落ファイルのダウンロード",
     "downloadExistingFiles": "既存ファイルのダウンロード",
+    "parseBooklessReferences": "選択したテキスト内のブックマークの参照を解析します。",
 }

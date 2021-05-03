@@ -707,4 +707,5 @@ translation = {
     "alreadyExists": "이미 존재하는",
     "downloadMissingFiles": "누락된 파일 다운로드",
     "downloadExistingFiles": "기존 파일 다운로드",
+    "parseBooklessReferences": "선택된 텍스트의 북적인 책갈피를 구문 분석하지 않습니다.",
 }

@@ -707,4 +707,5 @@ translation = {
     "alreadyExists": "уже существует",
     "downloadMissingFiles": "Загрузить отсутствующие файлы",
     "downloadExistingFiles": "Загрузить существующие файлы",
+    "parseBooklessReferences": "Анализировать ссылки на закладки в выбранном тексте.",
 }

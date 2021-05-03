@@ -707,4 +707,5 @@ translation = {
     "alreadyExists": "υπάρχει ήδη.",
     "downloadMissingFiles": "Λήψη αρχείων που λείπουν",
     "downloadExistingFiles": "Μεταφόρτωση υπαρχόντων αρχείων",
+    "parseBooklessReferences": "Ανάλυση παραπομπών σε επιλεγμένα κείμενα.",
 }

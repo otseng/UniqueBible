@@ -45,6 +45,7 @@ from ToolsSqlite import LexiconData
 from TtsLanguages import TtsLanguages
 from util.DatafileLocation import DatafileLocation
 from util.DateUtil import DateUtil
+from util.GithubUtil import GithubUtil
 from util.LanguageUtil import LanguageUtil
 from util.MacroParser import MacroParser
 from util.NoteService import NoteService
@@ -3213,6 +3214,18 @@ class MainWindow(QMainWindow):
                 outfile.write("DOWNLOAD:::MarvelData:::{0}\n".format(key))
             for key in DatafileLocation.hymnLyrics.keys():
                 outfile.write("DOWNLOAD:::HymnLyrics:::{0}\n".format(key))
+            for file in GithubUtil("otseng/UniqueBible_Bibles").getRepoData():
+                outfile.write("DOWNLOAD:::GitHubBible:::{0}\n".format(file.replace(".bible", "")))
+            for file in GithubUtil("darrelwright/UniqueBible_Commentaries").getRepoData():
+                outfile.write("DOWNLOAD:::GitHubCommentary:::{0}\n".format(file.replace(".commentary", "")))
+            for file in GithubUtil("darrelwright/UniqueBible_Books").getRepoData():
+                outfile.write("DOWNLOAD:::GitHubBook:::{0}\n".format(file.replace(".book", "")))
+            for file in GithubUtil("darrelwright/UniqueBible_Maps-Charts").getRepoData():
+                outfile.write("DOWNLOAD:::GitHubMap:::{0}\n".format(file.replace(".book", "")))
+            for file in GithubUtil("otseng/UniqueBible_PDF").getRepoData():
+                outfile.write("DOWNLOAD:::GitHubPdf:::{0}\n".format(file.replace(".pdf", "")))
+            for file in GithubUtil("otseng/UniqueBible_EPUB").getRepoData():
+                outfile.write("DOWNLOAD:::GitHubEpub:::{0}\n".format(file.replace(".epub", "")))
             outfile.close()
             self.displayMessage("Command saved to {0}".format(filename))
 

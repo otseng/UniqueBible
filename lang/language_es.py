@@ -705,4 +705,6 @@ translation = {
     "notFound": "no encontrado",
     "unknown": "Desconocido",
     "alreadyExists": "ya existe",
+    "downloadMissingFiles": "Descargar archivos que faltan",
+    "downloadExistingFiles": "Descargar archivos existentes",
 }

@@ -705,4 +705,6 @@ translation = {
     "notFound": "見つかりません",
     "unknown": "不明",
     "alreadyExists": "既に存在する",
+    "downloadMissingFiles": "欠落ファイルのダウンロード",
+    "downloadExistingFiles": "既存ファイルのダウンロード",
 }

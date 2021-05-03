@@ -3201,7 +3201,7 @@ class MainWindow(QMainWindow):
             outfile.close()
             self.displayMessage("Command saved to {0}".format(filename))
 
-    def macroGenerateDownload(self):
+    def macroGenerateDownloadMissingFiles(self):
         filename, ok = self.openSaveMacroDialog(config.thisTranslation["message_macro_save_command"])
         if ok:
             bibleList = [os.path.basename(file) for file in glob.glob(r"{0}/bibles/*.bible".format(config.marvelData))]
@@ -3224,26 +3224,73 @@ class MainWindow(QMainWindow):
                 if (value[0][2]) not in bookList:
                     outfile.write("DOWNLOAD:::HymnLyrics:::{0}\n".format(key))
             for file in GithubUtil("otseng/UniqueBible_Bibles").getRepoData():
-                if (file+".bible") not in bibleList:
+                if file not in bibleList:
                     outfile.write("DOWNLOAD:::GitHubBible:::{0}\n".format(file.replace(".bible", "")))
             for file in GithubUtil("darrelwright/UniqueBible_Commentaries").getRepoData():
-                if (file+".commentary") not in commentaryList:
+                if file not in commentaryList:
                     outfile.write("DOWNLOAD:::GitHubCommentary:::{0}\n".format(file.replace(".commentary", "")))
             for file in GithubUtil("darrelwright/UniqueBible_Books").getRepoData():
-                if (file+".book") not in bookList:
+                if file not in bookList:
                     outfile.write("DOWNLOAD:::GitHubBook:::{0}\n".format(file.replace(".book", "")))
             for file in GithubUtil("darrelwright/UniqueBible_Maps-Charts").getRepoData():
-                if (file+".book") not in bookList:
+                if file not in bookList:
                     outfile.write("DOWNLOAD:::GitHubMap:::{0}\n".format(file.replace(".book", "")))
             for file in GithubUtil("otseng/UniqueBible_PDF").getRepoData():
-                if (file+".pdf") not in pdfList:
+                if file not in pdfList:
                     outfile.write("DOWNLOAD:::GitHubPdf:::{0}\n".format(file.replace(".pdf", "")))
             for file in GithubUtil("otseng/UniqueBible_EPUB").getRepoData():
-                if (file+".epub") not in epubList:
+                if file not in epubList:
                     outfile.write("DOWNLOAD:::GitHubEpub:::{0}\n".format(file.replace(".epub", "")))
             outfile.close()
             self.displayMessage("Command saved to {0}".format(filename))
 
+    def macroGenerateDownloadExistingFiles(self):
+        filename, ok = self.openSaveMacroDialog(config.thisTranslation["message_macro_save_command"])
+        if ok:
+            bibleList = [os.path.basename(file) for file in glob.glob(r"{0}/bibles/*.bible".format(config.marvelData))]
+            commentaryList = [os.path.basename(file) for file in glob.glob(r"{0}/commentaries/*.commentary".format(config.marvelData))]
+            bookList = [os.path.basename(file) for file in glob.glob(r"{0}/books/*.book".format(config.marvelData))]
+            pdfList = [os.path.basename(file) for file in glob.glob(r"{0}/pdf/*.pdf".format(config.marvelData))]
+            epubList = [os.path.basename(file) for file in glob.glob(r"{0}/epub/*.epub".format(config.marvelData))]
+
+            bibles = [value[0][2] for value in DatafileLocation.marvelBibles.values()]
+            commentaries = [value[0][2] for value in DatafileLocation.marvelCommentaries.values()]
+            hymns = [value[0][2] for value in DatafileLocation.hymnLyrics.values()]
+
+            file = os.path.join(MacroParser.macros_dir, filename)
+            outfile = open(file, "w")
+            for file in bibleList:
+                if file in bibles:
+                    file = file.replace(".bible", "")
+                    outfile.write("DOWNLOAD:::MarvelBible:::{0}\n".format(file))
+            for file in commentaryList:
+                if file in commentaries:
+                    file = file.replace(".commentary", "")
+                    outfile.write("DOWNLOAD:::MarvelCommentary:::{0}\n".format(file))
+            for file in bookList:
+                if file in hymns:
+                    file = file.replace(".book", "")
+                    outfile.write("DOWNLOAD:::HymnLyrics:::{0}\n".format(file))
+            for file in GithubUtil("otseng/UniqueBible_Bibles").getRepoData():
+                if file in bibleList:
+                    outfile.write("DOWNLOAD:::GitHubBible:::{0}\n".format(file.replace(".bible", "")))
+            for file in GithubUtil("darrelwright/UniqueBible_Commentaries").getRepoData():
+                if file in commentaryList:
+                    outfile.write("DOWNLOAD:::GitHubCommentary:::{0}\n".format(file.replace(".commentary", "")))
+            for file in GithubUtil("darrelwright/UniqueBible_Books").getRepoData():
+                if file in bookList:
+                    outfile.write("DOWNLOAD:::GitHubBook:::{0}\n".format(file.replace(".book", "")))
+            for file in GithubUtil("darrelwright/UniqueBible_Maps-Charts").getRepoData():
+                if file in bookList:
+                    outfile.write("DOWNLOAD:::GitHubMap:::{0}\n".format(file.replace(".book", "")))
+            for file in GithubUtil("otseng/UniqueBible_PDF").getRepoData():
+                if file in pdfList:
+                    outfile.write("DOWNLOAD:::GitHubPdf:::{0}\n".format(file.replace(".pdf", "")))
+            for file in GithubUtil("otseng/UniqueBible_EPUB").getRepoData():
+                if file in epubList:
+                    outfile.write("DOWNLOAD:::GitHubEpub:::{0}\n".format(file.replace(".epub", "")))
+            outfile.close()
+            self.displayMessage("Command saved to {0}".format(filename))
 
     def openSaveMacroDialog(self, message):
         filename, ok = QInputDialog.getText(self, "UniqueBible.app", message, QLineEdit.Normal, "")

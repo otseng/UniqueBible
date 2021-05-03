@@ -705,4 +705,6 @@ translation = {
     "notFound": "नहीं मिला",
     "unknown": "अज्ञात",
     "alreadyExists": "पहले ही",
+    "downloadMissingFiles": "गुम फ़ाइलों को डाउनलोड करें",
+    "downloadExistingFiles": "मौजूदा फ़ाइल डाउनलोड करें",
 }

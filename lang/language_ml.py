@@ -705,4 +705,6 @@ translation = {
     "notFound": "കണ്ടെത്താനായില്ല",
     "unknown": "അപരിചിതമായ",
     "alreadyExists": "നിലവിലുണ്ടു്",
+    "downloadMissingFiles": "हराएको ഫയലുകള് ഡൌണ്ലോട് ചെയ്യുക",
+    "downloadExistingFiles": "ഫയലുകള് ഡൌണ്ലോട് ചെയ്യുക",
 }

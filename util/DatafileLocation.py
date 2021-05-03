@@ -146,4 +146,3 @@ class DatafileLocation:
         "Hymn Lyrics - Spanish - Himnos Letras":
             ((config.marvelData, "books", "Hymn Lyrics - Spanish.book"), "11_H2BxoSdWdcmZ2nv3E3vh9uaXBeyfE8"),
     }
-

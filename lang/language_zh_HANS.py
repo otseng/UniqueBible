@@ -705,4 +705,6 @@ translation = {
     "notFound": "未找到",
     "unknown": "未知",
     "alreadyExists": "已存在",
+    "downloadMissingFiles": "下载缺少的文件",
+    "downloadExistingFiles": "下载现有文件",
 }

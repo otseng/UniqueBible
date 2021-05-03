@@ -705,4 +705,6 @@ translation = {
     "notFound": "negăsit",
     "unknown": "necunoscut",
     "alreadyExists": "există deja",
+    "downloadMissingFiles": "Descărcare fişiere lipsă",
+    "downloadExistingFiles": "Descărcare fişiere existente",
 }

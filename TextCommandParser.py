@@ -2571,10 +2571,10 @@ class TextCommandParser:
                 if os.path.isfile(os.path.join(*databaseInfo[0])):
                     self.parent.displayMessage("{0} already exists".format(file))
                 else:
-                    # self.parent.downloader = Downloader(self, databaseInfo, True)
-                    # self.downloader.show()
+                    # self.parent.downloader = Downloader(self.parent, databaseInfo, True)
+                    # self.parent.downloader.show()
                     self.parent.downloadFile(databaseInfo, False)
-                    self.parent.displayMessage("{0} downloaded".format(file))
+                    self.parent.displayMessage("{0} downloading".format(file))
             else:
                 self.parent.displayMessage("{0} not found".format(file))
         return ("", "", {})

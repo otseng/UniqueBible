@@ -3200,11 +3200,28 @@ class MainWindow(QMainWindow):
             outfile.close()
             self.displayMessage("Command saved to {0}".format(filename))
 
+    def macroGenerateDownload(self):
+        filename, ok = self.openSaveMacroDialog(config.thisTranslation["message_macro_save_command"])
+        if ok:
+            file = os.path.join(MacroParser.macros_dir, filename)
+            outfile = open(file, "w")
+            for key in DatafileLocation.marvelBibles.keys():
+                outfile.write("DOWNLOAD:::MarvelBible:::{0}\n".format(key))
+            for key in DatafileLocation.marvelCommentaries.keys():
+                outfile.write("DOWNLOAD:::MarvelCommentary:::{0}\n".format(key))
+            for key in DatafileLocation.marvelData.keys():
+                outfile.write("DOWNLOAD:::MarvelData:::{0}\n".format(key))
+            for key in DatafileLocation.hymnLyrics.keys():
+                outfile.write("DOWNLOAD:::HymnLyrics:::{0}\n".format(key))
+            outfile.close()
+            self.displayMessage("Command saved to {0}".format(filename))
+
+
     def openSaveMacroDialog(self, message):
         filename, ok = QInputDialog.getText(self, "UniqueBible.app", message, QLineEdit.Normal, "")
         if ok and not filename == "":
-            if not ".txt" in filename:
-                filename += ".txt"
+            if not ".ubam" in filename:
+                filename += ".ubam"
             file = os.path.join(MacroParser.macros_dir, filename)
             if os.path.isfile(file):
                 reply = QMessageBox.question(self, "File exists",

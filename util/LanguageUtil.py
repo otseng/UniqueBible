@@ -230,7 +230,7 @@ if __name__ == "__main__":
             print("Error executing: " + str(e))
     else:
         # printCodesSupportedLanguages()
-        addLanguageStringToAllFiles("alreadyExists", "already exists")
+        addLanguageStringToAllFiles("message_macro_generate_download", "Enter filename to generate file download")
         # createNewLanguageFile("ro")
         # validateLanguageFileSizes()
 

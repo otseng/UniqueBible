@@ -701,4 +701,8 @@ translation = {
     "saved": "Enregistré",
     "marvelData": "Sélectionner le merveilleux répertoire de données",
     "resourceDirectory": "Sélectionnez Répertoire de base de données",
+    "Downloading": "Téléchargement",
+    "notFound": "Non trouvé",
+    "unknown": "Inconnu",
+    "alreadyExists": "Existe déjà",
 }

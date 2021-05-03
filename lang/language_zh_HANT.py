@@ -701,4 +701,8 @@ translation = {
     "saved": "已儲存",
     "marvelData": "選取 marveData 目錄",
     "resourceDirectory": "選取資料庫目錄",
+    "Downloading": "正在下載",
+    "notFound": "找不到",
+    "unknown": "未知",
+    "alreadyExists": "已存在",
 }

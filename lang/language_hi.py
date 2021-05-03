@@ -701,4 +701,8 @@ translation = {
     "saved": "सहेजा गया",
     "marvelData": "Marvelata निर्देशिका का चयन करें",
     "resourceDirectory": "डाटाबेस डिरेक्ट्री चुनें",
+    "Downloading": "डाउनलोड्स",
+    "notFound": "नहीं मिला",
+    "unknown": "अज्ञात",
+    "alreadyExists": "पहले ही",
 }

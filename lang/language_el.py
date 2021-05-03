@@ -701,4 +701,8 @@ translation = {
     "saved": "Σώθηκε!",
     "marvelData": "Επιλογή καταλόγου θαυμάτων",
     "resourceDirectory": "Επιλογή καταλόγου βάσης δεδομένων",
+    "Downloading": "Λήψη:",
+    "notFound": "δεν βρέθηκε.",
+    "unknown": "' γνωστος",
+    "alreadyExists": "υπάρχει ήδη.",
 }

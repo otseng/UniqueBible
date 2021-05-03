@@ -701,4 +701,8 @@ translation = {
     "saved": "已保存",
     "marvelData": "选择 marvelData 目录",
     "resourceDirectory": "选择数据库目录",
+    "Downloading": "正在下载",
+    "notFound": "未找到",
+    "unknown": "未知",
+    "alreadyExists": "已存在",
 }

@@ -701,4 +701,8 @@ translation = {
     "saved": "저장된",
     "marvelData": "marvelData Directory를 선택한다.",
     "resourceDirectory": "데이터베이스 디렉토리 선택",
+    "Downloading": "다운로드",
+    "notFound": "없음",
+    "unknown": "모르는",
+    "alreadyExists": "이미 존재하는",
 }

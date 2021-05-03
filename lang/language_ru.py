@@ -701,4 +701,8 @@ translation = {
     "saved": "Сохранено",
     "marvelData": "Выбрать каталог marvelData",
     "resourceDirectory": "Выбрать каталог базы данных",
+    "Downloading": "Загрузка",
+    "notFound": "не найдено",
+    "unknown": "неизвестно",
+    "alreadyExists": "уже существует",
 }

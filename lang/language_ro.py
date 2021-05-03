@@ -701,4 +701,8 @@ translation = {
     "saved": "Salvat",
     "marvelData": "Selectare director marvelData",
     "resourceDirectory": "Selectare director bază de date",
+    "Downloading": "Descărcare",
+    "notFound": "negăsit",
+    "unknown": "necunoscut",
+    "alreadyExists": "există deja",
 }

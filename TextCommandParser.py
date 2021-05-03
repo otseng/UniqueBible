@@ -1,4 +1,6 @@
 # coding=utf-8
+import zipfile
+
 from LexicalData import LexicalData
 import os, subprocess, signal, re, config, webbrowser, platform, multiprocessing
 from BibleVerseParser import BibleVerseParser
@@ -17,6 +19,7 @@ from qtpy.QtWidgets import QApplication
 from gui.Downloader import Downloader
 from install.module import *
 from util.DatafileLocation import DatafileLocation
+from util.GithubUtil import GithubUtil
 
 try:
     # Note: qtpy.QtTextToSpeech is not found!
@@ -2563,20 +2566,55 @@ class TextCommandParser:
 
     # DOWNLOAD:::
     def download(self, command, source):
-        action, file = self.splitCommand(command)
+        action, filename = self.splitCommand(command)
         action = action.lower()
-        if action == 'marvelbible':
-            if file in DatafileLocation.marvelBibles.keys():
-                databaseInfo = DatafileLocation.marvelBibles[file]
+        if action.startswith("marvel") or action.startswith("hymn"):
+            if action == "marvelbible":
+                dataset = DatafileLocation.marvelBibles
+            elif action == "marvelcommentary":
+                dataset = DatafileLocation.marvelCommentaries
+            elif action == "marveldata":
+                dataset = DatafileLocation.marvelData
+            elif action == "hymnlyrics":
+                dataset = DatafileLocation.hymnLyrics
+            else:
+                self.parent.displayMessage("{0} {1}".format(action, config.thisTranslation["unknown"]))
+                return ("", "", {})
+            if filename in dataset.keys():
+                databaseInfo = dataset[filename]
                 if os.path.isfile(os.path.join(*databaseInfo[0])):
-                    self.parent.displayMessage("{0} already exists".format(file))
+                    self.parent.displayMessage("{0} {1}".format(filename, config.thisTranslation["alreadyExists"]))
                 else:
                     # self.parent.downloader = Downloader(self.parent, databaseInfo, True)
                     # self.parent.downloader.show()
                     self.parent.downloadFile(databaseInfo, False)
-                    self.parent.displayMessage("{0} downloading".format(file))
+                    self.parent.reloadControlPanel(False)
+                    self.parent.displayMessage("{0} {1}".format(config.thisTranslation["Downloading"], filename))
             else:
-                self.parent.displayMessage("{0} not found".format(file))
+                self.parent.displayMessage("{0} {1}".format(filename, config.thisTranslation["notFound"]))
+        elif action.startswith("github"):
+            if action == "githubbible":
+                repo, directory, title, extension = ("otseng/UniqueBible_Bibles", "bibles", "githubBibles", "bible")
+                github = GithubUtil(repo)
+                repoData = github.getRepoData()
+                folder = os.path.join(config.marvelData, directory)
+            else:
+                self.parent.displayMessage("{0} {1}".format(action, config.thisTranslation["unknown"]))
+                return ("", "", {})
+            filename += "." + extension
+            if os.path.isfile(os.path.join(folder, filename)):
+                self.parent.displayMessage("{0} {1}".format(filename, config.thisTranslation["alreadyExists"]))
+            else:
+                file = os.path.join(folder, filename+".zip")
+                github.downloadFile(file, repoData[filename])
+                with zipfile.ZipFile(file, 'r') as zipped:
+                    zipped.extractall(folder)
+                os.remove(file)
+                self.parent.reloadControlPanel(False)
+                self.parent.displayMessage("{0} {1}".format(filename, config.thisTranslation["message_installed"]))
+        else:
+            self.parent.displayMessage("{0} {1}".format(action, config.thisTranslation["unknown"]))
+
         return ("", "", {})
 
 

@@ -701,4 +701,8 @@ translation = {
     "saved": "Gespeichert",
     "marvelData": "MarvelData-Verzeichnis auswählen",
     "resourceDirectory": "Datenbankverzeichnis auswählen",
+    "Downloading": "Download läuft",
+    "notFound": "nicht gefunden",
+    "unknown": "Unbekannt",
+    "alreadyExists": "ist bereits vorhanden",
 }

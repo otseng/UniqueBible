@@ -3278,6 +3278,7 @@ class MainWindow(QMainWindow):
                 if file not in epubList:
                     outfile.write("DOWNLOAD:::GitHubEpub:::{0}\n".format(file.replace(".epub", "")))
             outfile.close()
+            self.reloadResources()
             self.displayMessage("Command saved to {0}".format(filename))
 
     def macroGenerateDownloadExistingFiles(self):
@@ -3326,6 +3327,7 @@ class MainWindow(QMainWindow):
                 if file in epubList:
                     outfile.write("DOWNLOAD:::GitHubEpub:::{0}\n".format(file.replace(".epub", "")))
             outfile.close()
+            self.reloadResources()
             self.displayMessage("Command saved to {0}".format(filename))
 
     def openSaveMacroDialog(self, message):

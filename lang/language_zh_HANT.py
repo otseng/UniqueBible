@@ -708,4 +708,5 @@ translation = {
     "downloadMissingFiles": "下載遺漏的檔案",
     "downloadExistingFiles": "下載現有檔案",
     "parseBooklessReferences": "在選取的文字中剖析沒有註明書卷的經文參照。",
+    "exportToDocx": "匯出至 Word 文件",
 }

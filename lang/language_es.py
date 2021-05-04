@@ -708,4 +708,5 @@ translation = {
     "downloadMissingFiles": "Descargar archivos que faltan",
     "downloadExistingFiles": "Descargar archivos existentes",
     "parseBooklessReferences": "Analizar referencias sin libros en el texto seleccionado.",
+    "exportToDocx": "Exportar a documento de Word",
 }

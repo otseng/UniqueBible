@@ -1,3 +1,27 @@
+Major change in version 24.09:
+* Added a menu plugin "PowerPoint Text" to extract text from PowerPoint Files (*.pptx) and display on UBA.
+
+Major changes in version 24.08:
+* Improved display of differences in version comparison.
+* Improved display of search result exported Word Document.
+
+Major change in version 24.07:
+* Improved display of single verse version comparison of with use of table.
+
+Major changes in version 24.06:
+* Renamed 1 context plugin:
+    'plugins/context/Insert Text into Note Editor_Ctrl+Shift+I.py'
+* Added 5 new context plugins:
+    'plugins/context/Insert Text into Existing Word Document.py'
+    'plugins/context/Insert Text into NEW Word Dcoument.py'
+    'plugins/context/Insert References into Existing Word Document.py'
+    'plugins/context/Insert References into Note Editor.py'
+    'plugins/context/Insert References into NEW Word Dcoument.py'
+
+Major changes in version 24.05:
+* Added support to export Bible / Study Tab to Word Document (*.docx).
+* Added icon buttons on Focus menu layout to export content to Word Document.
+
 Major change in version 24.03, 24.04:
 * Added a config flag 'parseBooklessReferences', giving users an option to parse bookless references in selected text.
     This option is especially using for parsing references in non-tagged text, like pdf or word document.

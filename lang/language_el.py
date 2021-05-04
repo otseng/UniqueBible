@@ -708,4 +708,5 @@ translation = {
     "downloadMissingFiles": "Λήψη αρχείων που λείπουν",
     "downloadExistingFiles": "Μεταφόρτωση υπαρχόντων αρχείων",
     "parseBooklessReferences": "Ανάλυση παραπομπών σε επιλεγμένα κείμενα.",
+    "exportToDocx": "Εξαγωγή σε έγγραφο Word",
 }

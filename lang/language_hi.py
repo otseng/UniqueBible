@@ -708,4 +708,5 @@ translation = {
     "downloadMissingFiles": "गुम फ़ाइलों को डाउनलोड करें",
     "downloadExistingFiles": "मौजूदा फ़ाइल डाउनलोड करें",
     "parseBooklessReferences": "चुने गए पाठ में बुकलेस संदर्भों का विश्लेषण करें.",
+    "exportToDocx": "दस्तावेज़ शब्द दस्तावेज़ में निर्यात करें",
 }

@@ -4,6 +4,8 @@ import os
 import re
 import config
 from http.server import SimpleHTTPRequestHandler
+
+from BiblesSqlite import BiblesSqlite
 from TextCommandParser import TextCommandParser
 from util.RemoteCliMainWindow import RemoteCliMainWindow
 from urllib.parse import urlparse
@@ -13,6 +15,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
 
     def __init__(self, *args, **kwargs):
         self.textCommandParser = TextCommandParser(RemoteCliMainWindow())
+        self.bibles = BiblesSqlite().getBibleList()
         super().__init__(*args, directory="htmlResources", **kwargs)
 
     def do_GET(self):
@@ -136,8 +139,9 @@ visibility: hidden;
             </head>
             <body style="padding-top: 10px;" onload="document.getElementById('cmd').focus();" ontouchstart="">
                 <span id='v0.0.0'></span>
-                
                 <form action="index.html" action="get">
+                {12}
+                <br/>
                 {1}: <input type="text" id="cmd" style="width:60%" name="cmd" value="{0}"/>
                 <input type="submit" value="{2}"/>
                 </form>
@@ -176,7 +180,8 @@ visibility: hidden;
             config.fontChinese,
             config.theme,
             self.getHighlightCss(),
-            ""
+            "",
+            self.bibleSelection()
         )
         self.wfile.write(bytes(html, "utf8"))
 
@@ -218,6 +223,19 @@ visibility: hidden;
                          self.getHighlightCss(),
                          "")
         return html
+
+    def bibleSelection(self):
+        action = ""
+        return self.formatSelectList("bibleName", action, self.bibles, config.mainB)
+
+    def formatSelectList(self, id, action, options, selected):
+        selectForm = "<select id='{0}' onchange='{1}'>".format(id, action)
+        for value in options:
+            selectForm += "<option value='{0}' {1}>{0}</option>".format(value,
+                ("selected='selected'" if value == selected else ""))
+        selectForm += "</select>"
+        return selectForm
+
 
     def getHighlightCss(self):
         css = ""

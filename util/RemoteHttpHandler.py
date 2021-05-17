@@ -31,7 +31,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             RemoteHttpHandler.abbreviations = parser.standardAbbreviation
         self.abbreviations = RemoteHttpHandler.abbreviations
         if RemoteHttpHandler.books is None:
-            RemoteHttpHandler.books = [(k, v) for k, v in self.abbreviations.items()]
+            RemoteHttpHandler.books = [(k, v) for k, v in self.abbreviations.items() if int(k) <= 69]
         self.books = RemoteHttpHandler.books
         super().__init__(*args, directory="htmlResources", **kwargs)
 
@@ -131,7 +131,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 -->
                 <script src='js/{9}.js'></script>
                 <script src='w3.js'></script>
-                <script src='js/http_server.js?4'></script>
+                <script src='js/http_server.js'></script>
                 <script>
                 var queryString = window.location.search;	
                 queryString = queryString.substring(1);
@@ -226,6 +226,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 "<!-- <script src='js/common.js'></script> -->"
                 "<script src='js/{7}.js'></script>"
                 "<script src='w3.js'></script>"
+                "<script src='js/http_server.js'></script>"
                 "<script src='js/custom.js'></script>"
                 "{0}"
                 "<script>"

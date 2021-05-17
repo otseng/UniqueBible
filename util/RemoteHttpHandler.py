@@ -131,7 +131,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 {10} {11}
                 </style>
                 <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css'>
-                <script src='js/common.js?1'></script>
+                <script src='js/common.js'></script>
                 <script src='js/{9}.js'></script>
                 <script src='w3.js'></script>
                 <script src='js/http_server.js'></script>

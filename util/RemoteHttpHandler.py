@@ -17,6 +17,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
     textCommandParser = None
     bibles = None
     books = None
+    abbreviations = None
 
     def __init__(self, *args, **kwargs):
         if RemoteHttpHandler.textCommandParser is None:
@@ -25,9 +26,12 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         if RemoteHttpHandler.bibles is None:
             RemoteHttpHandler.bibles = [(bible, bible) for bible in BiblesSqlite().getBibleList()]
         self.bibles = RemoteHttpHandler.bibles
-        if RemoteHttpHandler.books is None:
+        if RemoteHttpHandler.abbreviations is None:
             parser = BibleVerseParser(config.parserStandarisation)
-            RemoteHttpHandler.books = [(k, v) for k, v in parser.standardAbbreviation.items()]
+            RemoteHttpHandler.abbreviations = parser.standardAbbreviation
+        self.abbreviations = RemoteHttpHandler.abbreviations
+        if RemoteHttpHandler.books is None:
+            RemoteHttpHandler.books = [(k, v) for k, v in self.abbreviations.items()]
         self.books = RemoteHttpHandler.books
         super().__init__(*args, directory="htmlResources", **kwargs)
 
@@ -36,7 +40,9 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             query_components = parse_qs(urlparse(self.path).query)
             if 'cmd' in query_components:
                 self.command = query_components["cmd"][0].strip()
-                if len(self.command) == 0 or self.command.lower() in (".help", "?"):
+                if len(self.command) == 0:
+                    self.command = self.abbreviations[config.mainB]
+                if self.command.lower() in (".help", "?"):
                     content = self.helpContent()
                 elif self.command.lower() in (".quit", ".stop"):
                     self.closeWindow()
@@ -45,8 +51,8 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 else:
                     view, content, dict = self.textCommandParser.parser(self.command, "http")
             else:
-                self.command = ""
-                content = self.helpContent()
+                self.command = self.abbreviations[str(config.mainB)]
+                view, content, dict = self.textCommandParser.parser(self.command, "http")
             content = self.wrapHtml(content)
             outputFile = os.path.join("htmlResources", "main.html")
             fileObject = open(outputFile, "w", encoding="utf-8")
@@ -142,7 +148,6 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 var versionList = []; var compareList = []; var parallelList = []; 
                 var diffList = []; var searchList = [];
                 </script>
-                <script src='js/custom.js'></script>
 
             </head>
             <body style="padding-top: 10px;" onload="document.getElementById('commandInput').focus();" ontouchstart="">

@@ -9,7 +9,6 @@ from BibleBooks import BibleBooks
 from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite
 from TextCommandParser import TextCommandParser
-from ToolsSqlite import Book
 from util.RemoteCliMainWindow import RemoteCliMainWindow
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
@@ -234,9 +233,6 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 "<script src='js/http_server.js'></script>"
                 "<script src='js/custom.js'></script>"
                 "{0}"
-                "<script>"
-                ""
-                "</script>"
                 "<script>var versionList = []; var compareList = []; var parallelList = []; "
                 "var diffList = []; var searchList = [];</script></head>"
                 "<body><span id='v0.0.0'></span>{1}"

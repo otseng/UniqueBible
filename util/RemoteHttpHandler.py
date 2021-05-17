@@ -16,19 +16,19 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
 
     textCommandParser = None
     bibles = None
-    bookMap = None
+    books = None
 
     def __init__(self, *args, **kwargs):
         if RemoteHttpHandler.textCommandParser is None:
             RemoteHttpHandler.textCommandParser = TextCommandParser(RemoteCliMainWindow())
         self.textCommandParser = RemoteHttpHandler.textCommandParser
         if RemoteHttpHandler.bibles is None:
-            RemoteHttpHandler.bibles = BiblesSqlite().getBibleList()
+            RemoteHttpHandler.bibles = [(bible, bible) for bible in BiblesSqlite().getBibleList()]
         self.bibles = RemoteHttpHandler.bibles
-        if RemoteHttpHandler.bookMap is None:
+        if RemoteHttpHandler.books is None:
             parser = BibleVerseParser(config.parserStandarisation)
-            RemoteHttpHandler.bookMap = parser.standardAbbreviation
-        self.bookMap = RemoteHttpHandler.bookMap
+            RemoteHttpHandler.books = [(k, v) for k, v in parser.standardAbbreviation.items()]
+        self.books = RemoteHttpHandler.books
         super().__init__(*args, directory="htmlResources", **kwargs)
 
     def do_GET(self):
@@ -148,7 +148,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             <body style="padding-top: 10px;" onload="document.getElementById('commandInput').focus();" ontouchstart="">
                 <span id='v0.0.0'></span>
                 <form id="commandForm" action="index.html" action="get">
-                {12}
+                {12} {13}
                 <br/><br/>
                 {1}: <input type="text" id="commandInput" style="width:60%" name="cmd" value="{0}"/>
                 <input type="submit" value="{2}"/>
@@ -189,7 +189,8 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             config.theme,
             self.getHighlightCss(),
             "",
-            self.bibleSelection()
+            self.bibleSelection(),
+            self.bookSelection()
         )
         self.wfile.write(bytes(html, "utf8"))
 
@@ -244,14 +245,16 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
     def bibleSelection(self):
         return self.formatSelectList("bibleName", "submitTextCommand", self.bibles, config.mainText)
 
+    def bookSelection(self):
+        return self.formatSelectList("bookName", "submitBookCommand", self.books, str(config.mainB))
+
     def formatSelectList(self, id, action, options, selected):
         selectForm = "<select id='{0}' onchange='{1}(\"{0}\")'>".format(id, action)
-        for value in options:
-            selectForm += "<option value='{0}' {1}>{0}</option>".format(value,
+        for value, display in options:
+            selectForm += "<option value='{0}' {2}>{1}</option>".format(value, display,
                 ("selected='selected'" if value == selected else ""))
         selectForm += "</select>"
         return selectForm
-
 
     def getHighlightCss(self):
         css = ""

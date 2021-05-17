@@ -131,12 +131,10 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 {10} {11}
                 </style>
                 <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css'>
-                <!-- 
                 <script src='js/common.js?1'></script>
-                -->
                 <script src='js/{9}.js'></script>
                 <script src='w3.js'></script>
-                <script src='js/http_server.js?6'></script>
+                <script src='js/http_server.js'></script>
                 <script>
                 var queryString = window.location.search;	
                 queryString = queryString.substring(1);
@@ -230,10 +228,10 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 "{8} {9}</style>"
                 "<link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{7}.css'>"
                 "<link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css'>"
-                "<!-- <script src='js/common.js'></script> -->"
+                "<script src='js/common.js'></script>"
                 "<script src='js/{7}.js'></script>"
                 "<script src='w3.js'></script>"
-                "<script src='js/http_server.js?6'></script>"
+                "<script src='js/http_server.js'></script>"
                 "<script src='js/custom.js'></script>"
                 "{0}"
                 "<script>"

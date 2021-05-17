@@ -5,15 +5,18 @@ import re
 import config
 from http.server import SimpleHTTPRequestHandler
 
+from BibleBooks import BibleBooks
 from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite
 from TextCommandParser import TextCommandParser
+from ToolsSqlite import Book
 from util.RemoteCliMainWindow import RemoteCliMainWindow
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 
 class RemoteHttpHandler(SimpleHTTPRequestHandler):
 
+    parser = None
     textCommandParser = None
     bibles = None
     books = None
@@ -26,9 +29,11 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         if RemoteHttpHandler.bibles is None:
             RemoteHttpHandler.bibles = [(bible, bible) for bible in BiblesSqlite().getBibleList()]
         self.bibles = RemoteHttpHandler.bibles
+        if RemoteHttpHandler.parser is None:
+            RemoteHttpHandler.parser = BibleVerseParser(config.parserStandarisation)
+        self.parser = RemoteHttpHandler.parser
         if RemoteHttpHandler.abbreviations is None:
-            parser = BibleVerseParser(config.parserStandarisation)
-            RemoteHttpHandler.abbreviations = parser.standardAbbreviation
+            RemoteHttpHandler.abbreviations = self.parser.standardAbbreviation
         self.abbreviations = RemoteHttpHandler.abbreviations
         if RemoteHttpHandler.books is None:
             RemoteHttpHandler.books = [(k, v) for k, v in self.abbreviations.items() if int(k) <= 69]
@@ -131,7 +136,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 -->
                 <script src='js/{9}.js'></script>
                 <script src='w3.js'></script>
-                <script src='js/http_server.js'></script>
+                <script src='js/http_server.js?6'></script>
                 <script>
                 var queryString = window.location.search;	
                 queryString = queryString.substring(1);
@@ -153,7 +158,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             <body style="padding-top: 10px;" onload="document.getElementById('commandInput').focus();" ontouchstart="">
                 <span id='v0.0.0'></span>
                 <form id="commandForm" action="index.html" action="get">
-                {12} {13}
+                {12} {13} {14} {15}
                 <br/><br/>
                 {1}: <input type="text" id="commandInput" style="width:60%" name="cmd" value="{0}"/>
                 <input type="submit" value="{2}"/>
@@ -195,7 +200,9 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             self.getHighlightCss(),
             "",
             self.bibleSelection(),
-            self.bookSelection()
+            self.bookSelection(),
+            self.previousChapter(),
+            self.nextChapter()
         )
         self.wfile.write(bytes(html, "utf8"))
 
@@ -226,7 +233,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 "<!-- <script src='js/common.js'></script> -->"
                 "<script src='js/{7}.js'></script>"
                 "<script src='w3.js'></script>"
-                "<script src='js/http_server.js'></script>"
+                "<script src='js/http_server.js?6'></script>"
                 "<script src='js/custom.js'></script>"
                 "{0}"
                 "<script>"
@@ -261,6 +268,22 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 ("selected='selected'" if value == selected else ""))
         selectForm += "</select>"
         return selectForm
+
+    def previousChapter(self):
+        newChapter = config.mainC - 1
+        if newChapter < 1:
+            newChapter = 1
+        command = self.parser.bcvToVerseReference(config.mainB, newChapter, 1)
+        html = "<button type='button' onclick='submitCommand(\"{0}\")'>&lt;</button>".format(command)
+        return html
+
+    def nextChapter(self):
+        newChapter = config.mainC
+        if config.mainC < BibleBooks.getLastChapter(config.mainB):
+            newChapter += 1
+        command = self.parser.bcvToVerseReference(config.mainB, newChapter, 1)
+        html = "<button type='button' onclick='submitCommand(\"{0}\")'>&gt;</button>".format(command)
+        return html
 
     def getHighlightCss(self):
         css = ""

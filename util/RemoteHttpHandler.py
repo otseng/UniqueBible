@@ -107,10 +107,10 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 {10} {11}
                 </style>
                 <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css'>
-
                 <script src='js/common.js'></script>
                 <script src='js/{9}.js'></script>
                 <script src='w3.js'></script>
+                <script src='js/http_server.js'></script>
                 <script>
                 var queryString = window.location.search;	
                 queryString = queryString.substring(1);
@@ -132,10 +132,10 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             </head>
             <body style="padding-top: 10px;" onload="document.getElementById('cmd').focus();" ontouchstart="">
                 <span id='v0.0.0'></span>
-                <form action="index.html" action="get">
+                <form id="commandForm" action="index.html" action="get">
                 {12}
                 <br/>
-                {1}: <input type="text" id="cmd" style="width:60%" name="cmd" value="{0}"/>
+                {1}: <input type="text" id="commandBar" style="width:60%" name="cmd" value="{0}"/>
                 <input type="submit" value="{2}"/>
                 </form>
                 
@@ -200,8 +200,12 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 "<script src='js/common.js'></script>"
                 "<script src='js/{7}.js'></script>"
                 "<script src='w3.js'></script>"
+                "<script src='js/http_server.js'></script>"
                 "<script src='js/custom.js'></script>"
                 "{0}"
+                "<script>"
+                ""
+                "</script>"
                 "<script>var versionList = []; var compareList = []; var parallelList = []; "
                 "var diffList = []; var searchList = [];</script></head>"
                 "<body><span id='v0.0.0'></span>{1}"
@@ -219,11 +223,11 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         return html
 
     def bibleSelection(self):
-        action = ""
+        action = "submitTextCommand('{0}')"
         return self.formatSelectList("bibleName", action, self.bibles, config.mainB)
 
     def formatSelectList(self, id, action, options, selected):
-        selectForm = "<select id='{0}' onchange='{1}'>".format(id, action)
+        selectForm = "<select id='{0}' onchange='{1}'>".format(id, action.format(id))
         for value in options:
             selectForm += "<option value='{0}' {1}>{0}</option>".format(value,
                 ("selected='selected'" if value == selected else ""))

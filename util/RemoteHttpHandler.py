@@ -5,6 +5,7 @@ import re
 import config
 from http.server import SimpleHTTPRequestHandler
 
+from BibleVerseParser import BibleVerseParser
 from BiblesSqlite import BiblesSqlite
 from TextCommandParser import TextCommandParser
 from util.RemoteCliMainWindow import RemoteCliMainWindow
@@ -13,9 +14,21 @@ from urllib.parse import parse_qs
 
 class RemoteHttpHandler(SimpleHTTPRequestHandler):
 
+    textCommandParser = None
+    bibles = None
+    bookMap = None
+
     def __init__(self, *args, **kwargs):
-        self.textCommandParser = TextCommandParser(RemoteCliMainWindow())
-        self.bibles = BiblesSqlite().getBibleList()
+        if RemoteHttpHandler.textCommandParser is None:
+            RemoteHttpHandler.textCommandParser = TextCommandParser(RemoteCliMainWindow())
+        self.textCommandParser = RemoteHttpHandler.textCommandParser
+        if RemoteHttpHandler.bibles is None:
+            RemoteHttpHandler.bibles = BiblesSqlite().getBibleList()
+        self.bibles = RemoteHttpHandler.bibles
+        if RemoteHttpHandler.bookMap is None:
+            parser = BibleVerseParser(config.parserStandarisation)
+            RemoteHttpHandler.bookMap = parser.standardAbbreviation
+        self.bookMap = RemoteHttpHandler.bookMap
         super().__init__(*args, directory="htmlResources", **kwargs)
 
     def do_GET(self):
@@ -229,12 +242,10 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         return html
 
     def bibleSelection(self):
-        action = "submitTextCommand(\\\'{0}\\\')"
-        return self.formatSelectList("bibleName", action, self.bibles, config.mainText)
+        return self.formatSelectList("bibleName", "submitTextCommand", self.bibles, config.mainText)
 
     def formatSelectList(self, id, action, options, selected):
-        act = action.replace("{0}", id)
-        selectForm = "<select id='{0}' onchange='submitTextCommand(\"{0}\")'>".format(id)
+        selectForm = "<select id='{0}' onchange='{1}(\"{0}\")'>".format(id, action)
         for value in options:
             selectForm += "<option value='{0}' {1}>{0}</option>".format(value,
                 ("selected='selected'" if value == selected else ""))

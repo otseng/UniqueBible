@@ -155,7 +155,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             <body style="padding-top: 10px;" onload="document.getElementById('commandInput').focus();" ontouchstart="">
                 <span id='v0.0.0'></span>
                 <form id="commandForm" action="index.html" action="get">
-                {12} {13} {14} {15}
+                {12}&nbsp;&nbsp;{13}&nbsp;&nbsp;{14}&nbsp;&nbsp;{15}
                 <br/><br/>
                 {1}: <input type="text" id="commandInput" style="width:60%" name="cmd" value="{0}"/>
                 <input type="submit" value="{2}"/>
@@ -256,7 +256,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         return self.formatSelectList("bookName", "submitBookCommand", self.books, str(config.mainB))
 
     def formatSelectList(self, id, action, options, selected):
-        selectForm = "<select id='{0}' onchange='{1}(\"{0}\")'>".format(id, action)
+        selectForm = "<select id='{0}' style='width: 100px' onchange='{1}(\"{0}\")'>".format(id, action)
         for value, display in options:
             selectForm += "<option value='{0}' {2}>{1}</option>".format(value, display,
                 ("selected='selected'" if value == selected else ""))
@@ -268,7 +268,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         if newChapter < 1:
             newChapter = 1
         command = self.parser.bcvToVerseReference(config.mainB, newChapter, 1)
-        html = "<button type='button' onclick='submitCommand(\"{0}\")'>&lt;</button>".format(command)
+        html = "<button type='button' style='width: 50px' onclick='submitCommand(\"{0}\")'>&lt;</button>".format(command)
         return html
 
     def nextChapter(self):
@@ -276,7 +276,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         if config.mainC < BibleBooks.getLastChapter(config.mainB):
             newChapter += 1
         command = self.parser.bcvToVerseReference(config.mainB, newChapter, 1)
-        html = "<button type='button' onclick='submitCommand(\"{0}\")'>&gt;</button>".format(command)
+        html = "<button type='button' style='width: 50px' onclick='submitCommand(\"{0}\")'>&gt;</button>".format(command)
         return html
 
     def getHighlightCss(self):

@@ -2,10 +2,7 @@
 
 function onBodyLoad() {
     cmd = decodeURIComponent(location.search);
-    if (cmd.startsWith('?')) {
-        cmd = cmd.substring(1);
-    }
-    cmd = cmd.replace("cmd=", "")
+    cmd = cmd.replace("?cmd=", "")
              .replace("+", " ");
     el = document.getElementById('commandInput')
     el.value = cmd

@@ -1,3 +1,17 @@
+/* Onload functions */
+
+function onBodyLoad() {
+    cmd = decodeURIComponent(location.search);
+    if (cmd.startsWith('?')) {
+        cmd = cmd.substring(1);
+    }
+    cmd = cmd.replace("cmd=", "")
+             .replace("+", " ");
+    el = document.getElementById('commandInput')
+    el.value = cmd
+    el.focus();
+}
+
 /* Display message */
 function messageUser(messageHeader, message) {
     document.getElementById('myMessageHeader').innerHTML = messageHeader;

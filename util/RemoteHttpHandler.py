@@ -141,7 +141,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 <script src='js/common.js?v=1.001'></script>
                 <script src='js/{9}.js?v=1.001'></script>
                 <script src='w3.js?v=1.001'></script>
-                <script src='js/http_server.js?v=1.003'></script>
+                <script src='js/http_server.js?v=1.001'></script>
                 <script>
                 var queryString = window.location.search;	
                 queryString = queryString.substring(1);
@@ -298,7 +298,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 "<script src='js/common.js?v=1.001'></script>"
                 "<script src='js/{7}.js?v=1.001'></script>"
                 "<script src='w3.js?v=1.001'></script>"
-                "<script src='js/http_server.js?v=1.003'></script>"
+                "<script src='js/http_server.js?v=1.001'></script>"
                 """<script>
                 var target = document.querySelector('title');
                 var observer = new MutationObserver(function(mutations) {2}

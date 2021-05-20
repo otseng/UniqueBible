@@ -11,7 +11,7 @@ def qrCode(command, source):
         data = "http://{0}:{1}".format(NetworkUtil.get_ip(), config.httpServerPort)
     else:
         data = command
-    boxSize = 10 - (10/1000) * len(data)
+    boxSize = 12 - (10/1000) * len(data)
     if boxSize < 2:
         boxSize = 2
     qr = qrcode.QRCode(
@@ -30,7 +30,11 @@ def qrCode(command, source):
 
 config.mainWindow.textCommandParser.interpreters["qrcode"] = (qrCode, """
 # [KEYWORD] QRCODE
-# Display QRCODE of http-server address or text
+# Display QR CODE of http-server address or text
 # Usage - QRCODE:::server
 # Usage - QRCODE:::[Text to convert to QR Code]
+""")
+config.mainWindow.textCommandParser.interpreters["_qr"] = (qrCode, """
+# [KEYWORD] _QR
+# Shortcut version of QRCODE
 """)

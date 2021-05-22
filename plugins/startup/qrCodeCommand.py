@@ -26,12 +26,13 @@ def qrCode(command, source):
     boxSize = 12 - (10/1000) * len(data)
     if boxSize < 2:
         boxSize = 2
+    factory = qrcode.image.svg.SvgImage
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=boxSize,
         border=4,
-        image_factory=PymagingImage if config.noQt else None,
+        image_factory=factory,
     )
     qr.add_data(data)
     qr.make(fit=True)

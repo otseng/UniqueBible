@@ -25,6 +25,7 @@ def qrCode(command, source):
     qrCodeFile = os.path.join(".", "htmlResources", "images", "qrcode.png")
     qrCodeStream = open(qrCodeFile, "wb")
     img.save(qrCodeStream)
+    qrCodeStream.close()
     content = "<img style='position:absolute;margin:auto;top:0;left:0;right:0;bottom:0;' src='./images/qrcode.png'>"
     target = "main" if source == "http" else "popover.fullscreen"
     return (target, content, {})

@@ -4,12 +4,10 @@ from util.NetworkUtil import NetworkUtil
 
 
 def qrCode(command, source):
-    if not config.isQrCodeInstalled or (not config.noQt and not config.isPillowInstalled) or (config.noQt and not config.isPurePythonPngInstalled):
+    if not config.isQrCodeInstalled or not config.isPurePythonPngInstalled:
         return ("", "", {})
 
     import qrcode
-    if config.noQt:
-        from qrcode.image.pure import PymagingImage
 
     aliases = {
         "uba": "https://github.com/eliranwong/UniqueBible",
@@ -23,22 +21,10 @@ def qrCode(command, source):
         data = aliases[cmd]
     else:
         data = command
-    boxSize = 12 - (10/1000) * len(data)
-    if boxSize < 2:
-        boxSize = 2
-    factory = qrcode.image.svg.SvgImage
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=boxSize,
-        border=4,
-        image_factory=factory,
-    )
-    qr.add_data(data)
-    qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
+    img = qrcode.make(data, image_factory=qrcode.image.pure.PymagingImage)
     qrCodeFile = os.path.join(".", "htmlResources", "images", "qrcode.png")
-    img.save(qrCodeFile)
+    qrCodeStream = open(qrCodeFile, "wb")
+    img.save(qrCodeStream)
     content = "<img style='position:absolute;margin:auto;top:0;left:0;right:0;bottom:0;' src='./images/qrcode.png'>"
     target = "main" if source == "http" else "popover.fullscreen"
     return (target, content, {})

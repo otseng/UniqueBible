@@ -185,7 +185,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     url = config.httpServerViewerBaseUrl + "/submit.php"
                     data = {"code": self.viewerModeKey, "content": content}
                     response = requests.post(url, data=json.dumps(data))
-                    print("Submitted data to {0}: {1}".format(url, response))
+                    # print("Submitted data to {0}: {1}".format(url, response))
                 self.indexPage()
             else:
                 self.mainPage()

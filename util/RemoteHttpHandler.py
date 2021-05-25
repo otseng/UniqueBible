@@ -58,10 +58,14 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 config.httpServerViewerGlobalMode = False
         super().__init__(*args, directory="htmlResources", **kwargs)
 
+    def getCommands(self):
+        return {
+            ".myqrcode": self.getQrCodeCommand,
+            ".bible": self.getCurrentReference,
+        }
+
     def getShortcuts(self):
         return {
-            ".myqrcode": self.getQrCodeCommand(),
-            ".bible": self.getCurrentReference(),
             ".biblemenu": "_menu:::",
             ".commentarymenu": "_commentary:::{0}".format(config.commentaryText),
             ".timelinemenu": "BOOK:::Timelines",
@@ -144,12 +148,15 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     self.command = query_components["cmd"][0].strip()
                     # Convert command shortcut
                     shortcuts = self.getShortcuts()
+                    commands = self.getCommands()
                     if not self.command:
                         self.command = config.history["main"][-1]
                     elif self.command.lower() in config.customCommandShortcuts.keys():
                         self.command = config.customCommandShortcuts[self.command.lower()]
                     elif self.command.lower() in shortcuts.keys():
                         self.command = shortcuts[self.command.lower()]
+                    elif self.command.lower() in commands.keys():
+                        self.command = commands[self.command.lower()]()
                     elif self.command.upper()[1:] in self.getVerseFeatures().keys():
                         self.command = "{0}:::{1}".format(self.command.upper()[1:], self.getCurrentReference())
                     elif self.command.upper()[1:] in self.getChapterFeatures().keys():

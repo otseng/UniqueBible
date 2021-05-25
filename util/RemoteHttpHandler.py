@@ -198,14 +198,14 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 if config.bibleWindowContentTransformers:
                     for transformer in config.bibleWindowContentTransformers:
                         content = transformer(content)
-                outputFile = os.path.join("htmlResources", "main.html")
+                outputFile = os.path.join("htmlResources", "main-{0}.html".format(self.session))
                 with open(outputFile, "w", encoding="utf-8") as fileObject:
                     fileObject.write(content)
                 if config.httpServerViewerGlobalMode and config.webPresentationMode:
                     url = config.httpServerViewerBaseUrl + "/submit.php"
                     data = {"code": self.session, "content": content}
                     response = requests.post(url, data=json.dumps(data))
-                    print("Submitted data to {0}: {1}".format(url, response))
+                    # print("Submitted data to {0}: {1}".format(url, response))
                 self.indexPage()
             else:
                 self.mainPage()
@@ -305,7 +305,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 {0}
                 <div id="content">
                     <div id="bibleDiv" onscroll="scrollBiblesIOS(this.id)">
-                        <iframe id="bibleFrame" name="main-{2}" onload="resizeSite()" width="100%" height="{1}%" src="main.html">Oops!</iframe>
+                        <iframe id="bibleFrame" name="main-{2}" onload="resizeSite()" width="100%" height="{1}%" src="main-{14}.html">Oops!</iframe>
                     </div>
                     <div id="toolDiv" onscroll="scrollBiblesIOS(this.id)">
                         <iframe id="toolFrame" name="tool-{2}" onload="resizeSite()" src="empty.html">Oops!</iframe>
@@ -377,12 +377,13 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             config.mainB,
             config.mainC,
             config.mainV,
+            self.session,
         )
         self.wfile.write(bytes(html, "utf8"))
 
     def mainPage(self):
         self.commonHeader()
-        html = open(os.path.join("htmlResources", "main.html"), 'r').read()
+        html = open(os.path.join("htmlResources", "main-{0}.html".format(self.session)), 'r').read()
         self.wfile.write(bytes(html, "utf8"))
 
     def commonHeader(self):

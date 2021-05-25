@@ -1,14 +1,13 @@
 # https://docs.python.org/3/library/http.server.html
 # https://ironpython-test.readthedocs.io/en/latest/library/simplehttpserver.html
+import hashlib
 import json
 import os, re, config, pprint
 import subprocess
 import urllib
 
 import requests
-from datetime import date
 from http.server import SimpleHTTPRequestHandler
-from random import Random
 from time import gmtime
 from BibleBooks import BibleBooks
 from BibleVerseParser import BibleVerseParser
@@ -27,7 +26,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
     books = None
     bookMap = None
     abbreviations = None
-    viewerModeKey = None
+    session = None
     users = []
 
     def __init__(self, *args, **kwargs):
@@ -55,13 +54,8 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         if config.httpServerViewerGlobalMode:
             try:
                 urllib.request.urlopen(config.httpServerViewerBaseUrl)
-                if RemoteHttpHandler.viewerModeKey is None:
-                    now = date.today()
-                    RemoteHttpHandler.viewerModeKey = "{0}-{1}-{2}-{3}" \
-                        .format(now.year, now.month, now.day, Random().randint(10000, 99999))
             except:
                 config.httpServerViewerGlobalMode = False
-        self.viewerModeKey = RemoteHttpHandler.viewerModeKey
         super().__init__(*args, directory="htmlResources", **kwargs)
 
     def getShortcuts(self):
@@ -137,6 +131,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             "plainmode": self.togglePlainMode,
             "regexcasesensitive": self.toggleRegexCaseSensitive,
         }
+        self.session = self.getSession()
         clientIP = self.client_address[0]
         if clientIP not in self.users:
             self.users.append(clientIP)
@@ -208,9 +203,9 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     fileObject.write(content)
                 if config.httpServerViewerGlobalMode and config.webPresentationMode:
                     url = config.httpServerViewerBaseUrl + "/submit.php"
-                    data = {"code": self.viewerModeKey, "content": content}
+                    data = {"code": self.session, "content": content}
                     response = requests.post(url, data=json.dumps(data))
-                    # print("Submitted data to {0}: {1}".format(url, response))
+                    print("Submitted data to {0}: {1}".format(url, response))
                 self.indexPage()
             else:
                 self.mainPage()
@@ -840,7 +835,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
 
     def getQrCodeCommand(self):
         if config.httpServerViewerGlobalMode:
-            return "QRCODE:::{0}/index.php?code={1}".format(config.httpServerViewerBaseUrl, self.viewerModeKey)
+            return "QRCODE:::{0}/index.php?code={1}".format(config.httpServerViewerBaseUrl, self.session)
         else:
             return "QRCODE:::server"
 
@@ -883,3 +878,11 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         content += self.formatSearchSection("Books", "SEARCHBOOK", "SEARCHBOOK", self.textCommandParser.parent.referenceBookList)
         content += self.formatSearchSection("Third Party Dictionaries", "SEARCHTHIRDDICTIONARY", "SEARCHTHIRDDICTIONARY", self.textCommandParser.parent.thirdPartyDictionaryList)
         return content
+
+    def getSession(self):
+        headers = {x: y for x, y in self.headers._headers}
+        ip = self.client_address[0]
+        browser = headers['User-Agent']
+        session = str(ip + browser).encode('utf-8')
+        session = hashlib.sha256(session).hexdigest()[:30]
+        return session

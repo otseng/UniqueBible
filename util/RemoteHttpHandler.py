@@ -371,7 +371,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 </div>
 
                 {0}
-                <div id="content">
+                <div id="content" style="padding:5px;">
                     <div id="bibleDiv" onscroll="scrollBiblesIOS(this.id)">
                         <iframe id="bibleFrame" name="main-{2}" onload="resizeSite();{11}" width="100%" height="{1}%" src="main-{6}.html">Oops!</iframe>
                     </div>

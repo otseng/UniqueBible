@@ -1,3 +1,23 @@
+Major change in version 25.07:
+* Changed button icon on http-server mini layout.
+
+Major change in version 25.06:
+* Fixed button sizes on iOS.
+
+Major changes in version 25.05:
+* Added a QR code button to http-server default layout.
+* Added a QR code link to http-server mini layout.
+
+Major changes in version 25.04:
+* Added a bible link to verse comparison heading.
+* Http-server page now loads _setconfig::: link automatically.
+* Http-server layout now updates favourite bible buttons after a change of "setfavouritebible", "setfavouritebible2" or "setfavouritebible3".
+* Added command shortcuts to http-server:
+            ".setfavouritebible2"
+            ".setfavouritebible3"
+            ".setversenosingleclickaction"
+            ".setversenodoubleclickaction"
+
 Major change in version 25.03:
 * Corrected a subheading in http-server download page.
 

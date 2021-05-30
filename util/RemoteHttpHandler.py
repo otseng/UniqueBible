@@ -464,8 +464,8 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             "rgb(54, 53, 53)" if config.theme == "dark" else "rgb(247, 247, 247)",
             "#b6b4b4" if config.theme == "dark" else "rgb(70, 70, 70)",
             "#f1f1f1" if config.theme == "dark" else "rgb(5, 5, 5)",
-            "adjustBibleDivWidth('50px')",
-            "50px"
+            "adjustBibleDivWidth('{0}')".format(config.webDecreaseBibleDivWidth) if config.webDecreaseBibleDivWidth != "" else "",
+            config.webPaddingLeft
         )
         self.wfile.write(bytes(html, "utf8"))
 

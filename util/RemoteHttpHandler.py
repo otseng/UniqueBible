@@ -367,9 +367,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             </head>
             <body style="padding-top: 10px;" onload="onBodyLoad();{16}" ontouchstart="">
                 <span id='v0.0.0'></span>
-
                 <div style="padding-left: {17};">
-                
                 <div id="mySidenav" class="sidenav">
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
                     <a href="javascript:void(0)" class="fullscreenbtn" onclick="fullScreenSwitch()">&#x26F6;</a>
@@ -443,7 +441,6 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 {5}
 
                 </script>
-                
                 </div>
             </body>
             </html>

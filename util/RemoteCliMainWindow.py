@@ -1,5 +1,4 @@
-import os, config, zipfile, gdown
-import shutil
+import os, config, zipfile, gdown, shutil
 
 from util.LanguageUtil import LanguageUtil
 from util.TextCommandParser import TextCommandParser

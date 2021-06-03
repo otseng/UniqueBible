@@ -1,3 +1,12 @@
+Major change in version 25.23:
+* Fixed an issue that cannot launch http-server.
+
+Major change in version 25.22:
+* Display command upon opening a web version page.
+
+Major change in version 25.21:
+* Added epub viewer to web version.
+
 Major changes in version 25.19, 25.20:
 * Fixed strange bible version names displayed before chapter numbers.
 * Changes are made about http-server:

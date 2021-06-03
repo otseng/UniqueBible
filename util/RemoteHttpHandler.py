@@ -180,7 +180,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         }
         if self.primaryUser or not config.webPresentationMode:
             query_components = parse_qs(urlparse(self.path).query)
-            #self.initialCommandInput = ""
+            self.initialCommandInput = ""
             if 'cmd' in query_components:
                 self.command = query_components["cmd"][0].strip()
                 # Convert command shortcut
@@ -190,7 +190,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 if not self.command:
                     initialCommand = config.history["main"][-1]
                     self.command = initialCommand
-                    #self.initialCommandInput = initialCommand
+                    self.initialCommandInput = initialCommand
                 elif commandLower in config.customCommandShortcuts.keys():
                     self.command = config.customCommandShortcuts[commandLower]
                 elif commandLower in shortcuts.keys():
@@ -242,7 +242,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             else:
                 initialCommand = config.history["main"][-1]
                 self.command = initialCommand
-                #self.initialCommandInput = initialCommand
+                self.initialCommandInput = initialCommand
                 view, content, dict = self.textCommandParser.parser(self.command, "http")
             content = self.wrapHtml(content)
             if config.bibleWindowContentTransformers:
@@ -284,7 +284,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 <meta http-equiv="Pragma" content="no-cache" />
                 <meta http-equiv="Expires" content="0" />
 
-                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{9}.css?v=1.023'>
+                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{9}.css?v=1.024'>
                 <style>
                 ::-webkit-scrollbar {4}
                   display: none;
@@ -380,8 +380,8 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 zh {4} font-family:'{8}'; {5} 
                 {10}
                 </style>
-                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/http_server.css?v=1.023'>
-                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css?v=1.023'>
+                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/http_server.css?v=1.024'>
+                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css?v=1.024'>
                 <script src='js/common.js?v=1.023'></script>
                 <script src='js/{9}.js?v=1.023'></script>
                 <script src='w3.js?v=1.023'></script>
@@ -479,7 +479,6 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 function closeSideNav() {4}
                     document.getElementById("mySidenav").style.width = "0";
                 {5}
-
                 </script>
                 </div>
             </body>
@@ -544,7 +543,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         html = """<a href="#" onclick="submitCommand('.bible')">{0}</a>""".format(self.parser.bcvToVerseReference(config.mainB, config.mainC, config.mainV))
         for item in sideNavItems:
             html += """<a href="#" onclick="submitCommand('{1}')">{0}</a>""".format(*item)
-        html += """<a href="#" onclick="submitCommand('qrcode:::'+window.location.href)">{0}</a>""".format(config.thisTranslation["qrcode"])
+        #html += """<a href="#" onclick="submitCommand('qrcode:::'+window.location.href)">{0}</a>""".format(config.thisTranslation["qrcode"])
         html += """<a href="https://github.com/eliranwong/UniqueBible/wiki/Web-Version-%5Bavailable-OFFLINE%5D" target="_blank">{0}</a>""".format(config.thisTranslation["menu1_wikiPages"])
         html += """<a href="traditional.html">繁體中文</a>""" if self.homePage != "traditional.html" else ""
         html += """<a href="simplified.html">简体中文</a>""" if self.homePage != "simplified.html" else ""
@@ -560,7 +559,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     <form id="commandForm" action="{4}" action="get">
                     <table class='layout' style='border-collapse: collapse;'><tr>
                     <td class='layout' style='white-space: nowrap;'>{1}&nbsp;</td>
-                    <td class='layout' style='width: 100%;'><input type="text" id="commandInput" style="width:100%" name="cmd" value=""/></td>
+                    <td class='layout' style='width: 100%;'><input type="text" id="commandInput" style="width:100%" name="cmd" value="{5}"/></td>
                     <td class='layout' style='white-space: nowrap;'>&nbsp;{2}&nbsp;{3}&nbsp;{0}</td>
                     </tr></table>
                     </form>
@@ -570,6 +569,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     self.submitButton(),
                     self.qrButton(),
                     self.homePage,
+                    self.initialCommandInput.replace('"', '\\"'),
                 )
             else:
                 return """
@@ -578,7 +578,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     {11}&nbsp;&nbsp;{12}{13}{14}{15}&nbsp;&nbsp;{9}&nbsp;&nbsp;{8}&nbsp;&nbsp;{16}
                     <br/><br/>
                     <span onclick="focusCommandInput()">{1}</span>:
-                    <input type="text" id="commandInput" style="width:60%" name="cmd" value=""/>
+                    <input type="text" id="commandInput" style="width:60%" name="cmd" value="{17}"/>
                     {2}
                     </form>
                     """.format(
@@ -599,6 +599,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     "&nbsp;&nbsp;{0}".format(self.favouriteBibleButton(self.getFavouriteBible2())),
                     "&nbsp;&nbsp;{0}".format(self.favouriteBibleButton(self.getFavouriteBible3())),
                     self.qrButton(),
+                    self.initialCommandInput.replace('"', '\\"'),
                 )
         else:
             return ""
@@ -649,8 +650,8 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 "<style>body {2} font-size: {4}; font-family:'{5}';{3} "
                 "zh {2} font-family:'{6}'; {3} "
                 "{8} {9}</style>"
-                "<link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{7}.css?v=1.023'>"
-                "<link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css?v=1.023'>"
+                "<link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{7}.css?v=1.024'>"
+                "<link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css?v=1.024'>"
                 "<script src='js/common.js?v=1.023'></script>"
                 "<script src='js/{7}.js?v=1.023'></script>"
                 "<script src='w3.js?v=1.023'></script>"

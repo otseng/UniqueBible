@@ -964,7 +964,6 @@ class ConfigUtil:
         else:
             config.menuUnderline = ""
         config.enableHttpServer = False
-        config.webAdminLoggedIn = False
 
     # Save configurations on exit
     @staticmethod

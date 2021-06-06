@@ -91,6 +91,10 @@ class ConfigUtil:
          # Add padding-left size to body."""
         if not hasattr(config, "webPaddingLeft"):
             config.webPaddingLeft = "0px"
+        config.help["webAdminPassword"] = """
+         # Web admin password."""
+        if not hasattr(config, "webAdminPassword"):
+            config.webAdminPassword = "UBA123"
         config.help["referenceTranslation"] = """
         # Specify a translation as a reference for making other translations.  This option is created for development purpose."""
         if not hasattr(config, "referenceTranslation"):
@@ -960,6 +964,7 @@ class ConfigUtil:
         else:
             config.menuUnderline = ""
         config.enableHttpServer = False
+        config.webAdminLoggedIn = False
 
     # Save configurations on exit
     @staticmethod
@@ -986,6 +991,7 @@ class ConfigUtil:
             ("webCollapseFooterHeight", config.webCollapseFooterHeight),
             ("webDecreaseBibleDivWidth", config.webDecreaseBibleDivWidth),
             ("webPaddingLeft", config.webPaddingLeft),
+            ("webAdminPassword", config.webAdminPassword),
             ("referenceTranslation", config.referenceTranslation),
             ("workingTranslation", config.workingTranslation),
             ("myGoogleApiKey", config.myGoogleApiKey),

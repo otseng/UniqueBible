@@ -197,6 +197,10 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             "setversenosingleclickaction": self.setVerseNoClickActionContent,
             "setversenodoubleclickaction": lambda: self.setVerseNoClickActionContent(True),
         }
+        functions = {
+            "login": self.login,
+        }
+        adminCommands = ('.stop', '.restart', '.update')
         if self.primaryUser or not config.webPresentationMode:
             query_components = parse_qs(urlparse(self.path).query)
             self.initialCommandInput = ""
@@ -204,6 +208,9 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             if 'cmd' in query_components:
                 self.command = query_components["cmd"][0].strip()
                 # Convert command shortcut
+                self.commandParam = ""
+                if ' ' in self.command:
+                    self.command, self.commandParam = self.command.split(' ', 1)
                 shortcuts = self.getShortcuts()
                 commands = self.getCommands()
                 commandLower = self.command.lower()
@@ -226,25 +233,19 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     content = self.helpContent()
                 elif commandLower.startswith(".") and commandLower[1:] in features.keys():
                     content = features[commandLower[1:]]()
-                elif commandLower == ".stop" or self.command == config.httpServerStopCommand:
+                elif commandLower.startswith(".") and commandLower[1:] in functions.keys():
+                    content = functions[commandLower[1:]](self.commandParam)
+                elif commandLower in adminCommands:
                     permission, message = self.checkPermission()
-                    if permission or (config.httpServerStopCommand and self.command == config.httpServerStopCommand):
+                    if not permission:
+                        content = message
+                    elif commandLower == ".stop" or self.command == config.httpServerStopCommand:
                         self.closeWindow()
                         config.enableHttpServer = False
                         return
-                    else:
-                        content = message
-                elif commandLower == ".restart":
-                    permission, message = self.checkPermission()
-                    if not permission:
-                        content = message
-                    else:
+                    elif commandLower == ".restart":
                         return self.restartServer()
-                elif commandLower == ".update":
-                    permission, message = self.checkPermission()
-                    if not permission:
-                        content = message
-                    else:
+                    elif commandLower == ".update":
                         subprocess.Popen("git pull", shell=True)
                         return self.restartServer("updated and ")
                 else:
@@ -927,7 +928,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         return css
 
     def checkPermission(self):
-        if config.developer or config.webFullAccess:
+        if config.developer or config.webFullAccess or config.webAdminLoggedIn:
             return (True, "")
         else:
             return (False, "This feature is available for developers only.  To enable it, set 'developer = True' in file config.py and restart the server.")
@@ -1282,3 +1283,10 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         session = str(ip + browser).encode('utf-8')
         session = hashlib.sha256(session).hexdigest()[:30]
         return session
+
+    def login(self, password):
+        if password == config.webAdminPassword:
+            config.webAdminLoggedIn = True
+        else:
+            config.webAdminLoggedIn = False
+        return "Login command successful"

@@ -721,4 +721,6 @@ translation = {
     "layout": "Διάταξη:",
     "qrcode": "Κωδικός QR",
     "features": "Χαρακτηριστικά:",
+    "userManual": "Μη αυτόματη.",
+    "bibleNavigation": "Αγία Γραφή πλοήγησης",
 }

@@ -318,35 +318,36 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                   margin: 0;
                 {5}
 
-    .overlay {4}
-        height: 0%;
-        width: 100%;
-        position: fixed;
-        z-index: 1;
-        top: 0;
-        left: 0;
-        background-color: {13};
-        overflow-y: auto;
-        transition: 0.5s;
-    {5}
+                input[type=search] {4}
+                    -webkit-appearance: none;
+                {5}
 
-    cat {4}
-        color: {14};
-    {5}
-
-    .overlay navItem {4}
-        padding: 8px;
-        text-decoration: none;
-        font-size: 36px;
-        color: {14};
-        transition: 0.3s;
-        display: inline-block;
-    {5}
-
-    .overlay navItem:hover, .overlay navItem:focus {4}
-        color: {15};
-        cursor: pointer;
-    {5}
+                .overlay {4}
+                    height: 0%;
+                    width: 100%;
+                    position: fixed;
+                    z-index: 1;
+                    top: 0;
+                    left: 0;
+                    background-color: {13};
+                    overflow-y: auto;
+                    transition: 0.5s;
+                {5}
+                cat {4}
+                    color: {14};
+                {5}
+                .overlay navItem {4}
+                    padding: 8px;
+                    text-decoration: none;
+                    font-size: 36px;
+                    color: {14};
+                    transition: 0.3s;
+                    display: inline-block;
+                {5}
+                .overlay navItem:hover, .overlay navItem:focus {4}
+                    color: {15};
+                    cursor: pointer;
+                {5}
 
                 .sidenav {4}
                   height: 100%;
@@ -527,6 +528,17 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 window.onscroll = function() {4}keepTop(){5};
                 window.onresize = function() {4}resizeSite(){5};
 
+                function openCommandInNewWindow() {4}
+                    cmd = encodeURI(document.getElementById('commandInput').value);
+                    var url;
+                    if (cmd == "") {4}
+                        url = "{19}";
+                    {5} else {4}
+                        url = "{19}?cmd="+cmd;
+                    {5}
+                    window.open(url, "_blank");
+                {5}
+
                 // Open and close side navigation bar
                 function openSideNav() {4}
                     document.getElementById("mySidenav").style.width = "250px";
@@ -559,6 +571,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             "adjustBibleDivWidth('{0}')".format(config.webDecreaseBibleDivWidth) if config.webDecreaseBibleDivWidth else "",
             config.webPaddingLeft,
             self.getBibleNavigationMenu(),
+            config.webHomePage,
         )
         self.wfile.write(bytes(html, "utf8"))
 
@@ -607,7 +620,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         )
         for item in sideNavItems:
             html += """<a href="#" onclick="submitCommand('{1}')">{0}</a>""".format(*item)
-        html += """<a href="https://github.com/eliranwong/UniqueBible/wiki/Web-Version-%5Bavailable-OFFLINE%5D" target="_blank">{0}</a>""".format(config.thisTranslation["menu1_wikiPages"])
+        html += """<a href="https://github.com/eliranwong/UniqueBible/wiki/Web-Version-%5Bavailable-OFFLINE%5D" target="_blank">{0}</a>""".format(config.thisTranslation["userManual"])
         html += "<hr>"
         html += """<a href="traditional.html">繁體中文</a>""" if config.webHomePage != "traditional.html" else ""
         html += """<a href="simplified.html">简体中文</a>""" if config.webHomePage != "simplified.html" else ""
@@ -623,8 +636,8 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     <form id="commandForm" action="{4}" action="get">
                     <table class='layout' style='border-collapse: collapse;'><tr>
                     <td class='layout' style='white-space: nowrap;'>{1}&nbsp;</td>
-                    <td class='layout' style='width: 100%;'><input type="text" id="commandInput" style="width:100%" name="cmd" value="{5}"/></td>
-                    <td class='layout' style='white-space: nowrap;'>&nbsp;{2}&nbsp;{3}&nbsp;{0}</td>
+                    <td class='layout' style='width: 100%;'><input type="search" autocomplete="on" results=5 autosave="marvelbible" id="commandInput" style="width:100%" name="cmd" value="{5}"/></td>
+                    <td class='layout' style='white-space: nowrap;'>&nbsp;{2}&nbsp;{6}&nbsp;{3}&nbsp;{0}</td>
                     </tr></table>
                     </form>
                 """.format(
@@ -634,16 +647,17 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     self.qrButton(),
                     config.webHomePage,
                     self.initialCommandInput.replace('"', '\\"'),
+                    self.newWindowButton(),
                 )
             else:
                 return """
                     <form id="commandForm" action="{0}" action="get">
                     {10}&nbsp;&nbsp;{5}&nbsp;&nbsp;{3}&nbsp;&nbsp;{4}&nbsp;&nbsp;{6}&nbsp;&nbsp;{7}&nbsp;&nbsp;
-                    {11}&nbsp;&nbsp;{12}{13}{14}{15}&nbsp;&nbsp;{9}&nbsp;&nbsp;{8}&nbsp;&nbsp;{16}
+                    {11}&nbsp;&nbsp;{12}{13}{14}{15}&nbsp;&nbsp;{8}&nbsp;&nbsp;{16}&nbsp;&nbsp;{9}
                     <br/><br/>
                     <span onclick="focusCommandInput()">{1}</span>:
-                    <input type="text" id="commandInput" style="width:60%" name="cmd" value="{17}"/>
-                    {2}
+                    <input type="search" autocomplete="on" results=5 autosave="marvelbible" id="commandInput" style="width:60%" name="cmd" value="{17}"/>
+                    {2}&nbsp;&nbsp;{18}
                     </form>
                     """.format(
                     config.webHomePage,
@@ -656,7 +670,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     self.nextChapter(),
                     self.toggleFullscreen(),
                     self.helpButton(),
-                    self.passageSelectionButton(),
+                    self.openSideNav(),
                     self.libraryButton(),
                     self.searchButton(),
                     "&nbsp;&nbsp;{0}".format(self.favouriteBibleButton(self.getFavouriteBible())),
@@ -664,6 +678,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     "&nbsp;&nbsp;{0}".format(self.favouriteBibleButton(self.getFavouriteBible3())),
                     self.qrButton(),
                     self.initialCommandInput.replace('"', '\\"'),
+                    self.newWindowButton(),
                 )
         else:
             return ""
@@ -872,7 +887,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         if newChapter < 1:
             newChapter = 1
         command = self.parser.bcvToVerseReference(config.mainB, newChapter, 1)
-        html = "<button type='button' onclick='submitCommand(\"{0}\")'>&lt;</button>".format(command)
+        html = "<button type='button' title='{1}' onclick='submitCommand(\"{0}\")'>&lt;</button>".format(command, config.thisTranslation["menu4_previous"])
         return html
 
     def nextChapter(self):
@@ -880,32 +895,31 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         if config.mainC < BibleBooks.getLastChapter(config.mainB):
             newChapter += 1
         command = self.parser.bcvToVerseReference(config.mainB, newChapter, 1)
-        html = "<button type='button' onclick='submitCommand(\"{0}\")'>&gt;</button>".format(command)
+        html = "<button type='button' title='{1}' onclick='submitCommand(\"{0}\")'>&gt;</button>".format(command, config.thisTranslation["menu4_next"])
         return html
 
     def toggleFullscreen(self):
-        html = "<button type='button' onclick='fullScreenSwitch()'>+ / -</button>"
+        html = "<button type='button' title='{0}' onclick='fullScreenSwitch()'>+ / -</button>".format(config.thisTranslation["menu1_fullScreen"])
         return html
 
     def openSideNav(self):
-        html = "<button type='button' onclick='openSideNav()'>&equiv;</button>"
+        html = "<button type='button' title='{0}' onclick='openSideNav()'>&equiv;</button>".format(config.thisTranslation["menu_bibleMenu"])
         return html
 
     def helpButton(self):
-        html = """<button type='button' onclick='submitCommand(".help")'>&quest;</button>"""
+        html = """<button type='button' title='{0}' onclick='submitCommand(".help")'>&quest;</button>""".format(config.thisTranslation["userManual"])
         return html
 
     def submitButton(self):
-        html = """<button type='button' onclick='document.getElementById("commandForm").submit();'>&crarr;</button>"""
+        html = """<button type='button' title='{0}' onclick='document.getElementById("commandForm").submit();'>&crarr;</button>""".format(config.thisTranslation["enter"])
         return html
 
     def qrButton(self):
-        html = """<button type='button' onclick='submitCommand("qrcode:::"+window.location.href)'>&#9641;</button>"""
+        html = """<button type='button' title='{0}' onclick='submitCommand("qrcode:::"+window.location.href)'>&#9641;</button>""".format(config.thisTranslation["qrcode"])
         return html
 
     def passageSelectionButton(self):
-        #html = """<button type='button' onclick='submitCommand("_menu:::")'>&dagger;</button>"""
-        html = """<button type='button' onclick='mod = "KJV"; updateBook("KJV", "{0}"); openNav("navB");'>&dagger;</button>""".format(config.webHomePage)
+        html = """<button type='button' title='{1}' onclick='mod = "KJV"; updateBook("KJV", "{0}"); openNav("navB");'>&dagger;</button>""".format(config.webHomePage, config.thisTranslation["bibleNavigation"])
         return html
 
     def libraryButton(self):
@@ -914,6 +928,10 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
 
     def searchButton(self):
         html = """<button type='button' onclick='submitCommand(".search")'>{0}</button>""".format(config.thisTranslation["menu_search"])
+        return html
+
+    def newWindowButton(self):
+        html = """<button type='button' title='{0}' onclick='openCommandInNewWindow()'>&#8663;</button>""".format(config.thisTranslation["openOnNewWindow"])
         return html
 
     def favouriteBibleButton(self, text):

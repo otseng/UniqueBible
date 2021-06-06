@@ -721,4 +721,6 @@ translation = {
     "layout": "Макет",
     "qrcode": "Код QR",
     "features": "Функции",
+    "userManual": "Руководство пользователя",
+    "bibleNavigation": "Библия",
 }

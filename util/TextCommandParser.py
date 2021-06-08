@@ -1469,10 +1469,14 @@ class TextCommandParser:
                     return("main", "<br>".join(tableList), {})
                 else:
                     tableList = [("<th><ref onclick='document.title=\"TEXT:::{0}\"'>{0}</ref></th>".format(text),
-                                  "<td style='vertical-align: text-top;'>{0}</td>".format(
-                                      self.textBibleVerseParser(references, text, source, True)[1]))
+                                  "<td style='vertical-align: text-top;'><bibletext class={1}>{0}</bibletext></td>"
+                                  .format(self.textBibleVerseParser(references, text, source, True)[1], text))
                                  for text in confirmedTexts]
                     versions, verses = zip(*tableList)
+                    config.mainCssBibleFontStyle = ""
+                    for text in confirmedTexts:
+                        (fontFile, fontSize, css) = Bible(text).getFontInfo()
+                        config.mainCssBibleFontStyle += css
                     return ("main", "<table style='width:100%; table-layout:fixed;'><tr>{0}</tr><tr>{1}</tr></table>".format("".join(versions), "".join(verses)), {})
 
    # PASSAGES:::

@@ -3426,7 +3426,7 @@ class MainWindow(QMainWindow):
         button.clicked.connect(action)
         toolbar.addWidget(button)
 
-    def addBibleVersionButton(self, textButtonStyle=""):
+    def addBibleVersionButton(self):
         if self.textCommandParser.isDatabaseInstalled("bible"):
             if config.refButtonClickAction == "direct":
                 self.versionButton = None

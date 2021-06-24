@@ -623,7 +623,7 @@ class FocusMainWindow:
         self.firstToolBar.addAction(QIcon(iconFile), config.thisTranslation["menu_verseNote"], self.openMainVerseNote)
 
         # Version selection
-        self.addBibleVersionButton(textButtonStyle)
+        self.addBibleVersionButton()
 
         iconFile = os.path.join("htmlResources", "search.png")
         self.firstToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar1_searchBible"], self.displaySearchBibleCommand)

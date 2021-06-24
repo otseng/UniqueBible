@@ -458,7 +458,7 @@ class AlephMainWindow:
         self.firstToolBar.addWidget(button)
 
         # Version selection
-        self.addBibleVersionButton(textButtonStyle)
+        self.addBibleVersionButton()
 
         previousBookButton = QPushButton()
         previousBookButton.setToolTip(config.thisTranslation["menu_previous_book"])
@@ -997,7 +997,7 @@ class AlephMainWindow:
         self.firstToolBar.addAction(QIcon(iconFile), config.thisTranslation["bar1_verseNotes"], self.openMainVerseNote)
 
         # Version selection
-        self.addBibleVersionButton(textButtonStyle)
+        self.addBibleVersionButton()
 
         previousBookButton = QPushButton()
         previousBookButton.setToolTip(config.thisTranslation["menu_previous_book"])

@@ -1,5 +1,8 @@
 import logging
 import os, sqlite3, re, config
+
+import html_text
+
 from db.BiblesSqlite import BiblesSqlite
 from util.BibleVerseParser import BibleVerseParser
 from util.TextUtil import TextUtil
@@ -777,8 +780,18 @@ class Book:
     def getParagraphSectionsByChapter(self, entry):
         query = "SELECT Content FROM Reference WHERE Chapter=?"
         self.cursor.execute(query, (entry,))
-        data = self.cursor.fetchone()
-        lines = data[0].split('\n')
+        data = self.cursor.fetchone()[0]
+        if config.isHtmlTextInstalled:
+            import html_text
+            data = data.replace("\n", "[nl]")
+            data = data.replace("<br><br>", "<br>")
+            data = data.replace("<br>", "[br]")
+            data = data.replace("<br />", "[br]")
+            data = html_text.extract_text(data)
+            data = data.replace("\n\n", "\n")
+            data = data.replace("[nl]", "\n")
+            data = data.replace("[br]", "<br>")
+        lines = data.split('\n')
         sections = []
         section = ''
         for line in lines:
@@ -789,6 +802,8 @@ class Book:
                     sections.append(section)
                 section = ''
             else:
+                if len(line) > 0 and not line.startswith("<br>"):
+                    line = "<br>" + line
                 section += line
         if len(section) > 0:
             sections.append(section)

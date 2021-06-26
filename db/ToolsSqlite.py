@@ -1,8 +1,6 @@
 import logging
 import os, sqlite3, re, config
 
-import html_text
-
 from db.BiblesSqlite import BiblesSqlite
 from util.BibleVerseParser import BibleVerseParser
 from util.TextUtil import TextUtil

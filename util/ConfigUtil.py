@@ -975,7 +975,7 @@ class ConfigUtil:
         config.help["bibleCollections"] = """
         # Custom Bible Collections"""
         if not hasattr(config, "bibleCollections"):
-            config.bibleCollections = []
+            config.bibleCollections = {}
         config.help["parseTextConvertNotesToBook"] = """
         # Parse the text when converting notes to book"""
         if not hasattr(config, "parseTextConvertNotesToBook"):

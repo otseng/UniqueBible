@@ -2,7 +2,9 @@ import config
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QStandardItemModel, QStandardItem
 from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton
-from qtpy.QtWidgets import QBoxLayout, QLineEdit
+from qtpy.QtWidgets import QInputDialog
+from qtpy.QtWidgets import QFormLayout
+from qtpy.QtWidgets import QRadioButton
 
 
 class BibleCollectionWindow(QDialog):
@@ -20,23 +22,16 @@ class BibleCollectionWindow(QDialog):
         title = QLabel(config.thisTranslation["bibleCollections"])
         mainLayout.addWidget(title)
 
+        self.collectionsLayout = QFormLayout()
+        mainLayout.addLayout(self.collectionsLayout)
+        self.showListOfCollections()
+
         newCollectionLayout = QHBoxLayout()
-        collectionCodeLabel = QLabel("Code")
-        newCollectionLayout.addWidget(collectionCodeLabel)
-        self.collectionCode = QLineEdit()
-        self.collectionCode.setFixedWidth(100)
-        newCollectionLayout.addWidget(self.collectionCode)
-        collectionDescriptionLabel = QLabel("Description")
-        newCollectionLayout.addWidget(collectionDescriptionLabel)
-        self.collectionDescription = QLineEdit()
-        self.collectionDescription.setFixedWidth(300)
-        newCollectionLayout.addWidget(self.collectionDescription)
         addButton = QPushButton(config.thisTranslation["add"])
-        addButton.setFixedWidth(100)
-        # addButton.clicked.connect(self.searchLineEntered)
+        addButton.setFixedWidth(70)
+        addButton.clicked.connect(self.addNewCollection)
         newCollectionLayout.addWidget(addButton)
         newCollectionLayout.addStretch()
-
         mainLayout.addLayout(newCollectionLayout)
 
         self.dataView = QTableView()
@@ -55,6 +50,22 @@ class BibleCollectionWindow(QDialog):
         mainLayout.addLayout(buttonLayout)
 
         self.setLayout(mainLayout)
+
+    def showListOfCollections(self):
+        if len(config.bibleCollections) > 0:
+            for collection in config.bibleCollections.keys():
+                showBibleSelection = QRadioButton()
+                showBibleSelection.setChecked(False)
+                # self.showBibleSelection.clicked.connect(lambda: self.selectRadio("bible"))
+                self.collectionsLayout.addRow(showBibleSelection, QLabel(collection))
+        else:
+            self.collectionsLayout.addRow(QLabel("No collections defined"))
+
+    def addNewCollection(self):
+        name, ok = QInputDialog.getText(self, 'Collection', 'Collection name:')
+        if ok:
+            config.bibleCollections[name] = {}
+            self.showListOfCollections()
 
     def getBibles(self):
         from db.BiblesSqlite import BiblesSqlite

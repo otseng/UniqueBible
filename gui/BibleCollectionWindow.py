@@ -13,9 +13,9 @@ class BibleCollectionWindow(QDialog):
         super().__init__()
         self.setWindowTitle(config.thisTranslation["bibleCollections"])
         self.setMinimumSize(600, 500)
+        self.selectedCollection = None
         self.bibles = self.getBibles()
         self.setupUI()
-        self.selectedCollection = None
 
     def setupUI(self):
         mainLayout = QVBoxLayout()
@@ -48,7 +48,7 @@ class BibleCollectionWindow(QDialog):
         self.biblesTable.setSortingEnabled(True)
         self.dataViewModel = QStandardItemModel(self.biblesTable)
         self.biblesTable.setModel(self.dataViewModel)
-        self.resetItems()
+        self.loadBibleSelection()
         self.dataViewModel.itemChanged.connect(self.bibleSelectionChanged)
         mainLayout.addWidget(self.biblesTable)
 
@@ -96,30 +96,31 @@ class BibleCollectionWindow(QDialog):
     def selectCollection(self, item):
         self.selectedCollection = item.text()
         self.biblesTable.setEnabled(True)
+        self.loadBibleSelection()
 
     def bibleSelectionChanged(self, item):
-        print(item.text())
+        if self.selectedCollection is not None:
+            text = item.text()
+            rows = self.dataViewModel.rowCount()
+            for row in range(0, rows):
+                checkbox = self.dataViewModel.item(row, 0)
+                pass
 
-    def resetItems(self):
-        # Empty the model before reset
+    def loadBibleSelection(self):
         self.dataViewModel.clear()
+        biblesInCollection = []
+        if self.selectedCollection is not None:
+            biblesInCollection = config.bibleCollections[self.selectedCollection]
         rowCount = 0
         for bible, description in self.bibles:
-            # 1st column
             item = QStandardItem(bible)
             item.setToolTip(bible)
             item.setCheckable(True)
-            # item.setCheckState(Qt.CheckState.Checked if configValue else Qt.CheckState.Unchecked)
+            if bible in biblesInCollection:
+                item.setCheckState(Qt.Checked)
             self.dataViewModel.setItem(rowCount, 0, item)
-            # 2nd column
             item = QStandardItem(description)
             self.dataViewModel.setItem(rowCount, 1, item)
-            # # 3rd column
-            # tooltip = tooltip.replace("\n", " ")
-            # item = QStandardItem(tooltip)
-            # item.setToolTip(tooltip)
-            # self.dataViewModel.setItem(rowCount, 2, item)
-            # add row count
             rowCount += 1
         self.dataViewModel.setHorizontalHeaderLabels([config.thisTranslation["bible"], config.thisTranslation["description"]])
         self.biblesTable.resizeColumnsToContents()
@@ -134,6 +135,8 @@ if __name__ == '__main__':
 
     ConfigUtil.setup()
     config.noQt = False
+    config.bibleCollections["Custom"] = ['ABP', 'ACV']
+    config.bibleCollections["King James"] = ['KJV', 'KJVx', 'KJVA', 'KJV1611', 'KJV1769x']
     config.thisTranslation = LanguageUtil.loadTranslation("en_US")
     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)

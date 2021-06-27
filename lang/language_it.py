@@ -735,5 +735,5 @@ translation = {
     "qrcodeScanner": "QR Code Scanner",
     "night_theme": "Tema Notturno",
     "includeStrictDocTypeInNote": "Includere il tipo doc rigoroso in prima linea di note",
-    "bibleCollection": "Raccolta della Bibbia",
+    "bibleCollections": "Raccolta della Bibbia",
 }

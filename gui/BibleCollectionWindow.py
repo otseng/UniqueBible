@@ -2,13 +2,14 @@ import config
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QStandardItemModel, QStandardItem
 from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton
+from qtpy.QtWidgets import QBoxLayout, QLineEdit
 
 
 class BibleCollectionWindow(QDialog):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(config.thisTranslation["bibleCollection"])
+        self.setWindowTitle(config.thisTranslation["bibleCollections"])
         self.setMinimumSize(700, 500)
         self.bibles = self.getBibles()
         self.setupUI()
@@ -16,8 +17,27 @@ class BibleCollectionWindow(QDialog):
     def setupUI(self):
         mainLayout = QVBoxLayout()
 
-        title = QLabel(config.thisTranslation["bibleCollection"])
+        title = QLabel(config.thisTranslation["bibleCollections"])
         mainLayout.addWidget(title)
+
+        newCollectionLayout = QHBoxLayout()
+        collectionCodeLabel = QLabel("Code")
+        newCollectionLayout.addWidget(collectionCodeLabel)
+        self.collectionCode = QLineEdit()
+        self.collectionCode.setFixedWidth(100)
+        newCollectionLayout.addWidget(self.collectionCode)
+        collectionDescriptionLabel = QLabel("Description")
+        newCollectionLayout.addWidget(collectionDescriptionLabel)
+        self.collectionDescription = QLineEdit()
+        self.collectionDescription.setFixedWidth(300)
+        newCollectionLayout.addWidget(self.collectionDescription)
+        addButton = QPushButton(config.thisTranslation["add"])
+        addButton.setFixedWidth(100)
+        # addButton.clicked.connect(self.searchLineEntered)
+        newCollectionLayout.addWidget(addButton)
+        newCollectionLayout.addStretch()
+
+        mainLayout.addLayout(newCollectionLayout)
 
         self.dataView = QTableView()
         self.dataView.setEditTriggers(QAbstractItemView.NoEditTriggers)

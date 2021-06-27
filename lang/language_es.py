@@ -430,7 +430,6 @@ translation = {
     "noHightlight": "Sin resaltado",
     "selectRemoveHighlight": "Seleccionar para eliminar resaltado",
     "selectApplyHighlight": "Seleccionar para aplicar resaltado",
-    "rename": "Pulse aquí para cambiar el nombre",
     "colour": "Color",
     "changeColour": "Pulse aquí para cambiar el color",
     "select_a_folder": "Seleccionar una carpeta",
@@ -737,4 +736,5 @@ translation = {
     "includeStrictDocTypeInNote": "Incluir el tipo de documento estricto en la primera línea de notas",
     "bibleCollection": "Colección Bíblica",
     "parseTextConvertNotesToBook": "Cómo analizar el texto al convertir notas al libro",
+    "rename": "Rename",
 }

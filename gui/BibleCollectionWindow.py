@@ -12,7 +12,7 @@ class BibleCollectionWindow(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(config.thisTranslation["bibleCollections"])
-        self.setMinimumSize(600, 500)
+        self.setMinimumSize(680, 500)
         self.selectedCollection = None
         self.settingBibles = False
         self.bibles = self.getBibles()
@@ -26,20 +26,21 @@ class BibleCollectionWindow(QDialog):
 
         self.collectionsLayout = QVBoxLayout()
         self.collectionsList = QListWidget()
-        self.collectionsList.setMaximumHeight(70)
+        self.collectionsList.setMaximumHeight(90)
         self.collectionsLayout.addWidget(self.collectionsList)
         mainLayout.addLayout(self.collectionsLayout)
         self.showListOfCollections()
 
         buttonsLayout = QHBoxLayout()
         addButton = QPushButton(config.thisTranslation["add"])
-        # addButton.setFixedWidth(70)
         addButton.clicked.connect(self.addNewCollection)
         buttonsLayout.addWidget(addButton)
         removeButton = QPushButton(config.thisTranslation["remove"])
-        # removeButton.setFixedWidth(70)
         removeButton.clicked.connect(self.removeCollection)
         buttonsLayout.addWidget(removeButton)
+        renameButton = QPushButton(config.thisTranslation["rename"])
+        renameButton.clicked.connect(self.renameCollection)
+        buttonsLayout.addWidget(renameButton)
         buttonsLayout.addStretch()
         mainLayout.addLayout(buttonsLayout)
 
@@ -74,7 +75,7 @@ class BibleCollectionWindow(QDialog):
 
     def addNewCollection(self):
         name, ok = QInputDialog.getText(self, 'Collection', 'Collection name:')
-        if ok:
+        if ok and len(name) > 0:
             config.bibleCollections[name] = {}
             self.showListOfCollections()
 
@@ -82,6 +83,16 @@ class BibleCollectionWindow(QDialog):
         config.bibleCollections.pop(self.selectedCollection, None)
         self.showListOfCollections()
         self.biblesTable.setEnabled(False)
+
+    def renameCollection(self):
+        name, ok = QInputDialog.getText(self, 'Collection', 'Collection name:', text=self.selectedCollection)
+        if ok and len(name) > 0:
+            biblesInCollection = config.bibleCollections[self.selectedCollection]
+            config.bibleCollections.pop(self.selectedCollection, None)
+            self.selectedCollection = name
+            config.bibleCollections[name] = biblesInCollection
+            self.showListOfCollections()
+            self.biblesTable.setEnabled(False)
 
     def getBibles(self):
         from db.BiblesSqlite import BiblesSqlite

@@ -430,7 +430,6 @@ translation = {
     "noHightlight": "No Highlight",
     "selectRemoveHighlight": "Select to remove highlight",
     "selectApplyHighlight": "Select to apply highlight",
-    "rename": "Click here to rename",
     "colour": "Colour",
     "changeColour": "Click here to change colour",
     "select_a_folder": "Select a Folder",
@@ -737,4 +736,5 @@ translation = {
     "includeStrictDocTypeInNote": "Include the strict doc type in first line of notes",
     "bibleCollections": "Bible Collections",
     "parseTextConvertNotesToBook": "Parse the text when converting notes to book",
+    "rename": "Rename",
 }

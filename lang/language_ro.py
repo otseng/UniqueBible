@@ -736,4 +736,5 @@ translation = {
     "night_theme": "Temă de noapte",
     "includeStrictDocTypeInNote": "Includeţi tipul de doc strict în prima linie de note",
     "bibleCollections": "Colecţie biblică",
+    "parseTextConvertNotesToBook": "Analizaţi textul la convertirea notelor la carte",
 }

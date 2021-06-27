@@ -736,4 +736,5 @@ translation = {
     "night_theme": "밤 테마",
     "includeStrictDocTypeInNote": "첫 번째 행에 엄격한 문서 유형 포함",
     "bibleCollections": "성경 수집",
+    "parseTextConvertNotesToBook": "노트를 책으로 변환할 때 텍스트 구문 분석하기",
 }

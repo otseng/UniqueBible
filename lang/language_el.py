@@ -736,4 +736,5 @@ translation = {
     "night_theme": "Θέμα της νύχτας",
     "includeStrictDocTypeInNote": "Συμπεριλάβετε τον αυστηρό τύπο εγγράφου στην πρώτη γραμμή των σημειώσεων",
     "bibleCollections": "Συλλογή Βίβλου:",
+    "parseTextConvertNotesToBook": "Ανάλυση κειμένου κατά τη μετατροπή σημειώσεων σε βιβλίο",
 }

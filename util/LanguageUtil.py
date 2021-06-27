@@ -230,7 +230,7 @@ if __name__ == "__main__":
             print("Error executing: " + str(e))
     else:
         # printCodesSupportedLanguages()
-        addLanguageStringToAllFiles("bible", "Bible")
+        addLanguageStringToAllFiles("parseTextConvertNotesToBook", "Parse the text when converting notes to book")
         # createNewLanguageFile("ro")
         # validateLanguageFileSizes()
 

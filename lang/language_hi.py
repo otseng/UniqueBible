@@ -736,4 +736,5 @@ translation = {
     "night_theme": "रात्रि प्रसंग",
     "includeStrictDocTypeInNote": "नोट्स की पहली पंक्ति में सख्त डॉक्टर प्रकार को शामिल करें",
     "bibleCollections": "बाइबल संग्रह",
+    "parseTextConvertNotesToBook": "नोट्स को पुस्तक में परिवर्तित करने के दौरान पाठ की व्याख्या करें",
 }

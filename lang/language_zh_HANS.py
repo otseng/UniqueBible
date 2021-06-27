@@ -736,4 +736,5 @@ translation = {
     "night_theme": "夜间主题",
     "includeStrictDocTypeInNote": "在注释的第一行中包含严格的文档类型",
     "bibleCollections": "圣经收藏",
+    "parseTextConvertNotesToBook": "将注释转换为书籍时解析文本",
 }

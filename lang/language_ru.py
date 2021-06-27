@@ -736,4 +736,5 @@ translation = {
     "night_theme": "Ночная тема",
     "includeStrictDocTypeInNote": "Включить строгий тип документов в первую строку примечаний",
     "bibleCollections": "Сборник Библии",
+    "parseTextConvertNotesToBook": "Анализировать текст при преобразовании примечаний в книгу",
 }

@@ -736,4 +736,5 @@ translation = {
     "night_theme": "Tema Notturno",
     "includeStrictDocTypeInNote": "Includere il tipo doc rigoroso in prima linea di note",
     "bibleCollections": "Raccolta della Bibbia",
+    "parseTextConvertNotesToBook": "Analizza il testo quando converte le note da prenotare",
 }

@@ -64,7 +64,7 @@ class BibleCollectionWindow(QDialog):
     def showListOfCollections(self):
         self.collectionsList.clear()
         if len(config.bibleCollections) > 0:
-            for collection in config.bibleCollections.keys():
+            for collection in sorted(config.bibleCollections.keys()):
                 showBibleSelection = QRadioButton()
                 showBibleSelection.setChecked(False)
                 self.collectionsList.itemClicked.connect(self.selectCollection)
@@ -104,6 +104,8 @@ class BibleCollectionWindow(QDialog):
             if self.selectedCollection is not None:
                 text = item.text()
                 biblesInCollection = config.bibleCollections[self.selectedCollection]
+                if len(biblesInCollection) == 0:
+                    biblesInCollection = []
                 if text in biblesInCollection:
                     biblesInCollection.remove(text)
                 else:

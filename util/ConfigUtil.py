@@ -1219,6 +1219,7 @@ class ConfigUtil:
             ("enableMenuUnderline", config.enableMenuUnderline),
             ("githubAccessToken", config.githubAccessToken),
             ("includeStrictDocTypeInNote", config.includeStrictDocTypeInNote),
+            ("bibleCollections", config.bibleCollections),
         )
         with open("config.py", "w", encoding="utf-8") as fileObj:
             for name, value in configs:

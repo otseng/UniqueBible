@@ -1,24 +1,17 @@
 import config
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QStandardItemModel, QStandardItem
-from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QLineEdit, QPushButton, QMessageBox
+from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton
 
 
 class BibleCollectionWindow(QDialog):
 
     def __init__(self):
         super().__init__()
-        # set title
         self.setWindowTitle(config.thisTranslation["bibleCollection"])
-        self.setMinimumSize(500, 500)
+        self.setMinimumSize(700, 500)
         self.bibles = self.getBibles()
-        # set variables
-        self.setupVariables()
-        # setup interface
         self.setupUI()
-
-    def setupVariables(self):
-        self.isUpdating = False
 
     def setupUI(self):
         mainLayout = QVBoxLayout()
@@ -45,18 +38,23 @@ class BibleCollectionWindow(QDialog):
 
     def getBibles(self):
         from db.BiblesSqlite import BiblesSqlite
+        from db.BiblesSqlite import Bible
+
         bibles = BiblesSqlite().getBibleList()
-        return bibles
+        bibleInfo = []
+        for bible in bibles:
+            description = Bible(bible).bibleInfo()
+            bibleInfo.append((bible, description))
+        return bibleInfo
 
     def itemChanged(self, standardItem):
         pass
 
     def resetItems(self):
-        self.isUpdating = True
         # Empty the model before reset
         self.dataViewModel.clear()
         rowCount = 0
-        for bible in self.bibles:
+        for bible, description in self.bibles:
             # 1st column
             item = QStandardItem(bible)
             item.setToolTip(bible)
@@ -64,8 +62,8 @@ class BibleCollectionWindow(QDialog):
             # item.setCheckState(Qt.CheckState.Checked if configValue else Qt.CheckState.Unchecked)
             self.dataViewModel.setItem(rowCount, 0, item)
             # 2nd column
-            # item = QStandardItem(str(default))
-            # self.dataViewModel.setItem(rowCount, 1, item)
+            item = QStandardItem(description)
+            self.dataViewModel.setItem(rowCount, 1, item)
             # # 3rd column
             # tooltip = tooltip.replace("\n", " ")
             # item = QStandardItem(tooltip)
@@ -75,10 +73,6 @@ class BibleCollectionWindow(QDialog):
             rowCount += 1
         self.dataViewModel.setHorizontalHeaderLabels([config.thisTranslation["bible"], config.thisTranslation["description"]])
         self.dataView.resizeColumnsToContents()
-        self.isUpdating = False
-
-    def displayMessage(self, message="", title="UniqueBible"):
-        QMessageBox.information(self, title, message)
 
 
 if __name__ == '__main__':

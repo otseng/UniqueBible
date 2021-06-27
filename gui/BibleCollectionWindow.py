@@ -14,6 +14,7 @@ class BibleCollectionWindow(QDialog):
         self.setWindowTitle(config.thisTranslation["bibleCollections"])
         self.setMinimumSize(600, 500)
         self.selectedCollection = None
+        self.settingBibles = False
         self.bibles = self.getBibles()
         self.setupUI()
 
@@ -99,14 +100,18 @@ class BibleCollectionWindow(QDialog):
         self.loadBibleSelection()
 
     def bibleSelectionChanged(self, item):
-        if self.selectedCollection is not None:
-            text = item.text()
-            rows = self.dataViewModel.rowCount()
-            for row in range(0, rows):
-                checkbox = self.dataViewModel.item(row, 0)
-                pass
+        if not self.settingBibles:
+            if self.selectedCollection is not None:
+                text = item.text()
+                biblesInCollection = config.bibleCollections[self.selectedCollection]
+                if text in biblesInCollection:
+                    biblesInCollection.remove(text)
+                else:
+                    biblesInCollection.append(text)
+                config.bibleCollections[self.selectedCollection] = biblesInCollection
 
     def loadBibleSelection(self):
+        self.settingBibles = True
         self.dataViewModel.clear()
         biblesInCollection = []
         if self.selectedCollection is not None:
@@ -124,6 +129,7 @@ class BibleCollectionWindow(QDialog):
             rowCount += 1
         self.dataViewModel.setHorizontalHeaderLabels([config.thisTranslation["bible"], config.thisTranslation["description"]])
         self.biblesTable.resizeColumnsToContents()
+        self.settingBibles = False
 
 
 if __name__ == '__main__':

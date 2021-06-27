@@ -735,4 +735,5 @@ translation = {
     "qrcodeScanner": "QR-сканер кода",
     "night_theme": "Ночная тема",
     "includeStrictDocTypeInNote": "Включить строгий тип документов в первую строку примечаний",
+    "bibleCollection": "Сборник Библии",
 }

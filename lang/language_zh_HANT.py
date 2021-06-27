@@ -735,4 +735,5 @@ translation = {
     "qrcodeScanner": "二維碼掃描器",
     "night_theme": "夜間主題",
     "includeStrictDocTypeInNote": "在附註第一行包含嚴格的文件類型",
+    "bibleCollection": "聖經收藏",
 }

@@ -3,8 +3,8 @@ from qtpy.QtCore import Qt
 from qtpy.QtGui import QStandardItemModel, QStandardItem
 from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton
 from qtpy.QtWidgets import QInputDialog
-from qtpy.QtWidgets import QFormLayout
 from qtpy.QtWidgets import QRadioButton
+from qtpy.QtWidgets import QListWidget
 
 
 class BibleCollectionWindow(QDialog):
@@ -12,9 +12,10 @@ class BibleCollectionWindow(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(config.thisTranslation["bibleCollections"])
-        self.setMinimumSize(700, 500)
+        self.setMinimumSize(600, 500)
         self.bibles = self.getBibles()
         self.setupUI()
+        self.selectedCollection = None
 
     def setupUI(self):
         mainLayout = QVBoxLayout()
@@ -22,26 +23,34 @@ class BibleCollectionWindow(QDialog):
         title = QLabel(config.thisTranslation["bibleCollections"])
         mainLayout.addWidget(title)
 
-        self.collectionsLayout = QFormLayout()
+        self.collectionsLayout = QVBoxLayout()
+        self.collectionsList = QListWidget()
+        self.collectionsList.setMaximumHeight(70)
+        self.collectionsLayout.addWidget(self.collectionsList)
         mainLayout.addLayout(self.collectionsLayout)
         self.showListOfCollections()
 
-        newCollectionLayout = QHBoxLayout()
+        buttonsLayout = QHBoxLayout()
         addButton = QPushButton(config.thisTranslation["add"])
-        addButton.setFixedWidth(70)
+        # addButton.setFixedWidth(70)
         addButton.clicked.connect(self.addNewCollection)
-        newCollectionLayout.addWidget(addButton)
-        newCollectionLayout.addStretch()
-        mainLayout.addLayout(newCollectionLayout)
+        buttonsLayout.addWidget(addButton)
+        removeButton = QPushButton(config.thisTranslation["remove"])
+        # removeButton.setFixedWidth(70)
+        removeButton.clicked.connect(self.removeCollection)
+        buttonsLayout.addWidget(removeButton)
+        buttonsLayout.addStretch()
+        mainLayout.addLayout(buttonsLayout)
 
-        self.dataView = QTableView()
-        self.dataView.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.dataView.setSortingEnabled(True)
-        self.dataViewModel = QStandardItemModel(self.dataView)
-        self.dataView.setModel(self.dataViewModel)
+        self.biblesTable = QTableView()
+        self.biblesTable.setEnabled(False)
+        self.biblesTable.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.biblesTable.setSortingEnabled(True)
+        self.dataViewModel = QStandardItemModel(self.biblesTable)
+        self.biblesTable.setModel(self.dataViewModel)
         self.resetItems()
-        self.dataViewModel.itemChanged.connect(self.itemChanged)
-        mainLayout.addWidget(self.dataView)
+        self.dataViewModel.itemChanged.connect(self.bibleSelectionChanged)
+        mainLayout.addWidget(self.biblesTable)
 
         buttonLayout = QHBoxLayout()
         button = QPushButton(config.thisTranslation["close"])
@@ -52,20 +61,26 @@ class BibleCollectionWindow(QDialog):
         self.setLayout(mainLayout)
 
     def showListOfCollections(self):
+        self.collectionsList.clear()
         if len(config.bibleCollections) > 0:
             for collection in config.bibleCollections.keys():
                 showBibleSelection = QRadioButton()
                 showBibleSelection.setChecked(False)
-                # self.showBibleSelection.clicked.connect(lambda: self.selectRadio("bible"))
-                self.collectionsLayout.addRow(showBibleSelection, QLabel(collection))
+                self.collectionsList.itemClicked.connect(self.selectCollection)
+                self.collectionsList.addItem(collection)
         else:
-            self.collectionsLayout.addRow(QLabel("No collections defined"))
+            self.collectionsList.addItem("[No collection defined]")
 
     def addNewCollection(self):
         name, ok = QInputDialog.getText(self, 'Collection', 'Collection name:')
         if ok:
             config.bibleCollections[name] = {}
             self.showListOfCollections()
+
+    def removeCollection(self):
+        config.bibleCollections.pop(self.selectedCollection, None)
+        self.showListOfCollections()
+        self.biblesTable.setEnabled(False)
 
     def getBibles(self):
         from db.BiblesSqlite import BiblesSqlite
@@ -78,8 +93,12 @@ class BibleCollectionWindow(QDialog):
             bibleInfo.append((bible, description))
         return bibleInfo
 
-    def itemChanged(self, standardItem):
-        pass
+    def selectCollection(self, item):
+        self.selectedCollection = item.text()
+        self.biblesTable.setEnabled(True)
+
+    def bibleSelectionChanged(self, item):
+        print(item.text())
 
     def resetItems(self):
         # Empty the model before reset
@@ -103,7 +122,7 @@ class BibleCollectionWindow(QDialog):
             # add row count
             rowCount += 1
         self.dataViewModel.setHorizontalHeaderLabels([config.thisTranslation["bible"], config.thisTranslation["description"]])
-        self.dataView.resizeColumnsToContents()
+        self.biblesTable.resizeColumnsToContents()
 
 
 if __name__ == '__main__':

@@ -204,10 +204,10 @@ class MiniControl(QWidget):
             button.clicked.connect(partial(self.selectCollection, "All"))
             collectionsLayout.addWidget(button)
             count = 0
-            for bible in sorted(config.bibleCollections.keys()):
-                button = QPushButton(bible)
+            for collection in sorted(config.bibleCollections.keys()):
+                button = QPushButton(collection)
                 button.setStyleSheet(textButtonStyle)
-                button.clicked.connect(partial(self.selectCollection, bible))
+                button.clicked.connect(partial(self.selectCollection, collection))
                 collectionsLayout.addWidget(button)
                 count += 1
                 if count > 5:

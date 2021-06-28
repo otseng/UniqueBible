@@ -136,13 +136,21 @@ class BibleExplorer(QWidget):
         return self.parent.comboFeatureLayout(feature, self.differenceCombo, action)
 
     def navigationLayout6(self):
-        buttonRow1 = (
+        rows = []
+        row = [
             ("All", lambda: self.selectCollection("All")),
             ("None", lambda: self.selectCollection("None")),
-        )
-        buttonRow2 = ((bible, partial(self.selectCollection, bible)) for bible in sorted(config.bibleCollections.keys()))
-        buttonElementTupleTuple = (buttonRow1, buttonRow2)
-        return self.parent.buttonsWidget(buttonElementTupleTuple, False, False)
+        ]
+        count = len(row)
+        for collection in sorted(config.bibleCollections.keys()):
+            row.append((collection, partial(self.selectCollection, collection)))
+            count += 1
+            if count % 6 == 0:
+                rows.append(row)
+                row = []
+        if len(row) > 0:
+            rows.append(row)
+        return self.parent.buttonsWidget(rows, False, False)
 
     def navigationLayout7(self):
         buttonRow1 = (
@@ -151,13 +159,15 @@ class BibleExplorer(QWidget):
             ("MTB", lambda: self.openInWindow("BIBLE", "MTB")),
             ("MPB", lambda: self.openInWindow("BIBLE", "MPB")),
             ("MAB", lambda: self.openInWindow("BIBLE", "MAB")),
+            ("SBLGNTl", lambda: self.openInWindow("BIBLE", "SBLGNTl")),
         )
         buttonRow2 = (
             ("LXX1", lambda: self.openInWindow("BIBLE", "LXX1")),
             ("LXX1i", lambda: self.openInWindow("BIBLE", "LXX1i")),
             ("LXX2", lambda: self.openInWindow("BIBLE", "LXX2")),
             ("LXX2i", lambda: self.openInWindow("BIBLE", "LXX2i")),
-            ("SBLGNTl", lambda: self.openInWindow("BIBLE", "SBLGNTl")),
+            ("OHGB", lambda: self.openInWindow("BIBLE", "OHGB")),
+            ("OHGBi", lambda: self.openInWindow("BIBLE", "OHGBi")),
         )
         buttonElementTupleTuple = (buttonRow1, buttonRow2)
         return self.parent.buttonsWidget(buttonElementTupleTuple, False, False)

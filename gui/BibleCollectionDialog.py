@@ -7,7 +7,7 @@ from qtpy.QtWidgets import QRadioButton
 from qtpy.QtWidgets import QListWidget
 
 
-class BibleCollectionWindow(QDialog):
+class BibleCollectionDialog(QDialog):
 
     def __init__(self):
         super().__init__()
@@ -75,9 +75,10 @@ class BibleCollectionWindow(QDialog):
 
     def addNewCollection(self):
         name, ok = QInputDialog.getText(self, 'Collection', 'Collection name:')
-        if ok and len(name) > 0:
+        if ok and len(name) > 0 and name != "All":
             config.bibleCollections[name] = {}
             self.showListOfCollections()
+            self.biblesTable.setEnabled(False)
 
     def removeCollection(self):
         config.bibleCollections.pop(self.selectedCollection, None)
@@ -86,7 +87,7 @@ class BibleCollectionWindow(QDialog):
 
     def renameCollection(self):
         name, ok = QInputDialog.getText(self, 'Collection', 'Collection name:', text=self.selectedCollection)
-        if ok and len(name) > 0:
+        if ok and len(name) > 0 and name != "All":
             biblesInCollection = config.bibleCollections[self.selectedCollection]
             config.bibleCollections.pop(self.selectedCollection, None)
             self.selectedCollection = name
@@ -159,5 +160,5 @@ if __name__ == '__main__':
     config.thisTranslation = LanguageUtil.loadTranslation("en_US")
     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
-    window = BibleCollectionWindow()
-    window.exec_()
+    dialog = BibleCollectionDialog()
+    dialog.exec_()

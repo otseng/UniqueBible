@@ -9,7 +9,7 @@ from qtpy.QtWidgets import (QAction, QInputDialog, QLineEdit, QMainWindow, QMess
                                QFrame, QFontDialog, QApplication, QPushButton, QShortcut, QColorDialog)
 from qtpy.QtWidgets import QComboBox
 
-from gui.BibleCollectionWindow import BibleCollectionWindow
+from gui.BibleCollectionDialog import BibleCollectionDialog
 from util import exlbl
 from util.BibleBooks import BibleBooks
 from util.TextCommandParser import TextCommandParser
@@ -1944,8 +1944,8 @@ class MainWindow(QMainWindow):
         self.configFlagsDialog = ConfigFlagsWindow(self)
         self.configFlagsDialog.show()
 
-    def showBibleCollectionWindow(self):
-        self.bibleCollectionDialog = BibleCollectionWindow()
+    def showBibleCollectionDialog(self):
+        self.bibleCollectionDialog = BibleCollectionDialog()
         self.bibleCollectionDialog.show()
 
     def enableIndividualPluginsWindow(self):

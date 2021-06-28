@@ -194,18 +194,29 @@ class MiniControl(QWidget):
 
         # Bible translations tab
 
+        textButtonStyle = "QPushButton {background-color: #151B54; color: white;} QPushButton:hover {background-color: #333972;} QPushButton:pressed { background-color: #515790;}"
         self.biblesBox = QWidget()
         self.biblesBoxContainer = QVBoxLayout()
         collectionsLayout = self.newRowLayout()
         if len(config.bibleCollections) > 0:
             button = QPushButton("All")
+            button.setStyleSheet(textButtonStyle)
             button.clicked.connect(partial(self.selectCollection, "All"))
             collectionsLayout.addWidget(button)
+            count = 0
             for bible in sorted(config.bibleCollections.keys()):
                 button = QPushButton(bible)
+                button.setStyleSheet(textButtonStyle)
                 button.clicked.connect(partial(self.selectCollection, bible))
                 collectionsLayout.addWidget(button)
+                count += 1
+                if count > 5:
+                    count = 0
+                    self.biblesBoxContainer.addLayout(collectionsLayout)
+                    collectionsLayout = self.newRowLayout()
+
         self.biblesBoxContainer.addLayout(collectionsLayout)
+        self.bibleBoxWidget = QWidget()
         self.bibleBoxLayout = QVBoxLayout()
         self.bibleBoxLayout.setContentsMargins(0, 0, 0, 0)
         self.bibleBoxLayout.setSpacing(1)
@@ -228,6 +239,7 @@ class MiniControl(QWidget):
         self.bibleBoxLayout.addLayout(row_layout)
         self.bibleBoxLayout.addStretch()
         self.biblesBoxContainer.addLayout(self.bibleBoxLayout)
+        self.biblesBoxContainer.addStretch()
         self.biblesBox.setLayout(self.biblesBoxContainer)
         self.tabs.addTab(self.biblesBox, config.thisTranslation["translations"])
 
@@ -309,6 +321,7 @@ class MiniControl(QWidget):
     def newRowLayout(self):
         row_layout = QHBoxLayout()
         row_layout.setContentsMargins(0, 0, 0, 0)
+        row_layout.setSpacing(1)
         return row_layout
 
     def tabChanged(self, index):
@@ -384,17 +397,23 @@ class MiniControl(QWidget):
         self.parent.textCommandLineEdit.setText(command)
 
     def selectCollection(self, collection):
+        textButtonStyleEnabled = "QPushButton {background-color: #151B54; color: white;} QPushButton:hover {background-color: #333972;} QPushButton:pressed { background-color: #515790;}"
+        textButtonStyleDisabled = "QPushButton {background-color: #323232; color: #323232;} QPushButton:hover {background-color: #323232;} QPushButton:pressed { background-color: #323232;}"
+
         if not collection == "All":
             biblesInCollection = config.bibleCollections[collection]
         for bible in self.bibleButtons.keys():
             button = self.bibleButtons[bible]
             if collection == "All":
-                button.setVisible(True)
+                button.setEnabled(True)
+                button.setStyleSheet("")
             else:
                 if bible in biblesInCollection:
-                    button.setVisible(True)
+                    button.setEnabled(True)
+                    button.setStyleSheet("")
                 else:
-                    button.setVisible(False)
+                    button.setEnabled(False)
+                    button.setStyleSheet(textButtonStyleDisabled)
 
 
 ## Standalone development code
@@ -428,8 +447,8 @@ if __name__ == "__main__":
 
    ConfigUtil.setup()
    config.noQt = False
-   config.bibleCollections["Custom"] = ['ABP', 'ACV']
-   config.bibleCollections["King James"] = ['KJV', 'KJVx', 'KJVA', 'KJV1611', 'KJV1769x']
+   # config.bibleCollections["Custom"] = ['ABP', 'ACV']
+   # config.bibleCollections["King James"] = ['KJV', 'KJVx', 'KJVA', 'KJV1611', 'KJV1769x']
    config.thisTranslation = LanguageUtil.loadTranslation("en_US")
    QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
    app = QApplication(sys.argv)

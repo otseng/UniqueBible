@@ -178,7 +178,6 @@ class MiniControl(QWidget):
                 layout.addWidget(button)
             gp.setLayout(layout)
             bible_layout.addWidget(gp)
-
         for bookNumGp in bookNumGps[5:]:
             gp = QWidget()
             layout = self.newRowLayout()
@@ -189,7 +188,6 @@ class MiniControl(QWidget):
                 layout.addWidget(button)
             gp.setLayout(layout)
             bible_layout.addWidget(gp)
-
         bible_layout.addStretch()
         bible.setLayout(bible_layout)
         self.tabs.addTab(bible, config.thisTranslation["bible"])
@@ -198,7 +196,6 @@ class MiniControl(QWidget):
 
         self.biblesBox = QWidget()
         self.biblesBoxContainer = QVBoxLayout()
-
         collectionsLayout = self.newRowLayout()
         if len(config.bibleCollections) > 0:
             button = QPushButton("All")
@@ -208,9 +205,7 @@ class MiniControl(QWidget):
                 button = QPushButton(bible)
                 button.clicked.connect(partial(self.selectCollection, bible))
                 collectionsLayout.addWidget(button)
-
         self.biblesBoxContainer.addLayout(collectionsLayout)
-
         self.bibleBoxLayout = QVBoxLayout()
         self.bibleBoxLayout.setContentsMargins(0, 0, 0, 0)
         self.bibleBoxLayout.setSpacing(1)
@@ -232,11 +227,8 @@ class MiniControl(QWidget):
             self.bibleButtons[bible] = button
         self.bibleBoxLayout.addLayout(row_layout)
         self.bibleBoxLayout.addStretch()
-
         self.biblesBoxContainer.addLayout(self.bibleBoxLayout)
-
         self.biblesBox.setLayout(self.biblesBoxContainer)
-
         self.tabs.addTab(self.biblesBox, config.thisTranslation["translations"])
 
         # Commentaries tab

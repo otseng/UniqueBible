@@ -1,4 +1,8 @@
 import config
+
+if __name__ == "__main__":
+    config.noQt = True
+
 from functools import partial
 from util.TtsLanguages import TtsLanguages
 from qtpy.QtCore import Qt, QEvent
@@ -160,6 +164,7 @@ class MiniControl(QWidget):
         bible = QWidget()
         bible_layout = QVBoxLayout()
         bible_layout.setContentsMargins(0, 0, 0, 0)
+        bible_layout.setSpacing(1)
         for bookNumGp in bookNumGps[0:5]:
             gp = QWidget()
             layout = self.newRowLayout()
@@ -189,7 +194,10 @@ class MiniControl(QWidget):
         bibles_box = QWidget()
         box_layout = QVBoxLayout()
         box_layout.setContentsMargins(0, 0, 0, 0)
+        box_layout.setSpacing(1)
         row_layout = self.newRowLayout()
+        row_layout.setContentsMargins(0, 0, 0, 0)
+        row_layout.setSpacing(1)
         biblesSqlite = BiblesSqlite()
         bibles = biblesSqlite.getBibleList()
         count = 0
@@ -211,6 +219,7 @@ class MiniControl(QWidget):
         commentaries_box = QWidget()
         box_layout = QVBoxLayout()
         box_layout.setContentsMargins(0, 0, 0, 0)
+        box_layout.setSpacing(1)
         row_layout = self.newRowLayout()
         commentaries = Commentary().getCommentaryList()
         count = 0
@@ -232,6 +241,7 @@ class MiniControl(QWidget):
         lexicons_box = QWidget()
         box_layout = QVBoxLayout()
         box_layout.setContentsMargins(0, 0, 0, 0)
+        box_layout.setSpacing(1)
         row_layout = self.newRowLayout()
         lexicons = LexiconData().lexiconList
         count = 0
@@ -253,6 +263,7 @@ class MiniControl(QWidget):
         dictionaries_box = QWidget()
         box_layout = QVBoxLayout()
         box_layout.setContentsMargins(0, 0, 0, 0)
+        box_layout.setSpacing(1)
         row_layout = self.newRowLayout()
         dictionaries = IndexesSqlite().dictionaryList
         count = 0
@@ -360,10 +371,13 @@ class DummyParent():
     def verseReference(self, command):
         return ['', '']
 
+
 if __name__ == "__main__":
    import sys
    import config
    from util.LanguageUtil import LanguageUtil
+   from util.ConfigUtil import ConfigUtil
+   from qtpy.QtCore import QCoreApplication
 
    config.mainText = ""
    config.mainB = ""
@@ -377,6 +391,12 @@ if __name__ == "__main__":
    config.marvelData = "/Users/otseng/dev/UniqueBible/marvelData/"
    config.isTtsInstalled = False
 
+   ConfigUtil.setup()
+   config.noQt = False
+   config.bibleCollections["Custom"] = ['ABP', 'ACV']
+   config.bibleCollections["King James"] = ['KJV', 'KJVx', 'KJVA', 'KJV1611', 'KJV1769x']
+   config.thisTranslation = LanguageUtil.loadTranslation("en_US")
+   QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
    app = QApplication(sys.argv)
    ui = MiniControl(DummyParent())
    ui.setMinimumHeight(400)

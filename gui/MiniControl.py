@@ -30,6 +30,7 @@ class MiniControl(QWidget):
             self.resizeWindow(2 / 5, 1 / 3)
         self.resizeEvent = (lambda old_method: (lambda event: (self.onResized(event), old_method(event))[-1]))(
             self.resizeEvent)
+        self.bibleButtons = {}
         # setup interface
         self.setupUI()
 
@@ -161,6 +162,8 @@ class MiniControl(QWidget):
             bookNums[59:66],
         ]
 
+        # Bible books tab
+
         bible = QWidget()
         bible_layout = QVBoxLayout()
         bible_layout.setContentsMargins(0, 0, 0, 0)
@@ -191,10 +194,26 @@ class MiniControl(QWidget):
         bible.setLayout(bible_layout)
         self.tabs.addTab(bible, config.thisTranslation["bible"])
 
-        bibles_box = QWidget()
-        box_layout = QVBoxLayout()
-        box_layout.setContentsMargins(0, 0, 0, 0)
-        box_layout.setSpacing(1)
+        # Bible translations tab
+
+        self.biblesBox = QWidget()
+        self.biblesBoxContainer = QVBoxLayout()
+
+        collectionsLayout = self.newRowLayout()
+        if len(config.bibleCollections) > 0:
+            button = QPushButton("All")
+            button.clicked.connect(partial(self.selectCollection, "All"))
+            collectionsLayout.addWidget(button)
+            for bible in sorted(config.bibleCollections.keys()):
+                button = QPushButton(bible)
+                button.clicked.connect(partial(self.selectCollection, bible))
+                collectionsLayout.addWidget(button)
+
+        self.biblesBoxContainer.addLayout(collectionsLayout)
+
+        self.bibleBoxLayout = QVBoxLayout()
+        self.bibleBoxLayout.setContentsMargins(0, 0, 0, 0)
+        self.bibleBoxLayout.setSpacing(1)
         row_layout = self.newRowLayout()
         row_layout.setContentsMargins(0, 0, 0, 0)
         row_layout.setSpacing(1)
@@ -208,13 +227,19 @@ class MiniControl(QWidget):
             count += 1
             if count > 6:
                 count = 0
-                box_layout.addLayout(row_layout)
+                self.bibleBoxLayout.addLayout(row_layout)
                 row_layout = self.newRowLayout()
-        box_layout.addLayout(row_layout)
-        box_layout.addStretch()
-        bibles_box.setLayout(box_layout)
+            self.bibleButtons[bible] = button
+        self.bibleBoxLayout.addLayout(row_layout)
+        self.bibleBoxLayout.addStretch()
 
-        self.tabs.addTab(bibles_box, config.thisTranslation["translations"])
+        self.biblesBoxContainer.addLayout(self.bibleBoxLayout)
+
+        self.biblesBox.setLayout(self.biblesBoxContainer)
+
+        self.tabs.addTab(self.biblesBox, config.thisTranslation["translations"])
+
+        # Commentaries tab
 
         commentaries_box = QWidget()
         box_layout = QVBoxLayout()
@@ -238,6 +263,8 @@ class MiniControl(QWidget):
 
         self.tabs.addTab(commentaries_box, config.thisTranslation["commentaries"])
 
+        # Lexicons tab
+
         lexicons_box = QWidget()
         box_layout = QVBoxLayout()
         box_layout.setContentsMargins(0, 0, 0, 0)
@@ -259,6 +286,8 @@ class MiniControl(QWidget):
         lexicons_box.setLayout(box_layout)
 
         self.tabs.addTab(lexicons_box, config.thisTranslation["lexicons"])
+
+        # Dictionaries tab
 
         dictionaries_box = QWidget()
         box_layout = QVBoxLayout()
@@ -361,6 +390,20 @@ class MiniControl(QWidget):
         self.searchLineEdit.setText(command)
         self.parent.runTextCommand(command)
         self.parent.textCommandLineEdit.setText(command)
+
+    def selectCollection(self, collection):
+        if not collection == "All":
+            biblesInCollection = config.bibleCollections[collection]
+        for bible in self.bibleButtons.keys():
+            button = self.bibleButtons[bible]
+            if collection == "All":
+                button.setVisible(True)
+            else:
+                if bible in biblesInCollection:
+                    button.setVisible(True)
+                else:
+                    button.setVisible(False)
+
 
 ## Standalone development code
 

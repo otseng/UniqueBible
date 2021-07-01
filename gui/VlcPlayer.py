@@ -1,22 +1,25 @@
+import config
+import os
+import platform
+import sys
+from qtpy import QtWidgets, QtGui, QtCore
+from qtpy.QtWidgets import QMainWindow
+import vlc
+
 """
 Code based on:
 https://git.videolan.org/?p=vlc/bindings/python.git;a=blob_plain;f=examples/pyqt5vlc.py;hb=HEAD
 """
-import config
-import platform
-import sys
-from qtpy import QtWidgets, QtGui, QtCore
-import vlc
 
-class VlcPlayer(QtWidgets.QMainWindow):
+class VlcPlayer(QMainWindow):
 
-    height_audio = 90
+    height_audio = 70
     width_audio = 400
-    height_video = 480
-    width_video = 640
+    height_video = 460
+    width_video = 650
 
     def __init__(self, filename=None):
-        QtWidgets.QMainWindow.__init__(self)
+        super().__init__()
         self.setWindowTitle("Media Player")
         self.instance = vlc.Instance()
         self.media = None
@@ -98,10 +101,12 @@ class VlcPlayer(QtWidgets.QMainWindow):
             self.load_file(filename)
 
     def load_file(self, filename):
-        if filename.endswith(".mp4"):
-            self.resize(self.width_video, self.height_video)
-        else:
+        if not os.path.exists(filename):
+            return
+        if filename.endswith(".mp3"):
             self.resize(self.width_audio, self.height_audio)
+        else:
+            self.resize(self.width_video, self.height_video)
 
         self.media = self.instance.media_new(filename)
 
@@ -153,15 +158,13 @@ class VlcPlayer(QtWidgets.QMainWindow):
         # No need to call this function if nothing is played
         if not self.mediaplayer.is_playing():
             self.timer.stop()
-
-            # After the video finished, the play button stills shows "Pause",
-            # which is not the desired behavior of a media player.
-            # This fixes that "bug".
             if not self.is_paused:
                 self.stop()
 
 def main():
     # filename = "/Users/otseng/dev/UniqueBible/music/04 Made Me Glad (Live).mp3"
+    # filename = "/Users/otseng/dev/UniqueBible/video/Luke 15_11 - The Prodigal Son.mp4"
+    # filename = "doesnotexist.mp4"
     filename = ""
     app = QtWidgets.QApplication(sys.argv)
     player = VlcPlayer(filename)

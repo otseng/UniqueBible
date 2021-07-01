@@ -737,4 +737,5 @@ translation = {
     "bibleCollections": "圣经收藏",
     "parseTextConvertNotesToBook": "将注释转换为书籍时解析文本",
     "rename": "重命名",
+    "mediaPlayer": "媒体播放器",
 }

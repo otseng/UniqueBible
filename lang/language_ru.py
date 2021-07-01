@@ -737,4 +737,5 @@ translation = {
     "bibleCollections": "Сборник Библии",
     "parseTextConvertNotesToBook": "Анализировать текст при преобразовании примечаний в книгу",
     "rename": "Переименовать",
+    "mediaPlayer": "проигрыватель мультимедиа",
 }

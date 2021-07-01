@@ -286,6 +286,8 @@ def setInstallConfig(module, isInstalled):
         config.isQrCodeInstalled = isInstalled
     elif module == "git+git://github.com/ojii/pymaging.git#egg=pymaging git+git://github.com/ojii/pymaging-png.git#egg=pymaging-png":
         config.isPurePythonPngInstalled = isInstalled
+    elif module == "python-vlc":
+        config.isVlcInstalled = isInstalled
 
 # Check if required modules are installed
 required = (

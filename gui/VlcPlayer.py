@@ -1,71 +1,40 @@
-#
-# PyQt5 example for VLC Python bindings
-# Copyright (C) 2009-2010 the VideoLAN team
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
-#
 """
-A simple example for VLC python bindings using PyQt5.
-
-Author: Saveliy Yusufov, Columbia University, sy2685@columbia.edu
-Date: 25 December 2018
-
-https://git.videolan.org/?p=vlc/bindings/python.git;a=tree;f=examples;hb=HEAD
-
+Code based on:
+https://git.videolan.org/?p=vlc/bindings/python.git;a=blob_plain;f=examples/pyqt5vlc.py;hb=HEAD
 """
+import config
 import platform
 import sys
-
 from qtpy import QtWidgets, QtGui, QtCore
 import vlc
 
-class Player(QtWidgets.QMainWindow):
-    """A simple Media Player using VLC and Qt
-    """
+class VlcPlayer(QtWidgets.QMainWindow):
+
+    height_audio = 90
+    width_audio = 400
+    height_video = 480
+    width_video = 640
 
     def __init__(self, filename=None):
         QtWidgets.QMainWindow.__init__(self)
         self.setWindowTitle("Media Player")
-
-        # Create a basic vlc instance
         self.instance = vlc.Instance()
-
         self.media = None
-
-        # Create an empty vlc media player
         self.mediaplayer = self.instance.media_player_new()
-
         self.create_ui()
         self.is_paused = False
-
+        self.resize(self.width_audio, self.height_audio)
         if filename:
             self.load_file(filename)
 
     def create_ui(self):
-        """Set up the user interface, signals & slots
-        """
         self.widget = QtWidgets.QWidget(self)
         self.setCentralWidget(self.widget)
-
         self.videoframe = QtWidgets.QFrame()
-
         self.palette = self.videoframe.palette()
         self.palette.setColor(QtGui.QPalette.Window, QtGui.QColor(0, 0, 0))
         self.videoframe.setPalette(self.palette)
         self.videoframe.setAutoFillBackground(True)
-
         self.positionslider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
         self.positionslider.setToolTip("Position")
         self.positionslider.setMaximum(1000)
@@ -73,15 +42,12 @@ class Player(QtWidgets.QMainWindow):
         self.positionslider.sliderPressed.connect(self.set_position)
 
         self.hbuttonbox = QtWidgets.QHBoxLayout()
-
         self.openbutton = QtWidgets.QPushButton("Open")
         self.hbuttonbox.addWidget(self.openbutton)
         self.openbutton.clicked.connect(self.open_file)
-
         self.playbutton = QtWidgets.QPushButton("Play")
         self.hbuttonbox.addWidget(self.playbutton)
         self.playbutton.clicked.connect(self.play_pause)
-
         self.stopbutton = QtWidgets.QPushButton("Stop")
         self.hbuttonbox.addWidget(self.stopbutton)
         self.stopbutton.clicked.connect(self.stop)
@@ -106,8 +72,6 @@ class Player(QtWidgets.QMainWindow):
         self.timer.timeout.connect(self.update_ui)
 
     def play_pause(self):
-        """Toggle play/pause status
-        """
         if self.mediaplayer.is_playing():
             self.mediaplayer.pause()
             self.playbutton.setText("Play")
@@ -124,30 +88,25 @@ class Player(QtWidgets.QMainWindow):
             self.is_paused = False
 
     def stop(self):
-        """Stop player
-        """
         self.mediaplayer.stop()
         self.playbutton.setText("Play")
 
     def open_file(self):
-        """Open a media file in a MediaPlayer
-        """
-
-        dialog_txt = "Choose MP3/MP4 File"
+        dialog_txt = "Choose Media File"
         filename, filter = QtWidgets.QFileDialog.getOpenFileName(self, dialog_txt, ".")
         if filename:
             self.load_file(filename)
 
     def load_file(self, filename):
+        if filename.endswith(".mp4"):
+            self.resize(self.width_video, self.height_video)
+        else:
+            self.resize(self.width_audio, self.height_audio)
+
         self.media = self.instance.media_new(filename)
 
-        # Put the media in the media player
         self.mediaplayer.set_media(self.media)
-
-        # Parse the metadata of the file
         self.media.parse()
-
-        # Set the title of the track as window title
         self.setWindowTitle(self.media.get_meta(0))
 
         # The media player has to be 'connected' to the QFrame (otherwise the
@@ -202,11 +161,11 @@ class Player(QtWidgets.QMainWindow):
                 self.stop()
 
 def main():
-    filename = "/Users/otseng/dev/UniqueBible/music/04 Made Me Glad (Live).mp3"
+    # filename = "/Users/otseng/dev/UniqueBible/music/04 Made Me Glad (Live).mp3"
+    filename = ""
     app = QtWidgets.QApplication(sys.argv)
-    player = Player(filename)
+    player = VlcPlayer(filename)
     player.show()
-    player.resize(640, 480)
     sys.exit(app.exec_())
 
 if __name__ == "__main__":

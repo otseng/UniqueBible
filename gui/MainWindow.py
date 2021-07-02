@@ -3472,6 +3472,9 @@ class MainWindow(QMainWindow):
         elif config.refButtonClickAction == "mini":
             self.openMiniControlTab(1)
 
+    def checkIfBibleMP3FileExists(self, text, book, chapter):
+        return True
+
     def testing(self):
         #pass
         print("testing")

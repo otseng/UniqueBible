@@ -1218,6 +1218,28 @@ class TextCommandParser:
         self.parent.vlcPlayer.show()
         return ("", "", {})
 
+    def playAudioBible(self, command, source):
+        text = config.mainText
+        book = config.mainB
+        chapter = config.mainC
+        if command:
+            count = command.count(":::")
+            if count == 0:
+                verseList = self.extractAllVerses(command)
+                book, *_ = verseList[0]
+            elif count == 1:
+                texts, reference = self.splitCommand(command)
+                confirmedTexts = self.getConfirmedTexts(texts)
+                text = confirmedTexts[0]
+                verseList = self.extractAllVerses(command)
+                book, *_ = verseList[0]
+        if self.parent.checkIfBibleMP3FileExists(text, book, chapter):
+            print("Read it")
+        else:
+            print("Does not exist")
+        return ("", "", {})
+
+
     # functions about bible
 
     # overview:::

@@ -738,4 +738,7 @@ translation = {
     "parseTextConvertNotesToBook": "ノートをブックに変換するときにテキストを構文解析する",
     "rename": "名前変更",
     "mediaPlayer": "メディアプレーヤー",
+    "play": "プレイ",
+    "volume": "体積",
+    "pause": "一時停止",
 }

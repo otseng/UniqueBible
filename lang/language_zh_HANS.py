@@ -738,4 +738,7 @@ translation = {
     "parseTextConvertNotesToBook": "将注释转换为书籍时解析文本",
     "rename": "重命名",
     "mediaPlayer": "媒体播放器",
+    "play": "玩玩",
+    "volume": "卷",
+    "pause": "暂停",
 }

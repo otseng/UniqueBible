@@ -738,4 +738,7 @@ translation = {
     "parseTextConvertNotesToBook": "Analizza il testo quando converte le note da prenotare",
     "rename": "Rinomina",
     "mediaPlayer": "Media Player",
+    "play": "Play",
+    "volume": "Volume",
+    "pause": "Pausa",
 }

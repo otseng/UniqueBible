@@ -5,6 +5,7 @@ import sys
 from qtpy import QtWidgets, QtGui, QtCore
 from qtpy.QtWidgets import QWidget
 from qtpy.QtWidgets import QDesktopWidget
+from qtpy.QtCore import QEvent, Qt
 import vlc
 
 """
@@ -21,7 +22,7 @@ class VlcPlayer(QWidget):
 
     def __init__(self, filename=None):
         super().__init__()
-        self.setWindowTitle("Media Player")
+        self.setWindowTitle(config.thisTranslation["mediaPlayer"])
         self.instance = vlc.Instance()
         self.media = None
         self.mediaplayer = self.instance.media_player_new()
@@ -39,19 +40,18 @@ class VlcPlayer(QWidget):
         self.videoframe.setPalette(self.palette)
         self.videoframe.setAutoFillBackground(True)
         self.positionslider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
-        self.positionslider.setToolTip("Position")
         self.positionslider.setMaximum(1000)
         self.positionslider.sliderMoved.connect(self.set_position)
         self.positionslider.sliderPressed.connect(self.set_position)
 
         self.hbuttonbox = QtWidgets.QHBoxLayout()
-        self.openbutton = QtWidgets.QPushButton("Open")
+        self.openbutton = QtWidgets.QPushButton(config.thisTranslation["open"])
         self.hbuttonbox.addWidget(self.openbutton)
         self.openbutton.clicked.connect(self.open_file)
-        self.playbutton = QtWidgets.QPushButton("Play")
+        self.playbutton = QtWidgets.QPushButton(config.thisTranslation["play"])
         self.hbuttonbox.addWidget(self.playbutton)
         self.playbutton.clicked.connect(self.play_pause)
-        self.stopbutton = QtWidgets.QPushButton("Stop")
+        self.stopbutton = QtWidgets.QPushButton(config.thisTranslation["stop"])
         self.hbuttonbox.addWidget(self.stopbutton)
         self.stopbutton.clicked.connect(self.stop)
 
@@ -59,7 +59,7 @@ class VlcPlayer(QWidget):
         self.volumeslider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
         self.volumeslider.setMaximum(100)
         self.volumeslider.setValue(self.mediaplayer.audio_get_volume())
-        self.volumeslider.setToolTip("Volume")
+        self.volumeslider.setToolTip(config.thisTranslation["volume"])
         self.hbuttonbox.addWidget(self.volumeslider)
         self.volumeslider.valueChanged.connect(self.set_volume)
 
@@ -77,7 +77,7 @@ class VlcPlayer(QWidget):
     def play_pause(self):
         if self.mediaplayer.is_playing():
             self.mediaplayer.pause()
-            self.playbutton.setText("Play")
+            self.playbutton.setText(config.thisTranslation["play"])
             self.is_paused = True
             self.timer.stop()
         else:
@@ -86,17 +86,16 @@ class VlcPlayer(QWidget):
                 return
 
             self.mediaplayer.play()
-            self.playbutton.setText("Pause")
+            self.playbutton.setText(config.thisTranslation["pause"])
             self.timer.start()
             self.is_paused = False
 
     def stop(self):
         self.mediaplayer.stop()
-        self.playbutton.setText("Play")
+        self.playbutton.setText(config.thisTranslation["play"])
 
     def open_file(self):
-        dialog_txt = "Choose Media File"
-        filename, filter = QtWidgets.QFileDialog.getOpenFileName(self, dialog_txt, ".")
+        filename, filter = QtWidgets.QFileDialog.getOpenFileName(self, "Choose Media File", ".")
         if filename:
             self.load_file(filename)
 
@@ -164,6 +163,12 @@ class VlcPlayer(QWidget):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
+    def event(self, event):
+        if event.type() == QEvent.KeyRelease:
+            if event.key() == Qt.Key_Escape:
+                self.close()
+        return QWidget.event(self, event)
+
     def closeEvent(self, event):
         if self.mediaplayer.is_playing():
             self.mediaplayer.stop()
@@ -172,10 +177,13 @@ class VlcPlayer(QWidget):
 
 
 def main():
+    from util.LanguageUtil import LanguageUtil
+
     filename = "/Users/otseng/dev/UniqueBible/music/04 Made Me Glad (Live).mp3"
     # filename = "/Users/otseng/dev/UniqueBible/video/Luke 15_11 - The Prodigal Son.mp4"
     # filename = "doesnotexist.mp4"
     # filename = ""
+    config.thisTranslation = LanguageUtil.loadTranslation("en_US")
     app = QtWidgets.QApplication(sys.argv)
     player = VlcPlayer(filename)
     player.show()

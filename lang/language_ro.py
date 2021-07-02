@@ -738,4 +738,7 @@ translation = {
     "parseTextConvertNotesToBook": "Analizaţi textul la convertirea notelor la carte",
     "rename": "Redenumire",
     "mediaPlayer": "Jucător media",
+    "play": "Joacă",
+    "volume": "Volum",
+    "pause": "Pauză",
 }

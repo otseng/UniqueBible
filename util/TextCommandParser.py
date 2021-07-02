@@ -406,7 +406,7 @@ class TextCommandParser:
             # Feature: run VLC player to play mp3 and mp4 files
             # e.g. VLC
             # e.g. VLC:::music/AmazingGrace.mp3
-            # e.g. VLC:::videos/OnlyImagine.mp4
+            # e.g. VLC:::video/ProdigalSon.mp4
             """),
             "opennote": (self.textOpenNoteFile, """
             # [KEYWORD] opennote

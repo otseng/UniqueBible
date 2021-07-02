@@ -1,6 +1,5 @@
 import glob
 import os
-
 import config
 from qtpy.QtGui import QStandardItemModel, QStandardItem
 from qtpy.QtWidgets import (QPushButton, QListView, QAbstractItemView, QGroupBox, QHBoxLayout, QVBoxLayout, QWidget)

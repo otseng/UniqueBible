@@ -1664,11 +1664,10 @@ class MainWindow(QMainWindow):
 
     def openVlcPlayer(self, filename=""):
         textCommand = "VLC:::{0}".format(filename)
-        # self.textCommandLineEdit.setText(textCommand)
+        self.textCommandLineEdit.setText(textCommand)
         self.addHistoryRecord("study", textCommand)
-        player = VlcPlayer(filename)
-        time.sleep(.5)
-        player.show()
+        self.vlcPlayer = VlcPlayer(filename)
+        self.vlcPlayer.show()
 
     def openMiniBrowser(self, initialUrl=None):
         self.youTubeView = MiniBrowser(self, initialUrl)

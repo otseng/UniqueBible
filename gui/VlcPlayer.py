@@ -3,7 +3,8 @@ import os
 import platform
 import sys
 from qtpy import QtWidgets, QtGui, QtCore
-from qtpy.QtWidgets import QMainWindow
+from qtpy.QtWidgets import QWidget
+from qtpy.QtWidgets import QDesktopWidget
 import vlc
 
 """
@@ -11,9 +12,9 @@ Code based on:
 https://git.videolan.org/?p=vlc/bindings/python.git;a=blob_plain;f=examples/pyqt5vlc.py;hb=HEAD
 """
 
-class VlcPlayer(QMainWindow):
+class VlcPlayer(QWidget):
 
-    height_audio = 70
+    height_audio = 60
     width_audio = 400
     height_video = 460
     width_video = 650
@@ -27,12 +28,11 @@ class VlcPlayer(QMainWindow):
         self.create_ui()
         self.is_paused = False
         self.resize(self.width_audio, self.height_audio)
+        self.center()
         if filename:
             self.load_file(filename)
 
     def create_ui(self):
-        self.widget = QtWidgets.QWidget(self)
-        self.setCentralWidget(self.widget)
         self.videoframe = QtWidgets.QFrame()
         self.palette = self.videoframe.palette()
         self.palette.setColor(QtGui.QPalette.Window, QtGui.QColor(0, 0, 0))
@@ -68,7 +68,7 @@ class VlcPlayer(QMainWindow):
         self.vboxlayout.addWidget(self.positionslider)
         self.vboxlayout.addLayout(self.hbuttonbox)
 
-        self.widget.setLayout(self.vboxlayout)
+        self.setLayout(self.vboxlayout)
 
         self.timer = QtCore.QTimer(self)
         self.timer.setInterval(100)
@@ -107,6 +107,7 @@ class VlcPlayer(QMainWindow):
             self.resize(self.width_audio, self.height_audio)
         else:
             self.resize(self.width_video, self.height_video)
+        self.center()
 
         self.media = self.instance.media_new(filename)
 
@@ -147,25 +148,34 @@ class VlcPlayer(QMainWindow):
         self.timer.start()
 
     def update_ui(self):
-        """Updates the user interface"""
-
         # Set the slider's position to its corresponding media position
         # Note that the setValue function only takes values of type int,
         # so we must first convert the corresponding media position.
         media_pos = int(self.mediaplayer.get_position() * 1000)
         self.positionslider.setValue(media_pos)
-
-        # No need to call this function if nothing is played
         if not self.mediaplayer.is_playing():
             self.timer.stop()
             if not self.is_paused:
                 self.stop()
 
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def closeEvent(self, event):
+        if self.mediaplayer.is_playing():
+            self.mediaplayer.stop()
+            self.timer.stop()
+            self.stop()
+
+
 def main():
-    # filename = "/Users/otseng/dev/UniqueBible/music/04 Made Me Glad (Live).mp3"
+    filename = "/Users/otseng/dev/UniqueBible/music/04 Made Me Glad (Live).mp3"
     # filename = "/Users/otseng/dev/UniqueBible/video/Luke 15_11 - The Prodigal Son.mp4"
     # filename = "doesnotexist.mp4"
-    filename = ""
+    # filename = ""
     app = QtWidgets.QApplication(sys.argv)
     player = VlcPlayer(filename)
     player.show()

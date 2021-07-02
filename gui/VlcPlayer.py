@@ -22,6 +22,7 @@ class VlcPlayer(QWidget):
 
     def __init__(self, filename=None):
         super().__init__()
+        os.environ["VLC_VERBOSE"] = str("-1")  # turn off low level VLC logging
         self.setWindowTitle(config.thisTranslation["mediaPlayer"])
         self.instance = vlc.Instance()
         self.media = None
@@ -159,7 +160,7 @@ class VlcPlayer(QWidget):
 
     def center(self):
         qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
+        cp = QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 

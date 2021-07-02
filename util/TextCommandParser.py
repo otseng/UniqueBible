@@ -408,6 +408,14 @@ class TextCommandParser:
             # e.g. VLC:::music/AmazingGrace.mp3
             # e.g. VLC:::video/ProdigalSon.mp4
             """),
+            "readbible": (self.readBible, """
+            # [KEYWORD] READBIBLE
+            # Feature: Play Bible mp3 file recording of a chapter
+            # mp3 files should be placed under audio/
+            # e.g. READBIBLE
+            # e.g. READBIBLE:::John 1
+            # e.g. READBIBLE:::KJV:::John 1
+            """),
             "opennote": (self.textOpenNoteFile, """
             # [KEYWORD] opennote
             # e.g. opennote:::file_path"""),
@@ -1218,7 +1226,8 @@ class TextCommandParser:
         self.parent.vlcPlayer.show()
         return ("", "", {})
 
-    def playAudioBible(self, command, source):
+    # READBIBLE:::
+    def readBible(self, command, source):
         text = config.mainText
         book = config.mainB
         chapter = config.mainC

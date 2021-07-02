@@ -1664,8 +1664,9 @@ class MainWindow(QMainWindow):
 
     def openVlcPlayer(self, filename=""):
         textCommand = "VLC:::{0}".format(filename)
-        self.textCommandLineEdit.setText(textCommand)
-        self.addHistoryRecord("study", textCommand)
+        if filename:
+            self.textCommandLineEdit.setText(textCommand)
+            self.addHistoryRecord("study", textCommand)
         self.vlcPlayer = VlcPlayer(filename)
         self.vlcPlayer.show()
 

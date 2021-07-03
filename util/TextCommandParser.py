@@ -418,9 +418,9 @@ class TextCommandParser:
             # mp3 files can be downloaded from https://www.audiotreasure.com/audioindex.htm
             # Usage:
             # e.g. READBIBLE                             # Reads current Bible and current chapter
-            # e.g. READBIBLE:::John 1                    # Reads chapter from current Bible
-            # e.g. READBIBLE:::KJV:::John 1              # Reads chapter from Bible
-            # e.g. READBIBLE:::KJV:::John 1:::drama      # Reads from drama folder instead of default folder
+            # e.g. READBIBLE:::Matt 1                    # Reads chapter from current Bible
+            # e.g. READBIBLE:::KJV:::Matt 1              # Reads chapter from Bible
+            # e.g. READBIBLE:::KJV:::Matt 1:::drama      # Reads from drama folder instead of default folder
             """),
             "opennote": (self.textOpenNoteFile, """
             # [KEYWORD] opennote
@@ -1237,18 +1237,25 @@ class TextCommandParser:
         text = config.mainText
         book = config.mainB
         chapter = config.mainC
+        folder = "default"
         if command:
             count = command.count(":::")
             if count == 0:
                 verseList = self.extractAllVerses(command)
-                book, *_ = verseList[0]
+                book, chapter, verse = verseList[0]
             elif count == 1:
                 texts, reference = self.splitCommand(command)
                 confirmedTexts = self.getConfirmedTexts(texts)
                 text = confirmedTexts[0]
                 verseList = self.extractAllVerses(command)
-                book, *_ = verseList[0]
-        self.parent.playBibleMP3File(text, book, chapter)
+                book, chapter, verse = verseList[0]
+            elif count == 2:
+                texts, reference, folder = self.splitCommand(command)
+                confirmedTexts = self.getConfirmedTexts(texts)
+                text = confirmedTexts[0]
+                verseList = self.extractAllVerses(command)
+                book, chapter, verse = verseList[0]
+        self.parent.playBibleMP3File(text, book, chapter, folder)
         return ("", "", {})
 
 

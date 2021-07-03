@@ -1665,10 +1665,6 @@ class MainWindow(QMainWindow):
         self.openMiniBrowser()
 
     def openVlcPlayer(self, filename=""):
-        textCommand = "VLC:::{0}".format(filename)
-        if filename:
-            self.textCommandLineEdit.setText(textCommand)
-            self.addHistoryRecord("study", textCommand)
         if self.vlcPlayer is None:
             self.vlcPlayer = VlcPlayer(self, filename)
         else:
@@ -3473,7 +3469,6 @@ class MainWindow(QMainWindow):
             self.openMiniControlTab(1)
 
     def playBibleMP3File(self, text, book, chapter, folder="default"):
-        # directory = "{0}/audio/bibles/{1}/{2}/{3}".format(os.getcwd(), text, folder, book)
         directory = "audio/bibles/{0}/{1}/{2}".format(text, folder, book)
         if os.path.exists(directory):
             filesearch = "{0}/{1}*{2}.mp3".format(directory, book, "{:03d}".format(chapter))

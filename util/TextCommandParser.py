@@ -1244,15 +1244,12 @@ class TextCommandParser:
                 verseList = self.extractAllVerses(command)
                 book, chapter, verse = verseList[0]
             elif count == 1:
-                texts, reference = self.splitCommand(command)
-                confirmedTexts = self.getConfirmedTexts(texts)
-                text = confirmedTexts[0]
+                text, reference = self.splitCommand(command)
                 verseList = self.extractAllVerses(command)
                 book, chapter, verse = verseList[0]
             elif count == 2:
-                texts, reference, folder = self.splitCommand(command)
-                confirmedTexts = self.getConfirmedTexts(texts)
-                text = confirmedTexts[0]
+                text, commandList = self.splitCommand(command)
+                reference, folder = self.splitCommand(commandList)
                 verseList = self.extractAllVerses(command)
                 book, chapter, verse = verseList[0]
         self.parent.playBibleMP3File(text, book, chapter, folder)

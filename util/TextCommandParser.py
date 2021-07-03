@@ -412,9 +412,9 @@ class TextCommandParser:
             # [KEYWORD] READBIBLE
             # Feature: Play Bible mp3 file recording of a chapter
             # mp3 files should be placed under audio/bibles/[Bible Text]/default/[Chapter number]/
-            # for example, audio/KJV/default/40/
+            # for example, audio/bibles/KJV/default/40/
             # each file should be a recording of a chapter with the filename "[Book number]_[Name][Chapter number].mp3
-            # for example, 40_Matthew001.mp3
+            # for example, 40_Matthew001.mp3.  Chapter numbers should be three digits (eg `001`).
             # mp3 files can be downloaded from https://www.audiotreasure.com/audioindex.htm
             # Usage:
             # e.g. READBIBLE                             # Reads current Bible and current chapter

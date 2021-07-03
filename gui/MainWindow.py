@@ -3472,8 +3472,15 @@ class MainWindow(QMainWindow):
         elif config.refButtonClickAction == "mini":
             self.openMiniControlTab(1)
 
-    def checkIfBibleMP3FileExists(self, text, book, chapter):
-        return True
+    def playBibleMP3File(self, text, book, chapter, folder="default"):
+        # directory = "{0}/audio/bibles/{1}/{2}/{3}".format(os.getcwd(), text, folder, book)
+        directory = "audio/bibles/{0}/{1}/{2}".format(text, folder, book)
+        if os.path.exists(directory):
+            filesearch = "{0}/{1}*{2}.mp3".format(directory, book, "{:03d}".format(chapter))
+            files = glob.glob(filesearch)
+            if files:
+                file = files[0]
+                self.openVlcPlayer(file)
 
     def testing(self):
         #pass

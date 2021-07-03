@@ -411,10 +411,16 @@ class TextCommandParser:
             "readbible": (self.readBible, """
             # [KEYWORD] READBIBLE
             # Feature: Play Bible mp3 file recording of a chapter
-            # mp3 files should be placed under audio/
-            # e.g. READBIBLE
-            # e.g. READBIBLE:::John 1
-            # e.g. READBIBLE:::KJV:::John 1
+            # mp3 files should be placed under audio/bibles/[Bible Text]/default/[Chapter number]/
+            # for example, audio/KJV/default/40/
+            # each file should be a recording of a chapter with the filename "[Book number]_[Name][Chapter number].mp3
+            # for example, 40_Matthew001.mp3
+            # mp3 files can be downloaded from https://www.audiotreasure.com/audioindex.htm
+            # Usage:
+            # e.g. READBIBLE                             # Reads current Bible and current chapter
+            # e.g. READBIBLE:::John 1                    # Reads chapter from current Bible
+            # e.g. READBIBLE:::KJV:::John 1              # Reads chapter from Bible
+            # e.g. READBIBLE:::KJV:::John 1:::drama      # Reads from drama folder instead of default folder
             """),
             "opennote": (self.textOpenNoteFile, """
             # [KEYWORD] opennote
@@ -1242,10 +1248,7 @@ class TextCommandParser:
                 text = confirmedTexts[0]
                 verseList = self.extractAllVerses(command)
                 book, *_ = verseList[0]
-        if self.parent.checkIfBibleMP3FileExists(text, book, chapter):
-            print("Read it")
-        else:
-            print("Does not exist")
+        self.parent.playBibleMP3File(text, book, chapter)
         return ("", "", {})
 
 

@@ -758,11 +758,11 @@ input.addEventListener('keyup', function(event) {0}
         return chapter
 
     def insertReadBibleLink(self, text, b):
-        directory = "audio/bibles/{0}/{1}/{2}".format(text, "default", b)
-        if os.path.exists(directory):
-            return """ <ref onclick="document.title='READBIBLE:::'" style="font-size: .8em">&#128264;</ref>"""
-        else:
-            return ""
+        if config.runMode == "gui":
+            directory = "audio/bibles/{0}/{1}/{2}".format(text, "default", b)
+            if os.path.exists(directory):
+                return """ <ref onclick="document.title='READBIBLE:::'" style="font-size: .8em">&#128264;</ref>"""
+        return ""
 
     def migrateDatabaseContent(self):
         self.logger.debug("Migrating Bible name to Details table")
@@ -1078,11 +1078,11 @@ class Bible:
             return "<span style='color:gray;'>['{0}' does not contain this chapter.]</span>".format(self.text)
 
     def insertReadBibleLink(self, text, b):
-        directory = "audio/bibles/{0}/{1}/{2}".format(text, "default", b)
-        if os.path.exists(directory):
-            return """ <ref onclick="document.title='READBIBLE:::'" style="font-size: .8em">&#128264;</ref>"""
-        else:
-            return ""
+        if config.runMode == "gui":
+            directory = "audio/bibles/{0}/{1}/{2}".format(text, "default", b)
+            if os.path.exists(directory):
+                return """ <ref onclick="document.title='READBIBLE:::'" style="font-size: .8em">&#128264;</ref>"""
+        return ""
 
     def formatVerseNumber(self, match):
         v, tagEnding = match.groups()

@@ -105,7 +105,7 @@ class DownloadBibleMp3Dialog(QDialog):
                 item.setCheckState(Qt.Unchecked)
                 item.setEnabled(False)
             self.dataViewModel.setItem(rowCount, 0, item)
-            engFullBookName = BibleBooks().eng[str(file)][1]
+            engFullBookName = BibleBooks().eng[str(int(file))][1]
             item = QStandardItem(engFullBookName)
             self.dataViewModel.setItem(rowCount, 1, item)
             if not os.path.exists(folder):
@@ -156,8 +156,10 @@ class DownloadBibleMp3Dialog(QDialog):
         self.thread.start()
 
     def finishedDownloading(self, count):
+        self.selectBible(self.selectedBible)
         self.setStatus("")
-        self.close()
+        self.downloadButton.setEnabled(True)
+        self.closeButton.setEnabled(True)
         if count > 0:
             self.parent.displayMessage(config.thisTranslation["message_installed"])
 
@@ -185,14 +187,48 @@ class DownloadFromGitHub(QObject):
             if self.dataViewModel.item(index).checkState() == Qt.Checked:
                 filename = self.dataViewModel.item(index).text()
                 file = os.path.join(folder, filename+".zip")
-                msg = "Downloading " + filename + " ..."
+                msg = "Download " + filename
                 self.progress.emit(msg)
                 self.github.downloadFile(file, self.repoData[filename])
                 with zipfile.ZipFile(file, 'r') as zipped:
                     zipped.extractall(folder)
                 os.remove(file)
+                DownloadBibleMp3Util.moveFiles("{0}/{1}*.mp3".format(folder, filename), folder)
                 count += 1
         self.finished.emit(count)
+
+
+class DownloadBibleMp3Util:
+
+    @staticmethod
+    def moveFiles(sourceDir, destDir, debugOutput = False):
+        files = glob.glob(sourceDir)
+        for file in sorted(files):
+            base = os.path.basename(file)
+            folder = base[:2]
+            destFolder = os.path.join(destDir, folder)
+            if not os.path.exists(destFolder):
+                os.mkdir(destFolder)
+            newFile = os.path.join(destFolder, base)
+            os.rename(file, newFile)
+            if debugOutput:
+                print(newFile)
+
+    @staticmethod
+    def zipFiles(directory, debugOutput = False):
+        import shutil
+        directories = [d for d in os.listdir(directory) if
+                       os.path.isdir(os.path.join(directory, d)) and not d == ".git"]
+        count = 0
+        for dir in sorted(directories):
+            if debugOutput:
+                print(dir)
+            zipFile = os.path.join(directory, dir)
+            shutil.make_archive(zipFile, 'zip', zipFile)
+            count += 1
+            if count > 66:
+                break
+
 
 class DummyParent():
     def displayMessage(self, text):
@@ -213,34 +249,10 @@ def main():
     dialog = DownloadBibleMp3Dialog(DummyParent())
     dialog.exec_()
 
-def moveFiles(sourceDir, destDir):
-    files = glob.glob(sourceDir)
-    for file in sorted(files):
-        base = os.path.basename(file)
-        folder = base[:2]
-        destFolder = os.path.join(destDir, folder)
-        if not os.path.exists(destFolder):
-            os.mkdir(destFolder)
-        newFile = os.path.join(destFolder, base)
-        os.rename(file, newFile)
-        print(newFile)
-
-def zipFiles(directory):
-    import shutil
-    directories = [d for d in os.listdir(directory) if os.path.isdir(os.path.join(directory, d)) and not d == ".git"]
-    count = 0
-    for dir in sorted(directories):
-        print(dir)
-        zipFile = os.path.join(directory, dir)
-        shutil.make_archive(zipFile, 'zip', zipFile)
-        count += 1
-        if count > 66:
-            break
-
 if __name__ == '__main__':
     # main()
 
     sourceDir = "/Users/otseng/Downloads/KJV_OT_Audio_TB/*"
     destDir = "/Users/otseng/workspace/UniqueBible_MP3_KJV"
-    # moveFiles(sourceDir, destDir)
-    zipFiles(destDir)
+    # DownloadBibleMp3Util.moveFiles(sourceDir, destDir, True)
+    # DownloadBibleMp3Util.zipFiles(destDir, True)

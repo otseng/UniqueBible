@@ -1,3 +1,4 @@
+import glob
 import os
 import zipfile
 import config
@@ -212,5 +213,34 @@ def main():
     dialog = DownloadBibleMp3Dialog(DummyParent())
     dialog.exec_()
 
+def moveFiles(sourceDir, destDir):
+    files = glob.glob(sourceDir)
+    for file in sorted(files):
+        base = os.path.basename(file)
+        folder = base[:2]
+        destFolder = os.path.join(destDir, folder)
+        if not os.path.exists(destFolder):
+            os.mkdir(destFolder)
+        newFile = os.path.join(destFolder, base)
+        os.rename(file, newFile)
+        print(newFile)
+
+def zipFiles(directory):
+    import shutil
+    directories = [d for d in os.listdir(directory) if os.path.isdir(os.path.join(directory, d)) and not d == ".git"]
+    count = 0
+    for dir in sorted(directories):
+        print(dir)
+        zipFile = os.path.join(directory, dir)
+        shutil.make_archive(zipFile, 'zip', zipFile)
+        count += 1
+        if count > 66:
+            break
+
 if __name__ == '__main__':
-    main()
+    # main()
+
+    sourceDir = "/Users/otseng/Downloads/KJV_OT_Audio_TB/*"
+    destDir = "/Users/otseng/workspace/UniqueBible_MP3_KJV"
+    # moveFiles(sourceDir, destDir)
+    zipFiles(destDir)

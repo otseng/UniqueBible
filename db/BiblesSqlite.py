@@ -1072,7 +1072,7 @@ class Bible:
 
     @staticmethod
     def insertReadBibleLink(text, b):
-        if config.runMode == "gui":
+        if config.runMode == "gui" and config.isVlcInstalled:
             directory = "audio/bibles/{0}/{1}/{2}".format(text, "default", "{:02d}".format(b))
             if os.path.exists(directory):
                 return """ <ref onclick="document.title='READBIBLE:::'" style="font-size: .8em">&#128264;</ref>"""

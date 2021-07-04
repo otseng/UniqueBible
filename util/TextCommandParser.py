@@ -2,7 +2,6 @@
 import glob
 import os, signal, re, webbrowser, platform, multiprocessing, zipfile, subprocess, config
 
-from gui.VlcPlayer import VlcPlayer
 from util.TextUtil import TextUtil
 from util.LexicalData import LexicalData
 from functools import partial
@@ -1223,13 +1222,15 @@ class TextCommandParser:
 
     # VLC:::
     def openVlcPlayer(self, command, source):
-        filename = command
-        if self.parent.vlcPlayer is None:
-            self.parent.vlcPlayer = VlcPlayer(self, filename)
-        else:
-            self.parent.vlcPlayer.stop()
-            self.parent.vlcPlayer.load_file(filename)
-        self.parent.vlcPlayer.show()
+        if config.isVlcInstalled:
+            from gui.VlcPlayer import VlcPlayer
+            filename = command
+            if self.parent.vlcPlayer is None:
+                self.parent.vlcPlayer = VlcPlayer(self, filename)
+            else:
+                self.parent.vlcPlayer.stop()
+                self.parent.vlcPlayer.load_file(filename)
+            self.parent.vlcPlayer.show()
         return ("", "", {})
 
     # READBIBLE:::

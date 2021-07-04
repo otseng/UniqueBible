@@ -11,7 +11,6 @@ from qtpy.QtWidgets import (QAction, QInputDialog, QLineEdit, QMainWindow, QMess
 from qtpy.QtWidgets import QComboBox
 
 from gui.BibleCollectionDialog import BibleCollectionDialog
-from gui.DownloadBibleMp3Dialog import DownloadBibleMp3Dialog
 from gui.VlcPlayer import VlcPlayer
 from util import exlbl
 from util.BibleBooks import BibleBooks
@@ -654,8 +653,10 @@ class MainWindow(QMainWindow):
         self.installFromGitHub("otseng/UniqueBible_EPUB", "epub", "githubEpub")
 
     def installGithubBibleMp3(self):
-        self.downloadBibleMp3Dialog = DownloadBibleMp3Dialog(self)
-        self.downloadBibleMp3Dialog.show()
+        if config.isVlcInstalled:
+            from gui.DownloadBibleMp3Dialog import DownloadBibleMp3Dialog
+            self.downloadBibleMp3Dialog = DownloadBibleMp3Dialog(self)
+            self.downloadBibleMp3Dialog.show()
 
     def installFromGitHub(self, repo, directory, title):
         from util.GithubUtil import GithubUtil

@@ -134,6 +134,9 @@ class DownloadBibleMp3Dialog(QDialog):
         self.downloadButton.setEnabled(False)
         self.downloadButton.setText(config.thisTranslation["message_installing"])
         self.closeButton.setEnabled(False)
+        folder = os.path.join("audio", "bibles")
+        if not os.path.exists(folder):
+            os.mkdir(folder)
         folder = os.path.join("audio", "bibles", self.selectedBible)
         if not os.path.exists(folder):
             os.mkdir(folder)

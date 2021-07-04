@@ -2,6 +2,9 @@ import os
 import zipfile
 import config
 from qtpy.QtCore import Qt
+from qtpy.QtCore import QObject
+from qtpy.QtCore import Signal
+from qtpy.QtCore import QThread
 from qtpy.QtGui import QStandardItemModel, QStandardItem
 from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton
 from qtpy.QtWidgets import QApplication
@@ -60,10 +63,13 @@ class DownloadBibleMp3Dialog(QDialog):
         buttonsLayout.addStretch()
         mainLayout.addLayout(buttonsLayout)
 
+        self.status = QLabel("")
+        mainLayout.addWidget(self.status)
+
         buttonLayout = QHBoxLayout()
-        button = QPushButton(config.thisTranslation["close"])
-        button.clicked.connect(self.close)
-        buttonLayout.addWidget(button)
+        self.closeButton = QPushButton(config.thisTranslation["close"])
+        self.closeButton.clicked.connect(self.close)
+        buttonLayout.addWidget(self.closeButton)
         mainLayout.addLayout(buttonLayout)
 
         self.setLayout(mainLayout)
@@ -127,26 +133,62 @@ class DownloadBibleMp3Dialog(QDialog):
     def download(self):
         self.downloadButton.setEnabled(False)
         self.downloadButton.setText(config.thisTranslation["message_installing"])
+        self.closeButton.setEnabled(False)
         folder = os.path.join("audio", "bibles", self.selectedBible)
         if not os.path.exists(folder):
             os.mkdir(folder)
         folder = os.path.join("audio", "bibles", self.selectedBible, self.default)
         if not os.path.exists(folder):
             os.mkdir(folder)
+        self.thread = QThread()
+        self.worker = DownloadFromGitHub(self.github, self.repoData, self.dataViewModel, self.selectedBible, self.default)
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.worker.deleteLater)
+        self.worker.finished.connect(self.finishedDownloading)
+        self.worker.progress.connect(self.setStatus)
+        self.thread.start()
+
+    def finishedDownloading(self, count):
+        self.setStatus("")
+        self.close()
+        if count > 0:
+            self.parent.displayMessage(config.thisTranslation["message_installed"])
+
+    def setStatus(self, message):
+        self.status.setText(message)
+        QApplication.processEvents()
+
+
+class DownloadFromGitHub(QObject):
+    finished = Signal(int)
+    progress = Signal(str)
+
+    def __init__(self, github, repoData, dataViewModel, selectedBible, default):
+        super(DownloadFromGitHub, self).__init__()
+        self.github = github
+        self.repoData = repoData
+        self.dataViewModel = dataViewModel
+        self.selectedBible = selectedBible
+        self.default = default
+
+    def run(self):
+        folder = os.path.join("audio", "bibles", self.selectedBible, self.default)
         count = 0
         for index in range(self.dataViewModel.rowCount()):
             if self.dataViewModel.item(index).checkState() == Qt.Checked:
                 filename = self.dataViewModel.item(index).text()
                 file = os.path.join(folder, filename+".zip")
+                msg = "Downloading " + filename + " ..."
+                self.progress.emit(msg)
                 self.github.downloadFile(file, self.repoData[filename])
                 with zipfile.ZipFile(file, 'r') as zipped:
                     zipped.extractall(folder)
                 os.remove(file)
                 count += 1
-        self.close()
-        if count > 0:
-            self.parent.displayMessage(config.thisTranslation["message_installed"])
-
+        self.finished.emit(count)
 
 class DummyParent():
     def displayMessage(self, text):

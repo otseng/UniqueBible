@@ -6,6 +6,7 @@ from qtpy.QtCore import Qt
 from qtpy.QtCore import QObject
 from qtpy.QtCore import Signal
 from qtpy.QtCore import QThread
+from qtpy.QtCore import QTimer
 from qtpy.QtGui import QStandardItemModel, QStandardItem
 from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton
 from qtpy.QtWidgets import QApplication
@@ -27,6 +28,7 @@ class DownloadBibleMp3Dialog(QDialog):
         self.selectedBible = None
         self.settingBibles = False
         self.default = "default"
+        self.thread = None
         self.setupUI()
 
     def setupUI(self):
@@ -45,6 +47,7 @@ class DownloadBibleMp3Dialog(QDialog):
 
         self.downloadTable = QTableView()
         self.downloadTable.setEnabled(False)
+        self.downloadTable.setFocusPolicy(Qt.StrongFocus)
         self.downloadTable.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.downloadTable.setSortingEnabled(True)
         self.dataViewModel = QStandardItemModel(self.downloadTable)
@@ -52,30 +55,39 @@ class DownloadBibleMp3Dialog(QDialog):
         mainLayout.addWidget(self.downloadTable)
 
         buttonsLayout = QHBoxLayout()
-        self.downloadButton = QPushButton(config.thisTranslation["download"])
-        self.downloadButton.clicked.connect(self.download)
-        buttonsLayout.addWidget(self.downloadButton)
         selectAllButton = QPushButton(config.thisTranslation["selectAll"])
+        selectAllButton.setFocusPolicy(Qt.StrongFocus)
         selectAllButton.clicked.connect(self.selectAll)
         buttonsLayout.addWidget(selectAllButton)
         selectNoneButton = QPushButton(config.thisTranslation["selectNone"])
+        selectNoneButton.setFocusPolicy(Qt.StrongFocus)
         selectNoneButton.clicked.connect(self.selectNone)
         buttonsLayout.addWidget(selectNoneButton)
         otButton = QPushButton("1-39")
+        otButton.setFocusPolicy(Qt.StrongFocus)
         otButton.clicked.connect(self.selectOT)
         buttonsLayout.addWidget(otButton)
         ntButton = QPushButton("40-66")
+        ntButton.setFocusPolicy(Qt.StrongFocus)
         ntButton.clicked.connect(self.selectNT)
         buttonsLayout.addWidget(ntButton)
         # buttonsLayout.addStretch()
         mainLayout.addLayout(buttonsLayout)
+
+        self.downloadButton = QPushButton(config.thisTranslation["download"])
+        self.downloadButton.setFocusPolicy(Qt.StrongFocus)
+        self.downloadButton.setAutoDefault(True)
+        self.downloadButton.setFocus()
+        self.downloadButton.clicked.connect(self.download)
+        mainLayout.addWidget(self.downloadButton)
 
         self.status = QLabel("")
         mainLayout.addWidget(self.status)
 
         buttonLayout = QHBoxLayout()
         self.closeButton = QPushButton(config.thisTranslation["close"])
-        self.closeButton.clicked.connect(self.close)
+        self.closeButton.setFocusPolicy(Qt.StrongFocus)
+        self.closeButton.clicked.connect(self.closeDialog)
         buttonLayout.addWidget(self.closeButton)
         mainLayout.addLayout(buttonLayout)
 
@@ -84,6 +96,9 @@ class DownloadBibleMp3Dialog(QDialog):
         self.versionsList.item(0).setSelected(True)
         bible = self.versionsList.item(0).text()
         self.selectBible(bible)
+
+        self.downloadButton.setDefault(True)
+        QTimer.singleShot(0, self.downloadButton.setFocus)
 
     def selectItem(self, item):
         self.selectBible(item.text())
@@ -197,6 +212,12 @@ class DownloadBibleMp3Dialog(QDialog):
         self.status.setText(message)
         QApplication.processEvents()
 
+    def closeDialog(self):
+        if self.thread:
+            if self.thread.isRunning():
+                self.thread.quit()
+        self.close()
+
 
 class DownloadFromGitHub(QObject):
     finished = Signal(int)
@@ -211,6 +232,7 @@ class DownloadFromGitHub(QObject):
         self.default = default
 
     def run(self):
+        self.progress.emit(config.thisTranslation["message_installing"])
         folder = os.path.join("audio", "bibles", self.selectedBible, self.default)
         count = 0
         for index in range(self.dataViewModel.rowCount()):
@@ -280,7 +302,7 @@ def main():
     dialog.exec_()
 
 if __name__ == '__main__':
-    # main()
+    main()
 
     sourceDir = "/Users/otseng/Downloads/KJV_OT_Audio_TB/*"
     destDir = "/Users/otseng/workspace/UniqueBible_MP3_KJV"

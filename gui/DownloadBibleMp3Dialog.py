@@ -4,6 +4,7 @@ import config
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QStandardItemModel, QStandardItem
 from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton
+from qtpy.QtWidgets import QApplication
 from qtpy.QtWidgets import QListWidget
 from util.BibleBooks import BibleBooks
 
@@ -47,9 +48,9 @@ class DownloadBibleMp3Dialog(QDialog):
         mainLayout.addWidget(self.downloadTable)
 
         buttonsLayout = QHBoxLayout()
-        downloadButton = QPushButton(config.thisTranslation["download"])
-        downloadButton.clicked.connect(self.download)
-        buttonsLayout.addWidget(downloadButton)
+        self.downloadButton = QPushButton(config.thisTranslation["download"])
+        self.downloadButton.clicked.connect(self.download)
+        buttonsLayout.addWidget(self.downloadButton)
         selectAllButton = QPushButton(config.thisTranslation["selectAll"])
         selectAllButton.clicked.connect(self.selectAll)
         buttonsLayout.addWidget(selectAllButton)
@@ -91,23 +92,32 @@ class DownloadBibleMp3Dialog(QDialog):
             if not os.path.exists(folder):
                 item.setCheckable(True)
                 item.setCheckState(Qt.Checked)
+                item.setEnabled(True)
             else:
                 item.setCheckable(False)
                 item.setCheckState(Qt.Unchecked)
+                item.setEnabled(False)
             self.dataViewModel.setItem(rowCount, 0, item)
             engFullBookName = BibleBooks().eng[str(file)][1]
             item = QStandardItem(engFullBookName)
             self.dataViewModel.setItem(rowCount, 1, item)
+            if not os.path.exists(folder):
+                item = QStandardItem("")
+                self.dataViewModel.setItem(rowCount, 2, item)
+            else:
+                item = QStandardItem("Installed")
+                self.dataViewModel.setItem(rowCount, 2, item)
             rowCount += 1
         self.dataViewModel.setHorizontalHeaderLabels(
-            [config.thisTranslation["menu_book"], config.thisTranslation["name"]])
+            [config.thisTranslation["menu_book"], config.thisTranslation["name"], ""])
         self.downloadTable.resizeColumnsToContents()
         self.settingBibles = False
 
     def selectAll(self):
         for index in range(self.dataViewModel.rowCount()):
             item = self.dataViewModel.item(index)
-            item.setCheckState(Qt.Checked)
+            if item.isEnabled():
+                item.setCheckState(Qt.Checked)
 
     def selectNone(self):
         for index in range(self.dataViewModel.rowCount()):
@@ -115,12 +125,15 @@ class DownloadBibleMp3Dialog(QDialog):
             item.setCheckState(Qt.Unchecked)
 
     def download(self):
+        self.downloadButton.setEnabled(False)
+        self.downloadButton.setText(config.thisTranslation["message_installing"])
         folder = os.path.join("audio", "bibles", self.selectedBible)
         if not os.path.exists(folder):
             os.mkdir(folder)
         folder = os.path.join("audio", "bibles", self.selectedBible, self.default)
         if not os.path.exists(folder):
             os.mkdir(folder)
+        count = 0
         for index in range(self.dataViewModel.rowCount()):
             if self.dataViewModel.item(index).checkState() == Qt.Checked:
                 filename = self.dataViewModel.item(index).text()
@@ -129,15 +142,17 @@ class DownloadBibleMp3Dialog(QDialog):
                 with zipfile.ZipFile(file, 'r') as zipped:
                     zipped.extractall(folder)
                 os.remove(file)
+                count += 1
         self.close()
-        self.parent.displayMessage(config.thisTranslation["message_installed"])
+        if count > 0:
+            self.parent.displayMessage(config.thisTranslation["message_installed"])
 
 
 class DummyParent():
     def displayMessage(self, text):
         pass
 
-if __name__ == '__main__':
+def main():
     import sys
     from qtpy.QtWidgets import QApplication
     from qtpy.QtCore import QCoreApplication
@@ -151,3 +166,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     dialog = DownloadBibleMp3Dialog(DummyParent())
     dialog.exec_()
+
+if __name__ == '__main__':
+    main()

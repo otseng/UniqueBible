@@ -1235,25 +1235,26 @@ class TextCommandParser:
 
     # READBIBLE:::
     def readBible(self, command, source):
-        text = config.mainText
-        book = config.mainB
-        chapter = config.mainC
-        folder = "default"
-        if command:
-            count = command.count(":::")
-            if count == 0:
-                verseList = self.extractAllVerses(command)
-                book, chapter, verse = verseList[0]
-            elif count == 1:
-                text, reference = self.splitCommand(command)
-                verseList = self.extractAllVerses(command)
-                book, chapter, verse = verseList[0]
-            elif count == 2:
-                text, commandList = self.splitCommand(command)
-                reference, folder = self.splitCommand(commandList)
-                verseList = self.extractAllVerses(command)
-                book, chapter, verse = verseList[0]
-        self.parent.playBibleMP3File(text, book, chapter, folder)
+        if config.isVlcInstalled:
+            text = config.mainText
+            book = config.mainB
+            chapter = config.mainC
+            folder = "default"
+            if command:
+                count = command.count(":::")
+                if count == 0:
+                    verseList = self.extractAllVerses(command)
+                    book, chapter, verse = verseList[0]
+                elif count == 1:
+                    text, reference = self.splitCommand(command)
+                    verseList = self.extractAllVerses(command)
+                    book, chapter, verse = verseList[0]
+                elif count == 2:
+                    text, commandList = self.splitCommand(command)
+                    reference, folder = self.splitCommand(commandList)
+                    verseList = self.extractAllVerses(command)
+                    book, chapter, verse = verseList[0]
+            self.parent.playBibleMP3File(text, book, chapter, folder)
         return ("", "", {})
 
 

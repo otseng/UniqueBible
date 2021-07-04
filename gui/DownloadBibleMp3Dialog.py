@@ -1,26 +1,27 @@
+import os
+import zipfile
 import config
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QStandardItemModel, QStandardItem
 from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton
-from qtpy.QtWidgets import QInputDialog
-from qtpy.QtWidgets import QRadioButton
 from qtpy.QtWidgets import QListWidget
-
 from util.BibleBooks import BibleBooks
 
 
 class DownloadBibleMp3Dialog(QDialog):
 
-    bibles = {
-        "KJV": "otseng/UniqueBible_MP3_KJV"
-    }
-
-    def __init__(self):
+    def __init__(self, parent):
         super().__init__()
+
+        self.bibles = {
+            "KJV": "otseng/UniqueBible_MP3_KJV"
+        }
+        self.parent = parent
         self.setWindowTitle(config.thisTranslation["gitHubBibleMp3Files"])
-        self.setMinimumSize(680, 500)
+        self.setMinimumSize(150, 400)
         self.selectedBible = None
         self.settingBibles = False
+        self.default = "default"
         self.setupUI()
 
     def setupUI(self):
@@ -31,7 +32,7 @@ class DownloadBibleMp3Dialog(QDialog):
 
         self.versionsLayout = QVBoxLayout()
         self.versionsList = QListWidget()
-        self.versionsList.itemClicked.connect(self.selectBible)
+        self.versionsList.itemClicked.connect(self.selectItem)
         self.versionsList.addItem("KJV")
         self.versionsList.setMaximumHeight(50)
         self.versionsLayout.addWidget(self.versionsList)
@@ -66,23 +67,33 @@ class DownloadBibleMp3Dialog(QDialog):
 
         self.setLayout(mainLayout)
 
-    def selectBible(self, item):
+        self.versionsList.item(0).setSelected(True)
+        bible = self.versionsList.item(0).text()
+        self.selectBible(bible)
+
+    def selectItem(self, item):
+        self.selectBible(item.text())
+
+    def selectBible(self, bible):
         from util.GithubUtil import GithubUtil
 
-        self.selectedBible = item.text()
+        self.selectedBible = bible
         self.downloadTable.setEnabled(True)
-
-        repo = DownloadBibleMp3Dialog.bibles[self.selectedBible]
-        github = GithubUtil(repo)
-        repoData = github.getRepoData()
+        self.selectedRepo = self.bibles[self.selectedBible]
+        self.github = GithubUtil(self.selectedRepo)
+        self.repoData = self.github.getRepoData()
         self.settingBibles = True
         self.dataViewModel.clear()
         rowCount = 0
-        for file in repoData.keys():
+        for file in self.repoData.keys():
             item = QStandardItem(file)
-            item.setCheckable(True)
-            # if file in biblesInCollection:
-            #     item.setCheckState(Qt.Checked)
+            folder = os.path.join("audio", "bibles", self.selectedBible, self.default, file)
+            if not os.path.exists(folder):
+                item.setCheckable(True)
+                item.setCheckState(Qt.Checked)
+            else:
+                item.setCheckable(False)
+                item.setCheckState(Qt.Unchecked)
             self.dataViewModel.setItem(rowCount, 0, item)
             engFullBookName = BibleBooks().eng[str(file)][1]
             item = QStandardItem(engFullBookName)
@@ -104,15 +115,27 @@ class DownloadBibleMp3Dialog(QDialog):
             item.setCheckState(Qt.Unchecked)
 
     def download(self):
-        name, ok = QInputDialog.getText(self, 'Collection', 'Collection name:', text=self.selectedBible)
-        if ok and len(name) > 0 and name != "All":
-            biblesInCollection = config.bibleCollections[self.selectedBible]
-            config.bibleCollections.pop(self.selectedBible, None)
-            self.selectedBible = name
-            config.bibleCollections[name] = biblesInCollection
-            self.showListOfCollections()
-            self.downloadTable.setEnabled(False)
+        folder = os.path.join("audio", "bibles", self.selectedBible)
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+        folder = os.path.join("audio", "bibles", self.selectedBible, self.default)
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+        for index in range(self.dataViewModel.rowCount()):
+            if self.dataViewModel.item(index).checkState() == Qt.Checked:
+                filename = self.dataViewModel.item(index).text()
+                file = os.path.join(folder, filename+".zip")
+                self.github.downloadFile(file, self.repoData[filename])
+                with zipfile.ZipFile(file, 'r') as zipped:
+                    zipped.extractall(folder)
+                os.remove(file)
+        self.close()
+        self.parent.displayMessage(config.thisTranslation["message_installed"])
 
+
+class DummyParent():
+    def displayMessage(self, text):
+        pass
 
 if __name__ == '__main__':
     import sys
@@ -126,5 +149,5 @@ if __name__ == '__main__':
     config.thisTranslation = LanguageUtil.loadTranslation("en_US")
     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     app = QApplication(sys.argv)
-    dialog = DownloadBibleMp3Dialog()
+    dialog = DownloadBibleMp3Dialog(DummyParent())
     dialog.exec_()

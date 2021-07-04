@@ -61,7 +61,13 @@ class DownloadBibleMp3Dialog(QDialog):
         selectNoneButton = QPushButton(config.thisTranslation["selectNone"])
         selectNoneButton.clicked.connect(self.selectNone)
         buttonsLayout.addWidget(selectNoneButton)
-        buttonsLayout.addStretch()
+        otButton = QPushButton("1-39")
+        otButton.clicked.connect(self.selectOT)
+        buttonsLayout.addWidget(otButton)
+        ntButton = QPushButton("40-66")
+        ntButton.clicked.connect(self.selectNT)
+        buttonsLayout.addWidget(ntButton)
+        # buttonsLayout.addStretch()
         mainLayout.addLayout(buttonsLayout)
 
         self.status = QLabel("")
@@ -130,6 +136,30 @@ class DownloadBibleMp3Dialog(QDialog):
         for index in range(self.dataViewModel.rowCount()):
             item = self.dataViewModel.item(index)
             item.setCheckState(Qt.Unchecked)
+
+    def selectOT(self):
+        for index in range(self.dataViewModel.rowCount()):
+            item = self.dataViewModel.item(index)
+            bookNum = int(item.text())
+            if bookNum <= 39:
+                if item.isEnabled():
+                    item.setCheckState(Qt.Checked)
+                else:
+                    item.setCheckState(Qt.Unchecked)
+            else:
+                item.setCheckState(Qt.Unchecked)
+
+    def selectNT(self):
+        for index in range(self.dataViewModel.rowCount()):
+            item = self.dataViewModel.item(index)
+            bookNum = int(item.text())
+            if bookNum >= 40:
+                if item.isEnabled():
+                    item.setCheckState(Qt.Checked)
+                else:
+                    item.setCheckState(Qt.Unchecked)
+            else:
+                item.setCheckState(Qt.Unchecked)
 
     def download(self):
         self.downloadButton.setEnabled(False)

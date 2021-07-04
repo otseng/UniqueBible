@@ -6,6 +6,8 @@ from qtpy.QtWidgets import QInputDialog
 from qtpy.QtWidgets import QRadioButton
 from qtpy.QtWidgets import QListWidget
 
+from util.BibleBooks import BibleBooks
+
 
 class DownloadBibleMp3Dialog(QDialog):
 
@@ -82,23 +84,24 @@ class DownloadBibleMp3Dialog(QDialog):
             # if file in biblesInCollection:
             #     item.setCheckState(Qt.Checked)
             self.dataViewModel.setItem(rowCount, 0, item)
+            engFullBookName = BibleBooks().eng[str(file)][1]
+            item = QStandardItem(engFullBookName)
+            self.dataViewModel.setItem(rowCount, 1, item)
             rowCount += 1
         self.dataViewModel.setHorizontalHeaderLabels(
-            [config.thisTranslation["menu_book"]])
+            [config.thisTranslation["menu_book"], config.thisTranslation["name"]])
         self.downloadTable.resizeColumnsToContents()
         self.settingBibles = False
 
     def selectAll(self):
-        name, ok = QInputDialog.getText(self, 'Collection', 'Collection name:')
-        if ok and len(name) > 0 and name != "All":
-            config.bibleCollections[name] = {}
-            self.showListOfCollections()
-            self.downloadTable.setEnabled(False)
+        for index in range(self.dataViewModel.rowCount()):
+            item = self.dataViewModel.item(index)
+            item.setCheckState(Qt.Checked)
 
     def selectNone(self):
-        config.bibleCollections.pop(self.selectedBible, None)
-        self.showListOfCollections()
-        self.downloadTable.setEnabled(False)
+        for index in range(self.dataViewModel.rowCount()):
+            item = self.dataViewModel.item(index)
+            item.setCheckState(Qt.Unchecked)
 
     def download(self):
         name, ok = QInputDialog.getText(self, 'Collection', 'Collection name:', text=self.selectedBible)

@@ -78,7 +78,7 @@ def isPySide2Installed():
 
 def isPyQt5Installed():
     try:
-        from PyQt5 import QtGui
+        addGithubDownloadMenuItems
         fixFcitxOnLinux("PyQt5")
         return True
     except:

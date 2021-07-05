@@ -42,7 +42,8 @@ class DownloadBibleMp3Dialog(QDialog):
         self.versionsLayout = QVBoxLayout()
         self.versionsList = QListWidget()
         self.versionsList.itemClicked.connect(self.selectItem)
-        self.versionsList.addItem("KJV")
+        for version in self.bibles.keys():
+            self.versionsList.addItem(version)
         self.versionsList.setMaximumHeight(50)
         self.versionsLayout.addWidget(self.versionsList)
         mainLayout.addLayout(self.versionsLayout)
@@ -282,7 +283,7 @@ class DownloadBibleMp3Util:
             zipFile = os.path.join(directory, dir)
             shutil.make_archive(zipFile, 'zip', zipFile)
             count += 1
-            if count > 66:
+            if count > 39:
                 break
 
     @staticmethod

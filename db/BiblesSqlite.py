@@ -1077,7 +1077,7 @@ class Bible:
             directory = "audio/bibles/{0}".format(text)
             if os.path.exists(directory):
                 directory = "audio/bibles/{0}".format(text)
-                directories = [d for d in os.listdir(directory) if
+                directories = [d for d in sorted(os.listdir(directory)) if
                                os.path.isdir(os.path.join(directory, d))]
                 for dir in directories:
                     data += """ <ref onclick="document.title='READBIBLE:::@{0}'" title="{0}" style="font-size: .8em">&#128264;</ref>""".format(dir)

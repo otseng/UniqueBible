@@ -20,7 +20,9 @@ class DownloadBibleMp3Dialog(QDialog):
         super().__init__()
 
         self.bibles = {
-            "KJV": "otseng/UniqueBible_MP3_KJV"
+            "KJV": "otseng/UniqueBible_MP3_KJV",
+            "CUV": "otseng/UniqueBible_MP3_CUV",
+            "WEB": "otseng/UniqueBible_MP3_WEB",
         }
         self.parent = parent
         self.setWindowTitle(config.thisTranslation["gitHubBibleMp3Files"])
@@ -254,6 +256,8 @@ class DownloadBibleMp3Util:
 
     @staticmethod
     def moveFiles(sourceDir, destDir, debugOutput = False):
+        if not sourceDir.endswith(("*.mp3")):
+            sourceDir = os.path.join(sourceDir, "*.mp3")
         files = glob.glob(sourceDir)
         for file in sorted(files):
             base = os.path.basename(file)
@@ -281,6 +285,75 @@ class DownloadBibleMp3Util:
             if count > 66:
                 break
 
+    @staticmethod
+    def renameChinese(sourceDir, destDir, debugOutput = False):
+        offset = 0
+        sourceFiles = sourceDir
+        if not sourceFiles.endswith("*.mp3"):
+            sourceFiles += "/*.mp3"
+        files = glob.glob(sourceFiles)
+        for file in sorted(files):
+            base = os.path.basename(file)
+            bookNum = int(base[:2]) + offset
+            bookName = BibleBooks.eng[str(bookNum)][1]
+            bookName = bookName.replace(" ", "")
+            try:
+                chapter = int(base[-7:-4])
+            except:
+                try:
+                    chapter = int(base[-6:-4])
+                except:
+                    try:
+                        chapter = int(base[-5:-4])
+                    except:
+                        chapter = 1
+            newFile = "{0}_{1}{2}.mp3".format("{:02d}".format(bookNum), bookName, "{:03d}".format(chapter))
+            os.rename(os.path.join(sourceDir, file), os.path.join(sourceDir, newFile))
+            if debugOutput:
+                print(newFile)
+
+    @staticmethod
+    def fixFilenamesInAllSubdirectories(sourceDir, debugOutput = False):
+        directories = [d for d in os.listdir(sourceDir) if
+                       os.path.isdir(os.path.join(sourceDir, d)) and not d == ".git"]
+        for subdir in sorted(directories):
+            sourceDir = os.path.join(sourceDir, subdir)
+            DownloadBibleMp3Util.fixFilenamesInDirectory(sourceDir, debugOutput)
+
+    @staticmethod
+    def fixFilenamesInDirectory(sourceDir, debugOutput=False):
+        sourceFiles = os.path.join(sourceDir, "*.mp3")
+        files = glob.glob(sourceFiles)
+        for file in sorted(files):
+            base = os.path.basename(file)
+            bookNum = int(base[:2])
+            bookName = BibleBooks.eng[str(bookNum)][1]
+            bookName = bookName.replace(" ", "")
+            try:
+                chapter = int(base[-7:-4])
+            except:
+                try:
+                    chapter = int(base[-6:-4])
+                except:
+                    try:
+                        chapter = int(base[-5:-4])
+                    except:
+                        chapter = 1
+            newFile = "{0}_{1}{2}.mp3".format("{:02d}".format(bookNum), bookName, "{:03d}".format(chapter))
+            os.rename(os.path.join(sourceDir, file), os.path.join(sourceDir, newFile))
+            if debugOutput:
+                print(newFile)
+
+    @staticmethod
+    def renameDirs(sourceDir, debugOutput=False):
+        directories = [d for d in os.listdir(sourceDir) if
+                       os.path.isdir(os.path.join(sourceDir, d)) and not d == ".git"]
+        for dir in sorted(directories):
+            bookNum = dir[:2]
+            if bookNum != dir:
+                os.rename(os.path.join(sourceDir, dir), os.path.join(sourceDir, bookNum))
+                if debugOutput:
+                    print(bookNum)
 
 class DummyParent():
     def displayMessage(self, text):
@@ -302,9 +375,48 @@ def main():
     dialog.exec_()
 
 if __name__ == '__main__':
-    main()
+    # main()
 
-    sourceDir = "/Users/otseng/Downloads/KJV_OT_Audio_TB/*"
-    destDir = "/Users/otseng/workspace/UniqueBible_MP3_KJV"
+    """
+    KJV
+    https://www.audiotreasure.com/audioindex.htm
+    """
+    # sourceDir = "/Users/otseng/Downloads/temp"
+    # destDir = "/Users/otseng/dev/UniqueBible/audio/bibles/KJV/soft-music"
+    # DownloadBibleMp3Util.fixFilenamesInDirectory(sourceDir, True)
     # DownloadBibleMp3Util.moveFiles(sourceDir, destDir, True)
     # DownloadBibleMp3Util.zipFiles(destDir, True)
+
+    destDir = "/Users/otseng/dev/UniqueBible/audio/bibles/KJV/soft-music"
+    DownloadBibleMp3Util.zipFiles(destDir, True)
+
+    '''
+    Chinese
+    https://www.audiotreasure.com/audioindex.htm
+    '''
+    # sourceDir = "/Users/otseng/Downloads"
+    # destDir = "/Users/otseng/dev/UniqueBible/audio/bibles/CUV/default"
+    # DownloadBibleMp3Util.renameChinese(sourceDir, destDir, True)
+    # DownloadBibleMp3Util.moveFiles(sourceDir, destDir, True)
+
+    # sourceDir = "/Users/otseng/dev/UniqueBible/audio/bibles/CUV/default"
+    # DownloadBibleMp3Util.zipFiles(sourceDir, True)
+
+    # sourceDir = "/Users/otseng/Downloads"
+    # destDir = "/Users/otseng/dev/UniqueBible/audio/bibles/CUV/default"
+    # DownloadBibleMp3Util.renameChinese(sourceDir, destDir, True)
+    # DownloadBibleMp3Util.moveFiles(sourceDir, destDir, True)
+
+    '''
+    WEB
+    https://www.audiotreasure.com/webindex.htm
+    '''
+    # sourceDir = "/Users/otseng/dev/UniqueBible/audio/bibles/WEB/default"
+    # destDir = "/Users/otseng/dev/UniqueBible/audio/bibles/WEB/default"
+    # DownloadBibleMp3Util.moveFiles(sourceDir, destDir, True)
+
+    # sourceDir = "/Users/otseng/dev/UniqueBible/audio/bibles/WEB/default"
+    # DownloadBibleMp3Util.fixFilenames(sourceDir, True)
+
+    # sourceDir = "/Users/otseng/dev/UniqueBible/audio/bibles/WEB/default"
+    # DownloadBibleMp3Util.zipFiles(sourceDir, True)

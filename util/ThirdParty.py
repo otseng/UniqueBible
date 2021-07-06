@@ -1,3 +1,12 @@
+if __name__ == '__main__':
+    import config
+    from util.ConfigUtil import ConfigUtil
+    from util.LanguageUtil import LanguageUtil
+
+    ConfigUtil.setup()
+    config.noQt = False
+    config.thisTranslation = LanguageUtil.loadTranslation("en_US")
+
 import os, sqlite3, config, re, json, base64, logging
 from pathlib import Path
 from shutil import copyfile
@@ -406,9 +415,12 @@ class Converter:
 
         formattedChapters = {}
         for book, chapter, verse, scripture in verses:
-            if extended:
-                scripture = self.convertSuperStrongs(scripture)
-            scripture = self.convertESwordBibleTags(scripture)
+            # if extended:
+            #     scripture = self.convertSuperStrongs(scripture)
+            if scripture.startswith("{"):
+                scripture = self.convertFromRichTextFormat(scripture)
+            else:
+                scripture = self.convertESwordBibleTags(scripture)
 
             if scripture:
 
@@ -476,6 +488,50 @@ class Converter:
             text = re.sub(search, replace, text)
         text = text.strip()
         return text
+
+    def convertFromRichTextFormat(self, text):
+        out = ""
+        foundBrace = False
+        index = 0
+        element = ""
+        while index < len(text):
+            c = text[index]
+            if c == "{":
+                foundBrace = True
+            elif c == "}":
+                out += self.parseRtfElement(element)
+                foundBrace = False
+                element = ""
+            elif foundBrace:
+                element += c
+            index += 1
+        return out
+
+    def parseRtfElement(self, element):
+        out = ""
+        if " " in element:
+            element = element.replace("  ", " ")
+            tokens = element.split(" ")
+            command = tokens[0]
+            text = tokens[1]
+            if command == "\\cf2":
+                out = self.decodeString(text) + " "
+            elif "\\cf11" in command:
+                out = self.extractStrongs(text) + " "
+        return out
+
+    def decodeString(self, text):
+        if "'" in text:
+            out = re.sub("\\'([a-z0-9]{2})", lambda x: self.decodeHex(x.group(1)), text)
+        else:
+            out = text
+        return out
+
+    def decodeHex(self, hex):
+        return chr(int(hex, 16))
+
+    def extractStrongs(self, text):
+        return re.sub(".*([GH][0-9]*).*", "\\1", text)
 
     # Import e-Sword Commentaries
     def importESwordCommentary(self, filename):
@@ -1911,4 +1967,8 @@ if __name__ == '__main__':
     # note = "***[BOOK:::Thrones of our Soul:::0.4.3 The insight of Moses|Go to chapter]"
     # note = re.sub(r"\*\*\*\[(.+?)\|(.+?)\]", r"""<ref onclick="document.title='\1'">\2</ref>""", note)
     # print(note)
-    Converter().createBookModuleFromHymnLyricsFile("Hymn Lyrics - Romanian.txt")
+    # Converter().createBookModuleFromHymnLyricsFile("Hymn Lyrics - Romanian.txt")
+
+    text = "{\f2\'e1\'cc\'c0}{\sub 1}  {\cf11\super  PB}  {\cf2 En}  {\f2\u8594?}  {\cf16 el}  {\f2\'f8\'c5\'e0\'f9\'d1\'c4\'e9\'fa}{\sub 2}  {\cf11\super  H7225:NCcSFC}  {\cf2 principio}  {\f2\'e1\'cc\'c8\'f8\'c8\'e0}{\sub 3}  {\cf11\super  H1254:VqAsSM3}  {\cf2 cre\'f3} {\cf2 \'f5cre\'f3\'f4} {\f2\'e0\'c1\'ec\'c9\'e4\'c4\'e9\'ed}{\sub 4}  {\cf11\super  H430:NPDSMN}  {\cf2 Dios}  {\f2\'e0\'c5\'fa}{\sub 5}  {\cf11\super  H853:PA}   {\cf2\bullet}   {\f2\'e4\'c7}{\sub 6}  {\cf11\super  XD}  {\cf2 los}  {\f2\'f9\'d1\'cc\'c8\'ee\'c7\'e9\'c4\'ed}{\sub 7}  {\cf11\super  H8064:NCcDMNH}  {\cf2 cielos}  {\f2\'e5\'c0}{\sub 8}  {\cf11\super  CC}  {\cf2 y}  {\f2\'e0\'c5\'fa}{\sub 9}  {\cf11\super  H853:PA}   {\cf2\bullet}   {\f2\'e4\'c8}{\sub 10}  {\cf11\super  XD}  {\cf2 la}  {\f2\'e0\'c8\'f8\'c6\'f5}{\sub 11}  {\cf11\super  H776:NCcSFPH}  {\cf2 tierra.}"
+    out = Converter().convertFromRichTextFormat(text)
+    print(out)

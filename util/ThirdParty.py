@@ -531,7 +531,11 @@ class Converter:
         return chr(int(hex, 16))
 
     def extractStrongs(self, text):
-        return re.sub(".*([GH][0-9]*).*", "\\1", text)
+        out = ""
+        text = text.split(":")[0]
+        if re.search("[GH][0-9]*", text):
+            out = re.sub(".*([GH][0-9]*).*", "\\1", text)
+        return out
 
     # Import e-Sword Commentaries
     def importESwordCommentary(self, filename):

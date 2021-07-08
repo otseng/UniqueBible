@@ -28,12 +28,13 @@ class VlcPlayer(QWidget):
         self.parent = parent
         self.instance = vlc.Instance()
         self.media = None
-        self.timer = None
         self.mediaplayer = self.instance.media_player_new()
         self.create_ui()
         self.is_paused = False
         self.resize(self.widthAudio, self.heightAudio)
         self.centeredFirstTime = False
+        self.timer = None
+        self.resetTimer()
         if filename:
             self.loadAndPlayFile(filename)
 
@@ -171,7 +172,6 @@ class VlcPlayer(QWidget):
                 self.mediaplayer.set_nsobject(int(self.videoframe.winId()))
 
             self.updateNextButton()
-            self.resetTimer()
             self.stopbutton.setEnabled(True)
         else:
             self.stopbutton.setEnabled(False)
@@ -220,7 +220,8 @@ class VlcPlayer(QWidget):
             if not self.is_paused:
                 self.stop()
                 self.playNextInPlaylist()
-                self.resetTimer()
+                self.positionslider.setValue(0)
+                self.timer.start()
 
     def center(self):
         qr = self.frameGeometry()

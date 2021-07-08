@@ -33,7 +33,7 @@ class VlcPlayer(QWidget):
         self.create_ui()
         self.is_paused = False
         self.resize(self.widthAudio, self.heightAudio)
-        self.center()
+        self.centeredFirstTime = False
         if filename:
             self.loadAndPlayFile(filename)
 
@@ -148,7 +148,9 @@ class VlcPlayer(QWidget):
                 self.resize(self.widthAudio, self.heightAudio)
             else:
                 self.resize(self.widthVideo, self.heightVideo)
-            self.center()
+            if not self.centeredFirstTime:
+                self.center()
+                self.centeredFirstTime = True
 
             self.media = self.instance.media_new(filename)
 

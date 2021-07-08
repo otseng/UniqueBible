@@ -130,7 +130,11 @@ class VlcPlayer(QWidget):
         if filename:
             self.loadAndPlayFile(filename)
 
+    def clearPlaylist(self):
+        self.playlist = []
+
     def loadAndPlayFile(self, filename):
+        self.playlist = []
         self.addToPlaylist(filename)
         self.playNextInPlaylist()
 

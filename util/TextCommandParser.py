@@ -418,7 +418,10 @@ class TextCommandParser:
             # Usage:
             # e.g. READBIBLE                             # Reads current Bible and current chapter
             # e.g. READBIBLE:::Matt 1                    # Reads chapter from current Bible
+            # e.g. READBIBLE:::Matt 1,John 1             # Reads chapters from current Bible
+            # e.g. READBIBLE:::Matt 1-28                 # Reads chapters from current Bible
             # e.g. READBIBLE:::KJV:::Matt 1              # Reads chapter from Bible
+            # e.g. READBIBLE:::KJV:::Matt 1,Matt 2       # Reads chapters from Bible
             # e.g. READBIBLE:::KJV:::Matt 1:::drama      # Reads from drama folder instead of default folder
             # e.g. READBIBLE:::@drama                    # Reads from drama folder instead of default folder
             """),
@@ -1244,14 +1247,15 @@ class TextCommandParser:
             book = config.mainB
             chapter = config.mainC
             folder = "default"
+            playlist = []
             if command:
                 count = command.count(":::")
                 if count == 0:
                     if command.startswith("@"):
                         folder = command[1:]
+                        playlist.append((text, book, chapter, folder))
                     else:
-                        verseList = self.extractAllVerses(command)
-                        book, chapter, verse = verseList[0]
+                        playlist = self.getBiblePlaylist(text, command, book, chapter, folder)
                 elif count == 1:
                     text, reference = self.splitCommand(command)
                     verseList = self.extractAllVerses(command)
@@ -1261,9 +1265,21 @@ class TextCommandParser:
                     reference, folder = self.splitCommand(commandList)
                     verseList = self.extractAllVerses(command)
                     book, chapter, verse = verseList[0]
-            self.parent.playBibleMP3File(text, book, chapter, folder)
+            self.parent.playBibleMP3Playlist(playlist)
         return ("", "", {})
 
+    def getBiblePlaylist(self, command, text, book, chapter, folder):
+        playlist = []
+        if "," in command:
+            parts = command.split(",")
+            for part in parts:
+                verseList = self.extractAllVerses(part)
+                book, chapter, verse = verseList[0]
+                playlist.append((text, book, chapter, folder))
+        else:
+            verseList = self.extractAllVerses(command)
+            book, chapter, verse = verseList[0]
+            playlist.append((text, book, chapter, folder))
 
     # functions about bible
 

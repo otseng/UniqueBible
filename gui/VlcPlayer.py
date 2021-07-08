@@ -28,6 +28,7 @@ class VlcPlayer(QWidget):
         self.parent = parent
         self.instance = vlc.Instance()
         self.media = None
+        self.timer = None
         self.mediaplayer = self.instance.media_player_new()
         self.create_ui()
         self.is_paused = False
@@ -95,10 +96,6 @@ class VlcPlayer(QWidget):
 
         self.setLayout(self.vboxlayout)
 
-        self.timer = QtCore.QTimer(self)
-        self.timer.setInterval(100)
-        self.timer.timeout.connect(self.update_ui)
-
     def play_pause(self):
         if self.mediaplayer.is_playing():
             self.stopbutton.setEnabled(False)
@@ -157,6 +154,7 @@ class VlcPlayer(QWidget):
 
             self.mediaplayer.set_media(self.media)
             self.media.parse()
+            self.mediaplayer.play()
             self.setWindowTitle(self.media.get_meta(0))
 
             # The media player has to be 'connected' to the QFrame (otherwise the
@@ -171,9 +169,18 @@ class VlcPlayer(QWidget):
                 self.mediaplayer.set_nsobject(int(self.videoframe.winId()))
 
             self.updateNextButton()
-            if not self.mediaplayer.is_playing():
-                self.stopbutton.setEnabled(True)
-                self.mediaplayer.play()
+            self.resetTimer()
+            self.stopbutton.setEnabled(True)
+        else:
+            self.stopbutton.setEnabled(False)
+
+    def resetTimer(self):
+        if self.timer:
+            self.timer.stop()
+        self.timer = QtCore.QTimer(self)
+        self.timer.setInterval(100)
+        self.timer.timeout.connect(self.update_ui)
+        self.timer.start()
 
     def updateNextButton(self):
         if len(self.playlist) > 0:
@@ -210,6 +217,8 @@ class VlcPlayer(QWidget):
             self.timer.stop()
             if not self.is_paused:
                 self.stop()
+                self.playNextInPlaylist()
+                self.resetTimer()
 
     def center(self):
         qr = self.frameGeometry()

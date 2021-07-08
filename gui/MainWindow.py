@@ -3476,7 +3476,7 @@ class MainWindow(QMainWindow):
             self.openMiniControlTab(1)
 
     def playBibleMP3Playlist(self, playlist):
-        if config.isVlcInstalled:
+        if playlist and config.isVlcInstalled:
             from gui.VlcPlayer import VlcPlayer
             if self.vlcPlayer is None:
                 self.vlcPlayer = VlcPlayer(self)

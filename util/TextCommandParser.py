@@ -1255,7 +1255,7 @@ class TextCommandParser:
                         folder = command[1:]
                         playlist.append((text, book, chapter, folder))
                     else:
-                        playlist = self.getBiblePlaylist(text, command, book, chapter, folder)
+                        playlist = self.getBiblePlaylist(command, text, folder)
                 elif count == 1:
                     text, reference = self.splitCommand(command)
                     verseList = self.extractAllVerses(command)
@@ -1268,7 +1268,7 @@ class TextCommandParser:
             self.parent.playBibleMP3Playlist(playlist)
         return ("", "", {})
 
-    def getBiblePlaylist(self, command, text, book, chapter, folder):
+    def getBiblePlaylist(self, command, text, folder):
         playlist = []
         if "," in command:
             parts = command.split(",")
@@ -1280,6 +1280,7 @@ class TextCommandParser:
             verseList = self.extractAllVerses(command)
             book, chapter, verse = verseList[0]
             playlist.append((text, book, chapter, folder))
+        return playlist
 
     # functions about bible
 

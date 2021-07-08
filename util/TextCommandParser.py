@@ -422,8 +422,8 @@ class TextCommandParser:
             # e.g. READBIBLE:::Matt 1-28                 # Reads chapters from current Bible
             # e.g. READBIBLE:::KJV:::Matt 1              # Reads chapter from Bible
             # e.g. READBIBLE:::KJV:::Matt 1,Matt 2       # Reads chapters from Bible
-            # e.g. READBIBLE:::KJV:::Matt 1:::drama      # Reads from drama folder instead of default folder
-            # e.g. READBIBLE:::@drama                    # Reads from drama folder instead of default folder
+            # e.g. READBIBLE:::KJV:::Matt 1:::soft-music # Reads from drama folder instead of default folder
+            # e.g. READBIBLE:::@soft-music               # Reads from drama folder instead of default folder
             """),
             "opennote": (self.textOpenNoteFile, """
             # [KEYWORD] opennote
@@ -1263,8 +1263,7 @@ class TextCommandParser:
                 elif count == 2:
                     text, commandList = self.splitCommand(command)
                     reference, folder = self.splitCommand(commandList)
-                    verseList = self.extractAllVerses(command)
-                    book, chapter, verse = verseList[0]
+                    playlist = self.getBiblePlaylist(reference, text, folder)
             self.parent.playBibleMP3Playlist(playlist)
         return ("", "", {})
 

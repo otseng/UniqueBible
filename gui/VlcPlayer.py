@@ -4,6 +4,7 @@ import platform
 import sys
 from qtpy import QtWidgets, QtGui, QtCore
 from qtpy.QtWidgets import QWidget
+from qtpy.QtGui import QIcon
 from qtpy.QtCore import QEvent, Qt
 import vlc
 
@@ -14,13 +15,14 @@ https://git.videolan.org/?p=vlc/bindings/python.git;a=blob_plain;f=examples/pyqt
 
 class VlcPlayer(QWidget):
 
-    height_audio = 60
-    width_audio = 400
-    height_video = 460
-    width_video = 650
+    heightAudio = 60
+    widthAudio = 400
+    heightVideo = 460
+    widthVideo = 650
 
     def __init__(self, parent, filename=None):
         super().__init__()
+        self.playlist = []
         os.environ["VLC_VERBOSE"] = str("-1")  # turn off low level VLC logging
         self.setWindowTitle(config.thisTranslation["mediaPlayer"])
         self.parent = parent
@@ -29,10 +31,10 @@ class VlcPlayer(QWidget):
         self.mediaplayer = self.instance.media_player_new()
         self.create_ui()
         self.is_paused = False
-        self.resize(self.width_audio, self.height_audio)
+        self.resize(self.widthAudio, self.heightAudio)
         self.center()
         if filename:
-            self.load_file(filename)
+            self.loadAndPlayFile(filename)
 
     def create_ui(self):
         self.videoframe = QtWidgets.QFrame()
@@ -46,15 +48,37 @@ class VlcPlayer(QWidget):
         self.positionslider.sliderPressed.connect(self.set_position)
 
         self.hbuttonbox = QtWidgets.QHBoxLayout()
-        self.openbutton = QtWidgets.QPushButton(config.thisTranslation["open"])
-        self.hbuttonbox.addWidget(self.openbutton)
+
+        self.openbutton = QtWidgets.QPushButton()
+        self.openbutton.setToolTip(config.thisTranslation["open"])
+        file = os.path.join("htmlResources", "buttons", "playlist.png")
+        self.openbutton.setIcon(QIcon(file))
         self.openbutton.clicked.connect(self.open_file)
-        self.playbutton = QtWidgets.QPushButton(config.thisTranslation["play"])
-        self.hbuttonbox.addWidget(self.playbutton)
+        self.hbuttonbox.addWidget(self.openbutton)
+
+        self.playbutton = QtWidgets.QPushButton()
+        self.playbutton.setToolTip(config.thisTranslation["play"])
+        file = os.path.join("htmlResources", "buttons", "play.png")
+        self.playbutton.setIcon(QIcon(file))
         self.playbutton.clicked.connect(self.play_pause)
-        self.stopbutton = QtWidgets.QPushButton(config.thisTranslation["stop"])
-        self.hbuttonbox.addWidget(self.stopbutton)
+        self.playbutton.setEnabled(True)
+        self.hbuttonbox.addWidget(self.playbutton)
+
+        self.stopbutton = QtWidgets.QPushButton()
+        self.stopbutton.setToolTip(config.thisTranslation["stop"])
+        file = os.path.join("htmlResources", "buttons", "stop.png")
+        self.stopbutton.setIcon(QIcon(file))
         self.stopbutton.clicked.connect(self.stop)
+        self.stopbutton.setEnabled(False)
+        self.hbuttonbox.addWidget(self.stopbutton)
+
+        self.nextbutton = QtWidgets.QPushButton()
+        # self.nextbutton.setToolTip(config.thisTranslation["next"])
+        file = os.path.join("htmlResources", "buttons", "next.png")
+        self.nextbutton.setIcon(QIcon(file))
+        self.nextbutton.clicked.connect(self.playNextInPlaylist)
+        self.nextbutton.setEnabled(False)
+        self.hbuttonbox.addWidget(self.nextbutton)
 
         self.hbuttonbox.addStretch(1)
         self.volumeslider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
@@ -77,8 +101,10 @@ class VlcPlayer(QWidget):
 
     def play_pause(self):
         if self.mediaplayer.is_playing():
+            self.stopbutton.setEnabled(False)
             self.mediaplayer.pause()
-            self.playbutton.setText(config.thisTranslation["play"])
+            file = os.path.join("htmlResources", "buttons", "play.png")
+            self.playbutton.setIcon(QIcon(file))
             self.is_paused = True
             self.timer.stop()
         else:
@@ -86,47 +112,70 @@ class VlcPlayer(QWidget):
                 self.open_file()
                 return
 
+            self.stopbutton.setEnabled(True)
             self.mediaplayer.play()
-            self.playbutton.setText(config.thisTranslation["pause"])
+            file = os.path.join("htmlResources", "buttons", "pause.png")
+            self.playbutton.setIcon(QIcon(file))
             self.timer.start()
             self.is_paused = False
 
     def stop(self):
         self.mediaplayer.stop()
-        self.playbutton.setText(config.thisTranslation["play"])
+        file = os.path.join("htmlResources", "buttons", "play.png")
+        self.playbutton.setIcon(QIcon(file))
+        self.stopbutton.setEnabled(False)
 
     def open_file(self):
         filename, filter = QtWidgets.QFileDialog.getOpenFileName(self, "Choose Media File", ".")
         if filename:
-            self.load_file(filename)
+            self.loadAndPlayFile(filename)
 
-    def load_file(self, filename):
+    def loadAndPlayFile(self, filename):
+        self.addToPlaylist(filename)
+        self.playNextInPlaylist()
+
+    def addToPlaylist(self, filename):
         if not os.path.exists(filename):
             return
-        if filename.endswith(".mp3"):
-            self.resize(self.width_audio, self.height_audio)
+        self.playlist.insert(0, filename)
+        self.updateNextButton()
+
+    def playNextInPlaylist(self):
+        if len(self.playlist) > 0:
+            filename = self.playlist.pop()
+            if filename.endswith(".mp3"):
+                self.resize(self.widthAudio, self.heightAudio)
+            else:
+                self.resize(self.widthVideo, self.heightVideo)
+            self.center()
+
+            self.media = self.instance.media_new(filename)
+
+            self.mediaplayer.set_media(self.media)
+            self.media.parse()
+            self.setWindowTitle(self.media.get_meta(0))
+
+            # The media player has to be 'connected' to the QFrame (otherwise the
+            # video would be displayed in it's own window). This is platform
+            # specific, so we must give the ID of the QFrame (or similar object) to
+            # vlc. Different platforms have different functions for this
+            if platform.system() == "Linux": # for Linux using the X Server
+                self.mediaplayer.set_xwindow(int(self.videoframe.winId()))
+            elif platform.system() == "Windows": # for Windows
+                self.mediaplayer.set_hwnd(int(self.videoframe.winId()))
+            elif platform.system() == "Darwin": # for MacOS
+                self.mediaplayer.set_nsobject(int(self.videoframe.winId()))
+
+            self.updateNextButton()
+            if not self.mediaplayer.is_playing():
+                self.stopbutton.setEnabled(True)
+                self.mediaplayer.play()
+
+    def updateNextButton(self):
+        if len(self.playlist) > 0:
+            self.nextbutton.setEnabled(True)
         else:
-            self.resize(self.width_video, self.height_video)
-        self.center()
-
-        self.media = self.instance.media_new(filename)
-
-        self.mediaplayer.set_media(self.media)
-        self.media.parse()
-        self.setWindowTitle(self.media.get_meta(0))
-
-        # The media player has to be 'connected' to the QFrame (otherwise the
-        # video would be displayed in it's own window). This is platform
-        # specific, so we must give the ID of the QFrame (or similar object) to
-        # vlc. Different platforms have different functions for this
-        if platform.system() == "Linux": # for Linux using the X Server
-            self.mediaplayer.set_xwindow(int(self.videoframe.winId()))
-        elif platform.system() == "Windows": # for Windows
-            self.mediaplayer.set_hwnd(int(self.videoframe.winId()))
-        elif platform.system() == "Darwin": # for MacOS
-            self.mediaplayer.set_nsobject(int(self.videoframe.winId()))
-
-        self.play_pause()
+            self.nextbutton.setEnabled(False)
 
     def set_volume(self, volume):
         """Set the volume
@@ -185,13 +234,17 @@ class DummyParent():
 def main():
     from util.LanguageUtil import LanguageUtil
 
-    filename = "/Users/otseng/dev/UniqueBible/music/04 Made Me Glad (Live).mp3"
-    # filename = "/Users/otseng/dev/UniqueBible/video/Luke 15_11 - The Prodigal Son.mp4"
+    filename1 = "/Users/otseng/dev/UniqueBible/music/Draw Me Close To You - The AsidorS - Hillsong Cover.mp3"
+    filename2 = "/Users/otseng/dev/UniqueBible/music/Through It All Hillsong Cover The AsidorS.mp3"
+    filename3 = "/Users/otseng/dev/UniqueBible/music/04 Made Me Glad (Live).mp3"
+    filename4 = "/Users/otseng/dev/UniqueBible/video/Luke 15_11 - The Prodigal Son.mp4"
     # filename = "doesnotexist.mp4"
     # filename = ""
     config.thisTranslation = LanguageUtil.loadTranslation("en_US")
     app = QtWidgets.QApplication(sys.argv)
-    player = VlcPlayer(DummyParent(), filename)
+    player = VlcPlayer(DummyParent(), filename1)
+    player.addToPlaylist(filename2)
+    player.addToPlaylist(filename3)
     player.show()
     sys.exit(app.exec_())
 

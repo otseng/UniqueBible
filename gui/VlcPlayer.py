@@ -99,6 +99,8 @@ class VlcPlayer(QWidget):
         self.setLayout(self.vboxlayout)
 
     def play_pause(self):
+        if self.debug:
+            print("Play/Pause")
         if self.mediaplayer.is_playing():
             self.stopbutton.setEnabled(False)
             self.mediaplayer.pause()
@@ -248,6 +250,9 @@ class VlcPlayer(QWidget):
             self.timer.stop()
             self.stop()
             self.parent.vlcPlayer = None
+            if self.debug:
+                print("Close VLC")
+
 
 ## Standalone development code
 

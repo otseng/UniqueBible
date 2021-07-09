@@ -1678,13 +1678,15 @@ class MainWindow(QMainWindow):
 
     def openVlcPlayer(self, filename=""):
         if config.isVlcInstalled:
-            from gui.VlcPlayer import VlcPlayer
-            if self.vlcPlayer is None:
+            try:
+                from gui.VlcPlayer import VlcPlayer
+                if self.vlcPlayer is not None:
+                    self.vlcPlayer.stop()
                 self.vlcPlayer = VlcPlayer(self, filename)
-            else:
-                self.vlcPlayer.stop()
                 self.vlcPlayer.loadAndPlayFile(filename)
-            self.vlcPlayer.show()
+                self.vlcPlayer.show()
+            except:
+                pass
 
     def openMiniBrowser(self, initialUrl=None):
         self.youTubeView = MiniBrowser(self, initialUrl)

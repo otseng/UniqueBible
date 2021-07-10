@@ -241,7 +241,7 @@ class VlcPlayer(QWidget):
             self.mediaplayer.stop()
             self.timer.stop()
             self.stop()
-            self.parent.vlcPlayer = None
+        self.parent.vlcPlayer = None
 
 
 ## Standalone development code

@@ -1246,7 +1246,7 @@ class TextCommandParser:
             text = config.mainText
             book = config.mainB
             chapter = config.mainC
-            folder = "default"
+            folder = config.defaultMP3BibleFolder
             playlist = []
             if command:
                 count = command.count(":::")

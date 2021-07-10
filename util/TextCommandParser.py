@@ -2781,7 +2781,6 @@ class TextCommandParser:
         code, reference = self.splitCommand(command)
         verseList = self.extractAllVerses(reference)
         for b, c, v in verseList:
-            #print("{0}:{1}:{2}:{3}".format(b, c, v, code))
             if code == "delete":
                 hl.removeHighlight(b, c, v)
             else:

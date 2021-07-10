@@ -3205,7 +3205,6 @@ class MainWindow(QMainWindow):
     def setDefaultFont(self):
         ok, font = QFontDialog.getFont(QFont(config.font, config.fontSize), self)
         if ok:
-            # print(font.key())
             config.font, fontSize, *_ = font.key().split(",")
             config.fontSize = int(fontSize)
             self.defaultFontButton.setText("{0} {1}".format(config.font, config.fontSize))
@@ -3215,7 +3214,6 @@ class MainWindow(QMainWindow):
     def setChineseFont(self):
         ok, font = QFontDialog.getFont(QFont(config.fontChinese, config.fontSize), self)
         if ok:
-            # print(font.key())
             config.fontChinese, *_ = font.key().split(",")
             self.reloadCurrentRecord(True)
 
@@ -3487,14 +3485,13 @@ class MainWindow(QMainWindow):
     def playBibleMP3Playlist(self, playlist):
         if playlist and config.isVlcInstalled:
             from gui.VlcPlayer import VlcPlayer
-            if self.vlcPlayer is None:
-                self.vlcPlayer = VlcPlayer(self)
-            else:
+            if self.vlcPlayer is not None:
                 self.vlcPlayer.stop()
-            self.vlcPlayer.clearPlaylist()
+                self.vlcPlayer.close()
+            self.vlcPlayer = VlcPlayer(self)
             for listItem in playlist:
                 (text, book, chapter, folder) = listItem
-                directory = self.getBibleMP3Directory(text, book, chapter, folder)
+                directory = self.getBibleMP3Directory(text, book, folder)
                 if directory:
                     filesearch = "{0}/{1}*{2}.mp3".format(directory, "{:02d}".format(book), "{:03d}".format(chapter))
                     files = glob.glob(filesearch)
@@ -3502,10 +3499,10 @@ class MainWindow(QMainWindow):
                         filesearch = "{0}/{1}*{2}.mp3".format(directory, "{:02d}".format(book),
                                                               "{:02d}".format(chapter))
                         files = glob.glob(filesearch)
-                    if not files:
-                        filesearch = "{0}/{1}*{2}.mp3".format(directory, "{:02d}".format(book),
-                                                              "{:01d}".format(chapter))
-                        files = glob.glob(filesearch)
+                        if not files:
+                            filesearch = "{0}/{1}*{2}.mp3".format(directory, "{:02d}".format(book),
+                                                                  "{:01d}".format(chapter))
+                            files = glob.glob(filesearch)
                     if files:
                         file = files[0]
                         self.vlcPlayer.addToPlaylist(file)
@@ -3517,12 +3514,20 @@ class MainWindow(QMainWindow):
         playlist.append((text, book, chapter, folder))
         self.playBibleMP3Playlist(playlist)
 
-    def getBibleMP3Directory(self, text, book, chapter, folder):
+    def getBibleMP3Directory(self, text, book, folder):
         directory = "audio/bibles/{0}/{1}/{2}".format(text, folder, "{:02d}".format(book))
         if os.path.exists(directory):
             return directory
         else:
-            return None
+            directory = "audio/bibles/{0}".format(text)
+            directories = [d for d in os.listdir(directory) if
+                           os.path.isdir(os.path.join(directory, d)) and not d == ".git"]
+            if directories:
+                directory = "audio/bibles/{0}/{1}/{2}".format(text, directories[0], "{:02d}".format(book))
+                if os.path.exists(directory):
+                    return directory
+        return None
+
 
     def testing(self):
         #pass

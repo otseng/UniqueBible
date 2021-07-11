@@ -230,7 +230,7 @@ if __name__ == "__main__":
             print("Error executing: " + str(e))
     else:
         # printCodesSupportedLanguages()
-        addLanguageStringToAllFiles("disableLoadLastOpenFilesOnStartup", "Disable load last open files on startup")
+        addLanguageStringToAllFiles("pattern", "Pattern")
         # createNewLanguageFile("ro")
         # validateLanguageFileSizes()
 

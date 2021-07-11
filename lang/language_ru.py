@@ -748,4 +748,7 @@ translation = {
     "displayCmdOutput": "Показать вывод команды CMD",
     "textWithReference": "Текст со ссылкой",
     "disableLoadLastOpenFilesOnStartup": "Запретить загрузку последних открытых файлов при запуске",
+    "liveFilter": "Живой фильтр",
+    "filter2": "Фильтр",
+    "pattern": "Шаблон",
 }

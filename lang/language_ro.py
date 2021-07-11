@@ -748,4 +748,7 @@ translation = {
     "displayCmdOutput": "Afişare ieşire comandă CMD",
     "textWithReference": "Text cu referinţă",
     "disableLoadLastOpenFilesOnStartup": "Dezactivare încărcare ultimele fişiere deschise la pornire",
+    "liveFilter": "Filtru live",
+    "filter2": "Filtrare",
+    "pattern": "Tipar",
 }

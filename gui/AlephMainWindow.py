@@ -207,7 +207,7 @@ class AlephMainWindow:
         search_menu.addAction(QAction(config.thisTranslation["menu5_bible"], self, shortcut=sc.displaySearchBibleMenu, triggered=self.displaySearchBibleMenu))
         search_menu.addAction(QAction(config.thisTranslation["menu_verse_all_versions"], self, shortcut=sc.runCOMPARE, triggered=self.runCOMPARE))
         search_menu.addSeparator()
-        search_menu.addAction(QAction("Live Filter", self, triggered=self.showLiveFilterDialog))
+        search_menu.addAction(QAction(config.thisTranslation["liveFilter"], self, shortcut=sc.liveFilterDialog, triggered=self.showLiveFilterDialog))
         search_menu.addSeparator()
         search_menu.addAction(QAction(config.thisTranslation["menu5_topics"], self, triggered=self.searchTopicDialog))
         search_menu.addAction(QAction(config.thisTranslation["context1_encyclopedia"], self, triggered=self.searchEncyclopediaDialog))

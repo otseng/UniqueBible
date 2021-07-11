@@ -748,4 +748,7 @@ translation = {
     "displayCmdOutput": "Affichage de la sortie de la commande CMD",
     "textWithReference": "Texte avec référence",
     "disableLoadLastOpenFilesOnStartup": "Désactiver le chargement des fichiers ouverts au démarrage",
+    "liveFilter": "Filtre actif",
+    "filter2": "Filtrer",
+    "pattern": "Modèle",
 }

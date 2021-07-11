@@ -1986,6 +1986,11 @@ class MainWindow(QMainWindow):
 
     def showLiveFilterDialog(self):
         self.liveFilterDialog = LiveFilterDialog(self)
+        self.liveFilterDialog.reloadFilters()
+        screen = QGuiApplication.instance().desktop().availableGeometry()
+        x = screen.width() * float(1/8)
+        y = screen.height() * float(1/5)
+        self.liveFilterDialog.move(x, y)
         self.liveFilterDialog.show()
 
     def enableIndividualPluginsWindow(self):

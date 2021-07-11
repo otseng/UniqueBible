@@ -748,4 +748,7 @@ translation = {
     "displayCmdOutput": "सीएमडी कमांड के आउटपुट को प्रदर्शित करें",
     "textWithReference": "संदर्भ के साथ पाठ",
     "disableLoadLastOpenFilesOnStartup": "स्टार्टअप पर अंतिम खुले फ़ाइल को अक्षम करें",
+    "liveFilter": "लाइव फ़िल्टर",
+    "filter2": "फिल्टर",
+    "pattern": "पैटर्न",
 }

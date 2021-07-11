@@ -748,4 +748,7 @@ translation = {
     "displayCmdOutput": "CMD コマンドの出力の表示",
     "textWithReference": "参照のあるテキスト",
     "disableLoadLastOpenFilesOnStartup": "始動時に最後のオープン・ファイルをロード",
+    "liveFilter": "ライブ・フィルター",
+    "filter2": "フィルター",
+    "pattern": "パターン",
 }

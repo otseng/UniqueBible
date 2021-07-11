@@ -748,4 +748,7 @@ translation = {
     "displayCmdOutput": "Εμφάνιση εξόδου της εντολής CMD",
     "textWithReference": "Κείμενο με αναφορά:",
     "disableLoadLastOpenFilesOnStartup": "Απενεργοποίηση φόρτωσης τελευταία ανοικτά αρχεία κατά την εκκίνηση",
+    "liveFilter": "Φίλτρο Live",
+    "filter2": "Φίλτρο:",
+    "pattern": "Μοτίβο",
 }

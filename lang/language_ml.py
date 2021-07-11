@@ -748,4 +748,7 @@ translation = {
     "displayCmdOutput": "CMD ആജ്ഞ പ്രദര്ശിപ്പിക്കുക",
     "textWithReference": "റഫറൻസ് കൂടിയ പദാവലി",
     "disableLoadLastOpenFilesOnStartup": "തുടക്കത്തില് അവസാനത്തെ തുറന്ന ഫയലുകള് ലോഡ് ചെയ്യുക",
+    "liveFilter": "ലൈവ് ഫില്റ്റര്",
+    "filter2": "ഫില്റ്റര്",
+    "pattern": "പാറ്റേണ്",
 }

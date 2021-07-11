@@ -1,9 +1,9 @@
-from PyQt5.QtWidgets import QMessageBox
-
 import config
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QStandardItemModel, QStandardItem
+from qtpy.QtWidgets import QMessageBox
 from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton
+from qtpy.QtWidgets import QFileDialog
 from qtpy.QtWidgets import QDialogButtonBox
 from db.LiveFilterSqlite import LiveFilterSqlite
 from gui.MultiLineInputDialog import MultiLineInputDialog
@@ -38,9 +38,8 @@ class LiveFilterDialog(QDialog):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
-        self.setWindowTitle("Live Filter")
-        # self.setWindowTitle(config.thisTranslation["liveFilter"])
-        self.setMinimumSize(350, 400)
+        self.setWindowTitle(config.thisTranslation["liveFilter"])
+        self.setMinimumSize(400, 400)
         self.selectedFilter = None
         self.selectedPattern = None
         self.settingBibles = False
@@ -51,8 +50,7 @@ class LiveFilterDialog(QDialog):
     def setupUI(self):
         mainLayout = QVBoxLayout()
 
-        title = QLabel("Live Filter")
-        # title = QLabel(config.thisTranslation["liveFilter"])
+        title = QLabel(config.thisTranslation["liveFilter"])
         mainLayout.addWidget(title)
 
         self.filtersTable = QTableView()
@@ -77,6 +75,9 @@ class LiveFilterDialog(QDialog):
         editButton = QPushButton(config.thisTranslation["edit"])
         editButton.clicked.connect(self.editFilter)
         buttonsLayout.addWidget(editButton)
+        importButton = QPushButton(config.thisTranslation["import"])
+        importButton.clicked.connect(self.importFile)
+        buttonsLayout.addWidget(importButton)
         buttonsLayout.addStretch()
         mainLayout.addLayout(buttonsLayout)
 
@@ -100,8 +101,8 @@ class LiveFilterDialog(QDialog):
             item = QStandardItem(description)
             self.dataViewModel.setItem(rowCount, 1, item)
             rowCount += 1
-        self.dataViewModel.setHorizontalHeaderLabels(["Filter", "Pattern"])
-        # self.dataViewModel.setHorizontalHeaderLabels([config.thisTranslation["filter"], config.thisTranslation["pattern"]])
+        self.dataViewModel.setHorizontalHeaderLabels([config.thisTranslation["filter2"],
+                                                      config.thisTranslation["pattern"]])
         self.filtersTable.resizeColumnsToContents()
 
     def handleSelection(self, selected, deselected):
@@ -129,13 +130,16 @@ class LiveFilterDialog(QDialog):
                     if item.checkState() == Qt.Checked:
                         sets.append('"{0}"'.format(self.filters[index][1]))
                 wordSets = ",".join(sets)
-                config.mainWindow.studyPage.runJavaScript(self.JS_SHOW.format(wordSets))
+                js = self.JS_SHOW.format(wordSets)
+                print(js)
+                config.mainWindow.studyPage.runJavaScript(js)
                 print(self.JS_SHOW.format(wordSets))
         except Exception as e:
             print(str(e))
 
     def addNewFilter(self):
-        fields = [("Filter", ""), ("Pattern", "")]
+        fields = [(config.thisTranslation["filter2"], ""),
+                  (config.thisTranslation["pattern"], "")]
         dialog = MultiLineInputDialog("New Filter", fields)
         if dialog.exec():
             data = dialog.getInputs()
@@ -144,14 +148,15 @@ class LiveFilterDialog(QDialog):
 
     def removeFilter(self):
         reply = QMessageBox.question(self, "Delete",
-                                     'Delete {0} Filter'.format(self.selectedFilter),
+                                     'Delete {0} {1}'.format(self.selectedFilter, config.thisTranslation["filter2"]),
                                      QMessageBox.Yes | QMessageBox.No)
         if reply == QMessageBox.Yes:
             self.db.delete(self.selectedFilter)
             self.reloadFilters()
 
     def editFilter(self):
-        fields = [("Filter", self.selectedFilter), ("Pattern", self.selectedPattern)]
+        fields = [(config.thisTranslation["filter2"], self.selectedFilter),
+                  (config.thisTranslation["pattern"], self.selectedPattern)]
         dialog = MultiLineInputDialog("Edit Filter", fields)
         if dialog.exec():
             data = dialog.getInputs()
@@ -159,6 +164,26 @@ class LiveFilterDialog(QDialog):
             self.db.insert(data[0], data[1])
             self.reloadFilters()
 
+    def importFile(self):
+        options = QFileDialog.Options()
+        filename, filtr = QFileDialog.getOpenFileName(self,
+                                                      config.thisTranslation["import"],
+                                                      config.thisTranslation["liveFilter"],
+                                                      "File (*.*)",
+                                                      "", options)
+        if filename:
+            try:
+                with open(filename, errors='ignore') as f:
+                    for line in f:
+                        data = line.split(":::")
+                        filter = data[0].strip()
+                        pattern = data[1].strip()
+                        if self.db.checkFilterExists(filter):
+                            self.db.delete(filter)
+                        self.db.insert(filter, pattern)
+            except Exception as e:
+                print(e)
+            self.reloadFilters()
 
 class Dummy:
     def __init__(self):

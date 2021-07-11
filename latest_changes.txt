@@ -1,5 +1,5 @@
 Major changes in version 25.78:
-* 
+*
 
 Major changes in version 25.77:
 * Import theWord OT Bibles

@@ -24,7 +24,9 @@ class LiveFilterDialog(QDialog):
             divs = document.querySelectorAll("div");
             for (var i = 0, len = divs.length; i < len; i++) {{
                 div = divs[i];
-                if (div.innerHTML.includes("{0}")) {{
+                var regex = new RegExp("{0}", "i");
+                var found = regex.test(div.innerHTML);
+                if (found) {{
                     div.hidden = false;
                 }}
             }};
@@ -38,7 +40,7 @@ class LiveFilterDialog(QDialog):
         self.setMinimumSize(500, 400)
         self.selectedFilter = None
         self.settingBibles = False
-        self.filters = [("Pronouns", "he, him, we"), ("Jesus", "Jesus"), ("God", "God")]
+        self.filters = [("Jesus", "jesus"), ("God", "god"), ("Nicodemus", "nicodemus")]
         self.setupUI()
 
     def setupUI(self):

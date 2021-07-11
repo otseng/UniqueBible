@@ -2795,7 +2795,8 @@ class MainWindow(QMainWindow):
                     and not newTextCommand.endswith(".pdf") \
                     and not newTextCommand.startswith("ePubViewer.html") \
                     and not newTextCommand.endswith("Published with Bibi") \
-                    or (newTextCommand.lower().startswith("pdf:::") and newTextCommand.endswith(".pdf")):
+                    or (newTextCommand.lower().startswith("pdf:::") and newTextCommand.endswith(".pdf")) \
+                    or (newTextCommand.lower().startswith("anypdf:::") and newTextCommand.endswith(".pdf")):
                 self.textCommandChanged(newTextCommand, "study")
         except:
             pass

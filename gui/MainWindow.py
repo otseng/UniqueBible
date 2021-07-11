@@ -11,6 +11,7 @@ from qtpy.QtWidgets import (QAction, QInputDialog, QLineEdit, QMainWindow, QMess
 from qtpy.QtWidgets import QComboBox
 
 from gui.BibleCollectionDialog import BibleCollectionDialog
+from gui.LiveFilterDialog import LiveFilterDialog
 from util import exlbl
 from util.BibleBooks import BibleBooks
 from util.TextCommandParser import TextCommandParser
@@ -1982,6 +1983,10 @@ class MainWindow(QMainWindow):
     def showBibleCollectionDialog(self):
         self.bibleCollectionDialog = BibleCollectionDialog()
         self.bibleCollectionDialog.show()
+
+    def showLiveFilterDialog(self):
+        self.liveFilterDialog = LiveFilterDialog(self)
+        self.liveFilterDialog.show()
 
     def enableIndividualPluginsWindow(self):
         self.individualPluginsWindow = EnableIndividualPlugins(self)

@@ -17,7 +17,7 @@ class LiveFilterDialog(QDialog):
         self.parent = parent
         self.setWindowTitle("Live Filter")
         # self.setWindowTitle(config.thisTranslation["liveFilter"])
-        self.setMinimumSize(680, 500)
+        self.setMinimumSize(500, 400)
         self.selectedFilter = None
         self.settingBibles = False
         self.filters = [("Jesus", "Jesus"), ("God", "God")]
@@ -31,7 +31,7 @@ class LiveFilterDialog(QDialog):
         mainLayout.addWidget(title)
 
         self.filtersTable = QTableView()
-        self.filtersTable.setEnabled(False)
+        self.filtersTable.setEnabled(True)
         self.filtersTable.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.filtersTable.setSortingEnabled(True)
         self.dataViewModel = QStandardItemModel(self.filtersTable)
@@ -40,16 +40,11 @@ class LiveFilterDialog(QDialog):
         mainLayout.addWidget(self.filtersTable)
 
         self.dataViewModel.clear()
-        biblesInFilter = []
-        if self.selectedFilter is not None:
-            biblesInFilter = config.bibleFilters[self.selectedFilter]
         rowCount = 0
         for bible, description in self.filters:
             item = QStandardItem(bible)
             item.setToolTip(bible)
             item.setCheckable(True)
-            if bible in biblesInFilter:
-                item.setCheckState(Qt.Checked)
             self.dataViewModel.setItem(rowCount, 0, item)
             item = QStandardItem(description)
             self.dataViewModel.setItem(rowCount, 1, item)
@@ -79,42 +74,42 @@ class LiveFilterDialog(QDialog):
 
         self.setLayout(mainLayout)
 
-    def showListOfFilters(self):
-        self.collectionsList.clear()
-        if len(config.bibleFilters) > 0:
-            for collection in sorted(config.bibleFilters.keys()):
-                showBibleSelection = QRadioButton()
-                showBibleSelection.setChecked(False)
-                # self.collectionsList.itemClicked.connect(self.selectFilter)
-                self.collectionsList.addItem(collection)
-        else:
-            self.collectionsList.addItem("[No collection defined]")
+
+    def filterSelectionChanged(self, item):
+        for index in range(self.dataViewModel.rowCount()):
+            item = self.dataViewModel.item(index)
+            if item.checkState() == Qt.Checked:
+                text = item.text()
+                try:
+                    config.mainWindow.mainPage.findText(text)
+                    config.mainWindow.studyPage.findText(text)
+                except:
+                    pass
 
     def addNewFilter(self):
         name, ok = QInputDialog.getText(self, 'Filter', 'Filter name:')
         if ok and len(name) > 0 and name != "All":
-            config.bibleFilters[name] = {}
-            self.showListOfFilters()
-            self.filtersTable.setEnabled(False)
+            pass
+            # config.bibleFilters[name] = {}
+            # self.showListOfFilters()
+            # self.filtersTable.setEnabled(False)
 
     def removeFilter(self):
-        config.bibleFilters.pop(self.selectedFilter, None)
-        self.showListOfFilters()
-        self.filtersTable.setEnabled(False)
+        pass
+        # config.bibleFilters.pop(self.selectedFilter, None)
+        # self.showListOfFilters()
+        # self.filtersTable.setEnabled(False)
 
     def renameFilter(self):
         name, ok = QInputDialog.getText(self, 'Filter', 'Filter name:', text=self.selectedFilter)
         if ok and len(name) > 0 and name != "All":
-            biblesInFilter = config.bibleFilters[self.selectedFilter]
-            config.bibleFilters.pop(self.selectedFilter, None)
-            self.selectedFilter = name
-            config.bibleFilters[name] = biblesInFilter
-            self.showListOfFilters()
-            self.filtersTable.setEnabled(False)
-
-
-    def filterSelectionChanged(self, item):
-        pass
+            pass
+            # biblesInFilter = config.bibleFilters[self.selectedFilter]
+            # config.bibleFilters.pop(self.selectedFilter, None)
+            # self.selectedFilter = name
+            # config.bibleFilters[name] = biblesInFilter
+            # self.showListOfFilters()
+            # self.filtersTable.setEnabled(False)
 
         # if not self.settingBibles:
         #     if self.selectedFilter is not None:

@@ -920,6 +920,8 @@
 (25.77, "file", "util/ThirdParty.py")
 (25.78, "file", "db/LiveFilterSqlite.py")
 (25.78, "file", "gui/AlephMainWindow.py")
+(25.78, "file", "gui/ClassicMainWindow.py")
+(25.78, "file", "gui/FocusMainWindow.py")
 (25.78, "file", "gui/ConfigFlagsWindow.py")
 (25.78, "file", "gui/LiveFilterDialog.py")
 (25.78, "file", "gui/MainWindow.py")

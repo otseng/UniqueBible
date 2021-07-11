@@ -12,6 +12,24 @@ from gui.CheckableComboBox import CheckableComboBox
 
 class LiveFilterDialog(QDialog):
 
+    JS_HIDE = """
+            divs = document.querySelectorAll("div");
+            for (var i = 0, len = divs.length; i < len; i++) {{
+                div = divs[i];
+                div.hidden = {0};
+            }};
+            """
+
+    JS_SHOW = """
+            divs = document.querySelectorAll("div");
+            for (var i = 0, len = divs.length; i < len; i++) {{
+                div = divs[i];
+                if (div.innerHTML.includes("{0}")) {{
+                    div.hidden = false;
+                }}
+            }};
+            """
+
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
@@ -20,7 +38,7 @@ class LiveFilterDialog(QDialog):
         self.setMinimumSize(500, 400)
         self.selectedFilter = None
         self.settingBibles = False
-        self.filters = [("Jesus", "Jesus"), ("God", "God")]
+        self.filters = [("Pronouns", "he, him, we"), ("Jesus", "Jesus"), ("God", "God")]
         self.setupUI()
 
     def setupUI(self):
@@ -76,15 +94,26 @@ class LiveFilterDialog(QDialog):
 
 
     def filterSelectionChanged(self, item):
-        for index in range(self.dataViewModel.rowCount()):
-            item = self.dataViewModel.item(index)
-            if item.checkState() == Qt.Checked:
-                text = item.text()
-                try:
-                    config.mainWindow.mainPage.findText(text)
-                    config.mainWindow.studyPage.findText(text)
-                except:
-                    pass
+        try:
+            numChecked = 0
+            for index in range(self.dataViewModel.rowCount()):
+                item = self.dataViewModel.item(index)
+                if item.checkState() == Qt.Checked:
+                    numChecked += 1
+            if numChecked == 0:
+                config.mainWindow.studyPage.runJavaScript(self.JS_HIDE.format("false"))
+            else:
+                config.mainWindow.studyPage.runJavaScript(self.JS_HIDE.format("true"))
+            for index in range(self.dataViewModel.rowCount()):
+                item = self.dataViewModel.item(index)
+                if item.checkState() == Qt.Checked:
+                    wordSet = self.filters[index][1]
+                    words = wordSet.split(",")
+                    for word in words:
+                        text = word.strip()
+                        config.mainWindow.studyPage.runJavaScript(self.JS_SHOW.format(text))
+        except Exception as e:
+            print(str(e))
 
     def addNewFilter(self):
         name, ok = QInputDialog.getText(self, 'Filter', 'Filter name:')

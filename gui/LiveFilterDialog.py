@@ -21,11 +21,13 @@ class LiveFilterDialog(QDialog):
             """
 
     JS_SHOW = """
+            
             divs = document.querySelectorAll("div");
             for (var i = 0, len = divs.length; i < len; i++) {{
                 div = divs[i];
+                var found = true
                 var regex = new RegExp("{0}", "i");
-                var found = regex.test(div.innerHTML);
+                found &= regex.test(div.innerHTML);
                 if (found) {{
                     div.hidden = false;
                 }}

@@ -64,6 +64,8 @@ class LiveFilterDialog(QDialog):
         self.dataViewModel = QStandardItemModel(self.filtersTable)
         self.filtersTable.setModel(self.dataViewModel)
         self.dataViewModel.itemChanged.connect(self.filterSelectionChanged)
+        self.selectionModel = self.filtersTable.selectionModel()
+        self.selectionModel.selectionChanged.connect(self.handleSelection)
         mainLayout.addWidget(self.filtersTable)
 
         self.dataViewModel.clear()
@@ -76,8 +78,8 @@ class LiveFilterDialog(QDialog):
             item = QStandardItem(description)
             self.dataViewModel.setItem(rowCount, 1, item)
             rowCount += 1
-        self.dataViewModel.setHorizontalHeaderLabels(["Filter", config.thisTranslation["description"]])
-        # self.dataViewModel.setHorizontalHeaderLabels([config.thisTranslation["filter"], config.thisTranslation["description"]])
+        self.dataViewModel.setHorizontalHeaderLabels(["Filter", "Pattern"])
+        # self.dataViewModel.setHorizontalHeaderLabels([config.thisTranslation["filter"], config.thisTranslation["pattern"]])
         self.filtersTable.resizeColumnsToContents()
 
         buttonsLayout = QHBoxLayout()
@@ -101,6 +103,9 @@ class LiveFilterDialog(QDialog):
 
         self.setLayout(mainLayout)
 
+    def handleSelection(self, selected, deselected):
+        for item in selected:
+            print(item)
 
     def filterSelectionChanged(self, item):
         try:

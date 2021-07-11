@@ -1,15 +1,12 @@
+from PyQt5.QtWidgets import QMessageBox
 
 import config
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QStandardItemModel, QStandardItem
 from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QPushButton
-from qtpy.QtWidgets import QInputDialog
-from qtpy.QtWidgets import QRadioButton
-from qtpy.QtWidgets import QListWidget
 from qtpy.QtWidgets import QDialogButtonBox
-
 from db.LiveFilterSqlite import LiveFilterSqlite
-from gui.CheckableComboBox import CheckableComboBox
+from gui.MultiLineInputDialog import MultiLineInputDialog
 
 
 class LiveFilterDialog(QDialog):
@@ -43,11 +40,12 @@ class LiveFilterDialog(QDialog):
         self.parent = parent
         self.setWindowTitle("Live Filter")
         # self.setWindowTitle(config.thisTranslation["liveFilter"])
-        self.setMinimumSize(500, 400)
+        self.setMinimumSize(350, 400)
         self.selectedFilter = None
+        self.selectedPattern = None
         self.settingBibles = False
         self.db = LiveFilterSqlite()
-        self.filters = self.db.getAll()
+        self.filters = None
         self.setupUI()
 
     def setupUI(self):
@@ -67,7 +65,31 @@ class LiveFilterDialog(QDialog):
         self.selectionModel = self.filtersTable.selectionModel()
         self.selectionModel.selectionChanged.connect(self.handleSelection)
         mainLayout.addWidget(self.filtersTable)
+        self.reloadFilters()
 
+        buttonsLayout = QHBoxLayout()
+        addButton = QPushButton(config.thisTranslation["add"])
+        addButton.clicked.connect(self.addNewFilter)
+        buttonsLayout.addWidget(addButton)
+        removeButton = QPushButton(config.thisTranslation["remove"])
+        removeButton.clicked.connect(self.removeFilter)
+        buttonsLayout.addWidget(removeButton)
+        editButton = QPushButton(config.thisTranslation["edit"])
+        editButton.clicked.connect(self.editFilter)
+        buttonsLayout.addWidget(editButton)
+        buttonsLayout.addStretch()
+        mainLayout.addLayout(buttonsLayout)
+
+        buttons = QDialogButtonBox.Ok
+        self.buttonBox = QDialogButtonBox(buttons)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        mainLayout.addWidget(self.buttonBox)
+
+        self.setLayout(mainLayout)
+
+    def reloadFilters(self):
+        self.filters = self.db.getAll()
         self.dataViewModel.clear()
         rowCount = 0
         for bible, description in self.filters:
@@ -82,30 +104,13 @@ class LiveFilterDialog(QDialog):
         # self.dataViewModel.setHorizontalHeaderLabels([config.thisTranslation["filter"], config.thisTranslation["pattern"]])
         self.filtersTable.resizeColumnsToContents()
 
-        buttonsLayout = QHBoxLayout()
-        addButton = QPushButton(config.thisTranslation["add"])
-        addButton.clicked.connect(self.addNewFilter)
-        buttonsLayout.addWidget(addButton)
-        removeButton = QPushButton(config.thisTranslation["remove"])
-        removeButton.clicked.connect(self.removeFilter)
-        buttonsLayout.addWidget(removeButton)
-        renameButton = QPushButton(config.thisTranslation["rename"])
-        renameButton.clicked.connect(self.renameFilter)
-        buttonsLayout.addWidget(renameButton)
-        buttonsLayout.addStretch()
-        mainLayout.addLayout(buttonsLayout)
-
-        buttons = QDialogButtonBox.Ok
-        self.buttonBox = QDialogButtonBox(buttons)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        mainLayout.addWidget(self.buttonBox)
-
-        self.setLayout(mainLayout)
-
     def handleSelection(self, selected, deselected):
         for item in selected:
-            print(item)
+            row = item.indexes()[0].row()
+            filter = self.dataViewModel.item(row, 0)
+            self.selectedFilter = filter.text()
+            pattern = self.dataViewModel.item(row, 1)
+            self.selectedPattern = pattern.text()
 
     def filterSelectionChanged(self, item):
         try:
@@ -130,41 +135,29 @@ class LiveFilterDialog(QDialog):
             print(str(e))
 
     def addNewFilter(self):
-        name, ok = QInputDialog.getText(self, 'Filter', 'Filter name:')
-        if ok and len(name) > 0 and name != "All":
-            pass
-            # config.bibleFilters[name] = {}
-            # self.showListOfFilters()
-            # self.filtersTable.setEnabled(False)
+        fields = [("Filter", ""), ("Pattern", "")]
+        dialog = MultiLineInputDialog("New Filter", fields)
+        if dialog.exec():
+            data = dialog.getInputs()
+            self.db.insert(data[0], data[1])
+            self.reloadFilters()
 
     def removeFilter(self):
-        pass
-        # config.bibleFilters.pop(self.selectedFilter, None)
-        # self.showListOfFilters()
-        # self.filtersTable.setEnabled(False)
+        reply = QMessageBox.question(self, "Delete",
+                                     'Delete {0} Filter'.format(self.selectedFilter),
+                                     QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.db.delete(self.selectedFilter)
+            self.reloadFilters()
 
-    def renameFilter(self):
-        name, ok = QInputDialog.getText(self, 'Filter', 'Filter name:', text=self.selectedFilter)
-        if ok and len(name) > 0 and name != "All":
-            pass
-            # biblesInFilter = config.bibleFilters[self.selectedFilter]
-            # config.bibleFilters.pop(self.selectedFilter, None)
-            # self.selectedFilter = name
-            # config.bibleFilters[name] = biblesInFilter
-            # self.showListOfFilters()
-            # self.filtersTable.setEnabled(False)
-
-        # if not self.settingBibles:
-        #     if self.selectedFilter is not None:
-        #         text = item.text()
-        #         biblesInFilter = config.bibleFilters[self.selectedFilter]
-        #         if len(biblesInFilter) == 0:
-        #             biblesInFilter = []
-        #         if text in biblesInFilter:
-        #             biblesInFilter.remove(text)
-        #         else:
-        #             biblesInFilter.append(text)
-        #         config.bibleFilters[self.selectedFilter] = biblesInFilter
+    def editFilter(self):
+        fields = [("Filter", self.selectedFilter), ("Pattern", self.selectedPattern)]
+        dialog = MultiLineInputDialog("Edit Filter", fields)
+        if dialog.exec():
+            data = dialog.getInputs()
+            self.db.delete(self.selectedFilter)
+            self.db.insert(data[0], data[1])
+            self.reloadFilters()
 
 
 class Dummy:

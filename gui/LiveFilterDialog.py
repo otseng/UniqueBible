@@ -7,6 +7,8 @@ from qtpy.QtWidgets import QInputDialog
 from qtpy.QtWidgets import QRadioButton
 from qtpy.QtWidgets import QListWidget
 from qtpy.QtWidgets import QDialogButtonBox
+
+from db.LiveFilterSqlite import LiveFilterSqlite
 from gui.CheckableComboBox import CheckableComboBox
 
 
@@ -44,7 +46,8 @@ class LiveFilterDialog(QDialog):
         self.setMinimumSize(500, 400)
         self.selectedFilter = None
         self.settingBibles = False
-        self.filters = [("Jesus", "jesus"), ("God", "god"), ("Nicodemus", "nicodemus")]
+        self.db = LiveFilterSqlite()
+        self.filters = self.db.getAll()
         self.setupUI()
 
     def setupUI(self):

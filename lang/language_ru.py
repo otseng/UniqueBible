@@ -747,4 +747,5 @@ translation = {
     "selectNone": "Выберите Нет",
     "displayCmdOutput": "Показать вывод команды CMD",
     "textWithReference": "Текст со ссылкой",
+    "disableLoadLastOpenFilesOnStartup": "Запретить загрузку последних открытых файлов при запуске",
 }

@@ -747,4 +747,5 @@ translation = {
     "selectNone": "Επιλέξτε Χωρίς.",
     "displayCmdOutput": "Εμφάνιση εξόδου της εντολής CMD",
     "textWithReference": "Κείμενο με αναφορά:",
+    "disableLoadLastOpenFilesOnStartup": "Απενεργοποίηση φόρτωσης τελευταία ανοικτά αρχεία κατά την εκκίνηση",
 }

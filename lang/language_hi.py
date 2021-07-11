@@ -747,4 +747,5 @@ translation = {
     "selectNone": "कुछ नहीं चुनें",
     "displayCmdOutput": "सीएमडी कमांड के आउटपुट को प्रदर्शित करें",
     "textWithReference": "संदर्भ के साथ पाठ",
+    "disableLoadLastOpenFilesOnStartup": "स्टार्टअप पर अंतिम खुले फ़ाइल को अक्षम करें",
 }

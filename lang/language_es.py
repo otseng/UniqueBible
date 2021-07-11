@@ -747,4 +747,5 @@ translation = {
     "selectNone": "Seleccione Ninguno",
     "displayCmdOutput": "Mostrar salida del mandato CMD",
     "textWithReference": "Texto con referencia",
+    "disableLoadLastOpenFilesOnStartup": "Inhabilitar la carga de los últimos archivos abiertos al iniciar",
 }

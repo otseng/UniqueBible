@@ -21,12 +21,12 @@ class LiveFilterDialog(QDialog):
             """
 
     JS_SHOW = """
-            
+            wordSets = ["{0}"]; 
             divs = document.querySelectorAll("div");
             for (var i = 0, len = divs.length; i < len; i++) {{
                 div = divs[i];
                 var found = true
-                var regex = new RegExp("{0}", "i");
+                var regex = new RegExp(wordSets[0], "i");
                 found &= regex.test(div.innerHTML);
                 if (found) {{
                     div.hidden = false;
@@ -107,15 +107,13 @@ class LiveFilterDialog(QDialog):
             if numChecked == 0:
                 config.mainWindow.studyPage.runJavaScript(self.JS_HIDE.format("false"))
             else:
+                wordSet = ""
                 config.mainWindow.studyPage.runJavaScript(self.JS_HIDE.format("true"))
-            for index in range(self.dataViewModel.rowCount()):
-                item = self.dataViewModel.item(index)
-                if item.checkState() == Qt.Checked:
-                    wordSet = self.filters[index][1]
-                    words = wordSet.split(",")
-                    for word in words:
-                        text = word.strip()
-                        config.mainWindow.studyPage.runJavaScript(self.JS_SHOW.format(text))
+                for index in range(self.dataViewModel.rowCount()):
+                    item = self.dataViewModel.item(index)
+                    if item.checkState() == Qt.Checked:
+                        wordSet = self.filters[index][1]
+                config.mainWindow.studyPage.runJavaScript(self.JS_SHOW.format(wordSet))
         except Exception as e:
             print(str(e))
 

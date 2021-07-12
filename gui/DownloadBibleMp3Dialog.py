@@ -270,6 +270,7 @@ class DownloadBibleMp3Util:
             base = os.path.basename(file)
             # folder = base[:2]
             folder = int(base[1:3])
+            bookNum = int(folder)
             if base[0] == 'B':
                 bookNum += 39
             # bookNum = int(base[:2])

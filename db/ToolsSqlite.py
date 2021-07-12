@@ -652,23 +652,20 @@ class Lexicon:
     def searchTopic(self, search):
         try:
             searchString = "%{0}%".format(search)
-            lexiconData = LexiconData()
-            #lexiconList = lexiconData.lexiconList
-
             query = "SELECT DISTINCT Topic FROM Lexicon WHERE Topic like ? OR DEFINITION like ? ORDER BY Topic LIMIT 0, 500"
             self.cursor.execute(query, (searchString, searchString))
             contentText = """<h2>{0}</h2>""".format(self.module)
             for topic in self.cursor.fetchall():
-                entry = """<div><ref onclick="document.title='LEXICON:::{1}:::{0}'">{0}</ref></div>""".format(topic[0], self.module)
+                t = topic[0]
+                e = t.replace("'", "\\\'").replace('"', '\\\"')
+                entry = """<div><ref onclick="document.title='LEXICON:::{0}:::{1}'">{2}</ref></div>""".format(self.module, e, t)
                 contentText += entry
             return contentText
         except:
-            return "Could not search {0}".format(searchString)
+            return "Could not search {0} in {1}".format(searchString, self.module)
 
     def getContent(self, entry):
         lexiconData = LexiconData()
-        #lexiconList = lexiconData.lexiconList
-
         query = "SELECT Definition FROM Lexicon WHERE Topic = ?"
         self.cursor.execute(query, (entry,))
         information = self.cursor.fetchone()

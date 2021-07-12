@@ -293,6 +293,11 @@ class TextCommandParser:
             # Usage - LEXICON:::[LEXICON_MODULE]:::[LEXICAL_ENTRIES]
             # e.g. LEXICON:::BDB:::H7225
             # e.g. LEXICON:::BDB:::H7225_H123"""),
+            "searchlexicon": (self.searchLexicon, """
+            # [KEYWORD] SEARCHLEXICON
+            # Usage - SEARCHLEXICON:::[LEXICON_MODULE]:::[TOPIC ENTRY SEARCH]
+            # e.g. SEARCHLEXICON:::BDB:::H7225
+            # e.g. SEARCHLEXICON:::Dake-topics:::Jesus"""),
             "lmcombo": (self.textLMcombo, """
             # [KEYWORD] LMCOMBO
             # e.g. LMCOMBO:::E70002:::ETCBC:::subs.f.sg.a"""),
@@ -2371,6 +2376,23 @@ class TextCommandParser:
             return self.invalidCommand()
         else:
             return ("study", content, {'tab_title': 'Lex:' + module + ':' + entries})
+
+    # SEARCHLEXICON:::
+    def searchLexicon(self, command, source):
+        if command.count(":::") == 0:
+            defaultLexicon = self.getDefaultLexicons()
+            command = "{0}:::{1}".format(defaultLexicon[command[0]], command)
+        module, search = self.splitCommand(command)
+        search = search.strip()
+        TextCommandParser.last_lexicon_entry = search
+        config.lexicon = module
+        lexicon = Lexicon(module)
+        content = lexicon.searchTopic(search)
+        del lexicon
+        if not content or content == "INVALID_COMMAND_ENTERED":
+            return self.invalidCommand()
+        else:
+            return ("study", content, {'tab_title': 'SearchLex:' + module + ':' + search})
 
     # LMCOMBO:::
     def textLMcombo(self, command, source):

@@ -25,6 +25,7 @@ class DownloadBibleMp3Dialog(QDialog):
             "KJV (American - soft music)": ("KJV", "otseng/UniqueBible_MP3_KJV_soft_music", "soft-music"),
             "CUV (Chinese)": ("CUV", "otseng/UniqueBible_MP3_CUV", "default"),
             "NHEB (Indian)": ("NHEB", "otseng/UniqueBible_MP3_NHEB_indian", "indian"),
+            "RVA (Spanish)": ("RVA", "otseng/UniqueBible_MP3_RVA", "default"),
             "WEB (American)": ("WEB", "otseng/UniqueBible_MP3_WEB", "default"),
         }
         self.parent = parent
@@ -475,6 +476,15 @@ if __name__ == '__main__':
     # destDir = "/Users/otseng/dev/UniqueBible/audio/bibles/BBE/british"
     # DownloadBibleMp3Util.moveFiles(sourceDir, destDir, True)
 
-    sourceDir = "/Users/otseng/dev/UniqueBible/audio/bibles/BBE/british"
-    DownloadBibleMp3Util.zipFiles(sourceDir, True)
+    # sourceDir = "/Users/otseng/dev/UniqueBible/audio/bibles/BBE/british"
+    # DownloadBibleMp3Util.zipFiles(sourceDir, True)
 
+    '''
+    RV
+    '''
+    # sourceDir = "/Users/otseng/Downloads/save"
+    # destDir = "/Users/otseng/dev/UniqueBible/audio/bibles/RVA/default"
+    # DownloadBibleMp3Util.moveFiles(sourceDir, destDir, True)
+
+    sourceDir = "/Users/otseng/dev/UniqueBible/audio/bibles/RVA/default"
+    DownloadBibleMp3Util.zipFiles(sourceDir, True)

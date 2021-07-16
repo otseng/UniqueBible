@@ -752,4 +752,6 @@ translation = {
     "filter2": "Filtrare",
     "pattern": "Tipar",
     "parseTextConvertHTMLToBook": "Analizaţi textul la convertirea HTML la carte",
+    "save": "Salvare",
+    "saveHtml": "Salvare HTML",
 }

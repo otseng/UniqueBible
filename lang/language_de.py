@@ -752,4 +752,6 @@ translation = {
     "filter2": "Filter",
     "pattern": "Muster",
     "parseTextConvertHTMLToBook": "Syntaxanalyse des Textes beim Konvertieren von HTML in das Buch",
+    "save": "Speichern",
+    "saveHtml": "HTML speichern",
 }

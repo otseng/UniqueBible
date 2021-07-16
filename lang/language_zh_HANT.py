@@ -752,4 +752,6 @@ translation = {
     "filter2": "過濾",
     "pattern": "Pattern",
     "parseTextConvertHTMLToBook": "將 HTML 轉換成書籍時剖析文字",
+    "save": "儲存",
+    "saveHtml": "儲存 HTML",
 }

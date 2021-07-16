@@ -1,7 +1,10 @@
+from shutil import copyfile
+
 from util.Languages import Languages
 import config, os, platform, webbrowser, re
 from functools import partial
 from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QFileDialog
 #from qtpy.QtGui import QDesktopServices
 #from qtpy.QtGui import QKeySequence
 from qtpy.QtGui import QGuiApplication
@@ -72,6 +75,32 @@ class WebEngineView(QWebEngineView):
     def addMenuActions(self):
 
         subMenu = QMenu()
+
+        if config.forceGenerateHtml:
+            action = QAction(self)
+            action.setText(config.thisTranslation["saveHtml"])
+            action.triggered.connect(self.saveHtml)
+            self.addAction(action)
+
+        action = QAction(self)
+        action.setText(config.thisTranslation["context1_search"])
+        action.triggered.connect(self.searchPanel)
+        self.addAction(action)
+
+        self.searchText = QAction(self)
+        self.searchText.setText("{0} [{1}]".format(config.thisTranslation["context1_search"], config.mainText))
+        self.searchText.triggered.connect(self.searchSelectedText)
+        subMenu.addAction(self.searchText)
+
+        self.searchTextInBook = QAction(self)
+        self.searchTextInBook.setText(config.thisTranslation["context1_current"])
+        self.searchTextInBook.triggered.connect(self.searchSelectedTextInBook)
+        subMenu.addAction(self.searchTextInBook)
+
+        searchFavouriteBible = QAction(self)
+        searchFavouriteBible.setText(config.thisTranslation["context1_favourite"])
+        searchFavouriteBible.triggered.connect(self.searchSelectedFavouriteBible)
+        subMenu.addAction(searchFavouriteBible)
 
         bibleVerseParser = BibleVerseParser(config.parserStandarisation)
         for bookNo in range(1, 67):
@@ -269,28 +298,6 @@ class WebEngineView(QWebEngineView):
             separator = QAction(self)
             separator.setSeparator(True)
             self.addAction(separator)
-
-        action = QAction(self)
-        action.setText(config.thisTranslation["context1_search"])
-        action.triggered.connect(self.searchPanel)
-        self.addAction(action)
-
-        subMenu = QMenu()
-
-        self.searchText = QAction(self)
-        self.searchText.setText("{0} [{1}]".format(config.thisTranslation["context1_search"], config.mainText))
-        self.searchText.triggered.connect(self.searchSelectedText)
-        subMenu.addAction(self.searchText)
-
-        self.searchTextInBook = QAction(self)
-        self.searchTextInBook.setText(config.thisTranslation["context1_current"])
-        self.searchTextInBook.triggered.connect(self.searchSelectedTextInBook)
-        subMenu.addAction(self.searchTextInBook)
-
-        searchFavouriteBible = QAction(self)
-        searchFavouriteBible.setText(config.thisTranslation["context1_favourite"])
-        searchFavouriteBible.triggered.connect(self.searchSelectedFavouriteBible)
-        subMenu.addAction(searchFavouriteBible)
 
         action = QAction(self)
         action.setText(config.thisTranslation["cp0"])
@@ -1179,6 +1186,24 @@ class WebEngineView(QWebEngineView):
     def closePopover(self):
         if hasattr(self, "popoverView"):
             self.popoverView.close()
+
+    def saveHtml(self):
+        if self.name == "main":
+            source = "main.html"
+        elif self.name == "study":
+            source = "study.html"
+        options = QFileDialog.Options()
+        fileName, filtr = QFileDialog.getSaveFileName(self,
+                config.thisTranslation["note_saveAs"],
+                "",
+                "HTML Files (*.html)", "", options)
+        if fileName:
+            if not "." in os.path.basename(fileName):
+                fileName = fileName + ".html"
+            sourceFile = os.path.join("htmlResources", source)
+            copyfile(sourceFile, fileName)
+            self.displayMessage(config.thisTranslation["saved"])
+
 
 class WebEnginePage(QWebEnginePage):
 

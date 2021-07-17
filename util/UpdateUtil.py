@@ -74,6 +74,9 @@ class UpdateUtil:
                                     requestObject2 = requests.get("{0}{1}".format(UpdateUtil.repository, filePath))
                                     with open(localPath, "wb") as fileObject:
                                         fileObject.write(requestObject2.content)
+                                elif contentType == "delete":
+                                    if os.path.exists(localPath):
+                                        os.remove(localPath)
                     except Exception as e:
                         # message on failed item
                         if parent is not None:

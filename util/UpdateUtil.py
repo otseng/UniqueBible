@@ -98,7 +98,9 @@ class UpdateUtil:
 
     @staticmethod
     def getFilesChanged(sha1, sha2):
-        git = subprocess.Popen("git diff --name-status {0} {1}".format(sha1, sha2), shell=True, stdout=subprocess.PIPE,
+        diffCommand = "git diff --name-status {0} {1}".format(sha1, sha2)
+        print(diffCommand)
+        git = subprocess.Popen(diffCommand, shell=True, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
         stdout, stderr = git.communicate()
         files = stdout.decode("utf-8").split("\n")
@@ -109,14 +111,14 @@ class UpdateUtil:
         lines = UpdateUtil.getFilesChanged(sha1, sha2)
         patch = open("patches.txt", "a")
         for line in lines:
-            action = "file"
-            code, file = line.split("\t")
-            if code.trim() == "D":
-                action = "delete"
-            if not file == "":
-                line = """({0}, "{1}", "{2}")""".format(version, action, file.trim())
-                print(line)
-                patch.write(line + "\n")
+            if not line == "":
+                action = "file"
+                code, file = line.split("\t")
+                if code.strip() == "D":
+                    action = "delete"
+                str = """({0}, "{1}", "{2}")""".format(version, action, file.strip())
+                print(str)
+                patch.write(str + "\n")
         patch.close()
 
 

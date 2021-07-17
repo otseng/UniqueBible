@@ -230,7 +230,7 @@ if __name__ == "__main__":
             print("Error executing: " + str(e))
     else:
         # printCodesSupportedLanguages()
-        addLanguageStringToAllFiles("saveHtml", "Save HTML")
+        addLanguageStringToAllFiles("disableOpenPopupWindowOnStartup", "Disable open popup windows on startup")
         # createNewLanguageFile("ro")
         # validateLanguageFileSizes()
 

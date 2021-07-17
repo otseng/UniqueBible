@@ -754,4 +754,5 @@ translation = {
     "parseTextConvertHTMLToBook": "Analizaţi textul la convertirea HTML la carte",
     "save": "Salvare",
     "saveHtml": "Salvare HTML",
+    "disableOpenPopupWindowOnStartup": "Dezactivare ferestre popup deschise la pornire",
 }

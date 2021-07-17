@@ -754,4 +754,5 @@ translation = {
     "parseTextConvertHTMLToBook": "Syntaxanalyse des Textes beim Konvertieren von HTML in das Buch",
     "save": "Speichern",
     "saveHtml": "HTML speichern",
+    "disableOpenPopupWindowOnStartup": "Geöffnete Popup-Fenster beim Start inaktivieren",
 }

@@ -754,4 +754,5 @@ translation = {
     "parseTextConvertHTMLToBook": "Parse the text when converting HTML to book",
     "save": "Save",
     "saveHtml": "Save HTML",
+    "disableOpenPopupWindowOnStartup": "Disable open popup windows on startup",
 }

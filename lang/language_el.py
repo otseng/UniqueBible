@@ -754,4 +754,5 @@ translation = {
     "parseTextConvertHTMLToBook": "Ανάλυση κειμένου κατά τη μετατροπή HTML σε βιβλίο",
     "save": "Αποθήκευση:",
     "saveHtml": "Αποθήκευση κώδικα HTML",
+    "disableOpenPopupWindowOnStartup": "Απενεργοποίηση ανοίγματος αναδυόμενων παραθύρων κατά την εκκίνηση",
 }

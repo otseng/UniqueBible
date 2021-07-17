@@ -754,4 +754,5 @@ translation = {
     "parseTextConvertHTMLToBook": "HTML をブックに変換するときにテキストを解析します",
     "save": "セーブ",
     "saveHtml": "HTML の保存",
+    "disableOpenPopupWindowOnStartup": "起動時にポップアップ・ウィンドウを開くことを",
 }

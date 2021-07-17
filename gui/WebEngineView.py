@@ -74,18 +74,17 @@ class WebEngineView(QWebEngineView):
 
     def addMenuActions(self):
 
-        subMenu = QMenu()
-
-        if config.forceGenerateHtml:
-            action = QAction(self)
-            action.setText(config.thisTranslation["saveHtml"])
-            action.triggered.connect(self.saveHtml)
-            self.addAction(action)
-
         action = QAction(self)
         action.setText(config.thisTranslation["context1_search"])
         action.triggered.connect(self.searchPanel)
         self.addAction(action)
+
+        action = QAction(self)
+        action.setText(config.thisTranslation["saveHtml"])
+        action.triggered.connect(self.saveHtml)
+        self.addAction(action)
+
+        subMenu = QMenu()
 
         self.searchText = QAction(self)
         self.searchText.setText("{0} [{1}]".format(config.thisTranslation["context1_search"], config.mainText))
@@ -1188,10 +1187,9 @@ class WebEngineView(QWebEngineView):
             self.popoverView.close()
 
     def saveHtml(self):
-        if self.name == "main":
-            source = "main.html"
-        elif self.name == "study":
-            source = "study.html"
+        self.page().toHtml(self.saveHtmlToFile)
+
+    def saveHtmlToFile(self, html):
         options = QFileDialog.Options()
         fileName, filtr = QFileDialog.getSaveFileName(self,
                 config.thisTranslation["note_saveAs"],
@@ -1200,8 +1198,9 @@ class WebEngineView(QWebEngineView):
         if fileName:
             if not "." in os.path.basename(fileName):
                 fileName = fileName + ".html"
-            sourceFile = os.path.join("htmlResources", source)
-            copyfile(sourceFile, fileName)
+            file = open(fileName, "w")
+            file.write(html)
+            file.close()
             self.displayMessage(config.thisTranslation["saved"])
 
 

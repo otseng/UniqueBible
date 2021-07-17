@@ -86,6 +86,37 @@ class WebEngineView(QWebEngineView):
 
         subMenu = QMenu()
 
+        copyText = QAction(self)
+        copyText.setText(config.thisTranslation["text"])
+        copyText.triggered.connect(self.copySelectedText)
+        subMenu.addAction(copyText)
+
+        copyText = QAction(self)
+        copyText.setText(config.thisTranslation["textWithReference"])
+        copyText.triggered.connect(self.copySelectedTextWithReference)
+        subMenu.addAction(copyText)
+
+        copyReferences = QAction(self)
+        copyReferences.setText(config.thisTranslation["bibleReferences"])
+        copyReferences.triggered.connect(self.copyAllReferences)
+        subMenu.addAction(copyReferences)
+
+        copyHtml = QAction(self)
+        copyHtml.setText(config.thisTranslation["htmlCode"])
+        copyHtml.triggered.connect(self.copyHtmlCode)
+        subMenu.addAction(copyHtml)
+
+        action = QAction(self)
+        action.setText(config.thisTranslation["context1_copy"])
+        action.setMenu(subMenu)
+        self.addAction(action)
+
+        separator = QAction(self)
+        separator.setSeparator(True)
+        self.addAction(separator)
+
+        subMenu = QMenu()
+
         self.searchText = QAction(self)
         self.searchText.setText("{0} [{1}]".format(config.thisTranslation["context1_search"], config.mainText))
         self.searchText.triggered.connect(self.searchSelectedText)
@@ -100,6 +131,13 @@ class WebEngineView(QWebEngineView):
         searchFavouriteBible.setText(config.thisTranslation["context1_favourite"])
         searchFavouriteBible.triggered.connect(self.searchSelectedFavouriteBible)
         subMenu.addAction(searchFavouriteBible)
+
+        action = QAction(self)
+        action.setText(config.thisTranslation["cp0"])
+        action.setMenu(subMenu)
+        self.addAction(action)
+
+        subMenu = QMenu()
 
         bibleVerseParser = BibleVerseParser(config.parserStandarisation)
         for bookNo in range(1, 67):
@@ -244,37 +282,6 @@ class WebEngineView(QWebEngineView):
         separator.setSeparator(True)
         self.addAction(separator)
 
-        subMenu = QMenu()
-
-        copyText = QAction(self)
-        copyText.setText(config.thisTranslation["text"])
-        copyText.triggered.connect(self.copySelectedText)
-        subMenu.addAction(copyText)
-
-        copyText = QAction(self)
-        copyText.setText(config.thisTranslation["textWithReference"])
-        copyText.triggered.connect(self.copySelectedTextWithReference)
-        subMenu.addAction(copyText)
-
-        copyReferences = QAction(self)
-        copyReferences.setText(config.thisTranslation["bibleReferences"])
-        copyReferences.triggered.connect(self.copyAllReferences)
-        subMenu.addAction(copyReferences)
-
-        copyHtml = QAction(self)
-        copyHtml.setText(config.thisTranslation["htmlCode"])
-        copyHtml.triggered.connect(self.copyHtmlCode)
-        subMenu.addAction(copyHtml)
-
-        action = QAction(self)
-        action.setText(config.thisTranslation["context1_copy"])
-        action.setMenu(subMenu)
-        self.addAction(action)
-
-        separator = QAction(self)
-        separator.setSeparator(True)
-        self.addAction(separator)
-
         if self.name == "main":
             subMenu = QMenu()
 
@@ -297,11 +304,6 @@ class WebEngineView(QWebEngineView):
             separator = QAction(self)
             separator.setSeparator(True)
             self.addAction(separator)
-
-        action = QAction(self)
-        action.setText(config.thisTranslation["cp0"])
-        action.setMenu(subMenu)
-        self.addAction(action)
 
         subMenu = QMenu()
 

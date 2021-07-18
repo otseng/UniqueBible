@@ -1,5 +1,14 @@
+import config
+
+if __name__ == "__main__":
+    from util.ConfigUtil import ConfigUtil
+    config.marvelData = "/Users/otseng/dev/UniqueBible/marvelData/"
+    config.noQt = True
+    ConfigUtil.setup()
+    config.noQt = True
+
 import logging
-import os, sqlite3, re, config
+import os, sqlite3, re
 from db.BiblesSqlite import BiblesSqlite
 from util.BibleVerseParser import BibleVerseParser
 from util.TextUtil import TextUtil
@@ -872,3 +881,13 @@ class Book:
         content = content.replace('<body style="background-attachment: fixed" background="http://www.swartzentrover.com/Web Graphics/BackGrounds/concrete/concrete12.jpg">', '<body>')
         content = content.replace('cellpadding="0"', 'cellpadding="5"')
         return content
+
+
+if __name__ == "__main__":
+
+    commentary = Commentary()
+    commentaries = commentary.getCommentaryList()
+    for item in commentaries:
+        com = Commentary(item)
+        info = com.commentaryInfo()
+        print("{0} - {1}".format(item, info))

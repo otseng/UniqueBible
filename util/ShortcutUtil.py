@@ -125,6 +125,7 @@ class ShortcutUtil:
             "ubaDiscussions": '',
             "commandLineInterface": '',
             "liveFilterDialog": '',
+            "bibleCollections": "",
         },
         "brachys": {
             "back": "Ctrl+[",
@@ -236,6 +237,7 @@ class ShortcutUtil:
             "ubaDiscussions": '',
             "commandLineInterface": '',
             "liveFilterDialog": '',
+            "bibleCollections": "",
         },
         "micron": {
             "back": 'Ctrl+[',
@@ -347,6 +349,7 @@ class ShortcutUtil:
             "ubaDiscussions": 'Ctrl+D',
             "commandLineInterface": 'Ctrl+^',
             "liveFilterDialog": '',
+            "bibleCollections": "",
         },
         "syntemno": {
             "back": "Ctrl+Y, 1",
@@ -458,6 +461,7 @@ class ShortcutUtil:
             "ubaDiscussions": '',
             "commandLineInterface": '',
             "liveFilterDialog": 'Ctrl+*',
+            "bibleCollections": "Ctrl+D,B",
         }
     }
 

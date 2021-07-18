@@ -21,7 +21,6 @@ class LiveFilterDialog(QDialog):
 
     JS_SHOW = """
             wordSets = [{0}]; 
-            h2 = document.querySelectorAll("h2")[0];
             divs = document.querySelectorAll("div");
             for (var i=0, len=divs.length; i < len; i++) {{
                 div = divs[i];
@@ -32,7 +31,6 @@ class LiveFilterDialog(QDialog):
                     if (wordSet.startsWith("'")) {{
                         wordSet = wordSet.replace("'", "");
                         wordSet = wordSet.replace("'", "");
-                        h2.innerHTML = wordSet;
                         regex = new RegExp(wordSet);
                     }} else {{
                         regex = new RegExp(wordSet, "i");

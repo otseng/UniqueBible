@@ -113,7 +113,7 @@ class AlephMainWindow:
         menu1_defaults.addAction(QAction(config.thisTranslation["activeVerseColour"], self, triggered=self.changeActiveVerseColour))
         menu1_defaults.addAction(QAction(config.thisTranslation["resourceDirectory"], self, triggered=self.customMarvelData))
         menu1_defaults.addAction(
-            QAction(config.thisTranslation["bibleCollections"], self, triggered=self.showBibleCollectionDialog))
+            QAction(config.thisTranslation["bibleCollections"], self, shortcut=sc.bibleCollections, triggered=self.showBibleCollectionDialog))
         menu1_defaults.addAction(
             QAction(config.thisTranslation["menu_favouriteBible"], self, triggered=self.openFavouriteBibleDialog))
         menu1_defaults.addAction(QAction(config.thisTranslation["menu_abbreviations"], self, triggered=self.setBibleAbbreviations))

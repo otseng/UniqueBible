@@ -21,12 +21,22 @@ class LiveFilterDialog(QDialog):
 
     JS_SHOW = """
             wordSets = [{0}]; 
+            h2 = document.querySelectorAll("h2")[0];
             divs = document.querySelectorAll("div");
             for (var i=0, len=divs.length; i < len; i++) {{
                 div = divs[i];
-                var found = true
+                var found = true;
                 for (var j=0, len2=wordSets.length; j < len2; j++) {{
-                    var regex = new RegExp(wordSets[j], "i");
+                    wordSet = wordSets[j];
+                    var regex;
+                    if (wordSet.startsWith("'")) {{
+                        wordSet = wordSet.replace("'", "");
+                        wordSet = wordSet.replace("'", "");
+                        h2.innerHTML = wordSet;
+                        regex = new RegExp(wordSet);
+                    }} else {{
+                        regex = new RegExp(wordSet, "i");
+                    }}
                     found &= regex.test(div.innerHTML);
                 }}
                 if (found) {{

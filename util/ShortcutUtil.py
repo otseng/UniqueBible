@@ -418,7 +418,7 @@ class ShortcutUtil:
             "runCROSSREFERENCE": "Ctrl+L, X",
             "runDISCOURSE": "Ctrl+L, D",
             "runINDEX": "Ctrl+L, I",
-            "runKJV2Bible": "Ctrl+B, K",
+            "runKJV2Bible": "",
             "runMAB": "Ctrl+B, 5",
             "runMIB": "Ctrl+B, 2",
             "runMOB": "Ctrl+B, 1",

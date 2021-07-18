@@ -658,6 +658,10 @@ class MainWindow(QMainWindow):
             self.downloadBibleMp3Dialog = DownloadBibleMp3Dialog(self)
             self.downloadBibleMp3Dialog.show()
 
+    def installGithubPluginsContext(self):
+        self.installFromGitHub("otseng/UniqueBible_Plugins_Context", "../plugins/context", "gitHubPluginsContext")
+        self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+
     def installFromGitHub(self, repo, directory, title):
         if config.isPygithubInstalled:
             from util.GithubUtil import GithubUtil

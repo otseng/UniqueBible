@@ -890,4 +890,5 @@ if __name__ == "__main__":
     for item in commentaries:
         com = Commentary(item)
         info = com.commentaryInfo()
+        info = info.replace("'", "")
         print("{0} - {1}".format(item, info))

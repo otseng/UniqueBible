@@ -692,11 +692,20 @@ class BookData:
     def __init__(self):
         self.bookList = self.getBookList()
 
-    def getBookList(self):
-        bookFolder = os.path.join(config.marvelData, "books")
+    def getDirectories(self):
+        bookFolder = config.booksFolder
+        dirList = ["{0}/".format(f) for f in os.listdir(bookFolder) if os.path.isdir(os.path.join(bookFolder, f)) and not f.startswith("__") and not f.startswith(".")]
+        dirList = sorted(dirList)
+        return dirList
+
+    def getBooks(self):
+        bookFolder = config.booksFolder
         bookList = [f[:-5] for f in os.listdir(bookFolder) if os.path.isfile(os.path.join(bookFolder, f)) and f.endswith(".book") and not re.search(r"^[\._]", f)]
         bookList = sorted(bookList)
-        return [(book, book) for book in bookList]
+        return bookList
+
+    def getBookList(self):
+        return [(book, book) for book in self.getBooks()]
 
     def getMenu(self, module=""):
         if module == "":

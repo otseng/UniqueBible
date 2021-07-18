@@ -1486,6 +1486,7 @@ class MainWindow(QMainWindow):
                   "MyBible Bibles (*.SQLite3);;MyBible Commentaries (*.commentaries.SQLite3);;MyBible Dictionaries (*.dictionary.SQLite3);;"
                   "XML [Beblia/OSIS/Zefania] (*.xml);;"
                   "theWord Complete Bibles (*.ont);;"
+                  "theWord OT Bibles (*.ot);;"
                   "theWord NT Bibles (*.nt);;"
                   "Word Documents (*.docx);;"
                   "PDF Documents (*.pdf)"), "", options)
@@ -1517,9 +1518,7 @@ class MainWindow(QMainWindow):
                 self.importMyBibleBible(fileName)
             elif fileName.endswith(".xml"):
                 self.importXMLBible(fileName)
-            elif fileName.endswith(".nt"):
-                self.importTheWordBible(fileName)
-            elif fileName.endswith(".ont"):
+            elif fileName.endswith(".nt") or fileName.endswith(".ot") or fileName.endswith(".ont"):
                 self.importTheWordBible(fileName)
 
     def customMarvelData(self):

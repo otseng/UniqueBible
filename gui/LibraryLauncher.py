@@ -18,6 +18,7 @@ class LibraryLauncher(QWidget):
         self.parent = parent
         # setup interface
         self.setupUI()
+        self.selectedBook = None
 
     def setupUI(self):
         mainLayout = QGridLayout()
@@ -44,6 +45,9 @@ class LibraryLauncher(QWidget):
         subSubLayout.addWidget(button)
         button = QPushButton(config.thisTranslation["addFavourite"])
         button.clicked.connect(self.parent.parent.addFavouriteBookDialog)
+        subSubLayout.addWidget(button)
+        button = QPushButton(config.thisTranslation["removeFavourite"])
+        button.clicked.connect(self.removeFavorite)
         subSubLayout.addWidget(button)
         subLayout.addLayout(subSubLayout)
         bookLayout.addLayout(subLayout)
@@ -150,17 +154,22 @@ class LibraryLauncher(QWidget):
 
     def bookOrFileSelected(self, selection):
         self.parent.isRefreshing = True
-        selected = selection[0].indexes()[0].data()
-        if config.book != selected:
-            if selected.endswith("/"):
-                config.booksFolder = FileUtil.normalizePath(os.path.join(config.booksFolder, selected))
+        self.selectedBook = selection[0].indexes()[0].data()
+        if config.book != self.selectedBook:
+            if self.selectedBook.endswith("/"):
+                config.booksFolder = FileUtil.normalizePath(os.path.join(config.booksFolder, self.selectedBook))
                 self.reloadBookListModel()
             else:
-                config.book = selected
+                config.book = self.selectedBook
                 topicList = self.getBookTopicList()
                 self.chapterModel.setStringList(topicList)
                 config.bookChapter = topicList[0] if topicList else ""
                 self.scrollChapterList(topicList)
+
+    def removeFavorite(self):
+        if self.selectedBook and self.selectedBook in config.favouriteBooks:
+            config.favouriteBooks.remove(self.selectedBook)
+            self.reloadBookListModel(sorted(config.favouriteBooks))
 
     def chapterSelected(self, selection):
         config.bookChapter = selection[0].indexes()[0].data()

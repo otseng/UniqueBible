@@ -80,7 +80,7 @@ class Converter:
                 with open(os.path.join(folder, filepath), "r", encoding="utf-8") as fileObject:
                     html = fileObject.read()
                     if config.parseTextConvertHTMLToBook:
-                        html = BibleVerseParser(config.parserStandarisation).parseText(html)
+                        html = BibleVerseParser(config.parserStandarisation).parseText(html, False)
                     # Convert links
                     html = TextUtil.formulateUBACommandHyperlink(html)
                     bookContent.append((fileName, html))

@@ -857,9 +857,11 @@ class Bible:
     def __init__(self, text):
         # connect [text].bible
         self.text = text
+        self.connection = None
         self.database = os.path.join(config.marvelData, "bibles", text+".bible")
-        self.connection = sqlite3.connect(self.database)
-        self.cursor = self.connection.cursor()
+        if os.path.exists(self.database):
+            self.connection = sqlite3.connect(self.database)
+            self.cursor = self.connection.cursor()
 
     def __del__(self):
         self.connection.commit()
@@ -896,6 +898,8 @@ class Bible:
         return [verse[0] for verse in self.cursor.fetchall()]
 
     def bibleInfo(self):
+        if self.connection is None:
+            return ""
         # It is observed that some files have Details table and some do not.
         try:
             query = "SELECT Title FROM Details limit 1"

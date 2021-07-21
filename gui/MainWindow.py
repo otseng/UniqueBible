@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 from distutils import util
 from functools import partial
+from pathlib import Path
 
 from qtpy.QtCore import QUrl, Qt, QEvent, QThread
 from qtpy.QtGui import QIcon, QGuiApplication, QFont, QKeySequence, QColor
@@ -17,7 +18,7 @@ from util.BibleBooks import BibleBooks
 from util.FileUtil import FileUtil
 from util.TextCommandParser import TextCommandParser
 from util.BibleVerseParser import BibleVerseParser
-from db.BiblesSqlite import BiblesSqlite
+from db.BiblesSqlite import BiblesSqlite, Bible
 from util.TextFileReader import TextFileReader
 from util.Translator import Translator
 from util.ThirdParty import Converter, ThirdPartyDictionary
@@ -157,6 +158,12 @@ class MainWindow(QMainWindow):
         config.pauseMode = False
         # VLC Player
         self.vlcPlayer = None
+
+        config.bibleDescription = {}
+        for file in glob.glob(config.marvelData + "/bibles/*.bible"):
+            name = Path(file).stem
+            bible = Bible(name)
+            config.bibleDescription[name] = bible.bibleInfo()
 
         # pre-load control panel
         # This is now implemented in main.py instead

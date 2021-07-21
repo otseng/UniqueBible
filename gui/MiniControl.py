@@ -210,6 +210,7 @@ class MiniControl(QWidget):
         count = 0
         for bible in bibles:
             button = QPushButton(bible)
+            button.setToolTip(config.bibleDescription[bible])
             button.clicked.connect(partial(self.bibleAction, bible))
             row_layout.addWidget(button)
             count += 1

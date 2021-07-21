@@ -159,11 +159,7 @@ class MainWindow(QMainWindow):
         # VLC Player
         self.vlcPlayer = None
 
-        config.bibleDescription = {}
-        for file in glob.glob(config.marvelData + "/bibles/*.bible"):
-            name = Path(file).stem
-            bible = Bible(name)
-            config.bibleDescription[name] = bible.bibleInfo()
+        self.loadBibleDescriptions()
 
         # pre-load control panel
         # This is now implemented in main.py instead
@@ -238,6 +234,13 @@ class MainWindow(QMainWindow):
             config.open = config.openMacos
         elif platform.system() == "Windows":
             config.open = config.openWindows
+
+    def loadBibleDescriptions(self):
+        config.bibleDescription = {}
+        for file in glob.glob(config.marvelData + "/bibles/*.bible"):
+            name = Path(file).stem
+            bible = Bible(name)
+            config.bibleDescription[name] = bible.bibleInfo()
 
     def setTranslation(self):
         config.thisTranslation = LanguageUtil.loadTranslation(config.displayLanguage)
@@ -590,6 +593,7 @@ class MainWindow(QMainWindow):
                 if item == value[-1]:
                     self.downloadHelper(self.bibleInfo[key])
                     break
+        self.loadBibleDescriptions()
 
     def installMarvelCommentaries(self):
         commentaries = DatafileLocation.marvelCommentaries
@@ -693,6 +697,7 @@ class MainWindow(QMainWindow):
                 self.reloadControlPanel(False)
                 self.displayMessage(item + " " + config.thisTranslation["message_installed"])
                 self.installFromGitHub(repo, directory, title)
+            self.loadBibleDescriptions()
 
     # Select database to modify
     def selectDatabaseToModify(self):
@@ -1529,6 +1534,7 @@ class MainWindow(QMainWindow):
                 self.importXMLBible(fileName)
             elif fileName.endswith(".nt") or fileName.endswith(".ot") or fileName.endswith(".ont"):
                 self.importTheWordBible(fileName)
+        self.loadBibleDescriptions()
 
     def customMarvelData(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly

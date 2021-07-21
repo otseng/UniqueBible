@@ -3,11 +3,20 @@ Reading data from bibles.sqlite
 """
 import glob
 import os, sqlite3, config, re, logging
+from pathlib import Path
+
+if __name__ == "__main__":
+    from util.ConfigUtil import ConfigUtil
+    config.marvelData = "/Users/otseng/dev/UniqueBible/marvelData/"
+    config.noQt = True
+    ConfigUtil.setup()
+    config.noQt = True
 
 from util.BibleVerseParser import BibleVerseParser
 from util.BibleBooks import BibleBooks
 from db.NoteSqlite import NoteSqlite
 from db.Highlight import Highlight
+from util.ConfigUtil import ConfigUtil
 from util.FileUtil import FileUtil
 from util.themes import Themes
 from util.NoteService import NoteService
@@ -1512,11 +1521,6 @@ class MorphologySqlite:
 
 
 if __name__ == '__main__':
-    # config.thisTranslation = Languages.translation
-    # config.parserStandarisation = 'NO'
-    # config.standardAbbreviation = 'ENG'
-    # config.marvelData = "/Users/otseng/dev/UniqueBible/marvelData/"
-    #
     # Bibles = BiblesSqlite()
     #
     # text = "John"
@@ -1550,14 +1554,20 @@ if __name__ == '__main__':
 
     # del Bibles
 
-    # fileList = glob.glob(config.marvelData+"/bibles/*.bible")
-    # for file in fileList:
-    #     if os.path.isfile(file):
-    #         bibleName = Path(file).stem
-    #         bible = Bible(bibleName)
-    #         description = bible.bibleInfo()
-    #         print("{0}:{1}".format(bibleName, description))
+    # bible = Bible("KJVx")
+    # bible.renameGlossToRef()
+    # print("Done")
 
-    bible = Bible("KJVx")
-    bible.renameGlossToRef()
-    print("Done")
+    fileList = glob.glob(config.marvelData+"/bibles/*.bible")
+    for file in fileList:
+        bible = None
+        try:
+            if os.path.isfile(file):
+                bibleName = Path(file).stem
+                bible = Bible(bibleName)
+                description = bible.bibleInfo()
+                lastBook = bible.getLastBook()
+                print("{0}:{1}:{2}".format(bibleName, lastBook, description))
+        except:
+            print("Error in {0}".format(bible))
+

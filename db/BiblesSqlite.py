@@ -1558,7 +1558,21 @@ if __name__ == '__main__':
     # bible.renameGlossToRef()
     # print("Done")
 
-    fileList = glob.glob(config.marvelData+"/bibles/*.bible")
+    # fileList = glob.glob(config.marvelData+"/bibles/*.bible")
+    # for file in fileList:
+    #     bible = None
+    #     try:
+    #         if os.path.isfile(file):
+    #             bibleName = Path(file).stem
+    #             bible = Bible(bibleName)
+    #             description = bible.bibleInfo()
+    #             lastBook = bible.getLastBook()
+    #             print("{0}:{1}:{2}".format(bibleName, lastBook, description))
+    #     except:
+    #         print("Error in {0}".format(bible))
+
+
+    fileList = glob.glob(config.marvelData+"")
     for file in fileList:
         bible = None
         try:
@@ -1570,4 +1584,3 @@ if __name__ == '__main__':
                 print("{0}:{1}:{2}".format(bibleName, lastBook, description))
         except:
             print("Error in {0}".format(bible))
-

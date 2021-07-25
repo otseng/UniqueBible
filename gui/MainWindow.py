@@ -753,9 +753,7 @@ class MainWindow(QMainWindow):
         elif config.openBibleWindowContentOnNextTab:
             self.nextBibleWindowTab()
         # check size of text content
-        if not config.forceGenerateHtml and sys.getsizeof(text) < 2097152:
-            self.mainView.setHtml(text, baseUrl)
-        else:
+        if config.forceGenerateHtml or sys.getsizeof(text) > 2097152:
             # save html in a separate file if text is larger than 2MB
             # reason: setHTML does not work with content larger than 2MB
             outputFile = os.path.join("htmlResources", "main.html")
@@ -765,6 +763,8 @@ class MainWindow(QMainWindow):
             # open the text file with webview
             fullOutputPath = os.path.abspath(outputFile)
             self.mainView.load(QUrl.fromLocalFile(fullOutputPath))
+        else:
+            self.mainView.setHtml(text, baseUrl)
         reference = "-".join(self.verseReference("main"))
         if self.textCommandParser.lastKeyword in ("compare", "parallel"):
             *_, reference2 = reference.split("-")
@@ -936,9 +936,7 @@ class MainWindow(QMainWindow):
         if config.clickToOpenImage:
             text = self.addOpenImageAction(text)
         # check size of text content
-        if not config.forceGenerateHtml and sys.getsizeof(text) < 2097152:
-            self.studyView.setHtml(text, baseUrl)
-        else:
+        if config.forceGenerateHtml or sys.getsizeof(text) > 2097152:
             # save html in a separate file if text is larger than 2MB
             # reason: setHTML does not work with content larger than 2MB
             outputFile = os.path.join("htmlResources", "study.html")
@@ -948,6 +946,8 @@ class MainWindow(QMainWindow):
             # open the text file with webview
             fullOutputPath = os.path.abspath(outputFile)
             self.studyView.load(QUrl.fromLocalFile(fullOutputPath))
+        else:
+            self.studyView.setHtml(text, baseUrl)
         if config.parallelMode == 0:
             self.parallel()
         if self.textCommandParser.lastKeyword == "main":

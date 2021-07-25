@@ -1150,8 +1150,8 @@ class BibleBooks:
         "The Testament of Simeon": "130",
         "T. Zebulun": "131",
         "The Testament of Zebulun": "131",
-        "Solomon": "132",
         "T. Sol.": "132",
+        "T. Solomon": "132",
         "The Testament of Solomon": "132",
         "创": "1", # Chinese book names & abbreviations
         "创世记": "1",

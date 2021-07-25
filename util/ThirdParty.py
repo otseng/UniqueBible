@@ -1273,6 +1273,7 @@ class Converter:
 
     # https://github.com/scrollmapper/bible_databases_deuterocanonical
     def importScrollmapperDeuterocanonicalFiles(self, filename):
+        biblename = "DEUT"
         count = 0
         data = []
         record = ""
@@ -1282,7 +1283,6 @@ class Converter:
                     if record.startswith("|"):
                         (bookName, chapter, verse, scripture) = re.search(r"\|(.*)\|(.*)\|(.*)\|(.*)$", line).groups()
                         if bookName in BibleBooks.name2number:
-                            # print("{0} found".format(bookName))
                             book = BibleBooks.name2number[bookName]
                             row = [book, chapter, verse, scripture]
                             data.append(row)
@@ -1291,8 +1291,8 @@ class Converter:
                     record = line
                 else:
                     record += " " + line
-        # self.mySwordBibleToRichFormat(biblename, biblename, data)
-        # self.mySwordBibleToPlainFormat(biblename, biblename, data)
+        self.mySwordBibleToRichFormat(biblename, biblename, data)
+        self.mySwordBibleToPlainFormat(biblename, biblename, data)
 
 
     def stripTheWordTags(self, line):

@@ -166,7 +166,20 @@ class MiniControl(QWidget):
             bookNums[59:69],
             bookNums[69:79],
             bookNums[79:89],
-            bookNums[89:92],
+            bookNums[89:94],
+            bookNums[94:99],
+            bookNums[99:104],
+            bookNums[104:109],
+            bookNums[109:119],
+            bookNums[119:129],
+            bookNums[129:139],
+            bookNums[139:149],
+            bookNums[149:159],
+            bookNums[159:169],
+            bookNums[169:174],
+            bookNums[174:179],
+            bookNums[179:189],
+            bookNums[189:199],
         ]
 
         # Bible books tab

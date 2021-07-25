@@ -2087,5 +2087,6 @@ if __name__ == '__main__':
     # print(out)
 
     file = "/Users/otseng/Downloads/apocrypha.txt"
+    print("Processing " + file)
     Converter().importScrollmapperDeuterocanonicalFiles(file)
 

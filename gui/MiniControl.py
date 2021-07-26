@@ -421,10 +421,16 @@ class MiniControl(QWidget):
         self.parent.runTextCommand(command)
 
     def lexiconAction(self, lexicon):
+        searchString = self.searchLineEdit.text()
+        if ":::" not in searchString:
+            TextCommandParser.last_lexicon_entry = searchString
         command = "SEARCHLEXICON:::{0}:::{1}".format(lexicon, TextCommandParser.last_lexicon_entry)
         self.runCommmand(command)
 
     def dictionaryAction(self, dictionary):
+        searchString = self.searchLineEdit.text()
+        if ":::" not in searchString:
+            TextCommandParser.last_text_search = searchString
         command = "SEARCHTOOL:::{0}:::{1}".format(dictionary, TextCommandParser.last_text_search)
         self.runCommmand(command)
 

@@ -227,7 +227,7 @@ class MiniControl(QWidget):
         for bible in bibles:
             button = QPushButton(bible)
             if bible in config.bibleDescription:
-                button.setToolTip(config.bibleDescription[bible])
+                button.setToolTip("{0}".format(config.bibleDescription[bible]))
             button.clicked.connect(partial(self.bibleAction, bible))
             row_layout.addWidget(button)
             count += 1
@@ -336,7 +336,10 @@ class MiniControl(QWidget):
                 if int(bookNum) in books:
                     text = self.bookMap[bookNum]
                     button = QPushButton(text)
-                    button.setToolTip(BibleBooks.eng[bookNum][1])
+                    if config.developer:
+                        button.setToolTip("{0} - {1}".format(BibleBooks.eng[bookNum][1], bookNum))
+                    else:
+                        button.setToolTip("{0}".format(BibleBooks.eng[bookNum][1]))
                     button.clicked.connect(partial(self.bibleBookAction, bookNum))
                     layout.addWidget(button)
             gp.setLayout(layout)

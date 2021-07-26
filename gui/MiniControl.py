@@ -1,4 +1,5 @@
 import config
+from util.BibleBooks import BibleBooks
 
 if __name__ == "__main__":
     config.noQt = True
@@ -335,6 +336,7 @@ class MiniControl(QWidget):
                 if int(bookNum) in books:
                     text = self.bookMap[bookNum]
                     button = QPushButton(text)
+                    button.setToolTip(BibleBooks.eng[bookNum][1])
                     button.clicked.connect(partial(self.bibleBookAction, bookNum))
                     layout.addWidget(button)
             gp.setLayout(layout)

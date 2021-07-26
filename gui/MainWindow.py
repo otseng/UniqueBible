@@ -2509,11 +2509,9 @@ class MainWindow(QMainWindow):
     def previousMainChapter(self):
         newChapter = config.mainC - 1
         if newChapter == 0:
-            if config.mainB == 1:
-                newChapter = 1
-            else:
-                config.mainB -= 1
-                newChapter = BibleBooks.getLastChapter(config.mainB)
+            prevBook = Bible(config.mainText).getPreviousBook(config.mainB)
+            newChapter = BibleBooks.getLastChapter(prevBook)
+            config.mainB = prevBook
         biblesSqlite = BiblesSqlite()
         mainChapterList = biblesSqlite.getChapterList(config.mainB)
         del biblesSqlite
@@ -2525,16 +2523,15 @@ class MainWindow(QMainWindow):
     def nextMainChapter(self):
         if config.mainC < BibleBooks.getLastChapter(config.mainB):
             newChapter = config.mainC + 1
-        elif config.mainB < 66:
-            newChapter = 1
-            config.mainB += 1
-        biblesSqlite = BiblesSqlite()
-        mainChapterList = biblesSqlite.getChapterList(config.mainB)
-        del biblesSqlite
-        if newChapter in mainChapterList or config.menuLayout == "aleph":
-            self.newTabException = True
-            newTextCommand = self.bcvToVerseReference(config.mainB, newChapter, 1)
-            self.textCommandChanged(newTextCommand, "main")
+            biblesSqlite = BiblesSqlite()
+            mainChapterList = biblesSqlite.getChapterList(config.mainB)
+            del biblesSqlite
+            if newChapter in mainChapterList or config.menuLayout == "aleph":
+                self.newTabException = True
+                newTextCommand = self.bcvToVerseReference(config.mainB, newChapter, 1)
+                self.textCommandChanged(newTextCommand, "main")
+        else:
+            self.nextMainBook()
 
     def gotoFirstChapter(self):
         config.mainC = 1
@@ -2549,18 +2546,24 @@ class MainWindow(QMainWindow):
         self.textCommandChanged(newTextCommand, "main")
 
     def previousMainBook(self):
-        config.mainC = 1
-        if config.mainB > 1:
-            config.mainB = config.mainB - 1
-        newTextCommand = self.bcvToVerseReference(config.mainB, config.mainC, 1)
-        self.textCommandChanged(newTextCommand, "main")
+        prevBook = Bible(config.mainText).getPreviousBook(config.mainB)
+        if prevBook:
+            newTextCommand = self.bcvToVerseReference(prevBook, 1, 1)
+            if len(newTextCommand) > 0:
+                config.mainB = prevBook
+                config.mainC = 1
+                config.mainV = 1
+                self.textCommandChanged(newTextCommand, "main")
 
     def nextMainBook(self):
-        config.mainC = 1
-        if config.mainB < 66:
-            config.mainB = config.mainB + 1
-        newTextCommand = self.bcvToVerseReference(config.mainB, config.mainC, 1)
-        self.textCommandChanged(newTextCommand, "main")
+        nextBook = Bible(config.mainText).getNextBook(config.mainB)
+        if nextBook:
+            newTextCommand = self.bcvToVerseReference(nextBook, 1, 1)
+            if len(newTextCommand) > 0:
+                config.mainB = nextBook
+                config.mainC = 1
+                config.mainV = 1
+                self.textCommandChanged(newTextCommand, "main")
 
     def openMainChapter(self):
         newTextCommand = self.bcvToVerseReference(config.mainB, config.mainC, config.mainV)

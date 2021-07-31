@@ -528,7 +528,7 @@ if __name__ == '__main__':
 
     '''
     Greek NT
-    https://www.dropbox.com/sh/beoqrdw8zkq1ahr/AABPJTJa5J9RU1y2wyChvPIxa
+    http://getbible.net/scriptureinstall/Greek__NT_Textus_Receptus_(1550_1894)__text__LTR.txt
     '''
     # sourceDir = "/Users/otseng/Downloads"
     # destDir = "/Users/otseng/dev/UniqueBible/audio/bibles/TR/modern"

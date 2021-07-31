@@ -1502,7 +1502,7 @@ class MainWindow(QMainWindow):
                   "theWord Complete Bibles (*.ont);;"
                   "theWord OT Bibles (*.ot);;"
                   "theWord NT Bibles (*.nt);;"
-                  "theWord Commentaries (*.twm);;"
+                  # "theWord Commentaries (*.twm);;"
                   "Word Documents (*.docx);;"
                   "PDF Documents (*.pdf)"), "", options)
         if fileName:

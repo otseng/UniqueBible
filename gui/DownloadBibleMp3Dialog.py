@@ -26,6 +26,7 @@ class DownloadBibleMp3Dialog(QDialog):
             "CUV (Chinese)": ("CUV", "otseng/UniqueBible_MP3_CUV", "default"),
             "NHEB (Indian)": ("NHEB", "otseng/UniqueBible_MP3_NHEB_indian", "indian"),
             "RVA (Spanish)": ("RVA", "otseng/UniqueBible_MP3_RVA", "default"),
+            "TR (Modern Greek)": ("TR", "otseng/UniqueBible_MP3_TR", "modern"),
             "WEB (American)": ("WEB", "otseng/UniqueBible_MP3_WEB", "default"),
         }
         self.parent = parent
@@ -124,7 +125,7 @@ class DownloadBibleMp3Dialog(QDialog):
         self.dataViewModel.clear()
         rowCount = 0
         for file in self.repoData.keys():
-            item = QStandardItem(file)
+            item = QStandardItem(file[:3])
             folder = os.path.join("audio", "bibles", self.selectedText, self.selectedDirectory, file)
             if not os.path.exists(folder):
                 item.setCheckable(True)
@@ -135,7 +136,10 @@ class DownloadBibleMp3Dialog(QDialog):
                 item.setCheckState(Qt.Unchecked)
                 item.setEnabled(False)
             self.dataViewModel.setItem(rowCount, 0, item)
-            engFullBookName = BibleBooks().eng[str(int(file))][1]
+            if len(str(file)) > 3:
+                engFullBookName = file[3:]
+            else:
+                engFullBookName = BibleBooks().eng[str(int(file))][1]
             item = QStandardItem(engFullBookName)
             self.dataViewModel.setItem(rowCount, 1, item)
             if not os.path.exists(folder):
@@ -285,6 +289,24 @@ class DownloadBibleMp3Util:
             os.rename(file, newFile)
             if debugOutput:
                 print(newFile)
+
+    @staticmethod
+    def moveGreekFiles(sourceDir, destDir, debugOutput = False):
+        for bookNum in range(40, 67):
+            dirs = glob.glob("{0}/{1} *".format(sourceDir, bookNum))
+            dir = dirs[0]
+            baseDir = os.path.basename(dir)
+            files = glob.glob("{0}/{1}".format(dir, "*.mp3"))
+            for file in files:
+                baseFile = os.path.basename(file)
+                destFolder = os.path.join(destDir, baseDir)
+                if not os.path.exists(destFolder):
+                    os.mkdir(destFolder)
+                newFile = os.path.join(destDir, "{0}/{1}_{2}".format(baseDir, bookNum, baseFile))
+                os.rename(file, newFile)
+                if debugOutput:
+                    print("From:" + file)
+                    print("To:" + newFile)
 
     @staticmethod
     def zipFiles(directory, debugOutput = False):
@@ -493,6 +515,17 @@ if __name__ == '__main__':
     AFV
     https://afaithfulversion.org/genesis/
     '''
-    sourceDir = "/Users/otseng/Downloads/save"
-    destDir = "/Users/otseng/dev/UniqueBible/audio/bibles/AFV/default"
+    # sourceDir = "/Users/otseng/Downloads/save"
+    # destDir = "/Users/otseng/dev/UniqueBible/audio/bibles/AFV/default"
     # DownloadBibleMp3Util.moveFiles(sourceDir, destDir, True)
+
+    '''
+    Greek NT
+    https://www.dropbox.com/sh/beoqrdw8zkq1ahr/AABPJTJa5J9RU1y2wyChvPIxa
+    '''
+    # sourceDir = "/Users/otseng/Downloads"
+    # destDir = "/Users/otseng/dev/UniqueBible/audio/bibles/TR/modern"
+    # DownloadBibleMp3Util.moveGreekFiles(sourceDir, destDir, True)
+
+    sourceDir = "/Users/otseng/dev/UniqueBible/audio/bibles/TR/modern"
+    DownloadBibleMp3Util.zipFiles(sourceDir, True)

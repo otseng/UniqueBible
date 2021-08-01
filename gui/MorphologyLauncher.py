@@ -1,8 +1,10 @@
 import config
+from util.BibleBooks import BibleBooks
 
 if __name__ == "__main__":
     config.noQt = False
 
+from qtpy.QtWidgets import QComboBox, QLabel
 from qtpy.QtWidgets import QPushButton
 from qtpy.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QWidget, QLineEdit, QRadioButton, QCheckBox
 
@@ -12,6 +14,7 @@ class MorphologyLauncher(QWidget):
         super().__init__()
         self.setWindowTitle(config.thisTranslation["cp7"])
         self.parent = parent
+        self.bookList = BibleBooks.getStandardBookAbbreviations()
         self.setupUI()
 
     def setupUI(self):
@@ -20,6 +23,32 @@ class MorphologyLauncher(QWidget):
         subLayout.addWidget(self.searchFieldWidget())
         button = QPushButton("Search")
         button.clicked.connect(self.searchMorphology)
+        subLayout.addWidget(button)
+        mainLayout.addLayout(subLayout)
+
+        subLayout = QHBoxLayout()
+        subLayout.addWidget(QLabel("Start:"))
+        self.startBookCombo = QComboBox()
+        subLayout.addWidget(self.startBookCombo)
+        self.startBookCombo.addItems(self.bookList)
+        self.startBookCombo.setCurrentIndex(0)
+        subLayout.addWidget(QLabel("End:"))
+        self.endBookCombo = QComboBox()
+        subLayout.addWidget(self.endBookCombo)
+        self.endBookCombo.addItems(self.bookList)
+        self.endBookCombo.setCurrentIndex(65)
+        subLayout.addWidget(QLabel(" "))
+        button = QPushButton("Entire Bible")
+        button.clicked.connect(lambda: self.selectBookCombos(0, 65))
+        subLayout.addWidget(button)
+        button = QPushButton("OT")
+        button.clicked.connect(lambda: self.selectBookCombos(0, 38))
+        subLayout.addWidget(button)
+        button = QPushButton("NT")
+        button.clicked.connect(lambda: self.selectBookCombos(39, 65))
+        subLayout.addWidget(button)
+        button = QPushButton("Gospels")
+        button.clicked.connect(lambda: self.selectBookCombos(39, 42))
         subLayout.addWidget(button)
         subLayout.addStretch()
         mainLayout.addLayout(subLayout)
@@ -30,6 +59,7 @@ class MorphologyLauncher(QWidget):
         self.strongsRadioButton = QRadioButton("Lexical")
         self.strongsRadioButton.setToolTip("G2424")
         self.strongsRadioButton.toggled.connect(lambda checked, mode="Lexical": self.searchTypeChanged(checked, mode))
+        self.strongsRadioButton.setChecked(True)
         layout.addWidget(self.strongsRadioButton)
         radioButton = QRadioButton("Word")
         radioButton.setToolTip("Ἰησοῦς")
@@ -47,17 +77,15 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.searchTypeBox)
 
+        posList = ["Noun", "Pronoun", "Adjective", "Verb"]
         self.partOfSpeechBox = QGroupBox("Part of speech")
         layout = QVBoxLayout()
-        self.nounRadioButton = QRadioButton("Noun")
-        self.nounRadioButton.toggled.connect(lambda checked, mode="Noun": self.searchModeChanged(checked, mode))
-        layout.addWidget(self.nounRadioButton)
-        radioButton = QRadioButton("Verb")
-        radioButton.toggled.connect(lambda checked, mode="Verb": self.searchModeChanged(checked, mode))
-        layout.addWidget(radioButton)
-        # radioButton = QRadioButton("Conjuction")
-        # radioButton.toggled.connect(lambda checked, mode="CONJ": self.searchModeChanged(checked, mode))
-        layout.addWidget(radioButton)
+        for count, pos in enumerate(posList):
+            button = QRadioButton(pos)
+            button.toggled.connect(lambda checked, mode=pos: self.searchModeChanged(checked, mode))
+            layout.addWidget(button)
+            if count == 0:
+                self.nounButton = button
         self.partOfSpeechBox.setLayout(layout)
         layout.addStretch()
         subLayout.addWidget(self.partOfSpeechBox)
@@ -162,37 +190,17 @@ class MorphologyLauncher(QWidget):
 
         mainLayout.addLayout(subLayout)
 
-        # stretchLayout = QVBoxLayout()
-        # stretchLayout.addStretch()
         mainLayout.addStretch()
-
         self.setLayout(mainLayout)
 
-        self.strongsRadioButton.setChecked(True)
-        self.nounRadioButton.setChecked(True)
+        self.nounButton.setChecked(True)
+
+    def selectBookCombos(self, start, end):
+        self.startBookCombo.setCurrentIndex(start)
+        self.endBookCombo.setCurrentIndex(end)
 
     def searchTypeChanged(self, checked, type):
         self.type = type
-
-    def searchModeChanged(self, checked, mode):
-        if checked:
-            self.mode = mode
-            if mode == "Noun":
-                self.genderBox.show()
-                self.numberBox.show()
-                self.caseBox.show()
-                self.personBox.hide()
-                self.tenseBox.hide()
-                self.moodBox.hide()
-                self.voiceBox.hide()
-            elif mode == "Verb":
-                self.genderBox.show()
-                self.numberBox.show()
-                self.personBox.show()
-                self.tenseBox.show()
-                self.moodBox.show()
-                self.voiceBox.show()
-                self.caseBox.hide()
 
     def caseCheckBoxChanged(self, state, case):
         if int(state) > 0:
@@ -232,11 +240,38 @@ class MorphologyLauncher(QWidget):
 
     def searchFieldWidget(self):
         self.searchField = QLineEdit()
-        self.searchField.setMaximumWidth(400)
         self.searchField.setClearButtonEnabled(True)
         self.searchField.setToolTip(config.thisTranslation["menu5_searchItems"])
         self.searchField.returnPressed.connect(self.searchMorphology)
         return self.searchField
+
+    def searchModeChanged(self, checked, mode):
+        if checked:
+            self.mode = mode
+            if mode in ("Noun", "Adjective"):
+                self.genderBox.show()
+                self.numberBox.show()
+                self.caseBox.show()
+                self.personBox.hide()
+                self.tenseBox.hide()
+                self.moodBox.hide()
+                self.voiceBox.hide()
+            elif mode in ("Pronoun"):
+                    self.genderBox.hide()
+                    self.numberBox.show()
+                    self.caseBox.show()
+                    self.personBox.show()
+                    self.tenseBox.hide()
+                    self.moodBox.hide()
+                    self.voiceBox.hide()
+            elif mode in ("Verb"):
+                self.genderBox.show()
+                self.numberBox.show()
+                self.personBox.show()
+                self.tenseBox.show()
+                self.moodBox.show()
+                self.voiceBox.show()
+                self.caseBox.hide()
 
     def searchMorphology(self):
         searchTerm = self.searchField.text()
@@ -267,12 +302,16 @@ class MorphologyLauncher(QWidget):
                 if numberCheckbox.isChecked():
                     morphologyList.append(numberCheckbox.text())
             morphology = ",".join(morphologyList)
+            startBook = self.startBookCombo.currentIndex() + 1
+            endBook = self.endBookCombo.currentIndex() + 1
+            if endBook < startBook:
+                endBook = startBook
             if self.type == "Lexical":
-                command = "SEARCHMORPHOLOGYBYLEX:::{0}:::{1}".format(searchTerm, morphology)
+                command = "SEARCHMORPHOLOGYBYLEX:::{0}:::{1}:::{2}-{3}".format(searchTerm, morphology, startBook, endBook)
             elif self.type == "Word":
-                command = "SEARCHMORPHOLOGYBYWORD:::{0}:::{1}".format(searchTerm, morphology)
+                command = "SEARCHMORPHOLOGYBYWORD:::{0}:::{1}:::{2}-{3}".format(searchTerm, morphology, startBook, endBook)
             elif self.type == "Gloss":
-                command = "SEARCHMORPHOLOGYBYGLOSS:::{0}:::{1}".format(searchTerm, morphology)
+                command = "SEARCHMORPHOLOGYBYGLOSS:::{0}:::{1}:::{2}-{3}".format(searchTerm, morphology, startBook, endBook)
             self.parent.runTextCommand(command)
 
 

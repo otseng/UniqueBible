@@ -143,8 +143,8 @@ class MasterControl(QWidget):
             self.tabs.setTabToolTip(6, sc.openControlPanelTab6)
         #7
         morphologyTab = MorphologyLauncher(self)
-        self.tabs.addTab(morphologyTab, config.thisTranslation["message_searchMorphology"])
-        # self.tabs.setTabToolTip(7, sc.openControlPanelTab7)
+        self.tabs.addTab(morphologyTab, config.thisTranslation["cp7"])
+        self.tabs.setTabToolTip(7, sc.openControlPanelTab7)
 
         # set action with changing tabs
         self.tabs.currentChanged.connect(self.tabChanged)

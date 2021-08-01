@@ -2507,9 +2507,18 @@ class TextCommandParser:
         return self.searchMorphologyCommon(command, source, "GLOSS")
 
     def searchMorphologyCommon(self, command, source, mode):
-        searchTerm, morphology = self.splitCommand(command)
+        commands = command.split(":::")
+        searchTerm = commands[0]
+        morphology = commands[1]
         startBook = 1
         endBook = 66
+        if len(commands) > 2:
+            range = commands[2]
+            if "-" in range:
+                startBook, endBook = range.split("-")
+            else:
+                startBook = range
+                endBook = range
         morphologyList = morphology.split(",")
         morphologySqlist = MorphologySqlite()
         if mode == "LEX":

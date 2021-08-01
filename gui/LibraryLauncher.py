@@ -29,6 +29,10 @@ class LibraryLauncher(QWidget):
         button = QPushButton(config.thisTranslation["open"])
         button.clicked.connect(self.openPreviousCommentary)
         commentaryLayout.addWidget(button)
+        button = QPushButton(config.thisTranslation["activeOnly"])
+        button.clicked.connect(self.showActiveOnlyCommentaries)
+        commentaryLayout.addWidget(button)
+
         leftColumnWidget.setLayout(commentaryLayout)
 
         rightColumnWidget = QGroupBox(config.thisTranslation["menu10_books"])
@@ -72,9 +76,13 @@ class LibraryLauncher(QWidget):
         # https://doc.qt.io/archives/qtforpython-5.12/PySide2/QtCore/QStringListModel.html
         # https://gist.github.com/minoue/9f384cd36339429eb0bf
         # https://www.pythoncentral.io/pyside-pyqt-tutorial-qlistview-and-qstandarditemmodel/
-        list = QListView()
-        list.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        model = QStandardItemModel(list)
+        self.commentaryList = QListView()
+        self.commentaryList.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.reloadCommentariesListModel()
+        return self.commentaryList
+
+    def reloadCommentariesListModel(self, showOnlyActiveCommentaries=False):
+        model = QStandardItemModel(self.commentaryList)
         for index, commentary in enumerate(self.parent.commentaryFullNameList):
             item = QStandardItem(commentary)
             item.setToolTip(self.parent.commentaryList[index])
@@ -85,17 +93,18 @@ class LibraryLauncher(QWidget):
             model.appendRow(item)
         #model = QStringListModel(self.parent.commentaryList)
         #model = QStringListModel(self.parent.commentaryFullNameList)
-        list.setModel(model)
+        self.commentaryList.setModel(model)
         if config.commentaryText in self.parent.commentaryList:
-            list.setCurrentIndex(model.index(self.parent.commentaryList.index(config.commentaryText), 0))
-        list.selectionModel().selectionChanged.connect(self.commentarySelected)
-        return list
+            self.commentaryList.setCurrentIndex(model.index(self.parent.commentaryList.index(config.commentaryText), 0))
+        self.commentaryList.selectionModel().selectionChanged.connect(self.commentarySelected)
+
 
     def bookListView(self):
         self.bookList = QListView()
         self.bookList.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.reloadBookListModel()
         return self.bookList
+
 
     def reloadBookListModel(self, files=None):
         self.dirsAndFiles = self.getSubdirectories()
@@ -145,6 +154,9 @@ class LibraryLauncher(QWidget):
         config.commentaryText = self.parent.commentaryList[index]
         command = "COMMENTARY:::{0}:::{1}".format(config.commentaryText, self.parent.bibleTab.getSelectedReference())
         self.parent.runTextCommand(command)
+
+    def showActiveOnlyCommentaries(self):
+        self.reloadCommentariesListModel()
 
     def showAllBooks(self):
         self.reloadBookListModel()

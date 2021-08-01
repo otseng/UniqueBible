@@ -535,6 +535,20 @@ class Commentary:
         commentaryList = [f[1:-11] for f in os.listdir(commentaryFolder) if os.path.isfile(os.path.join(commentaryFolder, f)) and f.endswith(".commentary") and not re.search(r"^[\._]", f)]
         return sorted(commentaryList)
 
+    def getCommentaryListThatHasBookAndChapter(self, book, chapter):
+        commentaryFolder = os.path.join(config.marvelData, "commentaries")
+        commentaryList = [f[1:-11] for f in os.listdir(commentaryFolder) if os.path.isfile(os.path.join(commentaryFolder, f)) and f.endswith(".commentary") and not re.search(r"^[\._]", f)]
+        activeCommentaries = []
+        for commentary in sorted(commentaryList):
+            database = os.path.join(config.marvelData, "commentaries", "c{0}.commentary".format(commentary))
+            connection = sqlite3.connect(database)
+            cursor = connection.cursor()
+            query = "select book from commentary where book=? and chapter=?"
+            cursor.execute(query, (book, chapter))
+            if cursor.fetchone():
+                activeCommentaries.append(commentary)
+        return activeCommentaries
+
     def getCommentaries(self):
         commentaryList = self.getCommentaryList()
         commentaries = " ".join(["{0}<button class='feature'>{1}</button></ref>".format(self.formCommentaryTag(commentary), commentary) for commentary in commentaryList])

@@ -1439,17 +1439,20 @@ class MorphologySqlite:
         self.cursor.execute(query, t)
         return self.cursor.fetchone()
 
-    def searchByLexicalAndMorphology(self, startBook, endBook, word, partOfSpeech):
-        return self.searchByMorphology(startBook, endBook, "lexicalentry", word, partOfSpeech)
+    def searchByLexicalAndMorphology(self, startBook, endBook, word, morphologyList):
+        return self.searchByMorphology(startBook, endBook, "lexicalentry", word, morphologyList)
 
-    def searchByMorphology(self, startBook, endBook, type, word, partOfSpeech):
+    def searchByMorphology(self, startBook, endBook, type, word, morphologyList):
         references = []
+        morphology = ""
+        for search in morphologyList:
+            morphology += "and morphology like '%{0}%' ".format(search)
         query = """
         SELECT * FROM morphology WHERE {0} like '%{1}%'
         and book >= {2} and book <= {3}
-        and morphology like '%{4}%'
+        {4}
         order by book, chapter, verse
-        """.format(type, word, startBook, endBook, partOfSpeech)
+        """.format(type, word, startBook, endBook, morphology)
         self.cursor.execute(query)
         records = self.cursor.fetchall()
         for record in records:

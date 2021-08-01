@@ -87,6 +87,18 @@ class MorphologyLauncher(QWidget):
         self.tenseBox.setLayout(layout)
         subLayout.addWidget(self.tenseBox)
 
+        caseList = ["Nominative", "Genitive", "Dative", "Accusative", "Vocative"]
+        self.caseCheckBoxes = []
+        self.caseBox = QGroupBox("Case")
+        self.caseBox.hide()
+        layout = QVBoxLayout()
+        for case in caseList:
+            checkbox = QCheckBox(case)
+            layout.addWidget(checkbox)
+            self.caseCheckBoxes.append(checkbox)
+        self.caseBox.setLayout(layout)
+        subLayout.addWidget(self.caseBox)
+
         self.numberBox = QGroupBox("Number")
         self.numberBox.hide()
         layout = QVBoxLayout()
@@ -109,6 +121,7 @@ class MorphologyLauncher(QWidget):
             self.mode = mode
             if mode == "Noun":
                 self.genderBox.show()
+                self.caseBox.show()
                 self.numberBox.show()
                 self.tenseBox.hide()
             elif mode == "Verb":
@@ -126,7 +139,13 @@ class MorphologyLauncher(QWidget):
 
     def searchMorphology(self):
         morphology = MorphologySqlite()
-        verses = morphology.searchByLexicalAndMorphology(1, 66, self.searchField.text(), self.mode)
+        morphologyList = []
+        morphologyList.append(self.mode)
+        if self.mode == "Noun":
+            for caseCheckbox in self.caseCheckBoxes:
+                if caseCheckbox.isChecked():
+                    morphologyList.append(caseCheckbox.text())
+        verses = morphology.searchByLexicalAndMorphology(1, 66, self.searchField.text(), morphologyList)
         print(len(verses))
 
 

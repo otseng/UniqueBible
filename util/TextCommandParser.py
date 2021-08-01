@@ -17,6 +17,7 @@ from db.NoteSqlite import NoteSqlite
 from util.Translator import Translator
 from db.Highlight import Highlight
 from util.TtsLanguages import TtsLanguages
+from db.BiblesSqlite import MorphologySqlite
 
 #from gui.Downloader import Downloader
 from install.module import *
@@ -319,6 +320,9 @@ class TextCommandParser:
             # alias of e.g. MORPHOLOGY:::LexicalEntry LIKE '%E70002,%' AND (Morphology LIKE "%feminine%")
             # e.g. SEARCHMORPHOLOGY:::E70002:::feminine|noun
             # alias of e.g. MORPHOLOGY:::LexicalEntry LIKE '%E70002,%' AND (Morphology LIKE "%feminine%" OR Morphology LIKE "%noun%")"""),
+            "searchmorphologybylex": (self.searchMorphologyByLex, """
+            # [KEYWORD] SEARCHMORPHOLOGYBYLEX
+            # e.g. SEARCHMORPHOLOGYBYLEX:::G2424:::Noun,Nominative,Masculine"""),
             "word": (self.textWordData, """
             # [KEYWORD] WORD
             # e.g. WORD:::1:::2"""),
@@ -2324,6 +2328,28 @@ class TextCommandParser:
             return ("study", text, {})
         else:
             return ("", "", {})
+
+    # SEARCHMORPHOLOGYBYLEX:::
+    def searchMorphologyByLex(self, command, source):
+        searchTerm, morphology = self.splitCommand(command)
+        startBook = 1
+        endBook = 66
+        morphologyList = morphology.split(",")
+        morphologySqlist = MorphologySqlite()
+        records = morphologySqlist.searchByLexicalAndMorphology(startBook, endBook, searchTerm, morphologyList)
+        formatedText = "<p>{0}:::{1} <b style='color: brown;'>{2}</b> hits</p>".format(searchTerm, morphology, len(records))
+        ohgbiInstalled = os.path.isfile(os.path.join(config.marvelData, "bibles", "OHGBi.bible"))
+        if config.addOHGBiToMorphologySearch and ohgbiInstalled:
+            ohgbiBible = Bible("OHGBi")
+        for index, word in enumerate(records):
+            wordID, clauseID, b, c, v, textWord, lexicalEntry, morphologyCode, morphology, lexeme, transliteration, pronuciation, interlinear, translation, gloss = word
+            firstLexicalEntry = lexicalEntry.split(",")[0]
+            textWord = "<{3} onclick='w({1},{2})' onmouseover='iw({1},{2})'>{0}</{3}>".format(textWord, b, wordID, "heb" if b < 40 else "grk")
+            formatedText += "<span style='color: purple;'>({0}{1}</ref>)</span> {2} <ref onclick='searchCode(\"{4}\", \"{3}\")'>{3}</ref>".format(morphologySqlist.formVerseTag(b, c, v, config.mainText), morphologySqlist.bcvToVerseReference(b, c, v), textWord, morphologyCode, firstLexicalEntry)
+            if config.addOHGBiToMorphologySearch and ohgbiInstalled:
+                formatedText += ohgbiBible.getHighlightedOHGBVerse(b, c, v, wordID, False, index + 1 > config.maximumOHGBiVersesDisplayedInSearchResult)
+            formatedText += "<br>"
+        return ("study", formatedText, {})
 
     # WORD:::
     def textWordData(self, command, source):

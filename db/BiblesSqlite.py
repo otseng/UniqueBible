@@ -1439,6 +1439,25 @@ class MorphologySqlite:
         self.cursor.execute(query, t)
         return self.cursor.fetchone()
 
+    def searchByLexicalAndMorphology(self, startBook, endBook, word, partOfSpeech):
+        return self.searchByMorphology(startBook, endBook, "lexicalentry", word, partOfSpeech)
+
+    def searchByMorphology(self, startBook, endBook, type, word, partOfSpeech):
+        references = []
+        query = """
+        SELECT * FROM morphology WHERE {0} like '%{1}%'
+        and book >= {2} and book <= {3}
+        and morphology like '%{4}%'
+        order by book, chapter, verse
+        """.format(type, word, startBook, endBook, partOfSpeech)
+        self.cursor.execute(query)
+        records = self.cursor.fetchall()
+        for record in records:
+            wordID, clauseID, b, c, v, textWord, lexicalEntry, morphologyCode, morphology, lexeme, transliteration, pronuciation, interlinear, translation, gloss = record
+            verseReference = self.bcvToVerseReference(b, c, v)
+            references.append(verseReference)
+        return references
+
     def formatOHGBiVerseText(self, bcv):
         query = "SELECT WordID, Word, LexicalEntry, Interlinear FROM morphology WHERE Book=? AND Chapter=? AND Verse=? ORDER BY WordID"
         self.cursor.execute(query, bcv)

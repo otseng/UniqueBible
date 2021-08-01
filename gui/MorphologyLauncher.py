@@ -21,6 +21,7 @@ class MorphologyLauncher(QWidget):
         button = QPushButton("Search")
         button.clicked.connect(self.searchMorphology)
         subLayout.addWidget(button)
+        subLayout.addStretch()
         mainLayout.addLayout(subLayout)
 
         subLayout = QHBoxLayout()
@@ -231,6 +232,7 @@ class MorphologyLauncher(QWidget):
 
     def searchFieldWidget(self):
         self.searchField = QLineEdit()
+        self.searchField.setMaximumWidth(400)
         self.searchField.setClearButtonEnabled(True)
         self.searchField.setToolTip(config.thisTranslation["menu5_searchItems"])
         self.searchField.returnPressed.connect(self.searchMorphology)

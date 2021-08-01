@@ -1248,7 +1248,7 @@ class TextCommandParser:
                 self.parent.vlcPlayer = VlcPlayer(self, filename)
             else:
                 self.parent.vlcPlayer.stop()
-                self.parent.vlcPlayer.load_file(filename)
+                self.parent.vlcPlayer.loadAndPlayFile(filename)
             self.parent.vlcPlayer.show()
         return ("", "", {})
 

@@ -264,6 +264,7 @@ class MiniControl(QWidget):
         count = 0
         for commentary in commentaries:
             button = QPushButton(commentary)
+            button.setToolTip(Commentary.fileLookup[commentary])
             button.clicked.connect(partial(self.commentaryAction, commentary))
             self.commentaryButtons[commentary] = button
             row_layout.addWidget(button)

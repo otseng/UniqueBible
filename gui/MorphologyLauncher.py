@@ -4,19 +4,14 @@ if __name__ == "__main__":
     config.noQt = False
 
 from qtpy.QtWidgets import QPushButton
-from qtpy.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QWidget, QComboBox, QLineEdit, QRadioButton, QCheckBox
-from db.BiblesSqlite import MorphologySqlite
-
+from qtpy.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QWidget, QLineEdit, QRadioButton, QCheckBox
 
 class MorphologyLauncher(QWidget):
 
     def __init__(self, parent):
         super().__init__()
-        # set title
-        self.setWindowTitle(config.thisTranslation["message_searchMorphology"])
-        # set up variables
+        self.setWindowTitle(config.thisTranslation["cp7"])
         self.parent = parent
-        # setup interface
         self.setupUI()
 
     def setupUI(self):
@@ -31,23 +26,24 @@ class MorphologyLauncher(QWidget):
         subLayout = QHBoxLayout()
         self.searchTypeBox = QGroupBox("Type")
         layout = QVBoxLayout()
-        self.strongsRadioButton = QRadioButton("Strongs")
+        self.strongsRadioButton = QRadioButton("Lexical")
         self.strongsRadioButton.setToolTip("G2424")
-        self.strongsRadioButton.toggled.connect(lambda checked, mode="Strongs": self.searchTypeChanged(checked, mode))
+        self.strongsRadioButton.toggled.connect(lambda checked, mode="Lexical": self.searchTypeChanged(checked, mode))
         layout.addWidget(self.strongsRadioButton)
-        radioButton = QRadioButton("Stem")
+        radioButton = QRadioButton("Word")
         radioButton.setToolTip("Ἰησοῦς")
-        radioButton.toggled.connect(lambda checked, mode="Stem": self.searchTypeChanged(checked, mode))
-        layout.addWidget(radioButton)
-        radioButton = QRadioButton("Transliteration")
-        radioButton.setToolTip("Iēsous")
-        radioButton.toggled.connect(lambda checked, mode="Transliteration": self.searchTypeChanged(checked, mode))
+        radioButton.toggled.connect(lambda checked, mode="Word": self.searchTypeChanged(checked, mode))
         layout.addWidget(radioButton)
         radioButton = QRadioButton("Gloss")
         radioButton.setToolTip("Jesus")
         radioButton.toggled.connect(lambda checked, mode="Gloss": self.searchTypeChanged(checked, mode))
         layout.addWidget(radioButton)
+        # radioButton = QRadioButton("Transliteration")
+        # radioButton.setToolTip("Iēsous")
+        # radioButton.toggled.connect(lambda checked, mode="Transliteration": self.searchTypeChanged(checked, mode))
+        # layout.addWidget(radioButton)
         self.searchTypeBox.setLayout(layout)
+        layout.addStretch()
         subLayout.addWidget(self.searchTypeBox)
 
         self.partOfSpeechBox = QGroupBox("Part of speech")
@@ -62,59 +58,8 @@ class MorphologyLauncher(QWidget):
         # radioButton.toggled.connect(lambda checked, mode="CONJ": self.searchModeChanged(checked, mode))
         layout.addWidget(radioButton)
         self.partOfSpeechBox.setLayout(layout)
+        layout.addStretch()
         subLayout.addWidget(self.partOfSpeechBox)
-
-        genderList = ["Masculine", "Feminine", "Neuter"]
-        self.genderCheckBoxes = []
-        self.genderBox = QGroupBox("Gender")
-        self.genderBox.hide()
-        layout = QVBoxLayout()
-        for gender in genderList:
-            checkbox = QCheckBox(gender)
-            layout.addWidget(checkbox)
-            self.genderCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, gender=gender: self.genderCheckBoxChanged(checked, gender))
-        self.genderBox.setLayout(layout)
-        subLayout.addWidget(self.genderBox)
-
-        tenseList = ["Aorist", "Future", "Imperfect", "Perfect", "Pluperfect", "Present"]
-        self.tenseCheckBoxes = []
-        self.tenseBox = QGroupBox("Tense")
-        self.tenseBox.hide()
-        layout = QVBoxLayout()
-        for tense in tenseList:
-            checkbox = QCheckBox(tense)
-            layout.addWidget(checkbox)
-            self.tenseCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, tense=tense: self.tenseCheckBoxChanged(checked, tense))
-        self.tenseBox.setLayout(layout)
-        subLayout.addWidget(self.tenseBox)
-
-        moodList = ["Aorist", "Future", "Imperfect", "Perfect", "Pluperfect", "Present"]
-        self.moodCheckBoxes = []
-        self.moodBox = QGroupBox("Mood")
-        self.moodBox.hide()
-        layout = QVBoxLayout()
-        for mood in moodList:
-            checkbox = QCheckBox(mood)
-            layout.addWidget(checkbox)
-            self.moodCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, mood=mood: self.moodCheckBoxChanged(checked, mood))
-        self.moodBox.setLayout(layout)
-        subLayout.addWidget(self.moodBox)
-
-        voiceList = ["Active", "Middle", "Passive"]
-        self.voiceCheckBoxes = []
-        self.voiceBox = QGroupBox("Voice")
-        self.voiceBox.hide()
-        layout = QVBoxLayout()
-        for voice in voiceList:
-            checkbox = QCheckBox(voice)
-            layout.addWidget(checkbox)
-            self.voiceCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, voice=voice: self.voiceCheckBoxChanged(checked, voice))
-        self.voiceBox.setLayout(layout)
-        subLayout.addWidget(self.voiceBox)
 
         caseList = ["Accusative", "Dative", "Genitive", "Nominative", "Vocative"]
         self.caseCheckBoxes = []
@@ -127,7 +72,64 @@ class MorphologyLauncher(QWidget):
             self.caseCheckBoxes.append(checkbox)
             checkbox.stateChanged.connect(lambda checked, case=case: self.caseCheckBoxChanged(checked, case))
         self.caseBox.setLayout(layout)
+        layout.addStretch()
         subLayout.addWidget(self.caseBox)
+
+        tenseList = ["Aorist", "Future", "Imperfect", "Perfect", "Pluperfect", "Present"]
+        self.tenseCheckBoxes = []
+        self.tenseBox = QGroupBox("Tense")
+        self.tenseBox.hide()
+        layout = QVBoxLayout()
+        for tense in tenseList:
+            checkbox = QCheckBox(tense)
+            layout.addWidget(checkbox)
+            self.tenseCheckBoxes.append(checkbox)
+            checkbox.stateChanged.connect(lambda checked, tense=tense: self.tenseCheckBoxChanged(checked, tense))
+        self.tenseBox.setLayout(layout)
+        layout.addStretch()
+        subLayout.addWidget(self.tenseBox)
+
+        voiceList = ["Active", "Middle", "Passive"]
+        self.voiceCheckBoxes = []
+        self.voiceBox = QGroupBox("Voice")
+        self.voiceBox.hide()
+        layout = QVBoxLayout()
+        for voice in voiceList:
+            checkbox = QCheckBox(voice)
+            layout.addWidget(checkbox)
+            self.voiceCheckBoxes.append(checkbox)
+            checkbox.stateChanged.connect(lambda checked, voice=voice: self.voiceCheckBoxChanged(checked, voice))
+        self.voiceBox.setLayout(layout)
+        layout.addStretch()
+        subLayout.addWidget(self.voiceBox)
+
+        moodList = ["Imperative", "Indicative", "Optative", "Subjunctive"]
+        self.moodCheckBoxes = []
+        self.moodBox = QGroupBox("Mood")
+        self.moodBox.hide()
+        layout = QVBoxLayout()
+        for mood in moodList:
+            checkbox = QCheckBox(mood)
+            layout.addWidget(checkbox)
+            self.moodCheckBoxes.append(checkbox)
+            checkbox.stateChanged.connect(lambda checked, mood=mood: self.moodCheckBoxChanged(checked, mood))
+        self.moodBox.setLayout(layout)
+        layout.addStretch()
+        subLayout.addWidget(self.moodBox)
+
+        personList = ["First", "Second", "Third"]
+        self.personCheckBoxes = []
+        self.personBox = QGroupBox("Person")
+        self.personBox.hide()
+        layout = QVBoxLayout()
+        for person in personList:
+            checkbox = QCheckBox(person)
+            layout.addWidget(checkbox)
+            self.personCheckBoxes.append(checkbox)
+            checkbox.stateChanged.connect(lambda checked, person=person: self.personCheckBoxChanged(checked, person))
+        self.personBox.setLayout(layout)
+        layout.addStretch()
+        subLayout.addWidget(self.personBox)
 
         numberList = ["Singular", "Plural"]
         self.numberCheckBoxes = []
@@ -140,13 +142,28 @@ class MorphologyLauncher(QWidget):
             self.numberCheckBoxes.append(checkbox)
             checkbox.stateChanged.connect(lambda checked, number=number: self.numberCheckBoxChanged(checked, number))
         self.numberBox.setLayout(layout)
+        layout.addStretch()
         subLayout.addWidget(self.numberBox)
+
+        genderList = ["Masculine", "Feminine", "Neuter"]
+        self.genderCheckBoxes = []
+        self.genderBox = QGroupBox("Gender")
+        self.genderBox.hide()
+        layout = QVBoxLayout()
+        for gender in genderList:
+            checkbox = QCheckBox(gender)
+            layout.addWidget(checkbox)
+            self.genderCheckBoxes.append(checkbox)
+            checkbox.stateChanged.connect(lambda checked, gender=gender: self.genderCheckBoxChanged(checked, gender))
+        self.genderBox.setLayout(layout)
+        layout.addStretch()
+        subLayout.addWidget(self.genderBox)
 
         mainLayout.addLayout(subLayout)
 
         # stretchLayout = QVBoxLayout()
         # stretchLayout.addStretch()
-        # mainLayout.addlayout(stretchLayout)
+        mainLayout.addStretch()
 
         self.setLayout(mainLayout)
 
@@ -161,18 +178,20 @@ class MorphologyLauncher(QWidget):
             self.mode = mode
             if mode == "Noun":
                 self.genderBox.show()
-                self.caseBox.show()
                 self.numberBox.show()
+                self.caseBox.show()
+                self.personBox.hide()
                 self.tenseBox.hide()
                 self.moodBox.hide()
                 self.voiceBox.hide()
             elif mode == "Verb":
                 self.genderBox.show()
-                self.caseBox.hide()
                 self.numberBox.show()
+                self.personBox.show()
                 self.tenseBox.show()
                 self.moodBox.show()
                 self.voiceBox.show()
+                self.caseBox.hide()
 
     def caseCheckBoxChanged(self, state, case):
         if int(state) > 0:
@@ -212,39 +231,47 @@ class MorphologyLauncher(QWidget):
 
     def searchFieldWidget(self):
         self.searchField = QLineEdit()
-        self.searchField.setText("G2424")
         self.searchField.setClearButtonEnabled(True)
         self.searchField.setToolTip(config.thisTranslation["menu5_searchItems"])
-        # self.searchField.returnPressed.connect(self.searchBible)
+        self.searchField.returnPressed.connect(self.searchMorphology)
         return self.searchField
 
     def searchMorphology(self):
-        morphologyList = []
-        morphologyList.append(self.mode)
-        if self.mode == "Noun":
-            for caseCheckbox in self.caseCheckBoxes:
-                if caseCheckbox.isChecked():
-                    morphologyList.append(caseCheckbox.text())
-        if self.mode == "Verb":
-            for tenseCheckbox in self.tenseCheckBoxes:
-                if tenseCheckbox.isChecked():
-                    morphologyList.append(tenseCheckbox.text())
-            for moodCheckbox in self.moodCheckBoxes:
-                if moodCheckbox.isChecked():
-                    morphologyList.append(moodCheckbox.text())
-            for voiceCheckbox in self.voiceCheckBoxes:
-                if voiceCheckbox.isChecked():
-                    morphologyList.append(voiceCheckbox.text())
-        for genderCheckbox in self.genderCheckBoxes:
-            if genderCheckbox.isChecked():
-                morphologyList.append(genderCheckbox.text())
-        for numberCheckbox in self.numberCheckBoxes:
-            if numberCheckbox.isChecked():
-                morphologyList.append(numberCheckbox.text())
         searchTerm = self.searchField.text()
-        morphology = ",".join(morphologyList)
-        command = "SEARCHMORPHOLOGYBYLEX:::{0}:::{1}".format(searchTerm, morphology)
-        self.parent.runTextCommand(command)
+        if len(searchTerm) > 1:
+            morphologyList = []
+            morphologyList.append(self.mode)
+            if self.mode == "Noun":
+                for caseCheckbox in self.caseCheckBoxes:
+                    if caseCheckbox.isChecked():
+                        morphologyList.append(caseCheckbox.text())
+            if self.mode == "Verb":
+                for tenseCheckbox in self.tenseCheckBoxes:
+                    if tenseCheckbox.isChecked():
+                        morphologyList.append(tenseCheckbox.text())
+                for moodCheckbox in self.moodCheckBoxes:
+                    if moodCheckbox.isChecked():
+                        morphologyList.append(moodCheckbox.text())
+                for voiceCheckbox in self.voiceCheckBoxes:
+                    if voiceCheckbox.isChecked():
+                        morphologyList.append(voiceCheckbox.text())
+                for personCheckbox in self.personCheckBoxes:
+                    if personCheckbox.isChecked():
+                        morphologyList.append(personCheckbox.text())
+            for genderCheckbox in self.genderCheckBoxes:
+                if genderCheckbox.isChecked():
+                    morphologyList.append(genderCheckbox.text())
+            for numberCheckbox in self.numberCheckBoxes:
+                if numberCheckbox.isChecked():
+                    morphologyList.append(numberCheckbox.text())
+            morphology = ",".join(morphologyList)
+            if self.type == "Lexical":
+                command = "SEARCHMORPHOLOGYBYLEX:::{0}:::{1}".format(searchTerm, morphology)
+            elif self.type == "Word":
+                command = "SEARCHMORPHOLOGYBYWORD:::{0}:::{1}".format(searchTerm, morphology)
+            elif self.type == "Gloss":
+                command = "SEARCHMORPHOLOGYBYGLOSS:::{0}:::{1}".format(searchTerm, morphology)
+            self.parent.runTextCommand(command)
 
 
 ## Standalone development code

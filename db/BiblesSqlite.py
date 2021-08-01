@@ -1442,6 +1442,12 @@ class MorphologySqlite:
     def searchByLexicalAndMorphology(self, startBook, endBook, word, morphologyList):
         return self.searchByMorphology(startBook, endBook, "lexicalentry", word, morphologyList)
 
+    def searchByWordAndMorphology(self, startBook, endBook, word, morphologyList):
+        return self.searchByMorphology(startBook, endBook, "word", word, morphologyList)
+
+    def searchByGlossAndMorphology(self, startBook, endBook, word, morphologyList):
+        return self.searchByMorphology(startBook, endBook, "gloss", word, morphologyList)
+
     def searchByMorphology(self, startBook, endBook, type, word, morphologyList):
         references = []
         morphology = ""

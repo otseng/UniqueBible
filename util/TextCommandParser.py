@@ -322,13 +322,19 @@ class TextCommandParser:
             # alias of e.g. MORPHOLOGY:::LexicalEntry LIKE '%E70002,%' AND (Morphology LIKE "%feminine%" OR Morphology LIKE "%noun%")"""),
             "searchmorphologybylex": (self.searchMorphologyByLex, """
             # [KEYWORD] SEARCHMORPHOLOGYBYLEX
-            # e.g. SEARCHMORPHOLOGYBYLEX:::G2424:::Noun,Nominative,Masculine"""),
+            # e.g. SEARCHMORPHOLOGYBYLEX:::G2424:::Noun,Nominative,Masculine
+            # e.g. SEARCHMORPHOLOGYBYLEX:::G2424:::Noun,Nominative,Masculine:::40-66
+            """),
             "searchmorphologybyword": (self.searchMorphologyByWord, """
             # [KEYWORD] SEARCHMORPHOLOGYBYWORD
-            # e.g. SEARCHMORPHOLOGYBYWORD:::Ἰησοῦς:::Noun,Dative,Masculine"""),
+            # e.g. SEARCHMORPHOLOGYBYWORD:::Ἰησοῦς:::Noun,Dative,Masculine
+            # e.g. SEARCHMORPHOLOGYBYWORD:::Ἰησοῦς:::Noun,Dative,Masculine:::40
+            """),
             "searchmorphologybygloss": (self.searchMorphologyByGloss, """
             # [KEYWORD] SEARCHMORPHOLOGYBYGLOSS
-            # e.g. SEARCHMORPHOLOGYBYGLOSS:::Jesus:::Noun,Dative,Masculine"""),
+            # e.g. SEARCHMORPHOLOGYBYGLOSS:::Joshua:::Noun,Dative,Masculine
+            # e.g. SEARCHMORPHOLOGYBYGLOSS:::Joshua:::Noun,Dative,Masculine:::1-66
+            """),
             "word": (self.textWordData, """
             # [KEYWORD] WORD
             # e.g. WORD:::1:::2"""),

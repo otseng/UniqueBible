@@ -77,7 +77,7 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.searchTypeBox)
 
-        posList = ["Noun", "Pronoun", "Adjective", "Verb"]
+        posList = ["Noun", "Pronoun", "Adjective", "Verb", "Article"]
         self.partOfSpeechBox = QGroupBox("Part of speech")
         layout = QVBoxLayout()
         for count, pos in enumerate(posList):
@@ -160,7 +160,7 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.personBox)
 
-        numberList = ["Singular", "Plural"]
+        numberList = ["Singular", "Plural", "Dual"]
         self.numberCheckBoxes = []
         self.numberBox = QGroupBox("Number")
         self.numberBox.hide()
@@ -256,16 +256,16 @@ class MorphologyLauncher(QWidget):
                 self.tenseBox.hide()
                 self.moodBox.hide()
                 self.voiceBox.hide()
-            elif mode in ("Pronoun"):
-                    self.genderBox.hide()
-                    self.numberBox.show()
-                    self.caseBox.show()
-                    self.personBox.show()
-                    self.tenseBox.hide()
-                    self.moodBox.hide()
-                    self.voiceBox.hide()
+            elif mode in ("Pronoun", "Article"):
+                self.genderBox.hide()
+                self.numberBox.show()
+                self.caseBox.show()
+                self.personBox.show()
+                self.tenseBox.hide()
+                self.moodBox.hide()
+                self.voiceBox.hide()
             elif mode in ("Verb"):
-                self.genderBox.show()
+                self.genderBox.hide()
                 self.numberBox.show()
                 self.personBox.show()
                 self.tenseBox.show()

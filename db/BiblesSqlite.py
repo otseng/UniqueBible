@@ -1462,11 +1462,6 @@ class MorphologySqlite:
         self.cursor.execute(query)
         records = self.cursor.fetchall()
         return records
-        # for record in records:
-        #     wordID, clauseID, b, c, v, textWord, lexicalEntry, morphologyCode, morphology, lexeme, transliteration, pronuciation, interlinear, translation, gloss = record
-        #     verseReference = self.bcvToVerseReference(b, c, v)
-        #     references.append(verseReference)
-        # return references
 
     def formatOHGBiVerseText(self, bcv):
         query = "SELECT WordID, Word, LexicalEntry, Interlinear FROM morphology WHERE Book=? AND Chapter=? AND Verse=? ORDER BY WordID"

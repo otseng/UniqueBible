@@ -2,6 +2,7 @@
 import glob
 import os, signal, re, webbrowser, platform, multiprocessing, zipfile, subprocess, config
 
+from util.HtmlContentBuilder import HtmlContentBuilder
 from util.TextUtil import TextUtil
 from util.LexicalData import LexicalData
 from functools import partial
@@ -2027,8 +2028,8 @@ class TextCommandParser:
                 config.mainText, config.mainB, config.mainC, config.mainV = text, int(b), int(c), int(v)
                 bibleCommand = "BIBLE:::{0}:::{1} {2}:{3}".format(text, BibleBooks.eng[b][0], config.mainC, config.mainV)
                 self.parent.addHistoryRecord("main", bibleCommand)
-            biblesSqlite = BiblesSqlite()
-            menu = biblesSqlite.getMenu(command, source)
+            htmlContentBuilder = HtmlContentBuilder()
+            menu = htmlContentBuilder.getMenu(command, source)
             return (source, menu, {})
         except:
             return self.invalidCommand()
@@ -2176,7 +2177,10 @@ class TextCommandParser:
         if command.count(":::") == 0:
             command = "{0}:::{1}".format(config.commentaryText, command)
         commandList = self.splitCommand(command)
-        verseList = self.extractAllVerses(commandList[1])
+        if " " in commandList[1]:
+            verseList = self.extractAllVerses(commandList[1])
+        else:
+            verseList = [(BibleBooks.name2number[commandList[1]], 0, 0)]
         if not len(commandList) == 2 or not verseList:
             return self.invalidCommand()
         else:

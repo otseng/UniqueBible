@@ -566,8 +566,7 @@ class Commentary:
             query = "select book from commentary where book=? and chapter=?"
             cursor.execute(query, (book, chapter))
             if cursor.fetchone():
-                activeCommentaries.append(commentary)
-                activeCommentaries.append(Commentary.fileLookup[commentary])
+                activeCommentaries.append((commentary, Commentary.fileLookup[commentary]))
         return activeCommentaries
 
     def getCommentaries(self):

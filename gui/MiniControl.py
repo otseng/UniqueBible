@@ -473,7 +473,8 @@ class MiniControl(QWidget):
                     button.setStyleSheet(self.textButtonStyleDisabled)
 
     def activeCommentaries(self):
-        activeCommentaries = Commentary().getCommentaryListThatHasBookAndChapter(config.mainB, config.mainC)
+        activeCommentaries = [item[0] for item in
+                              Commentary().getCommentaryListThatHasBookAndChapter(config.mainB, config.mainC)]
         for commentary in self.commentaryButtons.keys():
             button = self.commentaryButtons[commentary]
             if commentary in activeCommentaries:

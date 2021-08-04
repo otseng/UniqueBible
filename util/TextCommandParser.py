@@ -2,6 +2,7 @@
 import glob
 import os, signal, re, webbrowser, platform, multiprocessing, zipfile, subprocess, config
 
+from util.HtmlGeneratorUtil import HtmlGeneratorUtil
 from util.TextUtil import TextUtil
 from util.LexicalData import LexicalData
 from functools import partial
@@ -2028,7 +2029,8 @@ class TextCommandParser:
                 bibleCommand = "BIBLE:::{0}:::{1} {2}:{3}".format(text, BibleBooks.eng[b][0], config.mainC, config.mainV)
                 self.parent.addHistoryRecord("main", bibleCommand)
             biblesSqlite = BiblesSqlite()
-            menu = biblesSqlite.getMenu(command, source)
+            htmlGeneratorUtil = HtmlGeneratorUtil()
+            menu = htmlGeneratorUtil.getMenu(command, source)
             return (source, menu, {})
         except:
             return self.invalidCommand()

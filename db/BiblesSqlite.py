@@ -1556,10 +1556,10 @@ class MorphologySqlite:
             wordID, clauseID, b, c, v, textWord, lexicalEntry, morphologyCode, *_ = word
             firstLexicalEntry = lexicalEntry.split(",")[0]
             textWord = "<{3} onclick='w({1},{2})' onmouseover='iw({1},{2})'>{0}</{3}>".format(textWord, b, wordID, "heb" if b < 40 else "grk")
-            formatedText += "<span style='color: purple;'>({0}{1}</ref>)</span> {2} <ref onclick='searchCode(\"{4}\", \"{3}\")'>{3}</ref>".format(self.formVerseTag(b, c, v, config.mainText), self.bcvToVerseReference(b, c, v), textWord, morphologyCode, firstLexicalEntry)
+            formatedText += "<div><span style='color: purple;'>({0}{1}</ref>)</span> {2} <ref onclick='searchCode(\"{4}\", \"{3}\")'>{3}</ref>".format(self.formVerseTag(b, c, v, config.mainText), self.bcvToVerseReference(b, c, v), textWord, morphologyCode, firstLexicalEntry)
             if config.addOHGBiToMorphologySearch and ohgbiInstalled:
                 formatedText += ohgbiBible.getHighlightedOHGBVerse(b, c, v, wordID, False, index + 1 > config.maximumOHGBiVersesDisplayedInSearchResult)
-            formatedText += "<br>"
+            formatedText += "<br></div>"
         #end = time.time()
         #print(end - start)
         return formatedText

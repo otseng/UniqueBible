@@ -2544,10 +2544,10 @@ class TextCommandParser:
             wordID, clauseID, b, c, v, textWord, lexicalEntry, morphologyCode, morphology, lexeme, transliteration, pronuciation, interlinear, translation, gloss = word
             firstLexicalEntry = lexicalEntry.split(",")[0]
             textWord = "<{3} onclick='w({1},{2})' onmouseover='iw({1},{2})'>{0}</{3}>".format(textWord, b, wordID, "heb" if b < 40 else "grk")
-            formatedText += "<span style='color: purple;'>({0}{1}</ref>)</span> {2} <ref onclick='searchCode(\"{4}\", \"{3}\")'>{3}</ref>".format(morphologySqlist.formVerseTag(b, c, v, config.mainText), morphologySqlist.bcvToVerseReference(b, c, v), textWord, morphologyCode, firstLexicalEntry)
+            formatedText += "<div><span style='color: purple;'>({0}{1}</ref>)</span> {2} <ref onclick='searchCode(\"{4}\", \"{3}\")'>{3}</ref>".format(morphologySqlist.formVerseTag(b, c, v, config.mainText), morphologySqlist.bcvToVerseReference(b, c, v), textWord, morphologyCode, firstLexicalEntry)
             if config.addOHGBiToMorphologySearch and ohgbiInstalled:
                 formatedText += ohgbiBible.getHighlightedOHGBVerse(b, c, v, wordID, False, index + 1 > config.maximumOHGBiVersesDisplayedInSearchResult)
-            formatedText += "<br>"
+            formatedText += "<br></div>"
         return ("study", formatedText, {})
 
     # _setconfig:::

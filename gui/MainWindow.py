@@ -317,6 +317,8 @@ class MainWindow(QMainWindow):
                 textCommandText = self.textCommandLineEdit.text()
                 if textCommandText:
                     self.controlPanel.commandField.setText(textCommandText)
+                selectedText = self.mainView.currentWidget().selectedText().strip()
+                self.controlPanel.morphologyTab.searchField.setText(selectedText)
                 self.controlPanel.raise_()
                 # Method activateWindow() does not work with qt.qpa.wayland
                 # platform.system() == "Linux" and not os.getenv('QT_QPA_PLATFORM') is None and os.getenv('QT_QPA_PLATFORM') == "wayland"

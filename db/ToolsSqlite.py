@@ -646,6 +646,7 @@ class Commentary:
                 data = scripture[0]
                 if c == 0:
                     data = data.replace("<b>0:0</b>", "")
+                    data = data.replace("<u><b>0</b></u>", "")
                 if config.theme in ("dark", "night"):
                     data = data.replace('color:#000080;', 'color:gray;')
                 chapter += re.sub(r'onclick="luV\(([0-9]+?)\)"', r'onclick="luV(\1)" onmouseover="qV(\1)" ondblclick="mV(\1)"', data)

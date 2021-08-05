@@ -359,7 +359,10 @@ class MainWindow(QMainWindow):
             self.miniControl.setMinimumWidth(config.minicontrolWindowWidth)
             self.miniControl.show()
             textCommandText = self.textCommandLineEdit.text()
-            if config.clearCommandEntry:
+            selectedText = self.mainView.currentWidget().selectedText().strip()
+            if selectedText:
+                self.miniControl.searchLineEdit.setText(selectedText)
+            elif config.clearCommandEntry:
                 self.miniControl.searchLineEdit.setText("")
             elif textCommandText:
                 self.miniControl.searchLineEdit.setText(textCommandText)

@@ -974,6 +974,9 @@ class TextCommandParser:
             if (len(verseList) == 1) and (len(verseList[0]) == 3):
                 # i.e. only one verse reference is specified
                 bcvTuple = verseList[0]
+                # Force book to 1 if it's 0 (when viewing a commentary intro)
+                if bcvTuple[1] == 0:
+                    bcvTuple = (bcvTuple[0], 1, 1)
                 chapters = self.getChaptersMenu(bcvTuple[0], bcvTuple[1], text)
                 content = "{0}<hr>{1}<hr>{0}".format(chapters, self.textFormattedBible(bcvTuple, text, view))
             else:

@@ -2652,19 +2652,20 @@ class MainWindow(QMainWindow):
 
     def updateMainRefButton(self):
         *_, verseReference = self.verseReference("main")
-        if config.menuLayout == "aleph":
-            self.mainRefButton.setText(":::".join(self.verseReference("main")))
-        else:
-            self.mainRefButton.setText(self.verseReference("main")[-1])
-        self.updateVersionCombo()
-        if config.syncStudyWindowBibleWithMainWindow and not config.openBibleInMainViewOnly and not self.syncingBibles:
-            self.syncingBibles = True
-            newTextCommand = "STUDY:::{0}".format(verseReference)
-            self.runTextCommand(newTextCommand, True, "study")
-        elif config.syncCommentaryWithMainWindow:
-            self.syncingBibles = True
-            newTextCommand = "COMMENTARY:::{0}".format(verseReference)
-            self.runTextCommand(newTextCommand, True, "study")
+        if config.mainC > 0:
+            if config.menuLayout == "aleph":
+                self.mainRefButton.setText(":::".join(self.verseReference("main")))
+            else:
+                self.mainRefButton.setText(self.verseReference("main")[-1])
+            self.updateVersionCombo()
+            if config.syncStudyWindowBibleWithMainWindow and not config.openBibleInMainViewOnly and not self.syncingBibles:
+                self.syncingBibles = True
+                newTextCommand = "STUDY:::{0}".format(verseReference)
+                self.runTextCommand(newTextCommand, True, "study")
+            elif config.syncCommentaryWithMainWindow:
+                self.syncingBibles = True
+                newTextCommand = "COMMENTARY:::{0}".format(verseReference)
+                self.runTextCommand(newTextCommand, True, "study")
 
     def updateStudyRefButton(self):
         text, verseReference = self.verseReference("study")

@@ -2,6 +2,7 @@ import re
 
 import config
 from db.BiblesSqlite import BiblesSqlite
+from db.ToolsSqlite import Commentary
 from util.BibleBooks import BibleBooks
 from util.BibleVerseParser import BibleVerseParser
 
@@ -70,8 +71,12 @@ class HtmlGeneratorUtil:
                     # display selected book
                     menu += "<br><br><b>{2}</b> <span style='color: brown;' onmouseover='bookName(\"{0}\")'>{0}</span> {1}<br>{3} {4} {5} {6}".format(bookAbb, openOption, config.thisTranslation["html_current"], introductionButton, timelinesButton, dictionaryButton, encyclopediaButton)
                     # display book commentaries
-                    menu += "<br><br><b>{1}</b> <span style='color: brown;' onmouseover='bookName(\"{0}\")'>{0}</span>".format(bookAbb, config.thisTranslation["commentaries"])
-
+                    menu += "<br><br><b>{1}:</b> <span style='color: brown;' onmouseover='bookName(\"{0}\")'>{0}</span>".format(bookAbb, config.thisTranslation["commentaries"])
+                    list = Commentary().getCommentaryListThatHasBookAndChapter(bookNo, 0)
+                    for commentary in list:
+                        button = " <button class='feature' onmouseover='instantInfo(\"{2}\")' onclick='document.title=\"COMMENTARY:::{0}:::{1}\"'>{0}</button>".format(
+                            commentary[0], engFullBookName, commentary[1])
+                        menu += button
                     # Chapter specific buttons
                     # add chapter menu
                     menu += "<hr><b>{1}</b> {0}".format(biblesSqlite.getChapters(bookNo, text),
@@ -100,7 +105,17 @@ class HtmlGeneratorUtil:
                     # chapter note button
                     chapterNoteButton = " <button class='feature' onclick='document.title=\"_openchapternote:::{0}.{1}\"'>{2}</button>".format(bookNo, chapterNo, config.thisTranslation["menu6_notes"])
                     # selected chapter
-                    menu += "<br><br><b>{3}</b> <span style='color: brown;' onmouseover='document.title=\"_info:::Chapter {1}\"'>{1}</span> {2}{4}<br>{5} {6} {7} {8}".format(bookNo, chapterNo, openOption, config.thisTranslation["html_current"], "" if config.enableHttpServer else chapterNoteButton, overviewButton, chapterIndexButton, summaryButton, chapterCommentaryButton)
+                    menu += "<br><br><b>{3}</b> <span style='color: brown;' onmouseover='document.title=\"_info:::Chapter {1}\"'>{1}</span> {2}{4}<br>{5} {6} {7}".format(bookNo, chapterNo, openOption, config.thisTranslation["html_current"], "" if config.enableHttpServer else chapterNoteButton, overviewButton, chapterIndexButton, summaryButton)
+
+                    # display chapter commentaries
+                    menu += "<br><br><b>{1}:</b> <span style='color: brown;' onmouseover='instantInfo(\"Chapter {0}\")'>{0}</span>".format(
+                        chapterNo, config.thisTranslation["commentaries"])
+                    list = Commentary().getCommentaryListThatHasBookAndChapter(bookNo, config.mainC)
+                    for commentary in list:
+                        button = " <button class='feature' onmouseover='instantInfo(\"{2}\")' onclick='document.title=\"COMMENTARY:::{0}:::{1} {3}\"'>{0}</button>".format(
+                            commentary[0], engFullBookName, commentary[1], config.mainC)
+                        menu += button
+
                     # building verse list of slected chapter
                     menu += "<hr><b>{1}</b> {0}".format(biblesSqlite.getVersesMenu(bookNo, chapterNo, text), config.thisTranslation["html_verse"])
                 # Verse specific buttons

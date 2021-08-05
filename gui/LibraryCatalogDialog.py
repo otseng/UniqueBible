@@ -129,18 +129,17 @@ class LibraryCatalogDialog(QDialog):
     def itemClicked(self, index):
         selectedRow = index.row()
         self.catalogEntryId = self.dataViewModel.item(selectedRow, 0).text()
-        print(self.catalogEntryId)
 
     def displayMessage(self, message="", title="UniqueBible"):
         QMessageBox.information(self, title, message)
 
     def loadCatalog(self):
-        self.catalog += self.loadLocalFiles("PDF", "marvelData/pdf", ".pdf", "", "")
+        self.catalog += self.loadLocalFiles("PDF", config.marvelData + "/pdf", ".pdf", "", "")
         self.catalog += self.loadLocalFiles("MP3", "music", ".mp3", "", "")
         self.catalog += self.loadLocalFiles("MP4", "video", ".mp4", "", "")
-        self.catalog += self.loadLocalFiles("BOOK", "marvelData/books", ".book", "", "")
-        self.catalog += self.loadLocalFiles("DOCX", "marvelData/docx", ".docx", "", "")
-        self.catalog += self.loadLocalFiles("COMM", "marvelData/commentaries", ".commentary", "", "")
+        self.catalog += self.loadLocalFiles("BOOK", config.marvelData + "/books", ".book", "", "")
+        self.catalog += self.loadLocalFiles("DOCX", config.marvelData + "/docx", ".docx", "", "")
+        self.catalog += self.loadLocalFiles("COMM", config.marvelData + "/commentaries", ".commentary", "", "")
 
     def loadLocalFiles(self, type, folder, extension, repo="", installFolder=""):
         data = []
@@ -154,12 +153,22 @@ class LibraryCatalogDialog(QDialog):
     def download(self):
         pass
 
+    def fixDirectory(self, directory, type):
+        if type == "PDF":
+            directory = directory.replace(config.marvelData, "")
+            directory = directory.replace("/pdf/", "")
+        if len(directory) > 0 and not directory.endswith("/"):
+            directory += "/"
+        return directory
+
     def open(self):
         item = self.catalogData[self.catalogEntryId]
         id, filename, type, directory, file, description, repo, installDirectory = item
+        directory = self.fixDirectory(directory, type)
         command = ""
         if type == "PDF":
-            command = "PDF:::{0}".format(file)
+            command = "PDF:::{0}{1}".format(directory, file)
+            print(command)
         self.parent.runTextCommand(command)
 
 

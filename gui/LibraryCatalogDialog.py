@@ -1,30 +1,29 @@
+from pathlib import Path
+
 import config, platform, webbrowser, os
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QStandardItemModel, QStandardItem
 from qtpy.QtWidgets import QDialog, QLabel, QTableView, QAbstractItemView, QHBoxLayout, QVBoxLayout, QLineEdit, QPushButton, QMessageBox
+
+from util.FileUtil import FileUtil
+
 
 class LibraryCatalogDialog(QDialog):
 
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
-        # set title
         self.setWindowTitle(config.thisTranslation["libraryCatalog"])
-        self.setMinimumSize(500, 500)
-        # set variables
+        self.setMinimumSize(700, 500)
         self.setupVariables()
-        # setup interface
         self.setupUI()
 
     def setupVariables(self):
         self.isUpdating = False
         self.catalogEntryId = None
-        self.catalog = [
-            ("path/alpha.mp3", "MP3", "path", "alpha.mp3", "music", "repo", "install directory"),
-            ("path/alpha.mp4", "MP4", "path", "alpha.mp4", "video", "repo", "install directory"),
-            ("path/test.pdf", "PDF", "path", "test.pdf", "pdf", "repo", "install directory"),
-            ("path/test.book", "BOOK", "path", "test.book", "books", "repo", "install directory"),
-            ]
+        self.catalog = []
+        self.catalogData = {}
+        self.loadCatalog()
 
     def setupUI(self):
         mainLayout = QVBoxLayout()
@@ -43,16 +42,15 @@ class LibraryCatalogDialog(QDialog):
         self.dataViewModel = QStandardItemModel(self.dataView)
         self.dataView.setModel(self.dataViewModel)
         self.resetItems()
-        # self.dataViewModel.itemChanged.connect(self.itemChanged)
         mainLayout.addWidget(self.dataView)
 
         buttonLayout = QHBoxLayout()
         button = QPushButton(config.thisTranslation["open"])
         button.clicked.connect(self.open)
         buttonLayout.addWidget(button)
-        button = QPushButton(config.thisTranslation["download"])
-        button.clicked.connect(self.download)
-        buttonLayout.addWidget(button)
+        # button = QPushButton(config.thisTranslation["download"])
+        # button.clicked.connect(self.download)
+        # buttonLayout.addWidget(button)
         button = QPushButton(config.thisTranslation["close"])
         button.clicked.connect(self.close)
         buttonLayout.addWidget(button)
@@ -97,9 +95,7 @@ class LibraryCatalogDialog(QDialog):
 
     def resetItems(self):
         self.isUpdating = True
-        # Empty the model before reset
         self.dataViewModel.clear()
-        # Reset
         self.catalogData = self.getCatalogItems()
         filterEntry = self.filterEntry.text().lower()
         rowCount = 0
@@ -113,12 +109,9 @@ class LibraryCatalogDialog(QDialog):
                 item = QStandardItem(file)
                 self.dataViewModel.setItem(rowCount, colCount, item)
                 colCount += 1
-                # item = QStandardItem(type)
-                # self.dataViewModel.setItem(rowCount, colCount, item)
-                # colCount += 1
-                # item = QStandardItem(directory)
-                # self.dataViewModel.setItem(rowCount, colCount, item)
-                # colCount += 1
+                item = QStandardItem(directory)
+                self.dataViewModel.setItem(rowCount, colCount, item)
+                colCount += 1
                 # item = QStandardItem(description)
                 # self.dataViewModel.setItem(rowCount, colCount, item)
                 # colCount += 1
@@ -127,29 +120,47 @@ class LibraryCatalogDialog(QDialog):
                 colCount = 0
         self.dataViewModel.setHorizontalHeaderLabels(
             ["#", config.thisTranslation["file"],
-             # config.thisTranslation["type"], config.thisTranslation["directory"],
+             config.thisTranslation["directory"],
              # config.thisTranslation["description"]
              ])
         self.dataView.resizeColumnsToContents()
         self.isUpdating = False
 
-    # def itemChanged(self, standardItem):
-    #     flag = standardItem.text()
-    #     if flag in self.catalogData and not self.isUpdating:
-    #         self.catalogData[flag][-1]()
-
     def itemClicked(self, index):
-        self.selectedRow = index.row()
-        self.catalogEntryId = self.dataViewModel.item(self.selectedRow, 0).text()
+        selectedRow = index.row()
+        self.catalogEntryId = self.dataViewModel.item(selectedRow, 0).text()
+        print(self.catalogEntryId)
 
     def displayMessage(self, message="", title="UniqueBible"):
         QMessageBox.information(self, title, message)
 
-    def open(self):
-        pass
+    def loadCatalog(self):
+        self.catalog += self.loadLocalFiles("PDF", "marvelData/pdf", ".pdf", "", "")
+        self.catalog += self.loadLocalFiles("MP3", "music", ".mp3", "", "")
+        self.catalog += self.loadLocalFiles("MP4", "video", ".mp4", "", "")
+        self.catalog += self.loadLocalFiles("BOOK", "marvelData/books", ".book", "", "")
+        self.catalog += self.loadLocalFiles("DOCX", "marvelData/docx", ".docx", "", "")
+        self.catalog += self.loadLocalFiles("COMM", "marvelData/commentaries", ".commentary", "", "")
+
+    def loadLocalFiles(self, type, folder, extension, repo="", installFolder=""):
+        data = []
+        files = FileUtil.getAllFilesWithExtension(folder, extension)
+        for file in files:
+            path = os.path.dirname(file)
+            filename = os.path.basename(file)
+            data.append((file, type, path, filename, folder, repo, installFolder))
+        return data
 
     def download(self):
         pass
+
+    def open(self):
+        item = self.catalogData[self.catalogEntryId]
+        id, filename, type, directory, file, description, repo, installDirectory = item
+        command = ""
+        if type == "PDF":
+            command = "PDF:::{0}".format(file)
+        self.parent.runTextCommand(command)
 
 
 ## Standalone development code

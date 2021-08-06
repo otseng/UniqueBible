@@ -2,6 +2,7 @@
 import glob
 import os, signal, re, webbrowser, platform, multiprocessing, zipfile, subprocess, config
 
+from util.GitHubRepoInfo import GitHubRepoInfo
 from util.HtmlGeneratorUtil import HtmlGeneratorUtil
 from util.TextUtil import TextUtil
 from util.LexicalData import LexicalData
@@ -3024,7 +3025,7 @@ class TextCommandParser:
                     return ("", "", {})
 
                 if action == "githubbible":
-                    repo, directory, extension = ("otseng/UniqueBible_Bibles", "bibles", "bible")
+                    repo, directory, text, extension = GitHubRepoInfo.bibles
                 elif action == "githubcommentary":
                     repo, directory, extension = ("otseng/UniqueBible_Commentaries", "commentaries", "commentary")
                 elif action == "githubbook":

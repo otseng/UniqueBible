@@ -1,3 +1,5 @@
+import zipfile
+
 from PyQt5.QtWidgets import QRadioButton
 
 import config, os
@@ -28,7 +30,8 @@ class LibraryCatalogDialog(QDialog):
         self.localCatalog = self.loadLocalCatalog()
         self.remoteCatalog = self.loadRemoteCatalog()
         self.localCatalogData = self.getLocalCatalogItems()
-        self.remoteCatalogData = {}
+        self.remoteCatalogData = self.getRemoteCatalogItems()
+        self.location = "local"
 
     def setupUI(self):
         mainLayout = QVBoxLayout()
@@ -96,12 +99,14 @@ class LibraryCatalogDialog(QDialog):
         mainLayout.addWidget(self.dataView)
 
         buttonLayout = QHBoxLayout()
-        button = QPushButton(config.thisTranslation["open"])
-        button.clicked.connect(self.open)
-        buttonLayout.addWidget(button)
-        # button = QPushButton(config.thisTranslation["download"])
-        # button.clicked.connect(self.download)
-        # buttonLayout.addWidget(button)
+        self.openButton = QPushButton(config.thisTranslation["open"])
+        self.openButton.setEnabled(False)
+        self.openButton.clicked.connect(self.open)
+        buttonLayout.addWidget(self.openButton)
+        self.downloadButton = QPushButton(config.thisTranslation["download"])
+        self.downloadButton.setEnabled(False)
+        self.downloadButton.clicked.connect(self.download)
+        buttonLayout.addWidget(self.downloadButton)
         button = QPushButton(config.thisTranslation["close"])
         button.clicked.connect(self.close)
         buttonLayout.addWidget(button)
@@ -110,7 +115,14 @@ class LibraryCatalogDialog(QDialog):
         self.setLayout(mainLayout)
 
     def setLocation(self, location):
-        pass
+        self.location = location
+        self.resetItems()
+        if location == "local":
+            self.openButton.setEnabled(True)
+            self.downloadButton.setEnabled(False)
+        else:
+            self.openButton.setEnabled(False)
+            self.downloadButton.setEnabled(True)
 
     def selectAllTypes(self, value):
         self.pdfCheckbox.setChecked(value)
@@ -123,6 +135,9 @@ class LibraryCatalogDialog(QDialog):
     def getLocalCatalogItems(self):
         return self.getCatalogItems(self.localCatalog)
 
+    def getRemoteCatalogItems(self):
+        return self.getCatalogItems(self.remoteCatalog)
+
     def getCatalogItems(self, catalog):
         data = {}
         pdfCount = 0
@@ -132,7 +147,7 @@ class LibraryCatalogDialog(QDialog):
         docxCount = 0
         commCount = 0
         lexCount = 0
-        for filename, type, directory, file, description, repo, installDirectory in catalog:
+        for filename, type, directory, file, description, repo, installDirectory, sha in catalog:
             id = "UNKNOWN"
             if type == "PDF":
                 pdfCount += 1
@@ -155,7 +170,7 @@ class LibraryCatalogDialog(QDialog):
             elif type == "LEX":
                 lexCount += 1
                 id = "{0}-{1}".format(type, lexCount)
-            data[id] = [id, filename, type, directory, file, description, repo, installDirectory]
+            data[id] = [id, filename, type, directory, file, description, repo, installDirectory, sha]
         return data
 
     def resetItems(self):
@@ -164,8 +179,11 @@ class LibraryCatalogDialog(QDialog):
         filterEntry = self.filterEntry.text().lower()
         rowCount = 0
         colCount = 0
-        for id, value in self.localCatalogData.items():
-            id2, filename, type, directory, file, description, repo, installDirectory = value
+        catalogData = self.localCatalogData
+        if self.location == "remote":
+            catalogData = self.remoteCatalogData
+        for id, value in catalogData.items():
+            id2, filename, type, directory, file, description, repo, installDirectory, sha = value
             if (filterEntry == "" or filterEntry in filename.lower() or filterEntry in description.lower()):
                 if (not self.pdfCheckbox.isChecked() and type == "PDF") or \
                         (not self.mp3Checkbox.isChecked() and type == "MP3") or \
@@ -220,17 +238,15 @@ class LibraryCatalogDialog(QDialog):
         for file in files:
             path = os.path.dirname(file)
             filename = os.path.basename(file)
-            data.append((file, type, path, filename, folder, "", ""))
+            data.append((file, type, path, filename, folder, "", "", ""))
         return data
 
     def loadRemoteCatalog(self):
         data = []
         data += self.loadRemoteFiles("PDF", GitHubRepoInfo.pdf)
-        # data += self.loadRemoteFiles("MP3", "music", ".mp3", "", "")
-        # data += self.loadRemoteFiles("MP4", "video", ".mp4", "", "")
-        # data += self.loadRemoteFiles("BOOK", config.marvelData + "/books", ".book", "", "")
-        # data += self.loadLocalFiles("DOCX", config.marvelData + "/docx", ".docx", "", "")
-        # data += self.loadLocalFiles("COMM", config.marvelData + "/commentaries", ".commentary", "", "")
+        data += self.loadRemoteFiles("BOOK", GitHubRepoInfo.books)
+        data += self.loadRemoteFiles("BOOK", GitHubRepoInfo.maps)
+        data += self.loadRemoteFiles("COMM", GitHubRepoInfo.commentaries)
         return data
 
     def loadRemoteFiles(self, type, repo):
@@ -240,11 +256,9 @@ class LibraryCatalogDialog(QDialog):
         for file in repoData.keys():
             gitrepo = repo[0]
             installFolder = repo[1]
-            data.append((file, type, "", "", "", gitrepo, installFolder))
+            sha = repoData[file]
+            data.append((file, type, repo[0], file, "", gitrepo, installFolder, sha))
         return data
-
-    def download(self):
-        pass
 
     def fixDirectory(self, directory, type):
         if type == "PDF":
@@ -258,7 +272,7 @@ class LibraryCatalogDialog(QDialog):
 
     def open(self):
         item = self.localCatalogData[self.catalogEntryId]
-        id, filename, type, directory, file, description, repo, installDirectory = item
+        id, filename, type, directory, file, description, repo, installDirectory, sha = item
         directory = self.fixDirectory(directory, type)
         command = ""
         if type == "PDF":
@@ -281,6 +295,19 @@ class LibraryCatalogDialog(QDialog):
             command = "DOCX:::{0}".format(file)
         self.parent.runTextCommand(command)
 
+    def download(self):
+        item = self.remoteCatalogData[self.catalogEntryId]
+        id, filename, type, directory, file, description, repo, installDirectory, sha = item
+        github = GithubUtil(repo)
+        installDirectory = os.path.join(config.marvelData, installDirectory)
+        file = os.path.join(installDirectory, filename + ".zip")
+        github.downloadFile(file, sha)
+        with zipfile.ZipFile(file, 'r') as zipped:
+            zipped.extractall(installDirectory)
+        os.remove(file)
+        self.parent.displayMessage(item + " " + config.thisTranslation["message_installed"])
+
+
 
 ## Standalone development code
 
@@ -288,8 +315,8 @@ class DummyParent():
     def runTextCommand(self, command):
         print(command)
 
-    def verseReference(self, command):
-        return ['', '']
+    def displayMessage(self, command):
+        print(command)
 
 if __name__ == '__main__':
     import sys

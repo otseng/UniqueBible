@@ -1,9 +1,7 @@
 import zipfile
-
-from PyQt5.QtWidgets import QRadioButton
-
 import config, os
 from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QRadioButton
 from qtpy.QtWidgets import QCheckBox
 from qtpy.QtWidgets import QGroupBox
 from qtpy.QtGui import QStandardItemModel, QStandardItem
@@ -32,6 +30,8 @@ class LibraryCatalogDialog(QDialog):
         self.localCatalogData = self.getLocalCatalogItems()
         self.remoteCatalogData = self.getRemoteCatalogItems()
         self.location = "local"
+        self.textButtonStyle = "QPushButton {background-color: #333972; color: white;} QPushButton:hover {background-color: #333972;} QPushButton:pressed { background-color: #515790;}"
+
 
     def setupUI(self):
         mainLayout = QVBoxLayout()
@@ -58,9 +58,11 @@ class LibraryCatalogDialog(QDialog):
 
         typesLayout = QHBoxLayout()
         button = QPushButton("All")
+        button.setStyleSheet(self.textButtonStyle)
         button.clicked.connect(lambda: self.selectAllTypes(True))
         typesLayout.addWidget(button)
         button = QPushButton("None")
+        button.setStyleSheet(self.textButtonStyle)
         button.clicked.connect(lambda: self.selectAllTypes(False))
         typesLayout.addWidget(button)
         self.bookCheckbox = QCheckBox("BOOK")
@@ -218,6 +220,14 @@ class LibraryCatalogDialog(QDialog):
     def itemClicked(self, index):
         selectedRow = index.row()
         self.catalogEntryId = self.dataViewModel.item(selectedRow, 0).text()
+        if self.location == "remote":
+            item = self.remoteCatalogData[self.catalogEntryId]
+            id, filename, type, directory, file, description, repo, installDirectory, sha = item
+            installDirectory = os.path.join(config.marvelData, installDirectory)
+            if FileUtil.regexFileExists("{0}.*".format(GithubUtil.getShortname(filename)), installDirectory):
+                self.downloadButton.setEnabled(False)
+            else:
+                self.downloadButton.setEnabled(True)
 
     def displayMessage(self, message="", title="UniqueBible"):
         QMessageBox.information(self, title, message)
@@ -296,6 +306,7 @@ class LibraryCatalogDialog(QDialog):
         self.parent.runTextCommand(command)
 
     def download(self):
+        self.downloadButton.setEnabled(False)
         item = self.remoteCatalogData[self.catalogEntryId]
         id, filename, type, directory, file, description, repo, installDirectory, sha = item
         github = GithubUtil(repo)
@@ -305,17 +316,16 @@ class LibraryCatalogDialog(QDialog):
         with zipfile.ZipFile(file, 'r') as zipped:
             zipped.extractall(installDirectory)
         os.remove(file)
-        self.parent.displayMessage(item + " " + config.thisTranslation["message_installed"])
-
+        self.displayMessage(filename + " " + config.thisTranslation["message_installed"])
+        self.localCatalog = self.loadLocalCatalog()
+        self.localCatalogData = self.getLocalCatalogItems()
+        self.resetItems()
 
 
 ## Standalone development code
 
 class DummyParent():
     def runTextCommand(self, command):
-        print(command)
-
-    def displayMessage(self, command):
         print(command)
 
 if __name__ == '__main__':

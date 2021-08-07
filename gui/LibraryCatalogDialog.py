@@ -1,3 +1,4 @@
+import pprint
 import zipfile
 import config, os
 from qtpy.QtCore import Qt
@@ -10,6 +11,7 @@ from util.BibleBooks import BibleBooks
 from util.FileUtil import FileUtil
 from util.GitHubRepoInfo import GitHubRepoInfo
 from util.GithubUtil import GithubUtil
+from util.GitHubRepoCache import gitHubRepoCacheData
 
 
 class LibraryCatalogDialog(QDialog):
@@ -26,7 +28,7 @@ class LibraryCatalogDialog(QDialog):
         self.isUpdating = False
         self.catalogEntryId = None
         self.localCatalog = self.loadLocalCatalog()
-        self.remoteCatalog = self.loadRemoteCatalog()
+        self.remoteCatalog = self.loadRemoteCatalogFromCache()
         self.localCatalogData = self.getLocalCatalogItems()
         self.remoteCatalogData = self.getRemoteCatalogItems()
         self.location = "local"
@@ -102,7 +104,8 @@ class LibraryCatalogDialog(QDialog):
 
         buttonLayout = QHBoxLayout()
         self.openButton = QPushButton(config.thisTranslation["open"])
-        self.openButton.setEnabled(False)
+        self.openButton.setEnabled(True)
+        self.openButton.setStyleSheet(self.textButtonStyle)
         self.openButton.clicked.connect(self.open)
         buttonLayout.addWidget(self.openButton)
         self.downloadButton = QPushButton(config.thisTranslation["download"])
@@ -110,6 +113,7 @@ class LibraryCatalogDialog(QDialog):
         self.downloadButton.clicked.connect(self.download)
         buttonLayout.addWidget(self.downloadButton)
         button = QPushButton(config.thisTranslation["close"])
+        button.setStyleSheet(self.textButtonStyle)
         button.clicked.connect(self.close)
         buttonLayout.addWidget(button)
         mainLayout.addLayout(buttonLayout)
@@ -121,9 +125,11 @@ class LibraryCatalogDialog(QDialog):
         self.resetItems()
         if location == "local":
             self.openButton.setEnabled(True)
+            self.openButton.setStyleSheet(self.textButtonStyle)
             self.downloadButton.setEnabled(False)
         else:
             self.openButton.setEnabled(False)
+            self.openButton.setStyleSheet("")
             self.downloadButton.setEnabled(True)
 
     def selectAllTypes(self, value):
@@ -226,8 +232,10 @@ class LibraryCatalogDialog(QDialog):
             installDirectory = os.path.join(config.marvelData, installDirectory)
             if FileUtil.regexFileExists("{0}.*".format(GithubUtil.getShortname(filename)), installDirectory):
                 self.downloadButton.setEnabled(False)
+                self.downloadButton.setStyleSheet("")
             else:
                 self.downloadButton.setEnabled(True)
+                self.downloadButton.setStyleSheet(self.textButtonStyle)
 
     def displayMessage(self, message="", title="UniqueBible"):
         QMessageBox.information(self, title, message)
@@ -251,6 +259,9 @@ class LibraryCatalogDialog(QDialog):
             data.append((file, type, path, filename, folder, "", "", ""))
         return data
 
+    def loadRemoteCatalogFromCache(self):
+        return gitHubRepoCacheData
+
     def loadRemoteCatalog(self):
         data = []
         data += self.loadRemoteFiles("PDF", GitHubRepoInfo.pdf)
@@ -258,6 +269,11 @@ class LibraryCatalogDialog(QDialog):
         data += self.loadRemoteFiles("BOOK", GitHubRepoInfo.maps)
         data += self.loadRemoteFiles("COMM", GitHubRepoInfo.commentaries)
         return data
+
+    def saveRemoteCatalogToCache(self):
+        data = self.loadRemoteCatalog()
+        with open("util/GitHubRepoCache.py", "w", encoding="utf-8") as fileObj:
+            fileObj.write("gitHubRepoCacheData = {0}\n".format(pprint.pformat(data)))
 
     def loadRemoteFiles(self, type, repo):
         data = []
@@ -307,6 +323,7 @@ class LibraryCatalogDialog(QDialog):
 
     def download(self):
         self.downloadButton.setEnabled(False)
+        self.downloadButton.setStyleSheet("")
         item = self.remoteCatalogData[self.catalogEntryId]
         id, filename, type, directory, file, description, repo, installDirectory, sha = item
         github = GithubUtil(repo)
@@ -341,6 +358,8 @@ if __name__ == '__main__':
     config.bibleCollections["King James"] = ['KJV', 'KJVx', 'KJVA', 'KJV1611', 'KJV1769x']
     config.thisTranslation = LanguageUtil.loadTranslation("en_US")
     QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
+
     app = QApplication(sys.argv)
     dialog = LibraryCatalogDialog(DummyParent())
+    dialog.saveRemoteCatalogToCache()
     dialog.exec_()

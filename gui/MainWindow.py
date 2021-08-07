@@ -3382,16 +3382,16 @@ class MainWindow(QMainWindow):
                 for file in GithubUtil(GitHubRepoInfo.commentaries[0]).getRepoData():
                     if file not in commentaryList:
                         outfile.write("DOWNLOAD:::GitHubCommentary:::{0}\n".format(file.replace(".commentary", "")))
-                for file in GithubUtil("darrelwright/UniqueBible_Books").getRepoData():
+                for file in GithubUtil(GitHubRepoInfo.books[0]).getRepoData():
                     if file not in bookList:
                         outfile.write("DOWNLOAD:::GitHubBook:::{0}\n".format(file.replace(".book", "")))
-                for file in GithubUtil("darrelwright/UniqueBible_Maps-Charts").getRepoData():
+                for file in GithubUtil(GitHubRepoInfo.maps[0]).getRepoData():
                     if file not in bookList:
                         outfile.write("DOWNLOAD:::GitHubMap:::{0}\n".format(file.replace(".book", "")))
-                for file in GithubUtil("otseng/UniqueBible_PDF").getRepoData():
+                for file in GithubUtil(GitHubRepoInfo.pdf[0]).getRepoData():
                     if file not in pdfList:
                         outfile.write("DOWNLOAD:::GitHubPdf:::{0}\n".format(file.replace(".pdf", "")))
-                for file in GithubUtil("otseng/UniqueBible_EPUB").getRepoData():
+                for file in GithubUtil(GitHubRepoInfo.epub[0]).getRepoData():
                     if file not in epubList:
                         outfile.write("DOWNLOAD:::GitHubEpub:::{0}\n".format(file.replace(".epub", "")))
             outfile.close()
@@ -3434,16 +3434,16 @@ class MainWindow(QMainWindow):
                 for file in GithubUtil(GitHubRepoInfo.commentaries[0]).getRepoData():
                     if file in commentaryList:
                         outfile.write("DOWNLOAD:::GitHubCommentary:::{0}\n".format(file.replace(".commentary", "")))
-                for file in GithubUtil("darrelwright/UniqueBible_Books").getRepoData():
+                for file in GithubUtil(GitHubRepoInfo.books[0]).getRepoData():
                     if file in bookList:
                         outfile.write("DOWNLOAD:::GitHubBook:::{0}\n".format(file.replace(".book", "")))
-                for file in GithubUtil("darrelwright/UniqueBible_Maps-Charts").getRepoData():
+                for file in GithubUtil(GitHubRepoInfo.maps[0]).getRepoData():
                     if file in bookList:
                         outfile.write("DOWNLOAD:::GitHubMap:::{0}\n".format(file.replace(".book", "")))
-                for file in GithubUtil("otseng/UniqueBible_PDF").getRepoData():
+                for file in GithubUtil(GitHubRepoInfo.pdf[0]).getRepoData():
                     if file in pdfList:
                         outfile.write("DOWNLOAD:::GitHubPdf:::{0}\n".format(file.replace(".pdf", "")))
-                for file in GithubUtil("otseng/UniqueBible_EPUB").getRepoData():
+                for file in GithubUtil(GitHubRepoInfo.epub[0]).getRepoData():
                     if file in epubList:
                         outfile.write("DOWNLOAD:::GitHubEpub:::{0}\n".format(file.replace(".epub", "")))
             outfile.close()

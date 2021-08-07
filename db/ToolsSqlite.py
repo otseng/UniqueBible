@@ -729,10 +729,14 @@ class Lexicon:
     def searchTopic(self, search):
         try:
             searchString = "%{0}%".format(search)
-            query = "SELECT DISTINCT Topic FROM Lexicon WHERE Topic like ? OR DEFINITION like ? ORDER BY Topic LIMIT 0, 500"
-            self.cursor.execute(query, (searchString, searchString))
+            query = "SELECT DISTINCT Topic FROM Lexicon WHERE Topic like ? ORDER BY Topic"
+            self.cursor.execute(query, (searchString,))
+            topics = self.cursor.fetchall()
             contentText = """<h2>{0}</h2>""".format(self.module)
-            for topic in self.cursor.fetchall():
+            query = "SELECT DISTINCT Topic FROM Lexicon WHERE DEFINITION like ? and TOPIC NOT LIKE ? ORDER BY Topic LIMIT 0, 500"
+            self.cursor.execute(query, (searchString, searchString))
+            topics += self.cursor.fetchall()
+            for topic in topics:
                 t = topic[0]
                 e = t.replace("'", "\\\'").replace('"', '\\\"')
                 entry = """<div><ref onclick="document.title='LEXICON:::{0}:::{1}'">{2}</ref></div>""".format(self.module, e, t)

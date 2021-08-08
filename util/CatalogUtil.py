@@ -8,6 +8,7 @@ from util.GithubUtil import GithubUtil
 class CatalogUtil:
 
     localCatalog = None
+    bookCatalog = None
     folderLookup = {}
 
     @staticmethod
@@ -22,7 +23,9 @@ class CatalogUtil:
             CatalogUtil.localCatalog += CatalogUtil.loadLocalFiles("PDF", config.marvelData + "/pdf", ".pdf")
             CatalogUtil.localCatalog += CatalogUtil.loadLocalFiles("MP3", "music", ".mp3")
             CatalogUtil.localCatalog += CatalogUtil.loadLocalFiles("MP4", "video", ".mp4")
-            CatalogUtil.localCatalog += CatalogUtil.loadLocalFiles("BOOK", config.marvelData + "/books", ".book")
+            books = CatalogUtil.loadLocalFiles("BOOK", config.marvelData + "/books", ".book")
+            CatalogUtil.bookCatalog = books
+            CatalogUtil.localCatalog += books
             CatalogUtil.localCatalog += CatalogUtil.loadLocalFiles("DOCX", config.marvelData + "/docx", ".docx")
             CatalogUtil.localCatalog += CatalogUtil.loadLocalFiles("COMM", config.marvelData + "/commentaries", ".commentary")
         return CatalogUtil.localCatalog
@@ -41,6 +44,16 @@ class CatalogUtil:
     @staticmethod
     def getFolder(filename):
         return CatalogUtil.folderLookup[filename]
+
+    @staticmethod
+    def getBooks():
+        if CatalogUtil.bookCatalog is None:
+            CatalogUtil.loadLocalCatalog()
+        books = []
+        for record in CatalogUtil.bookCatalog:
+            book = record[3].replace(".book", "")
+            books.append(book)
+        return books
 
     @staticmethod
     def loadRemoteCatalog():

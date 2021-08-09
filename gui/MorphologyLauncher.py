@@ -80,12 +80,25 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.searchTypeBox)
 
-        posList = ["Noun", "Pronoun", "Adjective", "Verb", "Article"]
+        languageList = ["Greek", "Hebrew"]
+        self.languageBox = QGroupBox("Language")
+        layout = QVBoxLayout()
+        for count, lang in enumerate(languageList):
+            button = QRadioButton(lang)
+            button.toggled.connect(lambda checked, mode=lang: self.languageChanged(checked, mode))
+            layout.addWidget(button)
+            if count == 0:
+                self.greekButton = button
+        self.languageBox.setLayout(layout)
+        layout.addStretch()
+        subLayout.addWidget(self.languageBox)
+
+        posList = ["Noun", "Pronoun", "Verb", "Adverb", "Adjective", "Article", "Participle", "Preposition", "Conjunction"]
         self.partOfSpeechBox = QGroupBox("Part of speech")
         layout = QVBoxLayout()
         for count, pos in enumerate(posList):
             button = QRadioButton(pos)
-            button.toggled.connect(lambda checked, mode=pos: self.searchModeChanged(checked, mode))
+            button.toggled.connect(lambda checked, mode=pos: self.partOfSpeechChanged(checked, mode))
             layout.addWidget(button)
             if count == 0:
                 self.nounButton = button
@@ -93,33 +106,33 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.partOfSpeechBox)
 
-        caseList = ["Accusative", "Dative", "Genitive", "Nominative", "Vocative"]
-        self.caseCheckBoxes = []
-        self.caseBox = QGroupBox("Case")
-        self.caseBox.hide()
+        greekCaseList = ["Accusative", "Dative", "Genitive", "Nominative", "Vocative"]
+        self.greekCaseCheckBoxes = []
+        self.greekCaseBox = QGroupBox("Case")
+        self.greekCaseBox.hide()
         layout = QVBoxLayout()
-        for case in caseList:
+        for case in greekCaseList:
             checkbox = QCheckBox(case)
             layout.addWidget(checkbox)
-            self.caseCheckBoxes.append(checkbox)
+            self.greekCaseCheckBoxes.append(checkbox)
             checkbox.stateChanged.connect(lambda checked, case=case: self.caseCheckBoxChanged(checked, case))
-        self.caseBox.setLayout(layout)
+        self.greekCaseBox.setLayout(layout)
         layout.addStretch()
-        subLayout.addWidget(self.caseBox)
+        subLayout.addWidget(self.greekCaseBox)
 
-        tenseList = ["Aorist", "Future", "Imperfect", "Perfect", "Pluperfect", "Present"]
-        self.tenseCheckBoxes = []
-        self.tenseBox = QGroupBox("Tense")
-        self.tenseBox.hide()
+        greekTenseList = ["Aorist", "Future", "Imperfect", "Perfect", "Pluperfect", "Present"]
+        self.greekTenseCheckBoxes = []
+        self.greekTenseBox = QGroupBox("Tense")
+        self.greekTenseBox.hide()
         layout = QVBoxLayout()
-        for tense in tenseList:
+        for tense in greekTenseList:
             checkbox = QCheckBox(tense)
             layout.addWidget(checkbox)
-            self.tenseCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, tense=tense: self.tenseCheckBoxChanged(checked, tense))
-        self.tenseBox.setLayout(layout)
+            self.greekTenseCheckBoxes.append(checkbox)
+            checkbox.stateChanged.connect(lambda checked, tense=tense: self.greekTenseCheckBoxChanged(checked, tense))
+        self.greekTenseBox.setLayout(layout)
         layout.addStretch()
-        subLayout.addWidget(self.tenseBox)
+        subLayout.addWidget(self.greekTenseBox)
 
         voiceList = ["Active", "Middle", "Passive"]
         self.voiceCheckBoxes = []
@@ -135,19 +148,19 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.voiceBox)
 
-        moodList = ["Imperative", "Indicative", "Optative", "Subjunctive"]
-        self.moodCheckBoxes = []
-        self.moodBox = QGroupBox("Mood")
-        self.moodBox.hide()
+        greekMoodList = ["Imperative", "Indicative", "Optative", "Subjunctive"]
+        self.greekMoodCheckBoxes = []
+        self.greekMoodBox = QGroupBox("Mood")
+        self.greekMoodBox.hide()
         layout = QVBoxLayout()
-        for mood in moodList:
+        for mood in greekMoodList:
             checkbox = QCheckBox(mood)
             layout.addWidget(checkbox)
-            self.moodCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, mood=mood: self.moodCheckBoxChanged(checked, mood))
-        self.moodBox.setLayout(layout)
+            self.greekMoodCheckBoxes.append(checkbox)
+            checkbox.stateChanged.connect(lambda checked, mood=mood: self.greekMoodCheckBoxChanged(checked, mood))
+        self.greekMoodBox.setLayout(layout)
         layout.addStretch()
-        subLayout.addWidget(self.moodBox)
+        subLayout.addWidget(self.greekMoodBox)
 
         personList = ["First", "Second", "Third"]
         self.personCheckBoxes = []
@@ -191,25 +204,15 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.genderBox)
 
+        # TODO:
         hebrewList = ["Absolute", "Construct", "Hif‘il", "Infinitive", "Nif‘al", "Pi“el", "Pronominal", "Pu“al", "Qal", "Wayyiqtol"]
-        self.hebrewCheckBoxes = []
-        self.hebrewBox = QGroupBox("Hebrew")
-        self.hebrewBox.hide()
-        layout = QVBoxLayout()
-        for hebrew in hebrewList:
-            checkbox = QCheckBox(hebrew)
-            layout.addWidget(checkbox)
-            self.hebrewCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, hebrew=hebrew: self.hebrewCheckBoxChanged(checked, hebrew))
-        self.hebrewBox.setLayout(layout)
-        layout.addStretch()
-        subLayout.addWidget(self.hebrewBox)
 
         mainLayout.addLayout(subLayout)
 
         mainLayout.addStretch()
         self.setLayout(mainLayout)
 
+        self.greekButton.setChecked(True)
         self.nounButton.setChecked(True)
 
     def selectBookCombos(self, start, end):
@@ -221,7 +224,7 @@ class MorphologyLauncher(QWidget):
 
     def caseCheckBoxChanged(self, state, case):
         if int(state) > 0:
-            for caseCheckbox in self.caseCheckBoxes:
+            for caseCheckbox in self.greekCaseCheckBoxes:
                 if caseCheckbox.isChecked() and case != caseCheckbox.text():
                     caseCheckbox.setChecked(False)
 
@@ -231,15 +234,15 @@ class MorphologyLauncher(QWidget):
                 if numberCheckbox.isChecked() and number != numberCheckbox.text():
                     numberCheckbox.setChecked(False)
 
-    def tenseCheckBoxChanged(self, state, tense):
+    def greekTenseCheckBoxChanged(self, state, tense):
         if int(state) > 0:
-            for tenseCheckbox in self.tenseCheckBoxes:
+            for tenseCheckbox in self.greekTenseCheckBoxes:
                 if tenseCheckbox.isChecked() and tense != tenseCheckbox.text():
                     tenseCheckbox.setChecked(False)
 
-    def moodCheckBoxChanged(self, state, mood):
+    def greekMoodCheckBoxChanged(self, state, mood):
         if int(state) > 0:
-            for moodCheckbox in self.moodCheckBoxes:
+            for moodCheckbox in self.greekMoodCheckBoxes:
                 if moodCheckbox.isChecked() and mood != moodCheckbox.text():
                     moodCheckbox.setChecked(False)
 
@@ -262,51 +265,65 @@ class MorphologyLauncher(QWidget):
         self.searchField.returnPressed.connect(self.searchMorphology)
         return self.searchField
 
-    def searchModeChanged(self, checked, mode):
+    def languageChanged(self, checked, language):
         if checked:
-            self.mode = mode
-            if mode in ("Noun", "Adjective"):
+            self.language = language
+        self.updateAllCheckboxes()
+
+    def partOfSpeechChanged(self, checked, pos):
+        if checked:
+            self.pos = pos
+        self.updateAllCheckboxes()
+
+    def updateAllCheckboxes(self):
+        if self.language == "Greek":
+            self.genderBox.hide()
+            self.numberBox.hide()
+            self.greekCaseBox.hide()
+            self.personBox.hide()
+            self.greekTenseBox.hide()
+            self.greekMoodBox.hide()
+            self.voiceBox.hide()
+            if self.pos in ("Noun", "Adjective", "Preposition"):
+                self.greekCaseBox.show()
+                self.numberBox.show()
                 self.genderBox.show()
+            elif self.pos in ("Pronoun", "Article"):
+                self.greekCaseBox.show()
                 self.numberBox.show()
-                self.caseBox.show()
-                self.personBox.hide()
-                self.tenseBox.hide()
-                self.moodBox.hide()
-                self.voiceBox.hide()
-                self.hebrewBox.show()
-            elif mode in ("Pronoun", "Article"):
-                self.genderBox.hide()
-                self.numberBox.show()
-                self.caseBox.show()
+                self.genderBox.show()
                 self.personBox.show()
-                self.tenseBox.hide()
-                self.moodBox.hide()
-                self.voiceBox.hide()
-                self.hebrewBox.show()
-            elif mode in ("Verb"):
-                self.genderBox.hide()
-                self.numberBox.show()
-                self.personBox.show()
-                self.tenseBox.show()
-                self.moodBox.show()
+            elif self.pos == "Verb":
+                self.greekTenseBox.show()
                 self.voiceBox.show()
-                self.caseBox.hide()
-                self.hebrewBox.show()
+                self.greekMoodBox.show()
+                self.personBox.show()
+                self.numberBox.show()
+            elif self.pos == "Adverb":
+                self.greekCaseBox.show()
+                self.numberBox.show()
+                self.genderBox.show()
+            elif self.pos == "Participle":
+                self.greekCaseBox.hide()
+                self.genderBox.hide()
+                self.numberBox.hide()
+                self.greekTenseBox.hide()
+                self.voiceBox.hide()
 
     def searchMorphology(self):
         searchTerm = self.searchField.text()
         if len(searchTerm) > 1:
             morphologyList = []
-            morphologyList.append(self.mode)
-            if self.mode == "Noun":
-                for caseCheckbox in self.caseCheckBoxes:
+            morphologyList.append(self.pos)
+            if self.pos == "Noun":
+                for caseCheckbox in self.greekCaseCheckBoxes:
                     if caseCheckbox.isChecked():
                         morphologyList.append(caseCheckbox.text())
-            if self.mode == "Verb":
-                for tenseCheckbox in self.tenseCheckBoxes:
+            if self.pos == "Verb":
+                for tenseCheckbox in self.greekTenseCheckBoxes:
                     if tenseCheckbox.isChecked():
                         morphologyList.append(tenseCheckbox.text())
-                for moodCheckbox in self.moodCheckBoxes:
+                for moodCheckbox in self.greekMoodCheckBoxes:
                     if moodCheckbox.isChecked():
                         morphologyList.append(moodCheckbox.text())
                 for voiceCheckbox in self.voiceCheckBoxes:

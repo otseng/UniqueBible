@@ -290,6 +290,7 @@ class MainWindow(QMainWindow):
 
     def reloadResources(self):
         CrossPlatform().setupResourceLists()
+        CatalogUtil.reloadLocalCatalog()
         self.controlPanel.setupResourceLists()
         self.setMenuLayout(config.menuLayout)
         self.reloadControlPanel(False)

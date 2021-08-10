@@ -98,7 +98,7 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.languageBox)
 
-        posList = ["Adjective", "Adverb", "Article", "Conjunction", "Noun", "Participle", "Preposition", "Pronoun", "Verb"]
+        posList = ["Adjective", "Adverb", "Article", "Conjunction", "Interjection", "Noun", "Participle", "Preposition", "Pronoun", "Verb", ""]
         self.posCheckBoxes = []
         self.partOfSpeechBox = QGroupBox("Part of speech")
         layout = QVBoxLayout()
@@ -255,31 +255,31 @@ class MorphologyLauncher(QWidget):
         # TODO:
         hebrewList = ["Absolute", "",  "Infinitive", "Pronominal", ""]
 
-        self.spacerBox1 = QGroupBox("")
+        self.spacerBox1 = QGroupBox(" ")
         layout = QVBoxLayout()
         layout.addStretch()
         self.spacerBox1.setLayout(layout)
         subLayout.addWidget(self.spacerBox1)
 
-        self.spacerBox2 = QGroupBox("")
+        self.spacerBox2 = QGroupBox(" ")
         layout = QVBoxLayout()
         layout.addStretch()
         self.spacerBox2.setLayout(layout)
         subLayout.addWidget(self.spacerBox2)
 
-        self.spacerBox3 = QGroupBox("")
+        self.spacerBox3 = QGroupBox(" ")
         layout = QVBoxLayout()
         layout.addStretch()
         self.spacerBox3.setLayout(layout)
         subLayout.addWidget(self.spacerBox3)
 
-        self.spacerBox4 = QGroupBox("")
+        self.spacerBox4 = QGroupBox(" ")
         layout = QVBoxLayout()
         layout.addStretch()
         self.spacerBox4.setLayout(layout)
         subLayout.addWidget(self.spacerBox4)
 
-        self.spacerBox5 = QGroupBox("")
+        self.spacerBox5 = QGroupBox(" ")
         layout = QVBoxLayout()
         layout.addStretch()
         self.spacerBox5.setLayout(layout)
@@ -339,7 +339,7 @@ class MorphologyLauncher(QWidget):
         self.spacerBox4.hide()
         self.spacerBox5.hide()
         if self.language == "Greek":
-            if self.pos in ("Noun", "Adjective", "Preposition"):
+            if self.pos in ("Noun", "Adjective"):
                 self.greekCaseBox.show()
                 self.numberBox.show()
                 self.genderBox.show()
@@ -395,7 +395,7 @@ class MorphologyLauncher(QWidget):
             morphologyList = []
             morphologyList.append(self.pos)
             if self.language == "Greek":
-                if self.pos in ("Noun", "Adjective", "Preposition"):
+                if self.pos in ("Noun", "Adjective"):
                     checkBoxList = [self.greekCaseCheckBoxes, self.numberCheckBoxes, self.genderCheckBoxes]
                 elif self.pos == ("Pronoun", "Article"):
                     checkBoxList = [self.greekCaseCheckBoxes, self.numberCheckBoxes, self.genderCheckBoxes, self.personCheckBoxes]

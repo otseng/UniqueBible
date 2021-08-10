@@ -10,6 +10,7 @@ from qtpy.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QWidget, QLineEd
 
 # Hebrew:
 # https://uhg.readthedocs.io/en/latest/
+# https://blakleycreative.com/jtb/HebrewGrammar.htm
 # Greek:
 # https://ugg.readthedocs.io/en/latest/
 class MorphologyLauncher(QWidget):
@@ -97,7 +98,8 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.languageBox)
 
-        posList = ["Noun", "Pronoun", "Verb", "Adverb", "Adjective", "Article", "Participle", "Preposition", "Conjunction"]
+        posList = ["Adjective", "Adverb", "Article", "Conjunction", "Noun", "Participle", "Preposition", "Pronoun", "Verb"]
+        self.posCheckBoxes = []
         self.partOfSpeechBox = QGroupBox("Part of speech")
         layout = QVBoxLayout()
         for count, pos in enumerate(posList):
@@ -166,6 +168,48 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.greekMoodBox)
 
+        hebrewStateList = ["Construct", "Absolute"]
+        self.hebrewStateCheckBoxes = []
+        self.hebrewStateBox = QGroupBox("State")
+        self.hebrewStateBox.hide()
+        layout = QVBoxLayout()
+        for state in hebrewStateList:
+            checkbox = QCheckBox(state)
+            layout.addWidget(checkbox)
+            self.hebrewStateCheckBoxes.append(checkbox)
+            checkbox.stateChanged.connect(lambda checked, state=state: self.checkBoxChanged(checked, state, self.hebrewStateCheckBoxes))
+        self.hebrewStateBox.setLayout(layout)
+        layout.addStretch()
+        subLayout.addWidget(self.hebrewStateBox)
+
+        hebrewStateList = ["Construct", "Absolute"]
+        self.hebrewStateCheckBoxes = []
+        self.hebrewStateBox = QGroupBox("State")
+        self.hebrewStateBox.hide()
+        layout = QVBoxLayout()
+        for stem in hebrewStateList:
+            checkbox = QCheckBox(stem)
+            layout.addWidget(checkbox)
+            self.hebrewStateCheckBoxes.append(checkbox)
+            checkbox.stateChanged.connect(lambda checked, stem=stem: self.checkBoxChanged(checked, stem, self.hebrewStateCheckBoxes))
+        self.hebrewStateBox.setLayout(layout)
+        layout.addStretch()
+        subLayout.addWidget(self.hebrewStateBox)
+
+        hebrewPatternList = ["Hif‘il", "Hitpa“el", "Nif‘al", "Pi“el", "Pu“al", "Qal", "Wayyiqtol"]
+        self.hebrewPatternCheckBoxes = []
+        self.hebrewPatternBox = QGroupBox("State")
+        self.hebrewPatternBox.hide()
+        layout = QVBoxLayout()
+        for stem in hebrewPatternList:
+            checkbox = QCheckBox(stem)
+            layout.addWidget(checkbox)
+            self.hebrewPatternCheckBoxes.append(checkbox)
+            # checkbox.stateChanged.connect(lambda checked, stem=stem: self.checkBoxChanged(checked, stem, self.hebrewPatternCheckBoxes))
+        self.hebrewPatternBox.setLayout(layout)
+        layout.addStretch()
+        subLayout.addWidget(self.hebrewPatternBox)
+
         personList = ["First", "Second", "Third"]
         self.personCheckBoxes = []
         self.personBox = QGroupBox("Person")
@@ -208,37 +252,38 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.genderBox)
 
-        hebrewStateList = ["Construct", "Absolute"]
-        self.hebrewStateCheckBoxes = []
-        self.hebrewStateBox = QGroupBox("State")
-        self.hebrewStateBox.hide()
-        layout = QVBoxLayout()
-        for state in hebrewStateList:
-            checkbox = QCheckBox(state)
-            layout.addWidget(checkbox)
-            self.hebrewStateCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, state=state: self.checkBoxChanged(checked, state, self.hebrewStateCheckBoxes))
-        self.hebrewStateBox.setLayout(layout)
-        layout.addStretch()
-        subLayout.addWidget(self.hebrewStateBox)
-
-
-        hebrewStemList = ["Construct", "Absolute"]
-        self.hebrewStemCheckBoxes = []
-        self.hebrewStateBox = QGroupBox("State")
-        self.hebrewStateBox.hide()
-        layout = QVBoxLayout()
-        for stem in hebrewStemList:
-            checkbox = QCheckBox(stem)
-            layout.addWidget(checkbox)
-            self.hebrewStemCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, stem=stem: self.checkBoxChanged(checked, stem, self.hebrewStemCheckBoxes))
-        self.hebrewStateBox.setLayout(layout)
-        layout.addStretch()
-        subLayout.addWidget(self.hebrewStateBox)
-
         # TODO:
-        hebrewList = ["Absolute", "", "Hif‘il", "Infinitive", "Nif‘al", "Pi“el", "Pronominal", "Pu“al", "Qal", "Wayyiqtol"]
+        hebrewList = ["Absolute", "",  "Infinitive", "Pronominal", ""]
+
+        self.spacerBox1 = QGroupBox("")
+        layout = QVBoxLayout()
+        layout.addStretch()
+        self.spacerBox1.setLayout(layout)
+        subLayout.addWidget(self.spacerBox1)
+
+        self.spacerBox2 = QGroupBox("")
+        layout = QVBoxLayout()
+        layout.addStretch()
+        self.spacerBox2.setLayout(layout)
+        subLayout.addWidget(self.spacerBox2)
+
+        self.spacerBox3 = QGroupBox("")
+        layout = QVBoxLayout()
+        layout.addStretch()
+        self.spacerBox3.setLayout(layout)
+        subLayout.addWidget(self.spacerBox3)
+
+        self.spacerBox4 = QGroupBox("")
+        layout = QVBoxLayout()
+        layout.addStretch()
+        self.spacerBox4.setLayout(layout)
+        subLayout.addWidget(self.spacerBox4)
+
+        self.spacerBox5 = QGroupBox("")
+        layout = QVBoxLayout()
+        layout.addStretch()
+        self.spacerBox5.setLayout(layout)
+        subLayout.addWidget(self.spacerBox5)
 
         mainLayout.addLayout(subLayout)
 
@@ -279,24 +324,33 @@ class MorphologyLauncher(QWidget):
         self.updateAllCheckboxes()
 
     def updateAllCheckboxes(self):
+        self.genderBox.hide()
+        self.numberBox.hide()
+        self.greekCaseBox.hide()
+        self.personBox.hide()
+        self.greekTenseBox.hide()
+        self.greekMoodBox.hide()
+        self.voiceBox.hide()
+        self.hebrewStateBox.hide()
+        self.hebrewPatternBox.hide()
+        self.spacerBox1.hide()
+        self.spacerBox2.hide()
+        self.spacerBox3.hide()
+        self.spacerBox4.hide()
+        self.spacerBox5.hide()
         if self.language == "Greek":
-            self.genderBox.hide()
-            self.numberBox.hide()
-            self.greekCaseBox.hide()
-            self.personBox.hide()
-            self.greekTenseBox.hide()
-            self.greekMoodBox.hide()
-            self.voiceBox.hide()
-            self.hebrewStateBox.hide()
             if self.pos in ("Noun", "Adjective", "Preposition"):
                 self.greekCaseBox.show()
                 self.numberBox.show()
                 self.genderBox.show()
+                self.spacerBox4.show()
+                self.spacerBox5.show()
             elif self.pos in ("Pronoun", "Article"):
                 self.greekCaseBox.show()
                 self.numberBox.show()
                 self.genderBox.show()
                 self.personBox.show()
+                self.spacerBox5.show()
             elif self.pos == "Verb":
                 self.greekTenseBox.show()
                 self.voiceBox.show()
@@ -307,62 +361,61 @@ class MorphologyLauncher(QWidget):
                 self.greekCaseBox.show()
                 self.numberBox.show()
                 self.genderBox.show()
-            elif self.pos == "Participle":
-                self.greekCaseBox.hide()
-                self.genderBox.hide()
-                self.numberBox.hide()
-                self.greekTenseBox.hide()
-                self.voiceBox.hide()
-        elif self.language == "Hebrew":
-            self.genderBox.hide()
-            self.numberBox.hide()
-            self.greekCaseBox.hide()
-            self.personBox.hide()
-            self.greekTenseBox.hide()
-            self.greekMoodBox.hide()
-            self.voiceBox.hide()
-            self.hebrewStateBox.hide()
-            if self.pos in ("Noun", "Adjective", "Preposition"):
+                self.spacerBox4.show()
+                self.spacerBox5.show()
+            else:
+                self.spacerBox1.show()
+                self.spacerBox2.show()
+                self.spacerBox3.show()
+                self.spacerBox4.show()
+                self.spacerBox5.show()
+        else:
+            if self.pos in ("Noun", "Adjective", "Preposition", "Pronoun"):
                 self.numberBox.show()
                 self.genderBox.show()
                 self.hebrewStateBox.show()
-            elif self.pos == "Verb":
+                self.spacerBox4.show()
+                self.spacerBox5.show()
+            elif self.pos in ("Verb", "Adverb"):
                 self.personBox.show()
                 self.genderBox.show()
                 self.numberBox.show()
                 self.hebrewStateBox.show()
+                self.hebrewPatternBox.show()
+            else:
+                self.spacerBox1.show()
+                self.spacerBox2.show()
+                self.spacerBox3.show()
+                self.spacerBox4.show()
+                self.spacerBox5.show()
 
     def searchMorphology(self):
         searchTerm = self.searchField.text()
         if len(searchTerm) > 1:
             morphologyList = []
             morphologyList.append(self.pos)
-            if self.pos == "Noun":
-                for caseCheckbox in self.greekCaseCheckBoxes:
-                    if caseCheckbox.isChecked():
-                        morphologyList.append(caseCheckbox.text())
-            if self.pos == "Verb":
-                for tenseCheckbox in self.greekTenseCheckBoxes:
-                    if tenseCheckbox.isChecked():
-                        morphologyList.append(tenseCheckbox.text())
-                for moodCheckbox in self.greekMoodCheckBoxes:
-                    if moodCheckbox.isChecked():
-                        morphologyList.append(moodCheckbox.text())
-                for voiceCheckbox in self.voiceCheckBoxes:
-                    if voiceCheckbox.isChecked():
-                        morphologyList.append(voiceCheckbox.text())
-                for personCheckbox in self.personCheckBoxes:
-                    if personCheckbox.isChecked():
-                        morphologyList.append(personCheckbox.text())
-            for genderCheckbox in self.genderCheckBoxes:
-                if genderCheckbox.isChecked():
-                    morphologyList.append(genderCheckbox.text())
-            for numberCheckbox in self.numberCheckBoxes:
-                if numberCheckbox.isChecked():
-                    morphologyList.append(numberCheckbox.text())
-            for hebrewCheckbox in self.hebrewCheckBoxes:
-                if hebrewCheckbox.isChecked():
-                    morphologyList.append(hebrewCheckbox.text())
+            if self.language == "Greek":
+                if self.pos in ("Noun", "Adjective", "Preposition"):
+                    checkBoxList = [self.greekCaseCheckBoxes, self.numberCheckBoxes, self.genderCheckBoxes]
+                elif self.pos == ("Pronoun", "Article"):
+                    checkBoxList = [self.greekCaseCheckBoxes, self.numberCheckBoxes, self.genderCheckBoxes, self.personCheckBoxes]
+                elif self.pos == "Verb":
+                    checkBoxList = [self.greekTenseCheckBoxes, self.voiceCheckBoxes, self.greekMoodCheckBoxes, self.personCheckBoxes, self.numberCheckBoxes]
+                elif self.pos == "Adverb":
+                    checkBoxList = [self.greekCaseCheckBoxes, self.numberCheckBoxes, self.genderCheckBoxes]
+                else:
+                    checkBoxList = []
+            else:
+                if self.pos in ("Noun", "Adjective", "Preposition", "Pronoun"):
+                    checkBoxList = [self.numberCheckBoxes, self.genderCheckBoxes, self.hebrewStateCheckBoxes]
+                elif self.pos in ("Verb", "Adverb"):
+                    checkBoxList = [self.personCheckBoxes, self.genderCheckBoxes, self.numberCheckBoxes, self.hebrewStateCheckBoxes, self.hebrewPatternCheckBoxes]
+                else:
+                    checkBoxList = []
+            for checkBoxes in checkBoxList:
+                for checkbox in checkBoxes:
+                    if checkbox.isChecked():
+                        morphologyList.append(checkbox.text())
             morphology = ",".join(morphologyList)
             startBook = self.startBookCombo.currentIndex() + 1
             endBook = self.endBookCombo.currentIndex() + 1

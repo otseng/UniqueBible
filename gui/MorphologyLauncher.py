@@ -119,7 +119,7 @@ class MorphologyLauncher(QWidget):
             checkbox = QCheckBox(case)
             layout.addWidget(checkbox)
             self.greekCaseCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, case=case: self.caseCheckBoxChanged(checked, case))
+            checkbox.stateChanged.connect(lambda checked, case=case: self.checkBoxChanged(checked, case, self.greekCaseCheckBoxes))
         self.greekCaseBox.setLayout(layout)
         layout.addStretch()
         subLayout.addWidget(self.greekCaseBox)
@@ -133,7 +133,7 @@ class MorphologyLauncher(QWidget):
             checkbox = QCheckBox(tense)
             layout.addWidget(checkbox)
             self.greekTenseCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, tense=tense: self.greekTenseCheckBoxChanged(checked, tense))
+            checkbox.stateChanged.connect(lambda checked, tense=tense: self.checkBoxChanged(checked, tense, self.greekTenseCheckBoxes))
         self.greekTenseBox.setLayout(layout)
         layout.addStretch()
         subLayout.addWidget(self.greekTenseBox)
@@ -147,7 +147,7 @@ class MorphologyLauncher(QWidget):
             checkbox = QCheckBox(voice)
             layout.addWidget(checkbox)
             self.voiceCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, voice=voice: self.voiceCheckBoxChanged(checked, voice))
+            checkbox.stateChanged.connect(lambda checked, voice=voice: self.checkBoxChanged(checked, voice, self.voiceCheckBoxes))
         self.voiceBox.setLayout(layout)
         layout.addStretch()
         subLayout.addWidget(self.voiceBox)
@@ -161,7 +161,7 @@ class MorphologyLauncher(QWidget):
             checkbox = QCheckBox(mood)
             layout.addWidget(checkbox)
             self.greekMoodCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, mood=mood: self.greekMoodCheckBoxChanged(checked, mood))
+            checkbox.stateChanged.connect(lambda checked, mood=mood: self.checkBoxChanged(checked, mood, self.greekMoodCheckBoxes))
         self.greekMoodBox.setLayout(layout)
         layout.addStretch()
         subLayout.addWidget(self.greekMoodBox)
@@ -175,7 +175,7 @@ class MorphologyLauncher(QWidget):
             checkbox = QCheckBox(person)
             layout.addWidget(checkbox)
             self.personCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, person=person: self.personCheckBoxChanged(checked, person))
+            checkbox.stateChanged.connect(lambda checked, person=person: self.checkBoxChanged(checked, person, self.personCheckBoxes))
         self.personBox.setLayout(layout)
         layout.addStretch()
         subLayout.addWidget(self.personBox)
@@ -189,7 +189,7 @@ class MorphologyLauncher(QWidget):
             checkbox = QCheckBox(number)
             layout.addWidget(checkbox)
             self.numberCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, number=number: self.numberCheckBoxChanged(checked, number))
+            checkbox.stateChanged.connect(lambda checked, number=number: self.checkBoxChanged(checked, number, self.numberCheckBoxes))
         self.numberBox.setLayout(layout)
         layout.addStretch()
         subLayout.addWidget(self.numberBox)
@@ -203,7 +203,7 @@ class MorphologyLauncher(QWidget):
             checkbox = QCheckBox(gender)
             layout.addWidget(checkbox)
             self.genderCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, gender=gender: self.genderCheckBoxChanged(checked, gender))
+            checkbox.stateChanged.connect(lambda checked, gender=gender: self.checkBoxChanged(checked, gender, self.genderCheckBoxes))
         self.genderBox.setLayout(layout)
         layout.addStretch()
         subLayout.addWidget(self.genderBox)
@@ -217,7 +217,7 @@ class MorphologyLauncher(QWidget):
             checkbox = QCheckBox(state)
             layout.addWidget(checkbox)
             self.hebrewStateCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, state=state: self.hebrewStateCheckBoxChanged(checked, state))
+            checkbox.stateChanged.connect(lambda checked, state=state: self.checkBoxChanged(checked, state, self.hebrewStateCheckBoxes))
         self.hebrewStateBox.setLayout(layout)
         layout.addStretch()
         subLayout.addWidget(self.hebrewStateBox)
@@ -228,11 +228,11 @@ class MorphologyLauncher(QWidget):
         self.hebrewStateBox = QGroupBox("State")
         self.hebrewStateBox.hide()
         layout = QVBoxLayout()
-        for gender in hebrewStemList:
-            checkbox = QCheckBox(gender)
+        for stem in hebrewStemList:
+            checkbox = QCheckBox(stem)
             layout.addWidget(checkbox)
             self.hebrewStemCheckBoxes.append(checkbox)
-            checkbox.stateChanged.connect(lambda checked, gender=gender: self.genderCheckBoxChanged(checked, gender))
+            checkbox.stateChanged.connect(lambda checked, stem=stem: self.checkBoxChanged(checked, stem, self.hebrewStemCheckBoxes))
         self.hebrewStateBox.setLayout(layout)
         layout.addStretch()
         subLayout.addWidget(self.hebrewStateBox)
@@ -255,54 +255,18 @@ class MorphologyLauncher(QWidget):
     def searchTypeChanged(self, checked, type):
         self.type = type
 
-    def caseCheckBoxChanged(self, state, case):
-        if int(state) > 0:
-            for caseCheckbox in self.greekCaseCheckBoxes:
-                if caseCheckbox.isChecked() and case != caseCheckbox.text():
-                    caseCheckbox.setChecked(False)
-
-    def numberCheckBoxChanged(self, state, number):
-        if int(state) > 0:
-            for numberCheckbox in self.numberCheckBoxes:
-                if numberCheckbox.isChecked() and number != numberCheckbox.text():
-                    numberCheckbox.setChecked(False)
-
-    def greekTenseCheckBoxChanged(self, state, tense):
-        if int(state) > 0:
-            for tenseCheckbox in self.greekTenseCheckBoxes:
-                if tenseCheckbox.isChecked() and tense != tenseCheckbox.text():
-                    tenseCheckbox.setChecked(False)
-
-    def greekMoodCheckBoxChanged(self, state, mood):
-        if int(state) > 0:
-            for moodCheckbox in self.greekMoodCheckBoxes:
-                if moodCheckbox.isChecked() and mood != moodCheckbox.text():
-                    moodCheckbox.setChecked(False)
-
-    def voiceCheckBoxChanged(self, state, voice):
-        if int(state) > 0:
-            for voiceCheckbox in self.voiceCheckBoxes:
-                if voiceCheckbox.isChecked() and voice != voiceCheckbox.text():
-                    voiceCheckbox.setChecked(False)
-
-    def genderCheckBoxChanged(self, state, gender):
-        if int(state) > 0:
-            for genderCheckbox in self.genderCheckBoxes:
-                if genderCheckbox.isChecked() and gender != genderCheckbox.text():
-                    genderCheckbox.setChecked(False)
-
-    def hebrewStateCheckBoxChanged(self, state, value):
-        if int(value) > 0:
-            for checkbox in self.hebrewStateCheckBoxes:
-                if checkbox.isChecked() and value != checkbox.text():
-                    checkbox.setChecked(False)
-
     def searchFieldWidget(self):
         self.searchField = QLineEdit()
         self.searchField.setClearButtonEnabled(True)
         self.searchField.setToolTip(config.thisTranslation["menu5_searchItems"])
         self.searchField.returnPressed.connect(self.searchMorphology)
         return self.searchField
+
+    def checkBoxChanged(self, state, value, checkboxes):
+        if int(state) > 0:
+            for checkbox in checkboxes:
+                if checkbox.isChecked() and value != checkbox.text():
+                    checkbox.setChecked(False)
 
     def languageChanged(self, checked, language):
         if checked:

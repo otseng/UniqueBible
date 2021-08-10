@@ -1,5 +1,7 @@
 Major changes in version 26.06:
 * Fix sub directories navigation in master control for Windows
+* Open Library Catalog window in center
+* Add Greek/Hebrew selection to Morphology Search
 
 Major changes in version 26.05:
 * Show exact match for lexicon search first

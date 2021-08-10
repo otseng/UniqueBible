@@ -8,6 +8,10 @@ from qtpy.QtWidgets import QComboBox, QLabel
 from qtpy.QtWidgets import QPushButton
 from qtpy.QtWidgets import QGroupBox, QHBoxLayout, QVBoxLayout, QWidget, QLineEdit, QRadioButton, QCheckBox
 
+# Hebrew:
+# https://uhg.readthedocs.io/en/latest/
+# Greek:
+# https://ugg.readthedocs.io/en/latest/
 class MorphologyLauncher(QWidget):
 
     def __init__(self, parent):
@@ -204,8 +208,37 @@ class MorphologyLauncher(QWidget):
         layout.addStretch()
         subLayout.addWidget(self.genderBox)
 
+        hebrewStateList = ["Construct", "Absolute"]
+        self.hebrewStateCheckBoxes = []
+        self.hebrewStateBox = QGroupBox("State")
+        self.hebrewStateBox.hide()
+        layout = QVBoxLayout()
+        for state in hebrewStateList:
+            checkbox = QCheckBox(state)
+            layout.addWidget(checkbox)
+            self.hebrewStateCheckBoxes.append(checkbox)
+            checkbox.stateChanged.connect(lambda checked, state=state: self.hebrewStateCheckBoxChanged(checked, state))
+        self.hebrewStateBox.setLayout(layout)
+        layout.addStretch()
+        subLayout.addWidget(self.hebrewStateBox)
+
+
+        hebrewStemList = ["Construct", "Absolute"]
+        self.hebrewStemCheckBoxes = []
+        self.hebrewStateBox = QGroupBox("State")
+        self.hebrewStateBox.hide()
+        layout = QVBoxLayout()
+        for gender in hebrewStemList:
+            checkbox = QCheckBox(gender)
+            layout.addWidget(checkbox)
+            self.hebrewStemCheckBoxes.append(checkbox)
+            checkbox.stateChanged.connect(lambda checked, gender=gender: self.genderCheckBoxChanged(checked, gender))
+        self.hebrewStateBox.setLayout(layout)
+        layout.addStretch()
+        subLayout.addWidget(self.hebrewStateBox)
+
         # TODO:
-        hebrewList = ["Absolute", "Construct", "Hif‘il", "Infinitive", "Nif‘al", "Pi“el", "Pronominal", "Pu“al", "Qal", "Wayyiqtol"]
+        hebrewList = ["Absolute", "", "Hif‘il", "Infinitive", "Nif‘al", "Pi“el", "Pronominal", "Pu“al", "Qal", "Wayyiqtol"]
 
         mainLayout.addLayout(subLayout)
 
@@ -258,6 +291,12 @@ class MorphologyLauncher(QWidget):
                 if genderCheckbox.isChecked() and gender != genderCheckbox.text():
                     genderCheckbox.setChecked(False)
 
+    def hebrewStateCheckBoxChanged(self, state, value):
+        if int(value) > 0:
+            for checkbox in self.hebrewStateCheckBoxes:
+                if checkbox.isChecked() and value != checkbox.text():
+                    checkbox.setChecked(False)
+
     def searchFieldWidget(self):
         self.searchField = QLineEdit()
         self.searchField.setClearButtonEnabled(True)
@@ -284,6 +323,7 @@ class MorphologyLauncher(QWidget):
             self.greekTenseBox.hide()
             self.greekMoodBox.hide()
             self.voiceBox.hide()
+            self.hebrewStateBox.hide()
             if self.pos in ("Noun", "Adjective", "Preposition"):
                 self.greekCaseBox.show()
                 self.numberBox.show()
@@ -309,6 +349,24 @@ class MorphologyLauncher(QWidget):
                 self.numberBox.hide()
                 self.greekTenseBox.hide()
                 self.voiceBox.hide()
+        elif self.language == "Hebrew":
+            self.genderBox.hide()
+            self.numberBox.hide()
+            self.greekCaseBox.hide()
+            self.personBox.hide()
+            self.greekTenseBox.hide()
+            self.greekMoodBox.hide()
+            self.voiceBox.hide()
+            self.hebrewStateBox.hide()
+            if self.pos in ("Noun", "Adjective", "Preposition"):
+                self.numberBox.show()
+                self.genderBox.show()
+                self.hebrewStateBox.show()
+            elif self.pos == "Verb":
+                self.personBox.show()
+                self.genderBox.show()
+                self.numberBox.show()
+                self.hebrewStateBox.show()
 
     def searchMorphology(self):
         searchTerm = self.searchField.text()

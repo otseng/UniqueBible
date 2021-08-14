@@ -2841,22 +2841,21 @@ class MainWindow(QMainWindow):
         try:
             if isinstance(newTextCommand, str) and newTextCommand not in ("main.html", "UniqueBible.app"):
                 self.textCommandChanged(newTextCommand, "main")
-        except:
-            pass
+        except Exception as ex:
+            self.logger.error("mainTextCommandChanged:{0}".format(ex))
 
     def studyTextCommandChanged(self, newTextCommand):
         try:
             if isinstance(newTextCommand, str) and newTextCommand not in ("main.html", "UniqueBible.app", "index.html", "This E-Book is Published with Bibi | EPUB Reader on your website.") \
                     and not newTextCommand.endswith("UniqueBibleApp.png") \
                     and not newTextCommand.startswith("viewer.html") \
-                    and not newTextCommand.endswith(".pdf") \
                     and not newTextCommand.startswith("ePubViewer.html") \
                     and not newTextCommand.endswith("Published with Bibi") \
                     or (newTextCommand.lower().startswith("pdf:::") and newTextCommand.endswith(".pdf")) \
                     or (newTextCommand.lower().startswith("anypdf:::") and newTextCommand.endswith(".pdf")):
                 self.textCommandChanged(newTextCommand, "study")
-        except:
-            pass
+        except Exception as ex:
+            self.logger.error("studyTextCommandChanged:{0}".format(ex))
 
     def instantTextCommandChanged(self, newTextCommand):
         self.textCommandChanged(newTextCommand, "instant")

@@ -250,7 +250,6 @@ class TextCommandParser:
             "crossreference": (self.textCrossReference, """
             # [KEYWORD] CROSSREFERENCE
             # e.g. CROSSREFERENCE:::Gen 1:1
-            # e.g. CROSSREFERENCE:::ALL:::Gen 1:1
             # e.g. CROSSREFERENCE:::[Cross reference file]:::Rev 1:1
             """),
             "tske": (self.tske, """
@@ -2762,15 +2761,12 @@ class TextCommandParser:
     def textCrossReference(self, command, source):
         if command.count(":::") == 1:
             file, verses = self.splitCommand(command)
-            if file.lower() == "all":
-                files = [None]
-                for file in glob.glob(config.marvelData+"/xref/*.xref"):
-                    files.append(os.path.basename(file).replace(".xref", ""))
-            else:
-                files = [file]
+            files = [file]
         else:
             verses = command
             files = [None]
+            for file in glob.glob(config.marvelData + "/xref/*.xref"):
+                files.append(os.path.basename(file).replace(".xref", ""))
         verseList = self.extractAllVerses(verses)
         if not verseList:
             return self.invalidCommand()

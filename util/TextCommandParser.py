@@ -2757,16 +2757,24 @@ class TextCommandParser:
 
     # CROSSREFERENCE:::
     def textCrossReference(self, command, source):
-        verseList = self.extractAllVerses(command)
+        if command.count(":::") == 1:
+            file, verses = self.splitCommand(command)
+        else:
+            file = None
+            verses = command
+        verseList = self.extractAllVerses(verses)
         if not verseList:
             return self.invalidCommand()
         else:
             biblesSqlite = BiblesSqlite()
-            crossReferenceSqlite = CrossReferenceSqlite()
+            crossReferenceSqlite = CrossReferenceSqlite(file)
             content = ""
+            xrefFile = ""
+            if file is not None:
+                xrefFile = " ({0})".format(file)
             for verse in verseList:
-                content += "<h2>Cross-reference: <ref onclick='document.title=\"{0}\"'>{0}</ref></h2>".format(biblesSqlite.bcvToVerseReference(*verse))
-                crossReferenceList = self.extractAllVerses(crossReferenceSqlite.scrollMapper(verse))
+                content += "<h2>Cross-reference{1}: <ref onclick='document.title=\"{0}\"'>{0}</ref></h2>".format(biblesSqlite.bcvToVerseReference(*verse), xrefFile)
+                crossReferenceList = self.extractAllVerses(crossReferenceSqlite.getCrossReferenceList(verse))
                 if not crossReferenceList:
                     content += "[No cross-reference is found for this verse!]"
                 else:

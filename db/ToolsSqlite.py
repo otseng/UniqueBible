@@ -55,20 +55,30 @@ class VerseONTData:
 
 class CrossReferenceSqlite:
 
-    def __init__(self):
-        # connect cross-reference.sqlite
-        self.database = os.path.join(config.marvelData, "cross-reference.sqlite")
-        self.connection = sqlite3.connect(self.database)
-        self.cursor = self.connection.cursor()
+    def __init__(self, file=None):
+        self.file = file
+        if self.file is None:
+            filename = "cross-reference.sqlite"
+        else:
+            filename = os.path.join("xref", file + ".xref")
+        self.connection = None
+        self.database = os.path.join(config.marvelData, filename)
+        if os.path.exists(self.database):
+            self.connection = sqlite3.connect(self.database)
+            self.cursor = self.connection.cursor()
 
     def __del__(self):
-        self.connection.close()
+        if self.connection is not None:
+            self.connection.close()
 
     def bcvToVerseReference(self, b, c, v):
         return BibleVerseParser(config.parserStandarisation).bcvToVerseReference(b, c, v)
 
-    def scrollMapper(self, bcvTuple):
-        query = "SELECT Information FROM ScrollMapper WHERE Book=? AND Chapter=? AND Verse=?"
+    def getCrossReferenceList(self, bcvTuple):
+        if self.file is None:
+            query = "SELECT Information FROM ScrollMapper WHERE Book=? AND Chapter=? AND Verse=?"
+        else:
+            query = "SELECT Information FROM CrossReference WHERE Book=? AND Chapter=? AND Verse=?"
         self.cursor.execute(query, bcvTuple)
         information = self.cursor.fetchone()
         if not information:

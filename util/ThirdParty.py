@@ -1928,6 +1928,8 @@ class Converter:
                     if len(info) > 0:
                         info += "; "
                     info += BibleVerseParser(config.parserStandarisation).bcvToVerseReference(tbi, tci, tvi)
+                    if int(tspan) > 0:
+                        info += "-{0}".format(int(tvi)+int(tspan))
                 data.append((book, chapter, verse, info))
                 insert = "INSERT INTO CrossReference (Book, Chapter, Verse, Information) VALUES (?, ?, ?, ?)"
                 cursor.executemany(insert, data)

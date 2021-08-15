@@ -57,10 +57,13 @@ class CrossReferenceSqlite:
 
     def __init__(self, file=None):
         self.file = file
-        if self.file is None:
+        if file is None:
             filename = "cross-reference.sqlite"
         else:
-            filename = os.path.join("xref", file + ".xref")
+            file = os.path.basename(file)
+            if not file.endswith(".xref"):
+                file += ".xref"
+            filename = os.path.join("xref", file)
         self.connection = None
         self.database = os.path.join(config.marvelData, filename)
         if os.path.exists(self.database):

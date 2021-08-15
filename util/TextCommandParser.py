@@ -249,7 +249,9 @@ class TextCommandParser:
             # e.g. CHAPTERINDEX:::Gen 1"""),
             "crossreference": (self.textCrossReference, """
             # [KEYWORD] CROSSREFERENCE
-            # e.g. CROSSREFERENCE:::Gen 1:1"""),
+            # e.g. CROSSREFERENCE:::Gen 1:1
+            # e.g. CROSSREFERENCE:::[Cross reference file]:::Rev 1:1
+            """),
             "tske": (self.tske, """
             # [KEYWORD] TSKE
             # e.g. TSKE:::Gen 1:1"""),
@@ -2759,25 +2761,26 @@ class TextCommandParser:
     def textCrossReference(self, command, source):
         if command.count(":::") == 1:
             file, verses = self.splitCommand(command)
+            files = [file]
         else:
-            file = None
             verses = command
+            files = [None]
+            for file in glob.glob(config.marvelData+"/xref/*.xref"):
+                files.append(os.path.basename(file).replace(".xref", ""))
         verseList = self.extractAllVerses(verses)
         if not verseList:
             return self.invalidCommand()
-        else:
-            biblesSqlite = BiblesSqlite()
+        biblesSqlite = BiblesSqlite()
+        content = ""
+        for file in files:
             crossReferenceSqlite = CrossReferenceSqlite(file)
-            content = ""
             xrefFile = ""
             if file is not None:
                 xrefFile = " ({0})".format(file)
             for verse in verseList:
                 content += "<h2>Cross-reference{1}: <ref onclick='document.title=\"{0}\"'>{0}</ref></h2>".format(biblesSqlite.bcvToVerseReference(*verse), xrefFile)
                 crossReferenceList = self.extractAllVerses(crossReferenceSqlite.getCrossReferenceList(verse))
-                if not crossReferenceList:
-                    content += "[No cross-reference is found for this verse!]"
-                else:
+                if crossReferenceList:
                     crossReferenceList.insert(0, tuple(verse))
                     content += biblesSqlite.readMultipleVerses(config.mainText, crossReferenceList)
                 content += "<hr>"

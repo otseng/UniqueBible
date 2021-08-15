@@ -2784,10 +2784,10 @@ class TextCommandParser:
                     crossReferenceList.insert(0, tuple(verse))
                     content += biblesSqlite.readMultipleVerses(config.mainText, crossReferenceList)
                 content += "<hr>"
-            del crossReferenceSqlite
-            del biblesSqlite
-            self.setStudyVerse(config.studyText, verseList[-1])
-            return ("study", content, {})
+        del crossReferenceSqlite
+        del biblesSqlite
+        self.setStudyVerse(config.studyText, verseList[-1])
+        return ("study", content, {})
 
     # TSKE:::
     def tske(self, command, source):

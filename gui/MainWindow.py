@@ -1569,6 +1569,7 @@ class MainWindow(QMainWindow):
         if directory:
             if Converter().importAllFilesInAFolder(directory):
                 self.completeImport()
+                self.reloadResources()
             else:
                 self.displayMessage(config.thisTranslation["message_noSupportedFile"])
 
@@ -1579,7 +1580,7 @@ class MainWindow(QMainWindow):
                                                      self.directoryLabel.text(), options)
         if directory:
             if Converter().createBookModuleFromImages(directory):
-                self.reloadControlPanel(False)
+                self.reloadResources()
                 self.displayMessage(config.thisTranslation["message_done"])
             else:
                 self.displayMessage(config.thisTranslation["message_noSupportedFile"])
@@ -1591,7 +1592,7 @@ class MainWindow(QMainWindow):
                                                      self.directoryLabel.text(), options)
         if directory:
             if Converter().createBookModuleFromHTML(directory):
-                self.reloadControlPanel(False)
+                self.reloadResources()
                 self.displayMessage(config.thisTranslation["message_done"])
             else:
                 self.displayMessage(config.thisTranslation["message_noSupportedFile"])
@@ -1603,7 +1604,7 @@ class MainWindow(QMainWindow):
                                                      self.directoryLabel.text(), options)
         if directory:
             if Converter().createBookModuleFromNotes(directory):
-                self.reloadControlPanel(False)
+                self.reloadResources()
                 self.displayMessage(config.thisTranslation["message_done"])
             else:
                 self.displayMessage(config.thisTranslation["message_noSupportedFile"])

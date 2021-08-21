@@ -705,7 +705,7 @@ class MainWindow(QMainWindow):
                 os.remove(file)
                 self.reloadControlPanel(False)
                 self.displayMessage(item + " " + config.thisTranslation["message_installed"])
-                self.installFromGitHub(repo, directory, title)
+                self.installFromGitHub(gitHubRepoInfo)
             self.loadBibleDescriptions()
 
     # Select database to modify
@@ -1611,6 +1611,18 @@ class MainWindow(QMainWindow):
                                                      self.directoryLabel.text(), options)
         if directory:
             if Converter().createBookModuleFromNotes(directory):
+                self.reloadResources()
+                self.displayMessage(config.thisTranslation["message_done"])
+            else:
+                self.displayMessage(config.thisTranslation["message_noSupportedFile"])
+
+    def createBookModuleFromPDF(self):
+        options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
+        directory = QFileDialog.getExistingDirectory(self,
+                                                     config.thisTranslation["menu10_bookFromNotes"],
+                                                     self.directoryLabel.text(), options)
+        if directory:
+            if Converter().createBookModuleFromPDF(directory):
                 self.reloadResources()
                 self.displayMessage(config.thisTranslation["message_done"])
             else:

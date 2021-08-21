@@ -120,7 +120,7 @@ class Converter:
             fileBasename = os.path.basename(filepath)
             fileName, fileExtension = os.path.splitext(fileBasename)
             if fileExtension.lower() == ".pdf":
-                with open(os.path.join(folder, filepath), "r", encoding="utf-8") as fileObject:
+                with open(os.path.join(folder, filepath), "rb") as fileObject:
                     note = fileObject.read()
                     bookContent.append((fileName, note))
         if bookContent and module:

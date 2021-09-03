@@ -766,4 +766,5 @@ translation = {
     "type": "Type",
     "menu10_bookFromPDF": "Carnet de référence à partir des fichiers PDF",
     "gitHubPluginsMenu": "Menu Plugins GitHub",
+    "devotionals": "Dévoyations",
 }

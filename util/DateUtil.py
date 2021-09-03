@@ -1,5 +1,5 @@
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 import config
 
@@ -66,6 +66,18 @@ class DateUtil:
     @staticmethod
     def secondsBetweenLocalAndUtc():
         return int(DateUtil.stimeToEpoch(time.gmtime()) - DateUtil.stimeToEpoch(time.localtime()))
+
+    @staticmethod
+    def currentYear():
+        return date.today().year
+
+    @staticmethod
+    def currentMonth():
+        return date.today().month
+
+    @staticmethod
+    def currentDay():
+        return date.today().day
 
 def test_epoch():
     print(DateUtil.epoch())

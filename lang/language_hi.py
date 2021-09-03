@@ -766,4 +766,5 @@ translation = {
     "type": "क़िस्म",
     "menu10_bookFromPDF": "पीडीएफ फाइल से संदर्भ पुस्तक",
     "gitHubPluginsMenu": "GitHअय्यूब प्लगइन्स मेन्यू",
+    "devotionals": "प्रार्थनापत्र",
 }

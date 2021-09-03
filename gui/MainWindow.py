@@ -11,6 +11,7 @@ from qtpy.QtWidgets import (QAction, QInputDialog, QLineEdit, QMainWindow, QMess
                                QFrame, QFontDialog, QApplication, QPushButton, QShortcut, QColorDialog)
 from qtpy.QtWidgets import QComboBox
 
+from db.DevotionalSqlite import DevotionalSqlite
 from gui.BibleCollectionDialog import BibleCollectionDialog
 from gui.LibraryCatalogDialog import LibraryCatalogDialog
 from gui.LiveFilterDialog import LiveFilterDialog
@@ -3625,7 +3626,14 @@ class MainWindow(QMainWindow):
         playlist.append((text, book, chapter, folder))
         self.playBibleMP3Playlist(playlist)
 
-
+    def openDevotional(self, devotional, date=""):
+        print("opening " + devotional)
+        d = DevotionalSqlite(devotional)
+        text = d.getEntry(date)
+        text = re.sub('<a href=.*?>','', text)
+        text = text.replace('</a>', '')
+        text = self.htmlWrapper(text, True, "study", False, True)
+        self.openTextOnStudyView(text, tab_title=devotional)
 
 
     def testing(self):

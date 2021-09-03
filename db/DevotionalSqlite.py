@@ -29,7 +29,11 @@ class DevotionalSqlite:
             self.cursor.execute(query, (str(month), str(day)))
             content = self.cursor.fetchone()
             if content:
-                return content[0]
+                text = "<table style='border:none; border-collapse:collapse;'><tr><td></td>"
+                text += "<td align='center' width='80%'><h3>{0} {1}</h3></td>".format(DateUtil.monthFullName(month), day)
+                text += "<td></td></tr></table>"
+                text += content[0]
+                return text
         return config.thisTranslation["empty"]
 
     def checkTableExists(self, table):

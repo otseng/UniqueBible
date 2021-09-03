@@ -79,6 +79,10 @@ class DateUtil:
     def currentDay():
         return date.today().day
 
+    @staticmethod
+    def monthFullName(month):
+        return datetime.strptime(str(month), "%m").strftime("%B")
+
 def test_epoch():
     print(DateUtil.epoch())
     print(time.gmtime())
@@ -118,5 +122,9 @@ def test_stringFormat():
     dateObj = DateUtil.dateStringToObject('2021-02-23')
     print(dateObj)
 
+def test_month():
+    dateObj = DateUtil.monthFullName(1)
+    print(dateObj)
+
 if __name__ == "__main__":
-    test_stringFormat()
+    test_month()

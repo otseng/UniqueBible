@@ -767,4 +767,5 @@ translation = {
     "menu10_bookFromPDF": "Carte de referinţă din fişiere PDF",
     "gitHubPluginsMenu": "Meniu plugin-uri GitHub",
     "devotionals": "Dedicare",
+    "gitHubDevotionals": "Dedicare GitHub",
 }

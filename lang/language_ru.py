@@ -767,4 +767,5 @@ translation = {
     "menu10_bookFromPDF": "Справочные книги из файлов PDF",
     "gitHubPluginsMenu": "Меню модулей GitHub",
     "devotionals": "Последователи",
+    "gitHubDevotionals": "Последователи GitHub",
 }

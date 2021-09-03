@@ -767,4 +767,5 @@ translation = {
     "menu10_bookFromPDF": "PDF 파일에서 서적 참조",
     "gitHubPluginsMenu": "깃허브 플러그인메뉴 (GitHub Plugins) 메뉴",
     "devotionals": "Devotionals",
+    "gitHubDevotionals": "GitHub Devotionals",
 }

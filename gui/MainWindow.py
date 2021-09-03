@@ -688,6 +688,9 @@ class MainWindow(QMainWindow):
         self.installFromGitHub(GitHubRepoInfo.pluginsMenu)
         self.displayMessage(config.thisTranslation["message_configurationTakeEffectAfterRestart"])
 
+    def installGithubDevotionals(self):
+        self.installFromGitHub(GitHubRepoInfo.devotionals)
+
     def installFromGitHub(self, gitHubRepoInfo):
         repo, directory, title, extension = gitHubRepoInfo
         if config.isPygithubInstalled:

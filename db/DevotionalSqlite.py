@@ -16,23 +16,13 @@ class DevotionalSqlite:
         if self.connection is not None:
             self.connection.close()
 
-    def getEntry(self, date=""):
+    def getEntry(self, month, day):
         if self.connection is not None:
-            if date == "":
-                month = DateUtil.currentMonth()
-                day = DateUtil.currentDay()
-            else:
-                (m, d) = date.split("-")
-                month = int(m)
-                day = int(d)
             query = "SELECT devotion FROM devotional WHERE month=? and day=?"
             self.cursor.execute(query, (str(month), str(day)))
             content = self.cursor.fetchone()
             if content:
-                text = "<table style='border:none; border-collapse:collapse;'><tr><td></td>"
-                text += "<td align='center' width='80%'><h3>{0} {1}</h3></td>".format(DateUtil.monthFullName(month), day)
-                text += "<td></td></tr></table>"
-                text += content[0]
+                text = content[0]
                 return text
         return config.thisTranslation["empty"]
 

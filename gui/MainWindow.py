@@ -3630,12 +3630,32 @@ class MainWindow(QMainWindow):
         self.playBibleMP3Playlist(playlist)
 
     def openDevotional(self, devotional, date=""):
-        print("opening " + devotional)
+        if date == "":
+            month = DateUtil.currentMonth()
+            day = DateUtil.currentDay()
+        else:
+            (m, d) = date.split("-")
+            month = int(m)
+            day = int(d)
         d = DevotionalSqlite(devotional)
-        text = d.getEntry(date)
+        text = d.getEntry(month, day)
         text = re.sub('<a href=.*?>','', text)
         text = text.replace('</a>', '')
         text = self.htmlWrapper(text, True, "study", False, True)
+        current = DateUtil.dateStringToObject("{0}-{1}-{2}".format(DateUtil.currentYear(), month, day))
+        previous = DateUtil.addDays(current, -1)
+        next = DateUtil.addDays(current, 1)
+        prevMonth = previous.month
+        prevDay = previous.day
+        nextMonth = next.month
+        nextDay = next.day
+        header = """<center><h3>{0} {1}</h3>
+                <p>[{2}Previous</ref>] - [{3}Next</ref>]</p></center>
+                """.format(DateUtil.monthFullName(month), day,
+                "<ref onclick='document.title=\"DEVOTIONAL:::{0}:::{1}-{2}\"'>".format(devotional, prevMonth, prevDay),
+                "<ref onclick='document.title=\"DEVOTIONAL:::{0}:::{1}-{2}\"'>".format(devotional, nextMonth, nextDay))
+        text = header + text
+
         self.openTextOnStudyView(text, tab_title=devotional)
 
 

@@ -766,4 +766,8 @@ translation = {
     "type": "유형",
     "menu10_bookFromPDF": "PDF 파일에서 서적 참조",
     "gitHubPluginsMenu": "깃허브 플러그인메뉴 (GitHub Plugins) 메뉴",
+    "devotionals": "Devotionals",
+    "gitHubDevotionals": "GitHub Devotionals",
+    "message_macro_save_settings": "설정을 매크로 파일로 저장하려면 파일 이름을 입력하십시오.",
+    "settings": "설정",
 }

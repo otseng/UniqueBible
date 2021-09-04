@@ -11,6 +11,7 @@ from qtpy.QtWidgets import (QAction, QInputDialog, QLineEdit, QMainWindow, QMess
                                QFrame, QFontDialog, QApplication, QPushButton, QShortcut, QColorDialog)
 from qtpy.QtWidgets import QComboBox
 
+from db.DevotionalSqlite import DevotionalSqlite
 from gui.BibleCollectionDialog import BibleCollectionDialog
 from gui.LibraryCatalogDialog import LibraryCatalogDialog
 from gui.LiveFilterDialog import LiveFilterDialog
@@ -686,6 +687,9 @@ class MainWindow(QMainWindow):
     def installGithubPluginsMenu(self):
         self.installFromGitHub(GitHubRepoInfo.pluginsMenu)
         self.displayMessage(config.thisTranslation["message_configurationTakeEffectAfterRestart"])
+
+    def installGithubDevotionals(self):
+        self.installFromGitHub(GitHubRepoInfo.devotionals)
 
     def installFromGitHub(self, gitHubRepoInfo):
         repo, directory, title, extension = gitHubRepoInfo
@@ -3397,6 +3401,33 @@ class MainWindow(QMainWindow):
             self.reloadResources()
             self.displayMessage("Command saved to {0}".format(filename))
 
+    def macroSaveSettings(self):
+        filename, ok = self.openSaveMacroDialog(config.thisTranslation["message_macro_save_settings"])
+        if ok:
+            file = os.path.join(MacroParser.macros_dir, filename)
+            outfile = open(file, "w")
+            outfile.write("config.defaultLexiconStrongH = '{0}'{1}".format(config.defaultLexiconStrongH, "\n"))
+            outfile.write("config.defaultLexiconStrongG = '{0}'{1}".format(config.defaultLexiconStrongG, "\n"))
+            outfile.write("config.displayLanguage = '{0}'{1}".format(config.displayLanguage, "\n"))
+            outfile.write("config.enablePlugins = {0}{1}".format(config.enablePlugins, "\n"))
+            outfile.write("config.favouriteBible = '{0}'{1}".format(config.favouriteBible, "\n"))
+            outfile.write("config.forceGenerateHtml = {0}{1}".format(config.forceGenerateHtml, "\n"))
+            outfile.write("config.lexicon = '{0}'{1}".format(config.lexicon, "\n"))
+            outfile.write("config.menuLayout = '{0}'{1}".format(config.menuLayout, "\n"))
+            outfile.write("config.menuShortcuts = '{0}'{1}".format(config.menuShortcuts, "\n"))
+            outfile.write("config.numberOfTab = {0}{1}".format(config.numberOfTab, "\n"))
+            outfile.write("config.qtMaterial = {0}{1}".format(config.qtMaterial, "\n"))
+            outfile.write("config.theme = '{0}'{1}".format(config.theme, "\n"))
+            outfile.write("config.useLiteVerseParsing = {0}{1}".format(config.useLiteVerseParsing, "\n"))
+            outfile.write("config.useWebbrowser = {0}{1}".format(config.useWebbrowser, "\n"))
+            outfile.write("config.verseNoSingleClickAction = '{0}'{1}".format(config.verseNoSingleClickAction, "\n"))
+            outfile.write("config.verseNoDoubleClickAction = '{0}'{1}".format(config.verseNoDoubleClickAction, "\n"))
+            outfile.write("config.windowStyle = '{0}'{1}".format(config.windowStyle, "\n"))
+            outfile.write(". displayMessage Restart for settings to take effect\n")
+            outfile.close()
+            self.reloadResources()
+            self.displayMessage("Command saved to {0}".format(filename))
+
     def macroGenerateDownloadMissingFiles(self):
         filename, ok = self.openSaveMacroDialog(config.thisTranslation["message_macro_save_command"])
         if ok:
@@ -3625,7 +3656,34 @@ class MainWindow(QMainWindow):
         playlist.append((text, book, chapter, folder))
         self.playBibleMP3Playlist(playlist)
 
+    def openDevotional(self, devotional, date=""):
+        if date == "":
+            month = DateUtil.currentMonth()
+            day = DateUtil.currentDay()
+        else:
+            (m, d) = date.split("-")
+            month = int(m)
+            day = int(d)
+        d = DevotionalSqlite(devotional)
+        text = d.getEntry(month, day)
+        text = re.sub('<a href=.*?>','', text)
+        text = text.replace('</a>', '')
+        text = self.htmlWrapper(text, True, "study", False, True)
+        current = DateUtil.dateStringToObject("{0}-{1}-{2}".format(DateUtil.currentYear(), month, day))
+        previous = DateUtil.addDays(current, -1)
+        next = DateUtil.addDays(current, 1)
+        prevMonth = previous.month
+        prevDay = previous.day
+        nextMonth = next.month
+        nextDay = next.day
+        header = """<center><h3>{0} {1}</h3>
+                <p>[{2}Previous</ref>] - [{3}Next</ref>]</p></center>
+                """.format(DateUtil.monthFullName(month), day,
+                "<ref onclick='document.title=\"DEVOTIONAL:::{0}:::{1}-{2}\"'>".format(devotional, prevMonth, prevDay),
+                "<ref onclick='document.title=\"DEVOTIONAL:::{0}:::{1}-{2}\"'>".format(devotional, nextMonth, nextDay))
+        text = header + text
 
+        self.openTextOnStudyView(text, tab_title=devotional)
 
 
     def testing(self):

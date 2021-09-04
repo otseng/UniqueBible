@@ -57,9 +57,23 @@ def addGithubDownloadMenuItems(self, subMenu):
             ("githubMaps", self.installGithubMaps),
             ("githubPdf", self.installGithubPdf),
             ("githubEpub", self.installGithubEpub),
+            ("gitHubDevotionals", self.installGithubDevotionals),
             ("gitHubBibleMp3Files", self.installGithubBibleMp3),
             ("gitHubPluginsContext", self.installGithubPluginsContext),
             ("gitHubPluginsMenu", self.installGithubPluginsMenu),
+        )
+        for feature, action in items:
+            addMenuItem(subMenu, feature, self, action)
+
+def addBuildMacroMenuItems(self, subMenu):
+    if config.isPygithubInstalled:
+        subMenu.addSeparator()
+        items = (
+            ("menu_command", self.macroSaveCommand),
+            ("menu_highlight", self.macroSaveHighlights),
+            ("settings", self.macroSaveSettings),
+            ("downloadMissingFiles", self.macroGenerateDownloadMissingFiles),
+            ("downloadExistingFiles", self.macroGenerateDownloadExistingFiles),
         )
         for feature, action in items:
             addMenuItem(subMenu, feature, self, action)

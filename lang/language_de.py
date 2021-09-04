@@ -766,4 +766,8 @@ translation = {
     "type": "Typ",
     "menu10_bookFromPDF": "Referenzbuch aus PDF-Dateien",
     "gitHubPluginsMenu": "GitHub-Plugins-Menü",
+    "devotionals": "Devotionals",
+    "gitHubDevotionals": "GitHub Devotionals",
+    "message_macro_save_settings": "Dateinamen eingeben, um Einstellungen als Makrodatei zu speichern",
+    "settings": "Einstellungen",
 }

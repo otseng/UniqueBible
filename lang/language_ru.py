@@ -766,4 +766,8 @@ translation = {
     "type": "Тип",
     "menu10_bookFromPDF": "Справочные книги из файлов PDF",
     "gitHubPluginsMenu": "Меню модулей GitHub",
+    "devotionals": "Последователи",
+    "gitHubDevotionals": "Последователи GitHub",
+    "message_macro_save_settings": "Введите имя файла, чтобы сохранить параметры как файл макрокоманды",
+    "settings": "Параметры",
 }

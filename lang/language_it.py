@@ -766,4 +766,8 @@ translation = {
     "type": "Tipo",
     "menu10_bookFromPDF": "Libro di riferimento da file PDF",
     "gitHubPluginsMenu": "Menu Plugins GitHub",
+    "devotionals": "Devotionari",
+    "gitHubDevotionals": "GitHub Devotionals",
+    "message_macro_save_settings": "Inserisce il nomefile per salvare le impostazioni come file macro",
+    "settings": "Impostazioni",
 }

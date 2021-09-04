@@ -766,4 +766,8 @@ translation = {
     "type": "Tip",
     "menu10_bookFromPDF": "Carte de referinţă din fişiere PDF",
     "gitHubPluginsMenu": "Meniu plugin-uri GitHub",
+    "devotionals": "Dedicare",
+    "gitHubDevotionals": "Dedicare GitHub",
+    "message_macro_save_settings": "Introduceţi numele de fişier pentru a salva setările ca un fişier macro",
+    "settings": "Setări",
 }

@@ -1,6 +1,7 @@
 import glob
 from xml.dom.minidom import Node
 
+from db.DevotionalSqlite import DevotionalSqlite
 from util.BibleBooks import BibleBooks
 from util.TextUtil import TextUtil
 
@@ -1887,6 +1888,22 @@ class Converter:
 
         connection.close()
 
+    def importESwordDevotional(self, filename):
+        *_, module = os.path.split(filename)
+        module = Path(module).stem
+        connection = sqlite3.connect(filename)
+        cursor = connection.cursor()
+
+        query = "SELECT Month, Day, Devotion from Devotions"
+        cursor.execute(query)
+        content = cursor.fetchall()
+        data = []
+        for month, day, devotion in content:
+            devotion = self.convertRtfToHtml(devotion)
+            data.append((month, day, devotion))
+        DevotionalSqlite.createDevotional(module, data)
+        connection.close()
+
     def checkColumnExists(self, table, column, cursor):
         cursor.execute("SELECT * FROM pragma_table_info(?) WHERE name=?", (table, column))
         if cursor.fetchone():
@@ -1950,6 +1967,38 @@ class Converter:
                 insert = "INSERT INTO CrossReference (Book, Chapter, Verse, Information) VALUES (?, ?, ?, ?)"
                 cursor.executemany(insert, data)
                 connection.commit()
+
+    def convertRtfToHtml(self, rtf):
+        lines = rtf.split("\n")
+        output = ""
+        for line in lines:
+            line = line.replace("\\pard", "")
+            line = line.replace("\\par", "<br>")
+            line = re.sub("^\\\[^ ]+ ", "", line)
+            line = re.sub("^\\\[^ ]+<br>", "", line)
+            line = re.sub("^\\\[^ ]+$", "", line)
+            replace = [
+                       "\\cf11",
+                       "\\cf0none",
+                       "\\i0",
+                       "\\i ",
+                       "\\li1440",
+                       "\\li360",
+                       "\\li4320",
+                       "\\li720",
+                       "\\nowidctlpar",
+                       "\\ri360",
+                       "\\qc",
+                       "\\ul",
+                       "\\ulnone",
+                       "\\cf0none"
+                       ]
+            for r in replace:
+                line = line.replace(r, "")
+            line = line.replace("_", " ")
+            output += line + "\n"
+        return output
+
 
 class ThirdPartyDictionary:
 
@@ -2292,5 +2341,8 @@ if __name__ == '__main__':
     # print("Processing " + file)
     # Converter().importScrollmapperDeuterocanonicalFiles(file)
 
-    file = "/Users/otseng/Downloads/FruchtenbaumOTRev.xrefs.twm"
-    Converter().importTheWordXref(file)
+    # file = "/Users/otseng/Downloads/FruchtenbaumOTRev.xrefs.twm"
+    # Converter().importTheWordXref(file)
+
+    filename = "/home/oliver/Downloads/Cowman - Streams in the Desert.devx"
+    Converter().importESwordDevotional(filename)

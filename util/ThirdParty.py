@@ -1972,16 +1972,24 @@ class Converter:
         lines = rtf.split("\n")
         output = ""
         for line in lines:
+            center = False
             line = line.replace("\\pard", "")
+            line = line.replace("\\line", "<br>")
             line = line.replace("\\par", "<br>")
-            line = re.sub("^\\\[^ ]+ ", "", line)
-            line = re.sub("^\\\[^ ]+<br>", "", line)
+            line = line.replace("\\i0", "</i>")
+            line = line.replace("\\i ", "<i>")
+            line = line.replace("\\b0", "</b>")
+            line = line.replace("\\b ", "<b>")
+            if "\\qc" in line:
+                center = True
+                line = line.replace("\\qc", "<center>")
+            line = re.sub("^\\\[^ ]+?<", "<", line)
             line = re.sub("^\\\[^ ]+$", "", line)
+            line = re.sub("^\\\[^ ]+? ", "", line)
+            line = re.sub("\\\\tx[0-9]*", "", line)
             replace = [
                        "\\cf11",
                        "\\cf0none",
-                       "\\i0",
-                       "\\i ",
                        "\\li1440",
                        "\\li360",
                        "\\li4320",
@@ -1996,6 +2004,8 @@ class Converter:
             for r in replace:
                 line = line.replace(r, "")
             line = line.replace("_", " ")
+            if center:
+                line += "</center>"
             output += line + "\n"
         return output
 
@@ -2344,5 +2354,9 @@ if __name__ == '__main__':
     # file = "/Users/otseng/Downloads/FruchtenbaumOTRev.xrefs.twm"
     # Converter().importTheWordXref(file)
 
-    filename = "/home/oliver/Downloads/Cowman - Streams in the Desert.devx"
+    # line = "\\tx123dev\\tx2345abc"
+    # print(re.sub("\\\\tx[0-9]*", "", line))
+
+    filename = "/home/oliver/Downloads/Kitto - Daily Bible Illustrations - Morning.devx"
     Converter().importESwordDevotional(filename)
+

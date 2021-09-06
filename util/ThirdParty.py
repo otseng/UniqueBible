@@ -1969,7 +1969,8 @@ class Converter:
                 connection.commit()
 
     def convertRtfToHtml(self, rtf):
-        rtf = rtf.replace("\\pard", "<br>\n")
+        rtf = rtf.replace("\\pard", "<p>\n")
+        rtf = rtf.replace("\\par", "<p>\n")
         lines = rtf.split("\n")
         output = ""
         for line in lines:
@@ -2028,7 +2029,8 @@ class Converter:
                        "\\s22tap0n1",
                        "\\widctlparmult",
                        "\\cf0none",
-                       "\\b"
+                       "\\b",
+                       "\\i",
                        ]
             if len(line) > 0:
                 for r in replace:
@@ -2387,6 +2389,6 @@ if __name__ == '__main__':
     # line = "\\tx123dev\\tx2345abc"
     # print(re.sub("\\\\tx[0-9]*", "", line))
 
-    filename = "/home/oliver/Downloads/Kitto - Daily Bible Illustrations - Morning.devx"
+    filename = "/home/oliver/Downloads/Miller - Devotional Hours with the Bible.devx"
     Converter().importESwordDevotional(filename)
 

@@ -1969,41 +1969,71 @@ class Converter:
                 connection.commit()
 
     def convertRtfToHtml(self, rtf):
+        rtf = rtf.replace("\\pard", "<br>\n")
         lines = rtf.split("\n")
         output = ""
         for line in lines:
             center = False
-            line = line.replace("\\pard", "")
             line = line.replace("\\line", "<br>")
+            line = line.replace("\\s18tap01", "<br>")
             line = line.replace("\\par", "<br>")
             line = line.replace("\\i0", "</i>")
             line = line.replace("\\i ", "<i>")
             line = line.replace("\\b0", "</b>")
             line = line.replace("\\b ", "<b>")
+            line = line.replace("\\'91", "'")
+            line = line.replace("\\'92", "'")
+            line = line.replace("\\'93", '"')
+            line = line.replace("\\'94", '"')
+            line = line.replace("\\'97", ' - ')
+            line = line.replace("\\cs51", ':')
             if "\\qc" in line:
-                center = True
-                line = line.replace("\\qc", "<center>")
+                if len(line) < 80:
+                    center = True
+                    line = line.replace("\\qc", "<center>")
+                else:
+                    line = line.replace("\\qc", "")
             line = re.sub("^\\\[^ ]+?<", "<", line)
             line = re.sub("^\\\[^ ]+$", "", line)
+            line = re.sub("^\{.*\}$", "", line)
             line = re.sub("^\\\[^ ]+? ", "", line)
             line = re.sub("\\\\tx[0-9]*", "", line)
+            line = re.sub("\\\sb[0-9]*", "", line)
+            line = re.sub("\\\sl[0-9]*", "", line)
             replace = [
                        "\\cf11",
                        "\\cf0none",
+                       "\\cf1",
+                       "\\cs505",
+                       "\\cs52",
+                       "\\f0",
+                       "\\hich",
+                       "\\keep",
+                       "\\keepn1",
                        "\\li1440",
                        "\\li360",
                        "\\li4320",
                        "\\li720",
+                       "\\loch",
+                       "\\nosupersub",
                        "\\nowidctlpar",
                        "\\ri360",
+                       "\\lmult1",
                        "\\qc",
                        "\\ul",
                        "\\ulnone",
-                       "\\cf0none"
+                       "\\s18tap0",
+                       "\\s18tap01",
+                       "\\s22tap0",
+                       "\\s22tap0n1",
+                       "\\widctlparmult",
+                       "\\cf0none",
+                       "\\b"
                        ]
-            for r in replace:
-                line = line.replace(r, "")
-            line = line.replace("_", " ")
+            if len(line) > 0:
+                for r in replace:
+                    line = line.replace(r, "")
+                line = line.replace("_", " ")
             if center:
                 line += "</center>"
             output += line + "\n"

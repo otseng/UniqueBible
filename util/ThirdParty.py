@@ -114,6 +114,30 @@ class Converter:
         else:
             return False
 
+    def createDevotionalFromNotes(self, folder):
+        module = os.path.basename(folder)
+        devotionalContent = []
+        for filepath in sorted([f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f)) and not re.search(r"^[\._]", f)]):
+            fileBasename = os.path.basename(filepath)
+            fileName, fileExtension = os.path.splitext(fileBasename)
+            if fileExtension.lower() == ".uba":
+                with open(os.path.join(folder, filepath), "r", encoding="utf-8") as fileObject:
+                    note = fileObject.read()
+                    note = TextUtil.formulateUBACommandHyperlink(note)
+                    if config.parseTextConvertNotesToBook:
+                        note = BibleVerseParser(config.parserStandarisation).parseText(note)
+                    try:
+                        month = int(fileName[0:2])
+                        day = int(fileName[3:5])
+                    except:
+                        return False
+                    devotionalContent.append((month, day, note))
+        if devotionalContent and module:
+            DevotionalSqlite.createDevotional(module, devotionalContent)
+            return True
+        else:
+            return False
+
     def createBookModuleFromPDF(self, folder):
         module = os.path.basename(folder)
         bookContent = []

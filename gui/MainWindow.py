@@ -1627,6 +1627,18 @@ class MainWindow(QMainWindow):
             else:
                 self.displayMessage(config.thisTranslation["message_noSupportedFile"])
 
+    def createDevotionalFromNotes(self):
+        options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
+        directory = QFileDialog.getExistingDirectory(self,
+                                                     config.thisTranslation["devotionalFromNotes"],
+                                                     self.directoryLabel.text(), options)
+        if directory:
+            if Converter().createDevotionalFromNotes(directory):
+                self.reloadResources()
+                self.displayMessage(config.thisTranslation["message_done"])
+            else:
+                self.displayMessage(config.thisTranslation["message_noSupportedFile"])
+
     def createBookModuleFromPDF(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
         directory = QFileDialog.getExistingDirectory(self,

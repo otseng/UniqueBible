@@ -62,6 +62,8 @@ class GithubUtil:
     def getShortname(filename):
         if " - " in filename and filename.endswith(".commentary"):
             shortFilename = filename[:filename.find(" - ")]
+        elif " -- " in filename:
+            shortFilename = filename[:filename.find(" -- ")]
         else:
             shortFilename = filename
         return shortFilename

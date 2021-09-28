@@ -3458,10 +3458,6 @@ class MainWindow(QMainWindow):
                 value = DatafileLocation.marvelCommentaries[key]
                 if (value[0][2]) not in commentaryList:
                     outfile.write("DOWNLOAD:::MarvelCommentary:::{0}\n".format(key))
-            for key in DatafileLocation.hymnLyrics.keys():
-                value = DatafileLocation.hymnLyrics[key]
-                if (value[0][2]) not in bookList:
-                    outfile.write("DOWNLOAD:::HymnLyrics:::{0}\n".format(key))
             if config.isPygithubInstalled:
                 from util.GithubUtil import GithubUtil
 
@@ -3498,7 +3494,6 @@ class MainWindow(QMainWindow):
 
             bibles = [value[0][2] for value in DatafileLocation.marvelBibles.values()]
             commentaries = [value[0][2] for value in DatafileLocation.marvelCommentaries.values()]
-            hymns = [value[0][2] for value in DatafileLocation.hymnLyrics.values()]
 
             file = os.path.join(MacroParser.macros_dir, filename)
             outfile = open(file, "w")
@@ -3510,10 +3505,6 @@ class MainWindow(QMainWindow):
                 if file in commentaries:
                     file = file.replace(".commentary", "")
                     outfile.write("DOWNLOAD:::MarvelCommentary:::{0}\n".format(file))
-            for file in bookList:
-                if file in hymns:
-                    file = file.replace(".book", "")
-                    outfile.write("DOWNLOAD:::HymnLyrics:::{0}\n".format(file))
 
             if config.isPygithubInstalled:
                 from util.GithubUtil import GithubUtil

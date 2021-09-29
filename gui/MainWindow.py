@@ -2709,7 +2709,7 @@ class MainWindow(QMainWindow):
                 textIndex = self.bibleVersions.index(config.mainText)
             self.versionCombo.setCurrentIndex(textIndex)
             self.refreshing = False
-        if self.versionButton is not None:
+        if self.versionButton is not None and config.menuLayout not in ("Starter"):
             self.versionButton.setText(config.mainText)
 
     def updateMainRefButton(self):

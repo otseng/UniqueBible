@@ -1,4 +1,4 @@
-Change in version 26.25:
+Change in version 26.26:
 * Add Github startup plugin download support
 
 Change in version 26.25:

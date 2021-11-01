@@ -2298,7 +2298,10 @@ class TextCommandParser:
         if command.count(":::") == 0:
             command = "{0}:::{1}".format(config.mainText, command)
         commandList = self.splitCommand(command)
-        texts, searchEntry, *_ = commandList
+        texts, searchEntry = commandList
+        booksRange = ""
+        if searchEntry.count(":::") > 0:
+            searchEntry, booksRange = self.splitCommand(searchEntry)
         texts = self.getConfirmedTexts(texts)
         if texts and re.match("^[EHG][0-9]+?$", searchEntry):
             return self.textConcordance(command, "study")
@@ -2306,7 +2309,7 @@ class TextCommandParser:
             return self.invalidCommand()
         else:
             biblesSqlite = BiblesSqlite()
-            searchResult = "<hr>".join([biblesSqlite.countSearchBible(text, searchEntry, interlinear) for text in texts])
+            searchResult = "<hr>".join([biblesSqlite.countSearchBible(text, searchEntry, interlinear, booksRange) for text in texts])
             del biblesSqlite
             return ("study", searchResult, {})
 

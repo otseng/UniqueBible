@@ -392,14 +392,18 @@ input.addEventListener('keyup', function(event) {0}
         verses += "</table>"
         return verses
 
-    def countSearchBible(self, text, searchString, interlinear=False):
+    def countSearchBible(self, text, searchString, interlinear=False, booksRange=""):
         if text in self.marvelBibles and not text in ["LXX1", "LXX1i", "LXX2", "LXX2i"]:
             searchString = TextUtil.removeVowelAccent(searchString)
             searchString = TextUtil.removeSpecialCharacters(searchString)
         content = "SEARCH:::{0}:::{1}".format(text, searchString)
+        if booksRange:
+            content += ":::{0}".format(booksRange)
+            bookList = BibleVerseParser(config.parserStandarisation).extractBookListAsBookNumberList(booksRange)
+        else:
+            bookList = self.getBookList(text)
         showCommand = "SEARCHALL"
         searchFunction = "searchBibleBook"
-        bookList = self.getBookList(text)
         bookCountList = [self.countSearchBook(text, book, searchString) for book in bookList]
         content += "<p>Total: <ref onclick='document.title=\"{3}:::{1}:::{2}\"'>{0} verse(s)</ref> found in {1}. <ref onclick='document.title=\"SEARCHREFERENCE:::{1}:::{2}\"'>***</ref></p><table><tr><th>Book</th><th>Verse(s)</th></tr>".format(sum(bookCountList), text, searchString, showCommand)
         for counter, bookCount in enumerate(bookCountList):

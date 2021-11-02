@@ -423,7 +423,7 @@ input.addEventListener('keyup', function(event) {0}
         elif text in formattedBibleList:
             return Bible(text).countSearchBook(book, searchString)
 
-    def searchBible(self, text, mode, searchString, interlinear=False, referenceOnly=False):
+    def searchBible(self, text, mode, searchString, interlinear=False, referenceOnly=False, booksRange=""):
         if text in self.marvelBibles and not text in ["LXX1", "LXX1i", "LXX2", "LXX2i"]:
             searchString = TextUtil.removeVowelAccent(searchString)
         if not mode == "REGEX":
@@ -453,6 +453,9 @@ input.addEventListener('keyup', function(event) {0}
             searchCommand = "ADVANCEDSEARCH"
             formatedText += "{0}:::<z>{1}</z>:::{2}".format(searchCommand, text, searchString)
             query += searchString
+        if booksRange:
+            query += " AND book in ({0})".format(BibleVerseParser(config.parserStandarisation).extractBookListAsString(booksRange))
+            formatedText += ":::{0}".format(booksRange)
         query += " ORDER BY Book, Chapter, Verse"
         if text in plainBibleList:
             verses = self.getSearchVerses(query, t)

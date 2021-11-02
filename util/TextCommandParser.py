@@ -2357,14 +2357,16 @@ class TextCommandParser:
     # ANDSEARCH:::
     def textAndSearch(self, command, source):
         commandList = command.split(":::")
-        commandList[-1] = " AND ".join(['Scripture LIKE "%{0}%"'.format(m.strip()) for m in commandList[-1].split("|")])
+        index = -2 if command.count(":::") == 2 else -1
+        commandList[index] = " AND ".join(['Scripture LIKE "%{0}%"'.format(m.strip()) for m in commandList[index].split("|")])
         command = ":::".join(commandList)
         return self.textSearch(command, source, "ADVANCED", config.addFavouriteToMultiRef)
 
     # ORSEARCH:::
     def textOrSearch(self, command, source):
         commandList = command.split(":::")
-        commandList[-1] = " OR ".join(['Scripture LIKE "%{0}%"'.format(m.strip()) for m in commandList[-1].split("|")])
+        index = -2 if command.count(":::") == 2 else -1
+        commandList[index] = " OR ".join(['Scripture LIKE "%{0}%"'.format(m.strip()) for m in commandList[index].split("|")])
         command = ":::".join(commandList)
         return self.textSearch(command, source, "ADVANCED", config.addFavouriteToMultiRef)
 

@@ -416,7 +416,7 @@ class BibleVerseParser:
                         for book in range(40, 67):
                             books.append(book)
                     elif section.lower() == "all":
-                        for book in range(1, 67):
+                        for book in range(1, 500):
                             books.append(book)
                     else:
                         books.append(bibleVerseParser.bookNameToNum(section))

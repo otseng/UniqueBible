@@ -177,15 +177,19 @@ class TextCommandParser:
             # To search specific books of bible
             # e.g. SEARCH:::KJV:::love:::Matt-John, 1Cor, Rev
             # e.g. SEARCH:::KJV:::temple:::OT
-            #"""),
+            """),
             "searchall": (self.textSearchBasic, """
             # [KEYWORD] SEARCHALL
             # Feature - Search bible / bibles for a string
-            # Usage - SEARCHALL:::[BIBLE_VERSION(S)]:::[LOOK_UP_STRING]
+            # Usage - SEARCHALL:::[BIBLE_VERSION(S)]:::[LOOK_UP_STRING]:::[BIBLE_BOOKS]
             # SEARCHALL::: is different from SEARCH::: that SEARCH::: shows the number of hits in individual books only whereas SEARCHALL::: display all texts of the result.
             # e.g. SEARCHALL:::KJV:::love
             # To work on multiple bibles, separate bible versions with a character "_":
-            # e.g. SEARCHALL:::KJV_WEB:::love"""),
+            # e.g. SEARCHALL:::KJV_WEB:::love
+            # To search specific books of bible
+            # e.g. SEARCHALL:::KJV:::love:::Matt-John, 1Cor, Rev
+            # e.g. SEARCHALL:::KJV:::temple:::OT
+            """),
             "searchreference": (self.textSearchReference, """
             # [KEYWORD] SEARCHREFERENCE"""),
             "searchtnk": (self.textSearchOT, """
@@ -209,26 +213,30 @@ class TextCommandParser:
             "regexsearch": (self.textSearchRegex, """
             # [KEYWORD] REGEXSEARCH
             # Feature - Search bible / bibles with regular expression
-            # Usage - REGEXSEARCH:::[BIBLE_VERSION(S)]:::[REGEX_PATTERN]
-            # e.g. REGEXSEARCH:::KJV:::God.*?heaven"""),
+            # Usage - REGEXSEARCH:::[BIBLE_VERSION(S)]:::[REGEX_PATTERN]:::[BIBLE_BOOKS]
+            # e.g. REGEXSEARCH:::KJV:::God.*?heaven
+            # To search specific books of bible
+            # e.g. REGEXSEARCH:::KJV:::God.*?love:::Matt-John, 1Cor, Rev
+            # e.g. REGEXSEARCH:::KJV:::God.*?temple:::OT
+            """),
             "advancedsearch": (self.textSearchAdvanced, """
             # [KEYWORD] ADVANCEDSEARCH
             # Feature - Search bible / bibles with a sql string
-            # Usage - ADVANCEDSEARCH:::[BIBLE_VERSION(S)]:::[LOOK_UP_STRING]
+            # Usage - ADVANCEDSEARCH:::[BIBLE_VERSION(S)]:::[LOOK_UP_STRING]:::[BIBLE_BOOKS]
             # e.g. ADVANCEDSEARCH:::KJV:::Book = 1 AND Scripture LIKE '%love%'
             # To work on multiple bibles, separate bible versions with a character "_":
             # e.g. ADVANCEDSEARCH:::KJV_WEB:::Book = 1 AND Scripture LIKE '%love%'"""),
             "andsearch": (self.textAndSearch, """
             # [KEYWORD] ANDSEARCH
             # Feature - Search bible / bibles for combinations of words without taking order into consideration
-            # Usage - ANDSEARCH:::[BIBLE_VERSION(S)]:::[LOOK_UP_STRING]
+            # Usage - ANDSEARCH:::[BIBLE_VERSION(S)]:::[LOOK_UP_STRING]:::[BIBLE_BOOKS]
             # Words are separated by a character "|" in a search string.
             # e.g. ANDSEARCH:::KJV:::love|Jesus
             # alias of, e.g. ADVANCEDSEARCH:::KJV:::Scripture LIKE "%love%" AND Scripture LIKE "%Jesus%" """),
             "orsearch": (self.textOrSearch, """
             # [KEYWORD] ORSEARCH
             # Feature - Search bible / bibles for verses containing at least on of the words given in a string
-            # Usage - ORSEARCH:::[BIBLE_VERSION(S)]:::[LOOK_UP_STRING]
+            # Usage - ORSEARCH:::[BIBLE_VERSION(S)]:::[LOOK_UP_STRING]:::[BIBLE_BOOKS]
             # Words are separated by a character "|" in a search string.
             # e.g. ORSEARCH:::KJV:::love|Jesus
             # alias of, e.g. ADVANCEDSEARCH:::KJV:::Scripture LIKE "%love%" OR Scripture LIKE "%Jesus%" """),

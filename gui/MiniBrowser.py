@@ -115,7 +115,7 @@ class MiniBrowser(QWidget):
     def downloadSelectedOption(self, option):
         self.youTubeDownloadOptions.close()
         option = re.sub("^([0-9]+?) .*?$", r"\1", option)
-        downloadCommand = "youtube-dl -f {0}".format(option)
+        downloadCommand = "yt-dlp {0}".format(option)
         self.parent.textCommandParser.youtubeDownload(downloadCommand, self.addressBar.text())
 
     def downloadLastOption(self):

@@ -90,6 +90,8 @@ class FileUtil:
             file = glob.glob(filesearch)
             if file:
                 return file[0]
+            else:
+                return None
         filesearch = "audio/bibles/{0}/{1}/{2}{3}*_{4}*.mp3".format(text, folder, a, "{:02d}".format(b), c)
         file = glob.glob(filesearch)
         if file:

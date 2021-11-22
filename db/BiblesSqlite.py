@@ -1024,7 +1024,7 @@ class Bible:
             return "<span style='color:gray;'>['{0}' does not contain this chapter.]</span>".format(self.text)
 
     @staticmethod
-    def insertReadBibleLink(text, b, c):
+    def insertReadBibleLink(text, b, c, v=None):
         data = ""
         if config.runMode == "gui" and config.isVlcInstalled:
             directory = "audio/bibles/{0}".format(text)
@@ -1035,7 +1035,7 @@ class Bible:
                 for index, dir in enumerate(directories):
                     if index > 2:
                         index = 2
-                    file = FileUtil.getBibleMP3File(text, b, dir, c)
+                    file = FileUtil.getBibleMP3File(text, b, dir, c, v)
                     if file:
                         icon = '&#{0}'.format(128264 + index)
                         data += """ <ref onclick="document.title='READBIBLE:::@{0}'" title="{0}" style="font-size: .8em">{1}</ref>""".format(dir, icon)

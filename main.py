@@ -219,17 +219,16 @@ def executeInitialTextCommand(textCommand, addRecord=False, source="main"):
     try:
         if source == "main" or (source == "study" and re.match("^online:::", textCommand, flags=re.IGNORECASE)):
             config.mainWindow.textCommandLineEdit.setText(textCommand)
-        config.mainWindow.runTextCommand(textCommand, addRecord, source)
+        config.mainWindow.runTextCommand(textCommand, addRecord, source, True)
     except:
         print("Failed to execute '{0}' on startup.".format(textCommand))
 
 def populateTabsOnStartup(source="main"):
-    history = config.history[source]
     for i in reversed(range(config.numberOfTab - 1 if initialCommand and not initialCommandIsPython and not (hasattr(config, "cli") and config.cli) and source == "main" else config.numberOfTab)):
-        index = i + 1
-        if len(history) >= index:
-            command = history[0 - index]
-            executeInitialTextCommand(command, False, source)
+        if source == "main" and str(i) in config.tabHistory[source]:
+            command = config.tabHistory[source][str(i)]
+            if command:
+                executeInitialTextCommand(command, False, source)
 
 def runLastHistoryRecord(source="main"):
     history = config.history[source]

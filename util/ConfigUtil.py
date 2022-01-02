@@ -761,7 +761,7 @@ class ConfigUtil:
         config.help["tabHistory"] = """
         # Tab history records for startup"""
         if not hasattr(config, "tabHistory"):
-            config.tabHistory = {"main": {}, "study": {}}
+            config.tabHistory = {"main": {"0": config.history["main"][-1]}, "study": {"0": config.history["study"][-1]}}
         config.help["installHistory"] = """
         # Installed Formatted Bibles"""
         if not hasattr(config, "installHistory"):

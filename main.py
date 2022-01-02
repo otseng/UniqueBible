@@ -402,15 +402,18 @@ runStartupPlugins()
 if config.populateTabsOnStartup:
     openBibleWindowContentOnNextTab, openStudyWindowContentOnNextTab = config.openBibleWindowContentOnNextTab, config.openStudyWindowContentOnNextTab
     forceGenerateHtml = config.forceGenerateHtml
+    syncStudyWindowBibleWithMainWindow = config.syncStudyWindowBibleWithMainWindow
     config.openBibleWindowContentOnNextTab = True
     config.openStudyWindowContentOnNextTab = True
     config.forceGenerateHtml = False
+    config.syncStudyWindowBibleWithMainWindow = False
     # Execute initial command on Study Window
-    # populateTabsOnStartup("study")
+    populateTabsOnStartup("study")
     # Execute initial command on Bible Window
     populateTabsOnStartup("main")
     config.openBibleWindowContentOnNextTab, config.openStudyWindowContentOnNextTab = openBibleWindowContentOnNextTab, openStudyWindowContentOnNextTab
     config.forceGenerateHtml = forceGenerateHtml
+    config.syncStudyWindowBibleWithMainWindow = syncStudyWindowBibleWithMainWindow
 elif not config.disableLoadLastOpenFilesOnStartup:
     # Execute initial command on Bible Window
     if not initialCommand or initialCommandIsPython or (hasattr(config, "cli") and config.cli):

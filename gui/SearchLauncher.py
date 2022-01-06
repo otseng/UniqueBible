@@ -180,7 +180,7 @@ class SearchLauncher(QWidget):
         features = (
             (self.topicCombo, "menu5_topics", lambda: self.runSearchSelection("topic"), self.parent.topicList, initialTopicIndex),
             (self.lexiconCombo, "menu5_lexicon", lambda: self.runSearchSelection("lexicon"), self.lexiconList, initialLexiconIndex),
-            (self.lexiconCombo, "menu5_reverseLexicon", lambda: self.runSearchSelection("reverselexicon"), self.reverseLexiconList, initialReverseLexiconIndex),
+            (self.reverseLexiconCombo, "menu5_reverseLexicon", lambda: self.runSearchSelection("reverselexicon"), self.lexiconList, initialReverseLexiconIndex),
             (self.encyclopediaCombo, "context1_encyclopedia", lambda: self.runSearchSelection("encyclopedia"), self.parent.encyclopediaList, initialEncyclopediaIndex),
             (self.dictionaryCombo, "context1_dict", lambda: self.runSearchSelection("dictionary"), self.dictionaryList, initialDictionaryIndex),
             (self.thirdPartyDictionaryCombo, "menu5_3rdDict", lambda: self.runSearchSelection("thirdPartyDictionary"), self.thirdPartyDictionaryList, initialThridPartyDictionaryIndex),
@@ -291,6 +291,7 @@ class SearchLauncher(QWidget):
             comboDict = {
                 "topic": (self.topicCombo, self.parent.topicListAbb),
                 "lexicon": (self.lexiconCombo, self.lexiconList),
+                "reverselexicon": (self.reverseLexiconCombo, self.lexiconList),
                 "encyclopedia": (self.encyclopediaCombo, self.parent.encyclopediaListAbb),
                 "dictionary": (self.dictionaryCombo, self.dictionaryListAbb),
                 "thirdPartyDictionary": (self.thirdPartyDictionaryCombo, self.thirdPartyDictionaryList),
@@ -299,6 +300,8 @@ class SearchLauncher(QWidget):
             selectedItem = resourceList[combo.currentIndex()]
             if resource == "lexicon":
                 keyword = "LEXICON"
+            elif resource == "reverselexicon":
+                keyword = "REVERSELEXICON"
             elif resource == "thirdPartyDictionary":
                 keyword = "SEARCHTHIRDDICTIONARY"
             else:

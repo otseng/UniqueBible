@@ -785,6 +785,19 @@ class Lexicon:
             contentText = re.sub(r"src='getImage\.php\?resource=([^']*?)&id=([^']*?)'", r"src='images/\1/\1_\2'", contentText)
             return contentText
 
+    def getReverseContent(self, entry):
+        entry = "%{0}%".format(entry)
+        query = "SELECT Topic, Definition FROM Lexicon WHERE Definition like ?"
+        self.cursor.execute(query, (entry,))
+        records = self.cursor.fetchall()
+        contentText = """<h2>{0}</h2>""".format(self.module)
+        if not records:
+            return contentText+"[not found]"
+        else:
+            for record in records:
+                contentText += "<div><h3>{0}</h3>{1}</div>".format(record[0], record[1])
+            contentText = re.sub("(" + entry + ")", r"<z>\1</z>", contentText, flags=re.IGNORECASE)
+        return contentText
 
 class BookData:
 

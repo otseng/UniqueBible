@@ -157,9 +157,7 @@ class Converter:
                         elif "_" in fileName:
                             fields = fileName.split("_")
                         else:
-                            fields = []
-                            fields[0] = fileName
-                            fields[1] = 0
+                            fields = [fileName, 0]
                         book = fields[0]
                         bibleVerseParser = BibleVerseParser(config.parserStandarisation)
                         bookNum = bibleVerseParser.bookNameToNum(book)

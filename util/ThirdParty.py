@@ -1,7 +1,6 @@
-import glob
 from xml.dom.minidom import Node
-
 from db.DevotionalSqlite import DevotionalSqlite
+from db.ToolsSqlite import Commentary
 from util.BibleBooks import BibleBooks
 from util.TextUtil import TextUtil
 
@@ -136,6 +135,41 @@ class Converter:
                     devotionalContent.append((month, day, note))
         if devotionalContent and module:
             DevotionalSqlite.createDevotional(module, devotionalContent)
+            return True
+        else:
+            return False
+
+    def createCommentaryFromNotes(self, folder):
+        module = os.path.basename(folder)
+        commentaryContent = []
+        for filepath in sorted([f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f)) and not re.search(r"^[\._]", f)]):
+            fileBasename = os.path.basename(filepath)
+            fileName, fileExtension = os.path.splitext(fileBasename)
+            if fileExtension.lower() == ".uba":
+                with open(os.path.join(folder, filepath), "r", encoding="utf-8") as fileObject:
+                    note = fileObject.read()
+                    note = TextUtil.formulateUBACommandHyperlink(note)
+                    if config.parseTextConvertNotesToBook:
+                        note = BibleVerseParser(config.parserStandarisation).parseText(note)
+                    try:
+                        if " " in fileName:
+                            fields = fileName.split(" ")
+                        elif "_" in fileName:
+                            fields = fileName.split("_")
+                        else:
+                            fields = []
+                            fields[0] = fileName
+                            fields[1] = 0
+                        book = fields[0]
+                        bibleVerseParser = BibleVerseParser(config.parserStandarisation)
+                        bookNum = bibleVerseParser.bookNameToNum(book)
+                        chapter = fields[1]
+                        commentaryContent.append((bookNum, chapter, note))
+                    except Exception as e:
+                        logging.info("Could not convert {0} - {1}".format(fileName, e))
+        if commentaryContent and module:
+            Commentary.createCommentary(module, commentaryContent)
+            Commentary().reloadFileLookup()
             return True
         else:
             return False

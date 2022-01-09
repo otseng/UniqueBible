@@ -152,10 +152,10 @@ class Converter:
                     if config.parseTextConvertNotesToBook:
                         note = BibleVerseParser(config.parserStandarisation).parseText(note)
                     try:
-                        if " " in fileName:
-                            fields = fileName.split(" ")
-                        elif "_" in fileName:
+                        if "_" in fileName:
                             fields = fileName.split("_")
+                        elif " " in fileName:
+                            fields = fileName.split(" ")
                         else:
                             fields = [fileName, 0]
                         book = fields[0]

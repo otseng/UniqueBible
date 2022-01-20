@@ -463,11 +463,16 @@ class MiniControl(QWidget):
             self.searchLineEdit.setText(prefix)
 
     def searchLineEntered(self):
+
+        saveOpenBibleWindowContentOnNextTab = config.openBibleWindowContentOnNextTab
         searchString = self.searchLineEdit.text()
+        if ":::" not in searchString or ":::{0}:::".format(config.mainText) in searchString:
+            config.openBibleWindowContentOnNextTab = False
         self.parent.textCommandLineEdit.setText(searchString)
         self.parent.runTextCommand(searchString)
         self.searchLineEdit.setFocus()
         self.populateBooksButtons(config.mainText)
+        config.openBibleWindowContentOnNextTab = saveOpenBibleWindowContentOnNextTab
 
     #def setTtsDefaultLanguage(self):
         #config.ttsDefaultLangauge = self.languageCodes[self.languageCombo.currentIndex()]

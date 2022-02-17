@@ -44,7 +44,7 @@ class TextCommandParser:
     def __init__(self, parent):
         self.parent = parent
         self.lastKeyword = None
-        self.espeakTtsProcess = None
+        self.cliTtsProcess = None
         self.qtTtsEngine = None
 
         self.interpreters = {
@@ -442,6 +442,12 @@ class TextCommandParser:
             # e.g. SPEAK:::en-gb:::All Scripture is inspired by God
             # e.g. SPEAK:::zh-cn:::聖經都是上帝所默示的
             # e.g. SPEAK:::zh-tw:::聖經都是上帝所默示的"""),
+            "gtts": (self.googleTextToSpeech, """
+            # [KEYWORD] GTTS
+            # Feature: run text-to-speech function
+            # e.g. GTTS:::All Scripture is inspired by God
+            # e.g. GTTS:::en:::All Scripture is inspired by God
+            # e.g. GTTS:::zh:::聖經都是上帝所默示的"""),
             "mp3": (self.mp3Download, """
             # [KEYWORD] MP3
             # Feature: run yt-dlp to download mp3 from youtube, provided that yt-dlp is installed on user's system
@@ -1110,6 +1116,51 @@ class TextCommandParser:
         else:
             return False
 
+    # check if module is installed.
+    def isCommandInstalled(self, command):
+        commandInstalled, _ = subprocess.Popen("which {0}".format(command), shell=True, stdout=subprocess.PIPE).communicate()
+        if commandInstalled:
+            return True
+        else:
+            return False
+
+    # gtts:::
+    # run google text to speech feature
+    # internet is required
+    def googleTextToSpeech(self, command, source):
+        # Stop current playing first if any:
+        self.stopTtsAudio()
+
+        # Language codes: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+        language = "en"
+        text = command
+        if command.count(":::") != 0:
+            language, text = self.splitCommand(command)
+        
+        # fine-tune
+        text = re.sub("['\"]", "", text)
+        language = re.sub("\-.*?$", "", language)
+        if language in ("iw", "he"):
+            text = HebrewTransliteration().transliterateHebrew(text)
+            language = "el"
+        elif language == "el":
+            text = TextUtil.removeVowelAccent(text)
+
+        if not platform.system() == "Windows" and config.gTTS:
+            if not self.isCommandInstalled("gtts-cli"):
+                installmodule("gTTS")
+            if self.isCommandInstalled("gtts-cli") and self.isCommandInstalled("play"):
+                command = "gtts-cli '{0}' --lang {1} --nocheck | play -t mp3 -".format(text, language)
+                print(command)
+                self.cliTtsProcess = subprocess.Popen([command], shell=True, preexec_fn=os.setpgrp, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            elif self.isCommandInstalled("gtts-cli") and not self.isCommandInstalled("play"):
+                message = "Install sox FIRST! \nFor examples, run: \non macOS, 'brew install sox' \non Ubuntu / Debian, 'sudo apt install sox' \non Arch Linux, 'sudo pacman -S sox'"
+                self.parent.displayMessage(message)
+            elif not self.isCommandInstalled("gtts-cli") and not self.isCommandInstalled("play"):
+                message = "Install gTTS and sox FIRST! \nFor example, on Arch Linux, run:\n'pip3 install gTSS' and \n'sudo pacman -S sox'"
+                self.parent.displayMessage(message)
+        return ("", "", {})
+
     # speak:::
     # run text to speech feature
     def textToSpeech(self, command, source):
@@ -1166,7 +1217,7 @@ class TextCommandParser:
                 language = isoLang2epeakLang[language][0]
                 # subprocess is used
                 # Discussion on use of "preexec_fn=os.setpgrp": https://stackoverflow.com/questions/23811650/is-there-a-way-to-make-os-killpg-not-kill-the-script-that-calls-it
-                self.espeakTtsProcess = subprocess.Popen(["espeak -s {0} -v {1} '{2}'".format(config.espeakSpeed, language, text)], shell=True, preexec_fn=os.setpgrp, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                self.cliTtsProcess = subprocess.Popen(["espeak -s {0} -v {1} '{2}'".format(config.espeakSpeed, language, text)], shell=True, preexec_fn=os.setpgrp, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             else:
                 self.parent.displayMessage(config.thisTranslation["message_noEspeak"])
         else:
@@ -1201,13 +1252,13 @@ class TextCommandParser:
         return ("", "", {})
 
     def stopTtsAudio(self):
-        if config.espeak and (self.espeakTtsProcess is not None):
+        if (config.espeak or config.gTTS) and (self.cliTtsProcess is not None):
             # The following two lines do not work:
-            #self.espeakTtsProcess.kill()
-            #self.espeakTtsProcess.terminate()
+            #self.cliTtsProcess.kill()
+            #self.cliTtsProcess.terminate()
             # Therefore, we use:
-            os.killpg(os.getpgid(self.espeakTtsProcess.pid), signal.SIGTERM)
-            self.espeakTtsProcess = None
+            os.killpg(os.getpgid(self.cliTtsProcess.pid), signal.SIGTERM)
+            self.cliTtsProcess = None
         elif (self.qtTtsEngine is not None):
             self.qtTtsEngine.stop()
 
@@ -1221,6 +1272,7 @@ class TextCommandParser:
             # version 2: known issue - only works on Linux, but not macOS or Windows
             multiprocessing.Process(target=self.downloadYouTubeFile, args=(downloadCommand, command, config.musicFolder)).start()
             self.parent.displayMessage(config.thisTranslation["downloading"])
+        self.parent.reloadResources()
         return ("", "", {})
 
     # mp4:::
@@ -1233,6 +1285,7 @@ class TextCommandParser:
             # version 2: known issue - only works on Linux, but not macOS or Windows
             multiprocessing.Process(target=self.downloadYouTubeFile, args=(downloadCommand, command, config.videoFolder)).start()
             self.parent.displayMessage(config.thisTranslation["downloading"])
+        self.parent.reloadResources()
         return ("", "", {})
 
     def youtubeDownload(self, downloadCommand, youTubeLink):
@@ -1250,7 +1303,7 @@ class TextCommandParser:
         return False if stderr else True
 
     def getYouTubeDownloadOptions(self, url):
-        options = subprocess.Popen("yt-dlp -F {0}".format(url), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        options = subprocess.Popen("yt-dlp --list-formats {0}".format(url), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, *_ = options.communicate()
         options = stdout.decode("utf-8").split("\n")
         return [option for option in options if re.search(r"^[0-9]+? ", option)]

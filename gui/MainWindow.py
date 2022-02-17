@@ -2114,7 +2114,7 @@ class MainWindow(QMainWindow):
         screen = QGuiApplication.instance().desktop().availableGeometry()
         x = screen.width() * float(1/8)
         y = screen.height() * float(1/5)
-        self.liveFilterDialog.move(x, y)
+        self.liveFilterDialog.move(int(x), int(y))
         self.liveFilterDialog.show()
 
     def showLibraryCatalogDialog(self):
@@ -2122,7 +2122,7 @@ class MainWindow(QMainWindow):
         screen = QGuiApplication.instance().desktop().availableGeometry()
         x = screen.width() * float(1/8)
         y = screen.height() * float(1/5)
-        self.libraryCatalogDialog.move(x, y)
+        self.libraryCatalogDialog.move(int(x), int(y))
         self.libraryCatalogDialog.show()
 
     def enableIndividualPluginsWindow(self):
@@ -2379,14 +2379,14 @@ class MainWindow(QMainWindow):
         if platform.system() == "Linux":
             self.showNormal()
         availableGeometry = QGuiApplication.instance().desktop().availableGeometry()
-        self.resize(availableGeometry.width() * widthFactor, availableGeometry.height() * heightFactor)
+        self.resize(int(availableGeometry.width() * widthFactor), int(availableGeometry.height() * heightFactor))
 
     def moveWindow(self, horizontal, vertical):
         # Note: move feature does not work on Chrome OS
         screen = QGuiApplication.instance().desktop().availableGeometry()
         x = screen.width() * float(horizontal)
         y = screen.height() * float(vertical)
-        self.move(x, y)
+        self.move(int(x), int(y))
 
     # Actions - enable or disable enforcement of comparison / parallel
     def getEnableCompareParallelDisplay(self):

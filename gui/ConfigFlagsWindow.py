@@ -64,6 +64,7 @@ class ConfigFlagsWindow(QDialog):
             ("openStudyWindowContentOnNextTab", config.openStudyWindowContentOnNextTab, self.openStudyWindowContentOnNextTabChanged, True, config.thisTranslation["openStudyWindowContentOnNextTab"]),
             ("populateTabsOnStartup", config.populateTabsOnStartup, self.populateTabsOnStartupChanged, False, config.thisTranslation["populateTabsOnStartup"]),
             ("qtMaterial", config.qtMaterial, self.qtMaterialChanged, False, config.thisTranslation["qtMaterial"]),
+            ("startFullScreen", config.startFullScreen, self.startFullScreenChanged, False, "Option to launch UBA in fullscreen."),
             ("addBreakAfterTheFirstToolBar", config.addBreakAfterTheFirstToolBar, self.addBreakAfterTheFirstToolBarChanged, True, config.thisTranslation["addBreakAfterTheFirstToolBar"]),
             ("addBreakBeforeTheLastToolBar", config.addBreakBeforeTheLastToolBar, self.addBreakBeforeTheLastToolBarChanged, False, config.thisTranslation["addBreakBeforeTheLastToolBar"]),
             ("parserStandarisation", (config.parserStandarisation == "YES"), self.parserStandarisationChanged, False, config.thisTranslation["parserStandarisation"]),
@@ -129,6 +130,10 @@ class ConfigFlagsWindow(QDialog):
                 ("fcitx", config.fcitx, self.fcitxChanged, False, config.thisTranslation["fcitx"]),
                 ("ibus", config.ibus, self.ibusChanged, False, config.thisTranslation["ibus"]),
                 ("espeak", config.espeak, self.espeakChanged, False, config.thisTranslation["espeak"]),
+            ]
+        if not platform.system() == "Windows":
+            options += [
+                ("gTTS", config.gTTS, self.gTTSChanged, False, "Option to enable or disable Google text-to-speech feature."),
             ]
         if config.developer:
             options += [
@@ -372,12 +377,20 @@ class ConfigFlagsWindow(QDialog):
         else:
             config.parserStandarisation = "YES"
 
+    def startFullScreenChanged(self):
+        config.startFullScreen = not config.startFullScreen
+        self.displayMessage(config.thisTranslation["message_restart"])
+
     def linuxStartFullScreenChanged(self):
         config.linuxStartFullScreen = not config.linuxStartFullScreen
         self.displayMessage(config.thisTranslation["message_restart"])
 
     def espeakChanged(self):
         config.espeak = not config.espeak
+        self.displayMessage(config.thisTranslation["message_restart"])
+
+    def gTTSChanged(self):
+        config.gTTS = not config.gTTS
         self.displayMessage(config.thisTranslation["message_restart"])
 
     def enableLoggingChanged(self):

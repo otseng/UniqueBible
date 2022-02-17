@@ -3,6 +3,8 @@
 import os, sys, subprocess, platform
 from shutil import copyfile
 
+os.environ["PYTHONUNBUFFERED"] = "1"
+
 thisFile = os.path.realpath(__file__)
 wd = thisFile[:-6]
 if os.getcwd() != wd:
@@ -16,12 +18,13 @@ if sys.version_info < (3, 5):
 if sys.version_info < (3, 7):
     print("You are running a python version lower than 3.7.  Some optional features may not be enabled.  UniqueBible.app requires python version 3.7+ to run all its features.")
 
-# Set environment variable
-os.environ["QT_API"] = "pyside2"
-os.environ["QT_LOGGING_RULES"] = "*=false"
-
 # Take arguments
 initialCommand = " ".join(sys.argv[1:]).strip()
+
+# Set environment variable
+os.environ["QT_API"] = "pyqt5" if initialCommand == "docker" else "pyside2"
+os.environ["QT_LOGGING_RULES"] = "*=false"
+
 if initialCommand == "-i":
     initialCommand = input("Enter command: ").strip()
 enableCli = True if initialCommand in ("cli", "cli.py", "gui") \
@@ -103,7 +106,7 @@ if sys.prefix == sys.base_prefix:
         try:
             if not "venv" in sys.modules:
                 import venv
-            venv.create(env_dir=venvDir, with_pip=True)
+            venv.create(env_dir=venvDir, with_pip=True, system_site_packages=True) if initialCommand == "docker" else venv.create(env_dir=venvDir, with_pip=True)
         except:
             pass
 
@@ -135,7 +138,7 @@ else:
     if not os.path.exists(shortcutSh):
         # Create .sh shortcut
         with open(shortcutSh, "w") as fileObj:
-            fileObj.write("#!{0}\n{1} {2}".format(os.environ["SHELL"], sys.executable, thisFile))
+            fileObj.write("#!{0}\n{1} {2}{3}".format("/bin/bash" if initialCommand == "docker" else os.environ["SHELL"], sys.executable, thisFile, " docker" if initialCommand == "docker" else ""))
         # Set permission
         for file in (thisFile, "main.py", "util/BibleVerseParser.py", "util/RegexSearch.py", shortcutSh):
             try:
@@ -165,7 +168,7 @@ else:
         code = compile(f.read(), activator, 'exec')
         exec(code, dict(__file__=activator))
     # Run main.py
-    if enableCli:
+    if enableCli or initialCommand == "docker":
         os.system("{0} {1} {2}".format(python, mainFile, initialCommand))
     else:
         subprocess.Popen([python, mainFile, initialCommand] if initialCommand else [python, mainFile])

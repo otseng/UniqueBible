@@ -1,3 +1,81 @@
+Changes in 28.02:
+* Fixed google drive file download issues, which blocks UBA from startup on fresh installation.
+
+Changes in version 27.09, 28.00, 28.01:
+* Removed uba.py fullscreen, which could be achieved by setting config.startFullScreen to True.
+* Added uba.py docker for running on docker image.
+* Added venv option system_site_packages=True for docker version.
+
+Changes in version 27.07, 27.08:
+* Add ability to start UBA in fullscreen mode, by running "python3 uba.py fullscreen"
+* Add config.startFullScreen
+
+Changes in version 27.04, 27.05, 27.06:
+* Tweaks for building docker image.
+
+Change in version 27.03:
+* Do not show disabled text-to-speech message, if config.gTTS is set to True.
+
+Changes in version 27.02:
+* Fixed YouTube downloader mini browser buttons.
+* Now url is checked before passing to yt-dlp to list available formats.
+
+Changes in version 27.01:
+* Added config.maximumIconButtonWidth
+* Fixed loading qt material theme with pyqt5.
+* Fixed the issues that icon button are too wide with use of config.maximumIconButtonWidth.
+* Fixed loading toolbar on Classic menu layout.
+
+Changes in version 27.00:
+* Fixed Main Window resize issues.
+
+Changes in version 26.59:
+* Fixed opening mini Control.
+* Integrated use of Google text-to-speech feature into Master Control, Mini Control and Note Editor, when there is no offline tts engine.
+
+Changes in version 26.58:
+* Now update mp3 file list on media player list.
+* Now update mp4 file list on media player list.
+
+Changes in version 26.57:
+* Fixed opening Live Filter.
+* Fixed opening Library Catalog.
+
+Changes in version 26.56:
+* Fixed opening menu plugin Presentation.
+* Fixed a display message function.
+
+Changes in version 26.55:
+* Added Google text-to-speech feature to context menu if config.gTTS is set to True on non-Windows OS.
+* config.gTTS is now configurable via Config flag window.
+* Automate installation of gTTS python package.
+* Fixed running Google text-to-speech feature on Hebrew text.
+
+Changes in version 26.54:
+Added config.gTTS and GTTS::: command to run Google text-to-speech feature.
+        # Google text-to-speech feature
+        # gTTS and sox are required to run this feature.
+        # To install, e.g., on Arach Linux:
+        # 'pip3 install gTTS'
+        # 'sudo pacman -S sox'"""
+Will add this feature to context menu next update.
+
+Changes in version 26.53:
+* Fixed context menu and plugin features with pyqt5.
+* Updated config.qtLibrary when either PySide2 or PyQt5 is not found and alternative is installed.
+
+Changes in version 26.52:
+* Fixed extra spaces in plain chapter mode.
+* Fixed opening note editor.
+
+Changes in version 26.51:
+* Tested on Arch Linux webtop running on Apple M1 laptop.
+* Fixed a line to support running on Arch Linux webtop.
+Reference on webtops: https://docs.linuxserver.io/images/docker-webtop
+
+Change in version 26.50:
+* Fixed _menu::: command on web version.
+
 Change in version 26.49:
 * Fixed opening non-public pdf on web version.
 

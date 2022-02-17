@@ -567,13 +567,13 @@ class WebEngineView(QWebEngineView):
         self.addAction(separator)
 
         # TEXT-TO-SPEECH feature
-        languages = self.parent.parent.getTtsLanguages()
-        tts = QAction(self)
-        tts.setText("{0} [{1}]".format(config.thisTranslation["context1_speak"], languages[config.ttsDefaultLangauge][1].capitalize()))
-        tts.triggered.connect(self.textToSpeech)
-        self.addAction(tts)
-
         if config.isTtsInstalled:
+            languages = self.parent.parent.getTtsLanguages()
+            tts = QAction(self)
+            tts.setText("{0} [{1}]".format(config.thisTranslation["context1_speak"], languages[config.ttsDefaultLangauge][1].capitalize()))
+            tts.triggered.connect(self.textToSpeech)
+            self.addAction(tts)
+
             ttsMenu = QMenu()
             languageCodes = list(languages.keys())
             items = [languages[code][1] for code in languageCodes]
@@ -589,9 +589,28 @@ class WebEngineView(QWebEngineView):
             tts.setMenu(ttsMenu)
             self.addAction(tts)
 
-        separator = QAction(self)
-        separator.setSeparator(True)
-        self.addAction(separator)
+            separator = QAction(self)
+            separator.setSeparator(True)
+            self.addAction(separator)
+
+        # Google TEXT-TO-SPEECH feature
+        if not platform.system() == "Windows" and config.gTTS:
+
+            ttsMenu = QMenu()
+            for language, languageCode in Languages.googleTranslateCodes.items():
+                action = QAction(self)
+                action.setText(language)
+                action.triggered.connect(partial(self.googleTextToSpeechLanguage, languageCode))
+                ttsMenu.addAction(action)
+
+            tts = QAction(self)
+            tts.setText("Google TTS")
+            tts.setMenu(ttsMenu)
+            self.addAction(tts)
+
+            separator = QAction(self)
+            separator.setSeparator(True)
+            self.addAction(separator)
 
         # IBM-Watson Translation Service
 
@@ -671,7 +690,9 @@ class WebEngineView(QWebEngineView):
             self.addAction(action)
 
     def runPlugin(self, fileName, selectedText=None):
-        if selectedText is None:
+        #if selectedText is None:
+        # Note: Tested in Arch Linux using pyqt5, selectedText = False.  Therefore, the line above does not work.
+        if not selectedText:
             selectedText = self.selectedText().strip()
         config.contextSource = self
         config.pluginContext = selectedText
@@ -820,8 +841,16 @@ class WebEngineView(QWebEngineView):
         else:
             self.messageNoTtsEngine()
 
+    def googleTextToSpeechLanguage(self, language):
+        selectedText = self.selectedText().strip()
+        if not selectedText:
+            self.messageNoSelection()
+        speakCommand = "GTTS:::{0}:::{1}".format(language, selectedText)
+        self.parent.parent.textCommandChanged(speakCommand, self.name)
+
     def searchPanel(self, selectedText=None):
-        if selectedText is None:
+        #if selectedText is None:
+        if not selectedText:
             selectedText = self.selectedText().strip()
         if selectedText:
             config.contextItem = selectedText
@@ -1023,7 +1052,8 @@ class WebEngineView(QWebEngineView):
         self.openPopover(html=html, fullScreen=fullScreen)
 
     def displayVersesInBottomWindow(self, selectedText=None):
-        if selectedText is None:
+        #if selectedText is None:
+        if not selectedText:
             selectedText = self.selectedText().strip()
         if selectedText:
             verses = BibleVerseParser(config.parserStandarisation).extractAllReferences(selectedText, False)
@@ -1090,7 +1120,8 @@ class WebEngineView(QWebEngineView):
             self.messageNoSelection()
 
     def displayVersesInNewWindow(self, selectedText=None):
-        if selectedText is None:
+        #if selectedText is None:
+        if not selectedText:
             selectedText = self.selectedText().strip()
         if selectedText:
             verses = BibleVerseParser(config.parserStandarisation).extractAllReferences(selectedText, False)
@@ -1103,7 +1134,8 @@ class WebEngineView(QWebEngineView):
             self.messageNoSelection()
 
     def displayVersesInBibleWindow(self, selectedText=None):
-        if selectedText is None:
+        #if selectedText is None:
+        if not selectedText:
             selectedText = self.selectedText().strip()
         if selectedText:
             parser = BibleVerseParser(config.parserStandarisation)

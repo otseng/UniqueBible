@@ -205,6 +205,11 @@ input.addEventListener('keyup', function(event) {0}
 
     def getBookList(self, text=config.mainText):
         plainBibleList, formattedBibleList = self.getTwoBibleLists()
+        if not text in plainBibleList and not text in formattedBibleList:
+            if formattedBibleList:
+                text = formattedBibleList[0]
+            elif plainBibleList:
+                text = plainBibleList[0]
         if text in plainBibleList:
             query = "SELECT DISTINCT Book FROM {0} ORDER BY Book".format(text)
             self.cursor.execute(query)
@@ -219,6 +224,11 @@ input.addEventListener('keyup', function(event) {0}
 
     def getChapterList(self, b=config.mainB, text=config.mainText):
         plainBibleList, formattedBibleList = self.getTwoBibleLists()
+        if not text in plainBibleList and not text in formattedBibleList:
+            if formattedBibleList:
+                text = formattedBibleList[0]
+            elif plainBibleList:
+                text = plainBibleList[0]
         if text in plainBibleList:
             query = "SELECT DISTINCT Chapter FROM {0} WHERE Book=? ORDER BY Chapter".format(text)
             self.cursor.execute(query, (b,))
@@ -247,6 +257,11 @@ input.addEventListener('keyup', function(event) {0}
 
     def getVerseList(self, b, c, text=config.mainText, language=""):
         plainBibleList, formattedBibleList = self.getTwoBibleLists()
+        if not text in plainBibleList and not text in formattedBibleList:
+            if formattedBibleList:
+                text = formattedBibleList[0]
+            elif plainBibleList:
+                text = plainBibleList[0]
         if text in plainBibleList or text in ("kjvbcv", "title"):
             query = "SELECT DISTINCT Verse FROM {0} WHERE Book=? AND Chapter=? ORDER BY Verse".format(text)
             self.cursor.execute(query, (b, c))
@@ -660,9 +675,10 @@ input.addEventListener('keyup', function(event) {0}
             if b < 40 and text in config.rtlTexts:
                 divTag = "<div style='direction: rtl;'>"
             if v in titleList and config.addTitleToPlainChapter:
-                if not v == 1:
-                    chapter += "<br>"
-                chapter += "{0}<br>".format(self.readTextVerse("title", b, c, v)[3])
+                #if not v == 1:
+                #    chapter += "<br>"
+                #chapter += "{0}<br>".format(self.readTextVerse("title", b, c, v)[3])
+                chapter += self.readTextVerse("title", b, c, v)[3]
             chapter += divTag
             if config.enableVerseHighlighting and config.showHighlightMarkers:
                 chapter += '<ref onclick="hiV({0},{1},{2},\'hl1\')" class="ohl1">&#9678;</ref>'.format(b, c, v)

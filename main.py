@@ -26,8 +26,12 @@ ConfigUtil.setup()
 
 # Check argument passed to UBA as a parameter
 initialCommand = " ".join(sys.argv[1:]).strip()
+docker = False
 config.noQt = False
 config.cli = False
+if initialCommand == "docker":
+    docker = True
+    initialCommand = "gui"
 if initialCommand == "cli":
     config.cli = True
 elif initialCommand == "gui":
@@ -37,7 +41,12 @@ elif len(sys.argv) > 1 and sys.argv[1] in ("telnet-server", "http-server", "exec
 initialCommandIsPython = True if initialCommand.endswith(".py") and os.path.isfile(initialCommand) else False
 
 # Check for dependencies and other essential elements
+os.environ["PYTHONUNBUFFERED"] = "1"
 from util.checkup import *
+
+if initialCommand == "setup-only":
+    print("UniqueBibleApp installed!")
+    exit()
 
 # Setup logging
 logger = logging.getLogger('uba')
@@ -195,16 +204,18 @@ def setupMainWindow(availableGeometry):
     config.screenHeight = availableGeometry.height()
     # Check os with platform.system() or sys.platform
     # Linux / Darwin / Windows
-    if platform.system() == "Linux" and not config.linuxStartFullScreen:
+    if docker or config.startFullScreen or (platform.system() == "Linux" and config.linuxStartFullScreen):
+        config.mainWindow.showFullScreen()
+    elif platform.system() == "Linux" and not config.linuxStartFullScreen:
         # Launching the app in full screen in some Linux distributions makes the app too sticky to be resized.
-        config.mainWindow.resize(config.screenWidth, config.screenHeight - 60)
+        config.mainWindow.resize(int(config.screenWidth), int(config.screenHeight - 60))
         # Below is an alternate workaround, loading the app in 4/5 of the screen size.
-        #config.mainWindow.resize(config.screenWidth * 4 / 5, config.screenHeight)
+        #config.mainWindow.resize(int(config.screenWidth * 4 / 5), int(config.screenHeight))
     elif platform.system() == "Windows" and hasattr(config, "cli") and not config.cli:
         config.mainWindow.showMaximized()
     else:
         # macOS or Linux set to fullscreen
-        config.mainWindow.resize(config.screenWidth, config.screenHeight)
+        config.mainWindow.resize(int(config.screenWidth), int(config.screenHeight))
     # pre-load control panel
     config.mainWindow.manageControlPanel(config.showControlPanelOnStartup)
     if hasattr(config, "cli") and config.cli:

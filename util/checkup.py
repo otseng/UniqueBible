@@ -12,21 +12,36 @@ def downloadFileIfNotFound(databaseInfo):
         import gdown
         try:
             print("Downloading initial content '{0}' ...".format(fileItems[-1]))
-            gdown.download(cloudFile, localFile, quiet=True)
-            print("Downloaded!")
-            connection = True
+            #print("from: {0}".format(cloudFile))
+            #print("to: {0}".format(localFile))
+            # The following command does not work in docker image in some cases.
+            #gdown.download(cloudFile, localFile, quiet=False)
+            cli = "gdown {0} -O {1}".format(cloudFile, localFile)
+            try:
+                runcli = subprocess.Popen(cli, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                *_, stderr = runcli.communicate()
+                if not stderr:
+                    print("Failed to download '{0}'!".format(fileItems[-1]))
+                    connection = False
+                else:
+                    print("Downloaded!")
+                    connection = True
+            except:
+                print("Failed to download '{0}'!".format(fileItems[-1]))
+                connection = False
         except:
             print("Failed to download '{0}'!".format(fileItems[-1]))
             connection = False
-        if connection:
-            if localFile.endswith(".zip"):
-                print("Unpacking ...")
-                zipObject = zipfile.ZipFile(localFile, "r")
-                path, *_ = os.path.split(localFile)
-                zipObject.extractall(path)
-                zipObject.close()
-                os.remove(localFile)
-                print("'{0}' is installed!".format(fileItems[-1]))
+        if connection and os.path.isfile(localFile) and localFile.endswith(".zip"):
+            print("Unpacking ...")
+            zipObject = zipfile.ZipFile(localFile, "r")
+            path, *_ = os.path.split(localFile)
+            zipObject.extractall(path)
+            zipObject.close()
+            os.remove(localFile)
+            print("'{0}' is installed!".format(fileItems[-1]))
+        else:
+            print("Failed to download '{0}'!".format(fileItems[-1]))
 
 def pip3InstallModule(module):
     if not config.pipIsUpdated:
@@ -261,6 +276,12 @@ def isYoutubeDownloaderInstalled():
     except:
         return False
 
+def isGTTSInstalled():
+    try:
+        from gtts import gTTS
+        return True
+    except:
+        return False
 
 # Set config values for optional features
 def setInstallConfig(module, isInstalled):
@@ -298,6 +319,8 @@ def setInstallConfig(module, isInstalled):
         config.isVlcInstalled = isInstalled
     elif module == "yt-dlp":
         config.isYoutubeDownloaderInstalled = isInstalled
+    elif module == "gTTS":
+        config.isGTTSInstalled = isInstalled
 
 # Check if required modules are installed
 required = (
@@ -324,6 +347,7 @@ for module, feature, isInstalled in required:
                 pip3InstallModule(module)
                 pip3InstallModule("PyQtWebEngine")
                 if isInstalled():
+                    config.qtLibrary == "pyqt5"
                     print("Installed!")
                 else:
                     print("Required feature '{0}' is not enabled.\nInstall either 'PySide2' or 'PyQt5' first!".format(feature, module))
@@ -335,6 +359,7 @@ for module, feature, isInstalled in required:
                 print("PyQt5 is not found!  Trying to install 'PySide2' instead ...")
                 pip3InstallModule(module)
                 if isInstalled():
+                    config.qtLibrary == "pyside2"
                     print("Installed!")
                 else:
                     print("Required feature '{0}' is not enabled.\nInstall either 'PySide2' or 'PyQt5' first!".format(feature, module))
@@ -358,7 +383,8 @@ optional = (
     ("qrcode", "QR Code", isQrCodeInstalled),
     ("git+git://github.com/ojii/pymaging.git#egg=pymaging git+git://github.com/ojii/pymaging-png.git#egg=pymaging-png", "Pure Python PNG", isPurePythonPngInstalled),
     ("python-vlc", "VLC Player", isVlcInstalled),
-    ("yt-dlp", "YouTube Downloader", isYoutubeDownloaderInstalled)
+    ("yt-dlp", "YouTube Downloader", isYoutubeDownloaderInstalled),
+    ("gTTS", "Google text-to-speech", isGTTSInstalled)
 ) if config.noQt else (
     ("html-text", "Read html text", isHtmlTextInstalled),
     ("beautifulsoup4", "HTML / XML Parser", isBeautifulsoup4Installed),
@@ -390,7 +416,7 @@ for module, feature, isInstalled in optional:
 # Check if other optional features are installed
 # [Optional] Text-to-Speech feature
 config.isTtsInstalled = isTtsInstalled()
-if not config.isTtsInstalled:
+if not config.isTtsInstalled and not config.gTTS:
     print("Text-to-speech feature is not enabled or supported on your device.")
 
 # Import modules for developer

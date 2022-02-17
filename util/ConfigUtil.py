@@ -198,10 +198,22 @@ class ConfigUtil:
         # corresponding translation: "noAction", "cp0", "cp1", "cp2", "cp3", "cp4", "menu4_compareAll", "menu4_crossRef", "menu4_tske", "menu4_traslations", "menu4_discourse", "menu4_words", "menu4_tdw", "menu4_indexes", "menu4_commentary", "classicMenu" """
         if not hasattr(config, "verseNoDoubleClickAction"):
             config.verseNoDoubleClickAction = "CROSSREFERENCE" if config.enableHttpServer else "_cp0"
+        config.help["startFullScreen"] = """
+        # Start UBA with full-screen"""
+        if not hasattr(config, "startFullScreen"):
+            config.startFullScreen = False
         config.help["linuxStartFullScreen"] = """
         # Start UBA with full-screen on Linux os"""
         if not hasattr(config, "linuxStartFullScreen"):
             config.linuxStartFullScreen = False
+        config.help["gTTS"] = """
+        # Google text-to-speech feature
+        # gTTS and sox are required to run this feature.
+        # To install, e.g., on Arach Linux:
+        # 'pip3 install gTTS'
+        # 'sudo pacman -S sox'"""
+        if not hasattr(config, "gTTS"):
+            config.gTTS = False
         config.help["espeak"] = """
         # Use espeak for text-to-speech feature instead of built-in qt tts engine
         # espeak is a text-to-speech tool that can run offline
@@ -412,6 +424,18 @@ class ConfigUtil:
         # Options to use large sets of icons: True / False"""
         if not hasattr(config, "toolBarIconFullSize"):
             config.toolBarIconFullSize = False
+        config.help["maximumIconButtonWidth"] = """
+        # Options to set maximum icon button width"""
+        if not hasattr(config, "maximumIconButtonWidth"):
+            config.maximumIconButtonWidth = 36
+        config.help["toolbarIconSizeFactor"] = """
+        # Toolbar icon size factor"""
+        if not hasattr(config, "toolbarIconSizeFactor"):
+            config.toolbarIconSizeFactor = 0.75
+        config.help["sidebarIconSizeFactor"] = """
+        # Sidebar icon size factor"""
+        if not hasattr(config, "sidebarIconSizeFactor"):
+            config.sidebarIconSizeFactor = 0.6
         config.help["parallelMode"] = """
         # Options on parallel mode: 0, 1, 2, 3"""
         if not hasattr(config, "parallelMode"):
@@ -974,14 +998,6 @@ class ConfigUtil:
         # List of disabled shutdown plugins"""
         if not hasattr(config, "excludeShutdownPlugins"):
             config.excludeShutdownPlugins = []
-        config.help["toolbarIconSizeFactor"] = """
-        # Toolbar icon size factor"""
-        if not hasattr(config, "toolbarIconSizeFactor"):
-            config.toolbarIconSizeFactor = 0.75
-        config.help["sidebarIconSizeFactor"] = """
-        # Sidebar icon size factor"""
-        if not hasattr(config, "sidebarIconSizeFactor"):
-            config.sidebarIconSizeFactor = 0.6
         config.help["githubAccessToken"] = """
         # Github access token"""
         token = "{0}_{1}0{2}".format('tuc', 'AAUqeeL85rzuqvqZCx4B', 'iu2CrbkH41IBZJE')
@@ -1081,6 +1097,7 @@ class ConfigUtil:
             ("openLinuxPdf", config.openLinuxPdf),
             ("linuxStartFullScreen", config.linuxStartFullScreen),
             #("showTtsOnLinux", config.showTtsOnLinux),
+            ("gTTS", config.gTTS),
             ("espeak", config.espeak),
             ("espeakSpeed", config.espeakSpeed),
             ("qttsSpeed", config.qttsSpeed),
@@ -1120,9 +1137,11 @@ class ConfigUtil:
             ("exportEmbeddedImages", config.exportEmbeddedImages),
             ("clickToOpenImage", config.clickToOpenImage),
             ("landscapeMode", config.landscapeMode),
+            ("startFullScreen", config.startFullScreen),
             ("noToolBar", config.noToolBar),
             ("topToolBarOnly", config.topToolBarOnly),
             ("toolBarIconFullSize", config.toolBarIconFullSize),
+            ("maximumIconButtonWidth", config.maximumIconButtonWidth),
             ("toolbarIconSizeFactor", config.toolbarIconSizeFactor),
             ("sidebarIconSizeFactor", config.sidebarIconSizeFactor),
             ("parallelMode", config.parallelMode),

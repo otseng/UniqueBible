@@ -1303,7 +1303,7 @@ class Converter:
                 chapter = book.getElementsByTagName(chapterStr)[0]
                 # print(chapterStr)
                 verses = BibleBooks.verses[bookNum][chapterNum]
-                for verseNum in range(1, verses):
+                for verseNum in range(1, verses+1):
                     scripture = ""
                     try:
                         verse = chapter.getElementsByTagName("v{0}".format(verseNum))[0]
@@ -2486,5 +2486,5 @@ if __name__ == '__main__':
     # out = Converter().stripTheWordTags(line)
     # print(out)
 
-    file = "/home/oliver/Downloads/2001b.xml"
+    file = "/home/oliver/Downloads/temp/2001b.xml"
     Converter().importXMLBible(file)

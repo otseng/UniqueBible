@@ -110,7 +110,8 @@ class UpdateUtil:
         return files
 
     @staticmethod
-    def updatePatchFileWithChanges(version, sha1, sha2):
+    def updatePatchFileWithChanges(ver, sha1, sha2):
+        version = "{:.2f}".format(float(ver))
         patches = {}
         f = open("patches.txt", "r")
         lines = f.readlines()
@@ -125,16 +126,11 @@ class UpdateUtil:
                 action = "file"
                 code, file = line.split("\t")
                 if (file not in patches.keys()) or (patches[file] != version):
-                    if patches[file] == "28.09":
-                        pass
                     if code.strip() == "D":
                         action = "delete"
                     str = """({0}, "{1}", "{2}")""".format(version, action, file.strip())
                     print(str)
                     patch.write(str + "\n")
-        # patch.write("""({0}, "{1}", "{2}")\n""".format(ver, action, "patches.txt"))
-        # patch.write("""({0}, "{1}", "{2}")\n""".format(ver, action, "latest_changes.txt"))
-        # patch.write("""({0}, "{1}", "{2}")\n""".format(ver, action, "UniqueBibleAppVersion.txt"))
         patch.close()
 
     @staticmethod

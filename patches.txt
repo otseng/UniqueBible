@@ -743,7 +743,6 @@
 (26.13, "file", "gui/MultiLineInputDialog.py")
 (26.13, "file", "util/DateUtil.py")
 (26.15, "file", "db/DevotionalSqlite.py")
-(26.15, "file", "util/UpdateUtil.py")
 (26.16, "folder", "marvelData/devotionals")
 (26.16, "file", "marvelData/devotionals/Readme.md")
 (26.17, "file", "gui/MasterControl.py")
@@ -815,3 +814,4 @@
 (28.09, "file", "patches.txt")
 (28.09, "file", "latest_changes.txt")
 (28.09, "file", "UniqueBibleAppVersion.txt")
+(28.09, "file", "util/UpdateUtil.py")

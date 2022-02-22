@@ -111,22 +111,30 @@ class UpdateUtil:
 
     @staticmethod
     def updatePatchFileWithChanges(version, sha1, sha2):
-        ver = "{:.2f}".format(float(version))
+        patches = {}
+        f = open("patches.txt", "r")
+        lines = f.readlines()
+        for line in lines:
+            ver, contentType, filePath = literal_eval(line)
+            patches[filePath] = "{0}".format(ver)
+        f.close()
         lines = UpdateUtil.getFilesChanged(sha1, sha2)
         patch = open("patches.txt", "a")
         for line in lines:
             if not line == "":
                 action = "file"
                 code, file = line.split("\t")
-                if not file in ("patches.txt", "latest_changes.txt", "UniqueBibleAppVersion.txt"):
+                if (file not in patches.keys()) or (patches[file] != version):
+                    if patches[file] == "28.09":
+                        pass
                     if code.strip() == "D":
                         action = "delete"
-                    str = """({0}, "{1}", "{2}")""".format(ver, action, file.strip())
+                    str = """({0}, "{1}", "{2}")""".format(version, action, file.strip())
                     print(str)
                     patch.write(str + "\n")
-        patch.write("""({0}, "{1}", "{2}")\n""".format(ver, action, "patches.txt"))
-        patch.write("""({0}, "{1}", "{2}")\n""".format(ver, action, "latest_changes.txt"))
-        patch.write("""({0}, "{1}", "{2}")\n""".format(ver, action, "UniqueBibleAppVersion.txt"))
+        # patch.write("""({0}, "{1}", "{2}")\n""".format(ver, action, "patches.txt"))
+        # patch.write("""({0}, "{1}", "{2}")\n""".format(ver, action, "latest_changes.txt"))
+        # patch.write("""({0}, "{1}", "{2}")\n""".format(ver, action, "UniqueBibleAppVersion.txt"))
         patch.close()
 
     @staticmethod
@@ -150,7 +158,7 @@ if __name__ == "__main__":
     version = "28.09"
     # Run "git log" to find the sha of commits to compare
     sha1 = "dec108f8431303fbf105b5fcb502815af7fb7921"
-    sha2 = "185253bf947d181973d2a1f04fb5375a8f4b6863"
+    sha2 = "4de5fca3c41ee80ffaafff1f79373f79e2e5108b"
     if len(sys.argv) == 4:
         version = sys.argv[1].strip()
         sha1 = sys.argv[2].strip()

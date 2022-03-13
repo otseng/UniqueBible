@@ -74,7 +74,7 @@ class FileUtil:
     @staticmethod
     def getBibleMP3File(text, book, folder, chapter, verse=None):
         import config
-        
+
         text = FileUtil.getMP3TextFile(text)
         b = book
         a = "A"

@@ -164,7 +164,7 @@ if __name__ == "__main__":
     version = "29.51"
     # Run "git log" to find the sha of commits to compare
     sha1 = "8d3df70f795f91ad202bba17ef48cae113bd03fb"
-    sha2 = "a86267bcf038e4c7ca47d5e60bb78b3dec82f99c"
+    sha2 = "d36ef8852ea4eb5a985c54399a555933b0442b24"
     if len(sys.argv) == 4:
         version = sys.argv[1].strip()
         sha1 = sys.argv[2].strip()

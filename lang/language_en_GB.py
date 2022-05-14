@@ -820,4 +820,6 @@ translation = {
     "collections": "Collections",
     "controlPreference": "Select Control Preference",
     "customiseIconSize": "Customise Icon Size",
+    "clear": "Clear",
+    "export": "Export",
 }

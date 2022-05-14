@@ -820,4 +820,6 @@ translation = {
     "collections": "コレクション",
     "controlPreference": "制御設定の選択",
     "customiseIconSize": "カスタマイズ・アイコン・サイズ",
+    "clear": "Clear - クリア",
+    "export": "輸出",
 }

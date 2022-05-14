@@ -820,4 +820,6 @@ translation = {
     "collections": "संग्रह",
     "controlPreference": "नियंत्रण वरीयता चुनें",
     "customiseIconSize": "प्रतीक आकार अनुकूलित करें",
+    "clear": "साफ़ करें",
+    "export": "निर्यात",
 }

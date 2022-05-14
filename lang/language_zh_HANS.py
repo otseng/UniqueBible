@@ -820,4 +820,6 @@ translation = {
     "collections": "組合",
     "controlPreference": "选择控制首选项",
     "customiseIconSize": "定制图标大小",
+    "clear": "清除",
+    "export": "出口",
 }

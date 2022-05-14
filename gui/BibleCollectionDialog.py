@@ -17,8 +17,8 @@ class BibleCollectionDialog(QDialog):
         self.setMinimumSize(680, 500)
         self.selectedCollection = None
         self.settingBibles = False
-        self.bibles = self.getBibles()
         self.bibleNames = []
+        self.bibles = self.getBibles()
         self.setupUI()
         self.parent = parent
 

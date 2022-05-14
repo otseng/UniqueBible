@@ -822,4 +822,5 @@ translation = {
     "customiseIconSize": "Personalizează dimensiunea pictogramei",
     "clear": "Clar",
     "export": "Export",
+    "loadMySettings": "Încarcă setările mele",
 }

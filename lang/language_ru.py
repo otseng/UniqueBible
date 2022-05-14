@@ -822,4 +822,5 @@ translation = {
     "customiseIconSize": "Размер значка Customise",
     "clear": "Очистить",
     "export": "Экспорт",
+    "loadMySettings": "Загрузить мои параметры",
 }

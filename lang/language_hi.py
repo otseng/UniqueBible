@@ -822,4 +822,5 @@ translation = {
     "customiseIconSize": "प्रतीक आकार अनुकूलित करें",
     "clear": "साफ़ करें",
     "export": "निर्यात",
+    "loadMySettings": "मेरी सेटिंग लोड करें",
 }

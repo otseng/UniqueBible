@@ -822,4 +822,5 @@ translation = {
     "customiseIconSize": "사용자 정의 아이콘 크기",
     "clear": "지우기",
     "export": "내보내기",
+    "loadMySettings": "내 설정 로드하기",
 }

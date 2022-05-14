@@ -822,4 +822,5 @@ translation = {
     "customiseIconSize": "自訂圖示大小",
     "clear": "清除",
     "export": "匯出",
+    "loadMySettings": "載入我的設定",
 }

@@ -822,4 +822,5 @@ translation = {
     "customiseIconSize": "Customise Icon Size",
     "clear": "Clear",
     "export": "Export",
+    "loadMySettings": "Load my settings",
 }

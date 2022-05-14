@@ -822,4 +822,5 @@ translation = {
     "customiseIconSize": "カスタマイズ・アイコン・サイズ",
     "clear": "Clear - クリア",
     "export": "輸出",
+    "loadMySettings": "設定のロード",
 }

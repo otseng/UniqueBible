@@ -19,6 +19,7 @@ from urllib.parse import urlparse, parse_qs
 from util.FileUtil import FileUtil
 from util.LanguageUtil import LanguageUtil
 from pathlib import Path
+from util.HtmlGeneratorUtil import HtmlGeneratorUtil
 
 
 class RemoteHttpHandler(SimpleHTTPRequestHandler):
@@ -72,10 +73,77 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             #".bible": self.getCurrentReference,
         }
 
-    def getShortcuts(self):
+    def setMainVerse(self):
+        if not hasattr(config, "mainVerseData"):
+            config.mainVerseData = {}
+        if config.webHomePage == "{0}.html".format(config.webPrivateHomePage):
+            privateKey = "{0}_private".format(self.session)
+            config.mainVerseData[privateKey] = self.getConfigMainVerse() if privateKey in config.mainVerseData else self.getDefaultMainVerse()
+        else:
+            config.mainVerseData[self.session] = self.getConfigMainVerse() if self.session in config.mainVerseData else self.getDefaultMainVerse()
+
+    def getConfigMainVerse(self):
         return {
+            "text": config.mainText,
+            "bAbb": self.abbreviations[str(config.mainB)],
+            "bFullEnglishName": BibleBooks.eng[str(config.mainB)][-1],
+            "b": config.mainB,
+            "c": config.mainC,
+            "v": config.mainV,
+            "reference": self.getCurrentReference(),
+            "commentary": config.commentaryText,
+        }
+
+    def getDefaultMainVerse(self):
+        return {
+            "text": "KJV",
+            "bAbb": "John",
+            "bFullEnglishName": "John",
+            "b": 43,
+            "c": 3,
+            "v": 16,
+            "reference": "John 3:16",
+            "commentary": "CBSC",
+        }
+
+    def getMainVerse(self):
+        if config.webHomePage == "{0}.html".format(config.webPrivateHomePage):
+            privateKey = "{0}_private".format(self.session)
+            if not hasattr(config, "mainVerseData") or not privateKey in config.mainVerseData:
+                self.setMainVerse()
+            return config.mainVerseData[privateKey]
+        else:
+            if not hasattr(config, "mainVerseData") or not self.session in config.mainVerseData:
+                self.setMainVerse()
+            return config.mainVerseData[self.session]
+
+    def getShortcuts(self):
+        mainVerse = self.getMainVerse()
+        return {
+            ".chapters": "_chapters:::{0}".format(mainVerse["text"]),
+            ".bible": "BIBLE:::{0}:::{1}".format(mainVerse["text"], mainVerse["reference"]),
+            ".mob": "BIBLE:::MOB:::{0}".format(mainVerse["reference"]),
+            ".mib": "BIBLE:::MIB:::{0}".format(mainVerse["reference"]),
+            ".mtb": "BIBLE:::MTB:::{0}".format(mainVerse["reference"]),
+            ".mpb": "BIBLE:::MPB:::{0}".format(mainVerse["reference"]),
+            ".mab": "BIBLE:::MAB:::{0}".format(mainVerse["reference"]),
+            ".compare": "compare:::{0}".format(mainVerse["reference"]),
+            ".crossreference": "crossreference:::{0}".format(mainVerse["reference"]),
+            ".tske": "tske:::{0}".format(mainVerse["reference"]),
+            ".translation": "translation:::{0}".format(mainVerse["reference"]),
+            ".discourse": "discourse:::{0}".format(mainVerse["reference"]),
+            ".words": "words:::{0}".format(mainVerse["reference"]),
+            ".combo": "combo:::{0}".format(mainVerse["reference"]),
+            ".commentary": "commentary:::{0}:::{1}".format(mainVerse["commentary"], mainVerse["reference"]),
+            ".index": "index:::{0}".format(mainVerse["reference"]),
+            ".commentarymenu": "_commentarychapters:::{0}".format(mainVerse["commentary"]),
+            ".introduction": "SEARCHBOOKCHAPTER:::Tidwell_The_Bible_Book_by_Book:::{0}".format(mainVerse["bFullEnglishName"]),
+            ".timeline": "SEARCHBOOKCHAPTER:::Timelines:::{0}".format(mainVerse["bFullEnglishName"]),
+            ".timelines": "SEARCHBOOKCHAPTER:::Timelines:::{0}".format(mainVerse["bFullEnglishName"]),
+            ".overview": "overview:::{0} {1}".format(mainVerse["bAbb"], mainVerse["c"]),
+            ".chapterindex": "chapterindex:::{0} {1}".format(mainVerse["bAbb"], mainVerse["c"]),
+            ".summary": "summary:::{0} {1}".format(mainVerse["bAbb"], mainVerse["c"]),
             ".biblemenu": "_menu:::",
-            ".commentarymenu": "_commentary:::{0}".format(config.commentaryText),
             ".timelinemenu": "BOOK:::Timelines",
             ".maps": "SEARCHTOOL:::EXLBL:::",
             ".characters": "SEARCHTOOL:::EXLBP:::",
@@ -83,14 +151,6 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             ".promises": "BOOK:::Bible_Promises",
             ".parallels": "BOOK:::Harmonies_and_Parallels",
             ".topics": "SEARCHTOOL:::EXLBT:::",
-            #".mob": "TEXT:::MOB",
-            #".mib": "TEXT:::MIB",
-            #".mtb": "TEXT:::MTB",
-            #".mpb": "TEXT:::MPB",
-            #".mab": "TEXT:::MAB",
-            #".introduction": "SEARCHBOOKCHAPTER:::Tidwell_The_Bible_Book_by_Book:::{0}".format(BibleBooks.eng[str(config.mainB)][-1]),
-            #".timeline": "SEARCHBOOKCHAPTER:::Timelines:::{0}".format(BibleBooks.eng[str(config.mainB)][-1]),
-            #".timelines": "SEARCHBOOKCHAPTER:::Timelines:::{0}".format(BibleBooks.eng[str(config.mainB)][-1]),
         }
 
     def getChapterFeatures(self):
@@ -228,13 +288,12 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
                 <meta http-equiv="Pragma" content="no-cache" />
                 <meta http-equiv="Expires" content="0" />
-                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{3}.css?v=1.038'>
-                <script src='js/http_server.js?v=1.038'></script>
+                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{3}.css?v=1.062'>
+                <script src='js/http_server.js?v=1.062'></script>
                 </head>
                 <body>... {1} ...
                 <script>
-                checkCookie();
-                location.assign("{2}?cmd=" + getLastVerse());
+                location.assign("{2}?cmd=.bible");
                 </script>
                 </body>""".format(config.webUBAIcon, config.thisTranslation["loading"], config.webHomePage, config.theme)
 
@@ -244,6 +303,8 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
 
     def loadContent(self):
         features = {
+            "audio": self.audioContent,
+            "play": self.playAudio,
             "config": self.configContent,
             "download": self.downloadContent,
             "history": self.historyContent,
@@ -277,6 +338,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             "setversenosingleclickaction": self.setVerseNoClickActionContent,
             "setversenodoubleclickaction": lambda: self.setVerseNoClickActionContent(True),
             "setwebubaicon": self.setWebUBAIconContent,
+            "wordaudiolinks": self.toggleWordAudioLinks,
         }
         functions = {
             "login": self.login,
@@ -311,6 +373,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                          '.setversenosingleclickaction',
                          '.setversenodoubleclickaction',
                          '.setwebubaicon',
+                         '.wordaudiolinks',
                          )
         # Convert command shortcut
         commandFunction = ""
@@ -321,6 +384,21 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         shortcuts = self.getShortcuts()
         commands = self.getCommands()
         commandLower = self.command.lower()
+
+        if re.search("^[Bb][Ii][Bb][Ll][Ee]:::[^:]+:::$", self.command):
+            self.command = "{0}{1}".format(self.command, self.getMainVerse()["reference"])
+
+        if not self.checkPermission()[0] and config.readFormattedBibles:
+            checkOhgb = {
+                "text:::ohgb": "TEXT:::MOB",
+                "text:::ohgbi": "TEXT:::MIB",
+            }
+            if commandLower in checkOhgb.keys():
+                self.command = checkOhgb[commandLower]
+            elif commandLower.startswith("bible:::ohgb:::"):
+                self.command = "BIBLE:::MOB:::{0}".format(self.command[15:])
+            elif commandLower.startswith("bible:::ohgbi:::"):
+                self.command = "BIBLE:::MIB:::{0}".format(self.command[16:])
         
         if commandLower in config.customCommandShortcuts.keys():
             self.command = config.customCommandShortcuts[commandLower]
@@ -401,16 +479,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         fontFamily = config.font
         collapseFooter = "document.getElementById('bibleFrame').contentWindow.document.getElementById('lastElement').style.height='5px'" if config.webCollapseFooterHeight else ""
         if config.setMainVerse:
-            cookie = """document.cookie = "lastVerse={0}"; 
-            document.cookie = "lastBookName={1}"; 
-            document.cookie = "lastChapterNumber={2}"; 
-            document.cookie = "lastVerseNumber={3}"; 
-            document.cookie = "lastBookFullNameEnglish={4}";
-            document.cookie = "lastText={5}"; 
-            """.format(self.getCurrentReference(), self.abbreviations[str(config.mainB)], config.mainC, config.mainV, BibleBooks.eng[str(config.mainB)][-1], config.mainText)
-            config.setMainVerse = False
-        else:
-            cookie = ""
+            self.setMainVerse()
         html = """
             <html>
             <head>
@@ -422,7 +491,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 <meta http-equiv="Pragma" content="no-cache" />
                 <meta http-equiv="Expires" content="0" />
 
-                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{9}.css?v=1.038'>
+                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{9}.css?v=1.062'>
                 <style>
                 ::-webkit-scrollbar {4}
                   display: none;
@@ -493,19 +562,20 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 .sidenav .fullscreenbtn {4}
                   position: absolute;
                   top: 0;
-                  font-size: 25px;
+                  right: 45px;
+                  font-size: 30px;
                 {5}
 
                 #navBtns {4}
                   position: absolute;
                   top: 20;
-                  left: 70px;
+                  left: 30px;
                 {5}
 
                 .sidenav .closebtn {4}
                   position: absolute;
                   top: 0;
-                  right: 25px;
+                  right: 5px;
                   font-size: 35px;
                   margin-left: 50px;
                 {5}
@@ -551,15 +621,13 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 zh {4} font-family:'{8}'; {5}
                 {10}
                 </style>
-                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/http_server.css?v=1.038'>
-                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css?v=1.038'>
-                <script src='js/common.js?v=1.038'></script>
-                <script src='js/{9}.js?v=1.038'></script>
-                <script src='w3.js?v=1.038'></script>
-                <script src='js/http_server.js?v=1.038'></script>
+                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/http_server.css?v=1.062'>
+                <link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css?v=1.062'>
+                <script src='js/common.js?v=1.062'></script>
+                <script src='js/{9}.js?v=1.062'></script>
+                <script src='w3.js?v=1.062'></script>
+                <script src='js/http_server.js?v=1.062'></script>
                 <script>
-                checkCookie();
-                {21}
                 var queryString = window.location.search;	
                 queryString = queryString.substring(1);
                 var curPos;
@@ -645,15 +713,26 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 window.onscroll = function() {4}keepTop(){5};
                 window.onresize = function() {4}resizeSite(){5};
 
-                function openCommandInNewWindow() {4}
-                    cmd = encodeURI(document.getElementById('commandInput').value);
+                function getCommandURL() {4}
                     var url;
+                    cmd = encodeURI(document.getElementById('commandInput').value);
                     if (cmd == "") {4}
                         url = "{19}";
                     {5} else {4}
                         url = "{19}?cmd="+cmd;
                     {5}
+                    url = url.replace(/ /g, "%20");
+                    return url;
+                {5}
+
+                function openCommandInNewWindow() {4}
+                    url = getCommandURL();
                     window.open(url, "_blank");
+                {5}
+
+                function shareInfo() {4}
+                    document.getElementById('commandInput').value =  "_qrc:::" + document.getElementById('commandInputHolder').title;
+                    document.getElementById("commandForm").submit();
                 {5}
 
                 // Open and close side navigation bar
@@ -664,9 +743,6 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     document.getElementById("mySidenav").style.width = "0";
                 {5}
                 document.querySelector('#commandInput').addEventListener('click', closeSideNav);
-                
-                var thisLastVerse = getLastVerse();
-                document.getElementById("lastVerse").innerHTML = '<a href="#" onclick="submitCommand(' + "'" + thisLastVerse + "'" + ')">' + thisLastVerse + '</a>';
                 </script>
                 </div>
             </body>
@@ -693,7 +769,6 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             self.getBibleNavigationMenu(),
             config.webHomePage,
             config.webUBAIcon,
-            cookie,
         )
         self.wfile.write(bytes(html, "utf8"))
 
@@ -718,24 +793,25 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         self.wfile.write(bytes(html, "utf8"))
 
     def getSideNavContent(self):
-        html = """<div id="navBtns">{0} {1} {2}</div>""".format(self.previousChapter(), self.passageSelectionButton(), self.nextChapter())
-        #html += """<a href="#" onclick="submitCommand('.bible')">{0}</a>""".format(self.parser.bcvToVerseReference(config.mainB, config.mainC, config.mainV))
-        html += """<span id="lastVerse"></span>"""
+        mainVerse = self.getMainVerse()
+        html = """<div id="navBtns">{0} {1} {2}</div>""".format(self.previousChapter(), self.chapterSelectionButton(), self.nextChapter())
+        html += """<a href="#" onclick="submitCommand('.bible')">{0}</a>""".format(mainVerse["reference"])
         html += """<a href="#">{0}</a>""".format(self.verseActiionSelection())
         html += """<a href="#">{0}</a>""".format(self.bibleSelectionSide())
         sideNavItems = (
-            (self.getFavouriteBible(), "BIBLE:::{0}:::".format(self.getFavouriteBible())),
-            (self.getFavouriteBible2(), "BIBLE:::{0}:::".format(self.getFavouriteBible2())),
-            (self.getFavouriteBible3(), "BIBLE:::{0}:::".format(self.getFavouriteBible3())),
+            (self.getFavouriteBible(), "BIBLE:::{0}:::{1}".format(self.getFavouriteBible(), mainVerse["reference"])),
+            (self.getFavouriteBible2(), "BIBLE:::{0}:::{1}".format(self.getFavouriteBible2(), mainVerse["reference"])),
+            (self.getFavouriteBible3(), "BIBLE:::{0}:::{1}".format(self.getFavouriteBible3(), mainVerse["reference"])),
         )
         for item in sideNavItems:
-            html += """<a href="#" onclick="submitCommand('{1}'+getLastVerse())">{0}</a>""".format(*item)
+            html += """<a href="#" onclick="submitCommand('{1}')">{0}</a>""".format(*item)
         html += "<hr>"
         sideNavItems = (
             ("{0} &#x1F50E;&#xFE0E;".format(config.thisTranslation["menu5_bible"]), ".biblemenu"),
             (config.thisTranslation["commentaries"], ".commentarymenu"),
             (config.thisTranslation["menu_library"], ".library"),
             (config.thisTranslation["html_timelines"], ".timelineMenu"),
+            (config.thisTranslation["bibleAudio"], ".audio"),
             (config.thisTranslation["menu5_names"], ".names"),
             (config.thisTranslation["menu5_characters"], ".characters"),
             (config.thisTranslation["menu5_locations"], ".maps"),
@@ -755,6 +831,9 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         html += """<a href="index.html">English</a>""" if config.webHomePage != "index.html" else ""
         html += """<hr>{0}""".format(self.getOrganisationIcon())
         html += """<a href="https://github.com/eliranwong/UniqueBible" target="_blank"><img style="width:85px; height:auto;" src="icons/{0}"></a>""".format(config.webUBAIcon)
+        html += "<hr>"
+        html += """<a href="#" onclick="document.getElementById('bibleFrame').src = '{1}';">{0} <span class="material-icons-outlined">qr_code_scanner</span></a>""".format(config.thisTranslation["qrcodeScanner"], self.getQrScannerPage())
+        html += "<hr>"
         html += """<a href="#">&nbsp;</a>"""
         html += """<a href="#">&nbsp;</a>"""
         return html
@@ -776,7 +855,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     <form id="commandForm" onsubmit="checkCommands()" action="{4}" action="get">
                     <table class='layout' style='border-collapse: collapse;'><tr>
                     <td class='layout' style='white-space: nowrap;'>{1}&nbsp;</td>
-                    <td class='layout' style='width: 100%;'><input type="search" autocomplete="on" id="commandInput" style="width:100%" name="cmd" value=""/></td>
+                    <td class='layout' style='width: 100%;'><input type="search" autocomplete="on" id="commandInput" style="width:100%" name="cmd" value=""/><span id="commandInputHolder" title=""></span></td>
                     <td class='layout' style='white-space: nowrap;'>&nbsp;{2}&nbsp;{5}&nbsp;{3}&nbsp;{6}&nbsp;{0}</td>
                     </tr></table>
                     </form>
@@ -787,16 +866,18 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     self.qrButton(),
                     config.webHomePage,
                     self.newWindowButton(),
-                    self.qrScannerButton(),
+                    #self.qrScannerButton(),
+                    self.playAudioButton(),
                 )
             else:
                 return """
                     <form id="commandForm" action="{0}" action="get">
                     {10}&nbsp;&nbsp;{5}&nbsp;&nbsp;{3}&nbsp;&nbsp;{4}&nbsp;&nbsp;{6}&nbsp;&nbsp;{7}&nbsp;&nbsp;
-                    {11}&nbsp;&nbsp;{12}{13}{14}{15}&nbsp;&nbsp;{8}&nbsp;&nbsp;{16}&nbsp;&nbsp;{19}&nbsp;&nbsp;{18}&nbsp;&nbsp;{9}
+                    {11}&nbsp;&nbsp;{12}{13}{14}{15}&nbsp;&nbsp;{8}&nbsp;&nbsp;{16}&nbsp;&nbsp;{19}&nbsp;&nbsp;{20}&nbsp;&nbsp;{18}&nbsp;&nbsp;{9}
                     <br/><br/>
                     <span onclick="focusCommandInput()">{1}</span>:
                     <input type="search" autocomplete="on" id="commandInput" style="width:60%" name="cmd" value=""/>
+                    <span id="commandInputHolder" title=""></span>
                     {2}&nbsp;&nbsp;{17}
                     </form>
                     """.format(
@@ -820,6 +901,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                     self.newWindowButton(),
                     self.internalHelpButton(),
                     self.qrScannerButton(),
+                    self.playAudioButton(),
                 )
         else:
             return ""
@@ -883,13 +965,14 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 <meta http-equiv="Expires" content="0" />"""
                 "<style>body {2} font-size: {4}; font-family:'{5}';{3} "
                 "zh {2} font-family:'{6}'; {3} "
+                ".ubaButton {2} background-color: {10}; color: {11}; border: none; padding: 2px 10px; text-align: center; text-decoration: none; display: inline-block; font-size: 17px; margin: 2px 2px; cursor: pointer; {3}"
                 "{8}</style>"
-                "<link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{7}.css?v=1.038'>"
-                "<link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css?v=1.038'>"
-                "<script src='js/common.js?v=1.038'></script>"
-                "<script src='js/{7}.js?v=1.038'></script>"
-                "<script src='w3.js?v=1.038'></script>"
-                "<script src='js/http_server.js?v=1.038'></script>"
+                "<link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/{7}.css?v=1.062'>"
+                "<link id='theme_stylesheet' rel='stylesheet' type='text/css' href='css/custom.css?v=1.062'>"
+                "<script src='js/common.js?v=1.062'></script>"
+                "<script src='js/{7}.js?v=1.062'></script>"
+                "<script src='w3.js?v=1.062'></script>"
+                "<script src='js/http_server.js?v=1.062'></script>"
                 """<script>
                 var target = document.querySelector('title');
                 var observer = new MutationObserver(function(mutations) {2}
@@ -905,7 +988,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 "{0}"
                 """<script>var versionList = []; var compareList = []; var parallelList = [];
                 var diffList = []; var searchList = [];</script>"""
-                "<script src='js/custom.js?v=1.038'></script>"
+                "<script src='js/custom.js?v=1.062'></script>"
                 "</head><body><span id='v0.0.0'></span>{1}"
                 "<p>&nbsp;</p><div id='footer'><span id='lastElement'></span></div><script>loadBible();document.querySelector('body').addEventListener('click', window.parent.closeSideNav);</script></body></html>"
                 ).format(activeBCVsettings,
@@ -917,7 +1000,10 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                          config.fontChinese,
                          config.theme,
                          self.getHighlightCss(),
-                         config.webUBAIcon,)
+                         config.webUBAIcon,
+                         config.widgetBackgroundColor,
+                         config.widgetForegroundColor,
+                         )
         return html
 
     def getBibleNavigationMenu(self):
@@ -1046,7 +1132,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         if newChapter < 1:
             newChapter = 1
         command = self.parser.bcvToVerseReference(config.mainB, newChapter, 1)
-        html = "<button type='button' title='{1}' onclick='submitCommand(\"{0}\")'>&lt;</button>".format(command, config.thisTranslation["menu4_previous"])
+        html = """<button type='button' title='{1}' onclick='submitCommand(\"{0}\")'><span class="material-icons-outlined">navigate_before</span></button>""".format(command, config.thisTranslation["menu4_previous"])
         return html
 
     def nextChapter(self):
@@ -1054,15 +1140,19 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         if config.mainC < BibleBooks.getLastChapter(config.mainB):
             newChapter += 1
         command = self.parser.bcvToVerseReference(config.mainB, newChapter, 1)
-        html = "<button type='button' title='{1}' onclick='submitCommand(\"{0}\")'>&gt;</button>".format(command, config.thisTranslation["menu4_next"])
+        html = """<button type='button' title='{1}' onclick='submitCommand("{0}")'><span class="material-icons-outlined">navigate_next</span></button>""".format(command, config.thisTranslation["menu4_next"])
         return html
 
+    def playAudioButton(self):
+        return """<button type='button' title='{0}' onclick='submitCommand(".play")'><span class="material-icons-outlined">audiotrack</span></button>""".format(config.thisTranslation["bibleAudio"])
+
     def toggleFullscreen(self):
-        html = "<button type='button' title='{0}' onclick='fullScreenSwitch()'>+ / -</button>".format(config.thisTranslation["menu1_fullScreen"])
+        html = """<button type='button' title='{0}' onclick='fullScreenSwitch()'><span class="material-icons-outlined">fullscreen</span></button>""".format(config.thisTranslation["menu1_fullScreen"])
         return html
 
     def openSideNav(self):
-        html = "<button type='button' title='{0}' onclick='openSideNav()'>&equiv;</button>".format(config.thisTranslation["menu_bibleMenu"])
+        #html = "<button type='button' title='{0}' onclick='openSideNav()'>&equiv;</button>".format(config.thisTranslation["menu_bibleMenu"])
+        html = """<button type='button' title='{0}' onclick='openSideNav()'><span class="material-icons-outlined">menu</span></button>""".format(config.thisTranslation["menu_bibleMenu"])
         return html
 
     def getUserManual(self):
@@ -1073,43 +1163,57 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         return userManual
 
     def internalHelpButton(self):
-        html = """<button type='button' title='{0}' onclick='submitCommand(".help")'>&quest;</button>""".format(config.thisTranslation["ubaCommands"])
+        #html = """<button type='button' title='{0}' onclick='submitCommand(".help")'>&quest;</button>""".format(config.thisTranslation["ubaCommands"])
+        html = """<button type='button' title='{0}' onclick='submitCommand(".help")'><span class="material-icons-outlined">help_outline</span></button>""".format(config.thisTranslation["ubaCommands"])
         return html
 
     def externalHelpButton(self):
-        html = """<button type='button' title='{0}' onclick='window.open("{1}", "_blank")'>&quest;&quest;</button>""".format(config.thisTranslation["userManual"], self.getUserManual())
+        #html = """<button type='button' title='{0}' onclick='window.open("{1}", "_blank")'>&quest;&quest;</button>""".format(config.thisTranslation["userManual"], self.getUserManual())
+        html = """<button type='button' title='{0}' onclick='window.open("{1}", "_blank")'><span class="material-icons-outlined">menu_book</span></button>""".format(config.thisTranslation["userManual"], self.getUserManual())
         return html
 
     def submitButton(self):
-        html = """<button type='button' title='{0}' onclick='document.getElementById("commandForm").submit();'>&crarr;</button>""".format(config.thisTranslation["enter"])
+        #html = """<button type='button' title='{0}' onclick='document.getElementById("commandForm").submit();'>&crarr;</button>""".format(config.thisTranslation["enter"])
+        html = """<button type='button' title='{0}' onclick='document.getElementById("commandForm").submit();'><span class="material-icons-outlined">keyboard_return</span></button>""".format(config.thisTranslation["enter"])
         return html
 
     def qrButton(self):
-        html = """<button type='button' title='{0}' onclick='submitCommand("qrcode:::"+window.location.href)'>&#9641;</button>""".format(config.thisTranslation["qrcode"])
+        #html = """<button type='button' title='{0}' onclick='submitCommand("qrcode:::"+window.location.href)'>&#9641;</button>""".format(config.thisTranslation["qrcode"])
+        #html = """<button type='button' title='{0}' onclick='submitCommand("qrcode:::"+window.location.href)'><span class="material-icons-outlined">qr_code</span></button>""".format(config.thisTranslation["qrcode"])
+        html = """<button type='button' title='{0}' onclick='shareInfo()'><span class="material-icons-outlined">share</span></button>""".format(config.thisTranslation["share"])
         return html
 
     def qrScannerButton(self):
-        html = """<button type='button' title='{0}' onclick="document.getElementById('bibleFrame').src = '{1}';">&#9635;</button>""".format(config.thisTranslation["qrcodeScanner"], self.getQrScannerPage())
+        #html = """<button type='button' title='{0}' onclick="document.getElementById('bibleFrame').src = '{1}';">&#9635;</button>""".format(config.thisTranslation["qrcodeScanner"], self.getQrScannerPage())
+        html = """<button type='button' title='{0}' onclick="document.getElementById('bibleFrame').src = '{1}';"><span class="material-icons-outlined">qr_code_scanner</span></button>""".format(config.thisTranslation["qrcodeScanner"], self.getQrScannerPage())
         return html
 
     def passageSelectionButton(self):
-        html = """<button type='button' title='{1}' onclick='mod = "KJV"; updateBook("KJV", "{0}"); openNav("navB");'>&dagger;</button>""".format(config.webHomePage, config.thisTranslation["bibleNavigation"])
+        #html = """<button type='button' title='{1}' onclick='mod = "KJV"; updateBook("KJV", "{0}"); openNav("navB");'>&dagger;</button>""".format(config.webHomePage, config.thisTranslation["bibleNavigation"])
+        html = """<button type='button' title='{1}' onclick='mod = "KJV"; updateBook("KJV", "{0}"); openNav("navB");'><span class="material-icons-outlined">add</span></button>""".format(config.webHomePage, config.thisTranslation["bibleNavigation"])
+        return html
+
+    def chapterSelectionButton(self):
+        html = """<button type='button' title='{0}' onclick='submitCommand(".chapters")'><span class="material-icons-outlined">auto_stories</span></button>""".format(config.thisTranslation["bibleNavigation"])
         return html
 
     def libraryButton(self):
-        html = """<button type='button' onclick='submitCommand(".library")'>{0}</button>""".format(config.thisTranslation["menu_library"])
+        #html = """<button type='button' onclick='submitCommand(".library")'>{0}</button>""".format(config.thisTranslation["menu_library"])
+        html = """<button type='button' onclick='submitCommand(".library")'><span class="material-icons-outlined">local_library</span></button>"""
         return html
 
     def searchButton(self):
-        html = """<button type='button' onclick='submitCommand(".search")'>{0}</button>""".format(config.thisTranslation["menu_search"])
+        #html = """<button type='button' onclick='submitCommand(".search")'>{0}</button>""".format(config.thisTranslation["menu_search"])
+        html = """<button type='button' onclick='submitCommand(".search")'><span class="material-icons-outlined">search</span></button>"""
         return html
 
     def newWindowButton(self):
-        html = """<button type='button' title='{0}' onclick='openCommandInNewWindow()'>&#8663;</button>""".format(config.thisTranslation["openOnNewWindow"])
+        #html = """<button type='button' title='{0}' onclick='openCommandInNewWindow()'>&#8663;</button>""".format(config.thisTranslation["openOnNewWindow"])
+        html = """<button type='button' title='{0}' onclick='openCommandInNewWindow()'><span class="material-icons-outlined">open_in_new</span></button>""".format(config.thisTranslation["openOnNewWindow"])
         return html
 
     def favouriteBibleButton(self, text):
-        html = """<button type='button' onclick='submitCommand("BIBLE:::{0}:::"+getLastVerse())'>{0}</button>""".format(text)
+        html = """<button type='button' onclick='submitCommand("BIBLE:::{0}:::{1}")'>{0}</button>""".format(text, self.getMainVerse()["reference"])
         return html
 
     def getHighlightCss(self):
@@ -1171,8 +1275,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         #return content
         return """... {0} ...
                 <script>
-                checkCookie();
-                window.parent.location.assign("{1}?cmd=" + getLastVerse());
+                window.parent.location.assign("{1}?cmd=.bible");
                 </script>""".format(config.thisTranslation["loading"], config.webHomePage)
 
     def toggleCompareParallel(self):
@@ -1185,6 +1288,10 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
 
     def togglePlainMode(self):
         config.readFormattedBibles = not config.readFormattedBibles
+        return self.getBibleChapter()
+
+    def toggleWordAudioLinks(self):
+        config.showHebrewGreekWordAudioLinks = not config.showHebrewGreekWordAudioLinks
         return self.getBibleChapter()
 
     def toggleSubheadings(self):
@@ -1241,6 +1348,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         return
 
     def helpContent(self):
+        mainVerse = self.getMainVerse()
         dotCommands = """
         <h2>Commands</h2>
         <p>Unique Bible App supports single-line commands to navigate or interact between resources.  This page documents available commands.  Web version commands are supported on UBA web version only.  UBA commands are shared by both desktop and web versions, though some UBA commands apply to desktop version only.</p>
@@ -1250,8 +1358,11 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         <ref onclick="window.parent.submitCommand('.myqrcode')">.myQRcode</ref> - Display a QR code for other users connecting to the same UBA http-server.<br>
         <ref onclick="window.parent.submitCommand('.bible')">.bible</ref> - Open bible chapter.<br>
         <ref onclick="window.parent.submitCommand('.biblemenu')">.bibleMenu</ref> - Open bible menu.<br>
+        <ref onclick="window.parent.submitCommand('.chapters')">.chapters</ref> - Open a menu of all available chapters.<br>
         <ref onclick="window.parent.submitCommand('.commentarymenu')">.commentaryMenu</ref> - Open Commentary menu.<br>
         <ref onclick="window.parent.submitCommand('.timelinemenu')">.timelineMenu</ref> - Open Timeline menu.<br>
+        <ref onclick="window.parent.submitCommand('.audio')">.audio</ref> - Open audio bible content page.<br>
+        <ref onclick="window.parent.submitCommand('.play')">.play</ref> - Play all available bible audio linked with the current content.<br>
         <ref onclick="window.parent.submitCommand('.names')">.names</ref> - Open bible names content page.<br>
         <ref onclick="window.parent.submitCommand('.characters')">.characters</ref> - Open bible characters content page.<br>
         <ref onclick="window.parent.submitCommand('.maps')">.maps</ref> - Open bible maps content page.<br>
@@ -1269,14 +1380,14 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         <ref onclick="window.parent.submitCommand('.mpb')">.mpb</ref> - Open Marvel Parallel Bible.<br>
         <ref onclick="window.parent.submitCommand('.mab')">.mab</ref> - Open Marvel Annotated Bible.<br>
         </p><p>"""
-        dotCommands += """<u>Study currently selected book [<span id="libraryBook"></span>]</u><br>
+        dotCommands += """<u>Study currently selected book [<span id="libraryBook">{2}</span>]</u><br>
         <ref onclick="window.parent.submitCommand('.introduction')">.introduction</ref> - {0}.<br>
         <ref onclick="window.parent.submitCommand('.timelines')">.timelines</ref> - {1}.
-        </p><script>document.getElementById("libraryBook").innerHTML = getLastBookName();</script><p>""".format(config.thisTranslation["html_introduction"], config.thisTranslation["html_timelines"])
-        dotCommands += """<u>Study currently selected chapter [<span id="libraryChapter"></span>]</u><script>document.getElementById("libraryChapter").innerHTML = getLastBookName() + " " + getLastChapterNumber();</script><br>"""
+        </p><p>""".format(config.thisTranslation["html_introduction"], config.thisTranslation["html_timelines"], mainVerse["bAbb"])
+        dotCommands += """<u>Study currently selected chapter [<span id="libraryChapter">{0} {1}</span>]</u><br>""".format(mainVerse["bAbb"], mainVerse["b"])
         dotCommands += "<br>".join(["""<ref onclick="window.parent.submitCommand('.{0}')">.{0}</ref> - {1}.""".format(key.lower(), value) for key, value in self.getChapterFeatures().items()])
         dotCommands += "</p><p>"
-        dotCommands += """<u>Study currently selected verse [<span id="libraryVerse"></span>]</u><script>document.getElementById("libraryVerse").innerHTML = getLastBookName() + " " + getLastChapterNumber() + ":" + getLastVerseNumber();</script><br>"""
+        dotCommands += """<u>Study currently selected verse [<span id="libraryVerse">{0}</span>]</u><br>""".format(mainVerse["reference"])
         dotCommands += "<br>".join(["""<ref onclick="window.parent.submitCommand('.{0}')">.{0}</ref> - {1}.""".format(key.lower(), value) for key, value in self.getVerseFeatures().items()])
         dotCommands += """
         </p><p><b>Admin Options</b></p>
@@ -1296,6 +1407,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         <ref onclick="window.parent.submitCommand('.increasefontsize')">.increaseFontSize</ref> - Increase font size.<br>
         <ref onclick="window.parent.submitCommand('.decreasefontsize')">.decreaseFontSize</ref> - Decrease font size.<br>
         <ref onclick="window.parent.submitCommand('.plainmode')">.plainMode</ref> - Toggle 'plain mode' for displaying bible chapters.<br>
+        <ref onclick="window.parent.submitCommand('.wordaudiolinks')">.wordAudioLinks</ref> - Toggle 'Hebrew & Greek word audio links' for displaying bible chapters of marvel bibles.<br>
         <ref onclick="window.parent.submitCommand('.subheadings')">.subHeadings</ref> - Toggle 'sub-headings' for displaying bible chapters in plain mode.<br>
         <ref onclick="window.parent.submitCommand('.compareparallelmode')">.compareParallelMode</ref> - Toggle 'compare / parallel mode' for bible reading.<br>
         <ref onclick="window.parent.submitCommand('.regexcasesensitive')">.regexCaseSensitive</ref> - Toggle 'case sensitive' for searching bible with regular expression.<br>
@@ -1372,11 +1484,90 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         else:
             return "QRCODE:::server"
 
+    def getPlaylistFromHTML(self, html):
+        playlist = []
+        #searchPattern = """[Rr][Ee][Aa][Dd][Cc][Hh][Aa][Pp][Tt][Ee][Rr]:::([A-Za-z0-9]+?)\.([0-9]+?)\.([0-9]+?)[\."']"""
+        searchPattern = """_[Cc][Hh][Aa][Pp][Tt][Ee][Rr][Ss]:::([^\.>]+?)_([0-9]+?)\.([0-9]+?)["'].*onclick=["']rC\("""
+        found = re.search(searchPattern, html)
+        if found:
+            text, b, c = found[1], found[2], found[3]
+            text = FileUtil.getMP3TextFile(text)
+            playlist = RemoteCliMainWindow().playAudioBibleChapterVerseByVerse(text, b, c)
+        else:
+            searchPattern = """[Rr][Ee][Aa][Dd][Vv][Ee][Rr][Ss][Ee]:::([A-Za-z0-9]+?)\.([0-9]+?)\.([0-9]+?)\.([0-9]+?)["']"""
+            found = re.findall(searchPattern, html)
+            if found:
+                for entry in found:
+                    text, b, c, v = entry
+                    audioFolder = os.path.join("audio", "bibles", text, "default", "{1}_{2}".format(text, b, c))
+                    audioFile = "{0}_{1}_{2}_{3}.mp3".format(text, b, c, v)
+                    audioFilePath = os.path.join(audioFolder, audioFile)
+                    if os.path.isfile(audioFilePath):
+                        playlist.append((audioFile, audioFilePath))
+            else:
+                searchPattern = """[Rr][Ee][Aa][Dd]([Ww][Oo][Rr][Dd]|[Ll][Ee][Xx][Ee][Mm][Ee]):::([A-Za-z0-9]+?)\.([0-9]+?)\.([0-9]+?)\.([0-9]+?)\.([0-9]+?)["']"""
+                found = re.findall(searchPattern, html)
+                if found:
+                    for entry in found:
+                        wordType, text, b, c, v, wordID = entry
+                        audioFolder = os.path.join("audio", "bibles", text, "default", "{1}_{2}".format(text, b, c))
+                        prefix = "lex_" if wordType.lower() == "lexeme" else ""
+                        audioFile = "{5}{0}_{1}_{2}_{3}_{4}.mp3".format(text, b, c, v, wordID, prefix)
+                        audioFilePath = os.path.join(audioFolder, audioFile)
+                        if os.path.isfile(audioFilePath):
+                            playlist.append((audioFile, audioFilePath))
+        return playlist
+
+    def playAudio(self):
+        mainFileHTML = open(os.path.join("htmlResources", "main-{0}.html".format(self.session)), 'r').read()
+        playlist = self.getPlaylistFromHTML(mainFileHTML)
+        if playlist:
+            content = HtmlGeneratorUtil().getAudioPlayer(playlist)
+        else:
+            content = config.thisTranslation["noBibleAudioLink"]
+        return content
+
+    def audioContent(self):
+        content = ""
+        modules = {
+            "ASV": "American Standard Version",
+            "BBE": "Bible in Basic English",
+            "BSB": "Berean Study Bible",
+            "CUV": "中文和合本〔廣東話〕",
+            "CUVs": "中文和合本〔普通話〕",
+            "ERV": "English Revised Version",
+            "ISV": "International Standard Version",
+            "KJV": "King James Version",
+            "LEB": "Lexham English Bible",
+            "NET": "New English Translation",
+            "OHGB": "Open Hebrew & Greek Bible",
+            "SBLGNT": "SBL Greek New Testament",
+            "WEB": "World English Bible",
+            "WLC": "Westminster Leningrad Codex",
+        }
+        for module in modules.keys():
+            if os.path.isdir(os.path.join("audio", "bibles", module)):
+                try:
+                    bible = Bible(module)
+                    bookList = bible.getBookList()
+                    if bookList:
+                        b = bookList[0]
+                        chapterList = bible.getChapterList(b)
+                        if chapterList:
+                            c = chapterList[0]
+                            content += "<p>{0}</p>".format(HtmlGeneratorUtil.getChapterAudioButton(module, b, c, modules[module]))
+                except:
+                    pass
+        if not content:
+            content = config.thisTranslation["search_notFound"]
+        return "<div style='margin: auto; text-align: center;'><h2>{0}</h2><p style='text-align: center;'>{1}</p></div>".format(config.thisTranslation["bibleAudio"], content)
+
     def libraryContent(self):
         self.textCommandParser.parent.setupResourceLists()
         content = ""
         content += """<h2><ref onclick="window.parent.submitCommand('.commentarymenu')">{0}</ref></h2>""".format(config.thisTranslation["menu4_commentary"])
-        content += "<br>".join(["""<ref onclick ="document.title = 'COMMENTARY:::{0}:::'+getLastVerse()">{1}</ref>""".format(abb, self.textCommandParser.parent.commentaryFullNameList[index]) for index, abb in enumerate(self.textCommandParser.parent.commentaryList)])
+        #mainVerse = self.getMainVerse()
+        content += "<br>".join(["""<ref onclick ="document.title = '_commentarychapters:::{0}'">{1}</ref>""".format(abb, self.textCommandParser.parent.commentaryFullNameList[index]) for index, abb in enumerate(self.textCommandParser.parent.commentaryList)])
         content += "<h2>{0}</h2>".format(config.thisTranslation["menu5_selectBook"])
         content += "<br>".join(["""<ref onclick ="document.title = 'BOOK:::{0}'">{0}</ref>""".format(book) for book in self.textCommandParser.parent.referenceBookList])
         content += "<h2>PDF {0}</h2>".format(config.thisTranslation["file"])
@@ -1423,19 +1614,29 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
     def searchContent(self):
         content = ""
         content += """<h2>{0}</h2><p><ref onclick="document.title='_menu:::'">Click HERE to Search Bibles</ref></p>""".format(config.thisTranslation["html_bibles"])
+        content += "<hr>"
         abbList = ["HBN", "EXLBP", "EXLBL"]
         nameList = ["Bible Names", "Bible Characters", "Bible Locations"]
         content += self.formatSearchSection(config.thisTranslation["bibleBackground"], "SEARCHTOOL", "SEARCHTOOL", abbList, nameList)
+        content += "<hr>"
         abbList = ["Bible_Promises", "Harmonies_and_Parallels", "FAV", "ALL"]
         nameList = ["Bible Promises", "Harmonies and Parallels", "Favourite Books", "All Books"]
         content += self.formatSearchSection(config.thisTranslation["collection"], "collection", "SEARCHBOOK", abbList, nameList)
+        content += "<hr>"
         content += self.formatSearchSection(config.thisTranslation["menu5_topics"], "topics", "SEARCHTOOL", self.textCommandParser.parent.topicListAbb, self.textCommandParser.parent.topicList)
+        content += "<hr>"
         content += self.formatSearchSection(config.thisTranslation["context1_dict"], "dictionary", "SEARCHTOOL", self.textCommandParser.parent.dictionaryListAbb, self.textCommandParser.parent.dictionaryList)
+        content += "<hr>"
         content += self.formatSearchSection(config.thisTranslation["context1_encyclopedia"], "encyclopedia", "SEARCHTOOL", self.textCommandParser.parent.encyclopediaListAbb, self.textCommandParser.parent.encyclopediaList)
+        content += "<hr>"
         content += self.formatSearchSection(config.thisTranslation["bibleConcordance"], "CONCORDANCE", "CONCORDANCE", self.textCommandParser.parent.strongBibles)
+        content += "<hr>"
         content += self.formatSearchSection(config.thisTranslation["menu5_lexicon"], "LEXICON", "LEXICON", self.textCommandParser.parent.lexiconList)
+        content += "<hr>"
         content += self.formatSearchSection(config.thisTranslation["installBooks"], "SEARCHBOOK", "SEARCHBOOK", self.textCommandParser.parent.referenceBookList)
+        content += "<hr>"
         content += self.formatSearchSection(config.thisTranslation["menu5_3rdDict"], "SEARCHTHIRDDICTIONARY", "SEARCHTHIRDDICTIONARY", self.textCommandParser.parent.thirdPartyDictionaryList)
+        content += "<hr>"
         return content
 
     def getSession(self):

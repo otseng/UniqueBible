@@ -223,7 +223,8 @@ def isHtmlTextInstalled():
     except:
         return False
 
-def isTtsInstalled():
+# Check if OFFLINE text-to-speech feature is in place.
+def isOfflineTtsInstalled():
     if platform.system() == "Linux" and config.espeak:
         espeakInstalled, _ = subprocess.Popen("which espeak", shell=True, stdout=subprocess.PIPE).communicate()
         if not espeakInstalled:
@@ -247,6 +248,14 @@ def isTtsInstalled():
 def isQrCodeInstalled():
     try:
         import qrcode
+        return True
+    except:
+        return False
+
+def isPillowInstalled():
+    try:
+        import qrcode
+        from PIL import Image
         return True
     except:
         return False
@@ -276,6 +285,20 @@ def isYoutubeDownloaderInstalled():
 def isGTTSInstalled():
     try:
         from gtts import gTTS
+        return True
+    except:
+        return False
+
+def isMarkdownifyInstalled():
+    try:
+        from markdownify import markdownify
+        return True
+    except:
+        return False
+
+def isMarkdownInstalled():
+    try:
+        import markdown
         return True
     except:
         return False
@@ -310,14 +333,20 @@ def setInstallConfig(module, isInstalled):
         config.isHtml5libInstalled = isInstalled
     elif module == "qrcode":
         config.isQrCodeInstalled = isInstalled
-    elif module == "git+git://github.com/ojii/pymaging.git#egg=pymaging git+git://github.com/ojii/pymaging-png.git#egg=pymaging-png":
-        config.isPurePythonPngInstalled = isInstalled
+    elif module == "pillow":
+        config.isPillowInstalled = isInstalled
+    #elif module == "git+git://github.com/ojii/pymaging.git#egg=pymaging git+git://github.com/ojii/pymaging-png.git#egg=pymaging-png":
+        #config.isPurePythonPngInstalled = isInstalled
     elif module == "python-vlc":
         config.isVlcInstalled = isInstalled
     elif module == "yt-dlp":
         config.isYoutubeDownloaderInstalled = isInstalled
     elif module == "gTTS":
         config.isGTTSInstalled = isInstalled
+    elif module == "markdownify":
+        config.isMarkdownifyInstalled = isInstalled
+    elif module == "markdown":
+        config.isMarkdownInstalled = isInstalled
 
 # Check if required modules are installed
 required = (
@@ -392,10 +421,13 @@ optional = (
     ("telnetlib3", "Telnet Client and Server library", isTelnetlib3Installed),
     ("ibm-watson", "IBM-Watson Language Translator", isIbmWatsonInstalled),
     ("qrcode", "QR Code", isQrCodeInstalled),
-    ("git+git://github.com/ojii/pymaging.git#egg=pymaging git+git://github.com/ojii/pymaging-png.git#egg=pymaging-png", "Pure Python PNG", isPurePythonPngInstalled),
+    ("pillow", "QR Code", isPillowInstalled),
+    #("git+git://github.com/ojii/pymaging.git#egg=pymaging git+git://github.com/ojii/pymaging-png.git#egg=pymaging-png", "Pure Python PNG", isPurePythonPngInstalled),
     ("python-vlc", "VLC Player", isVlcInstalled),
     ("yt-dlp", "YouTube Downloader", isYoutubeDownloaderInstalled),
-    ("gTTS", "Google text-to-speech", isGTTSInstalled)
+    ("gTTS", "Google text-to-speech", isGTTSInstalled),
+    ("markdownify", "Convert HTML to Markdown", isMarkdownifyInstalled),
+    ("markdown", "Convert Markdown to HTML", isMarkdownInstalled),
 ) if config.noQt else (
     ("html-text", "Read html text", isHtmlTextInstalled),
     ("beautifulsoup4", "HTML / XML Parser", isBeautifulsoup4Installed),
@@ -411,9 +443,13 @@ optional = (
     ("telnetlib3", "Telnet Client and Server library", isTelnetlib3Installed),
     ("ibm-watson", "IBM-Watson Language Translator", isIbmWatsonInstalled),
     ("qrcode", "QR Code", isQrCodeInstalled),
-    ("git+git://github.com/ojii/pymaging.git#egg=pymaging git+git://github.com/ojii/pymaging-png.git#egg=pymaging-png", "Pure Python PNG", isPurePythonPngInstalled),
+    ("pillow", "QR Code", isPillowInstalled),
+    #("git+git://github.com/ojii/pymaging.git#egg=pymaging git+git://github.com/ojii/pymaging-png.git#egg=pymaging-png", "Pure Python PNG", isPurePythonPngInstalled),
     ("python-vlc", "VLC Player", isVlcInstalled),
-    ("yt-dlp", "YouTube Downloader", isYoutubeDownloaderInstalled)
+    ("yt-dlp", "YouTube Downloader", isYoutubeDownloaderInstalled),
+    ("gTTS", "Google text-to-speech", isGTTSInstalled),
+    ("markdownify", "Convert HTML to Markdown", isMarkdownifyInstalled),
+    ("markdown", "Convert Markdown to HTML", isMarkdownInstalled),
 )
 for module, feature, isInstalled in optional:
     if not isInstalled():
@@ -426,12 +462,25 @@ for module, feature, isInstalled in optional:
 
 # Check if other optional features are installed
 # [Optional] Text-to-Speech feature
+# Check is OFFLINE tts is in place
 if config.docker:
-    config.isTtsInstalled = False
+    config.isOfflineTtsInstalled = False
 else:
-    config.isTtsInstalled = isTtsInstalled()
-if not config.isTtsInstalled and not config.gTTS:
+    config.isOfflineTtsInstalled = isOfflineTtsInstalled()
+# Check if official Google Cloud text-to-speech service is in place
+config.isGoogleCloudTTSAvailable = os.path.isfile(os.path.join(os.getcwd(), "credentials_GoogleCloudTextToSpeech.json"))
+if config.isGoogleCloudTTSAvailable and config.ttsDefaultLangauge == "en":
+    config.ttsDefaultLangauge = "en-GB"
+elif not config.isGoogleCloudTTSAvailable and config.ttsDefaultLangauge == "en-GB":
+    config.ttsDefaultLangauge = "en"
+# Check if ONLINE tts is in place
+config.isOnlineTtsInstalled = True if config.isGTTSInstalled or config.isGoogleCloudTTSAvailable else False
+# Check if any tts is in place
+if not config.isOfflineTtsInstalled and not config.isOnlineTtsInstalled:
+    config.noTtsFound = True
     print("Text-to-speech feature is not enabled or supported on your device.")
+else:
+    config.noTtsFound = False
 
 # Import modules for developer
 if config.developer:

@@ -133,7 +133,7 @@ class FileUtil:
         audioFile = os.path.join(config.audioFolder, "bibles", text, "default", f"{b}_{c}", f"{text}_{b}_{c}_{v}.mp3")
         if os.path.isfile(audioFile):
             command = f"READVERSE:::{text}.{b}.{c}.{v}"
-            return f"""<ref onclick="document.title='{command}'" title="{command}" style="font-size: 1em">{config.audioBibleIcon}</ref> """
+            return f"""<ref onclick="document.title='{command}'" style="font-size: 1em">{config.audioBibleIcon}</ref>"""
         else:
             return ""
 
@@ -141,6 +141,10 @@ class FileUtil:
     def getMP3TextFile(text):
         matchTexts = {
             "KJVx": "KJV",
+            "NLT": "NLT2015",
+            "NLT2015x": "NLT2015",
+            "NIV2011x": "NIV",
+            "NRSVx": "NRSV",
             "NETx": "NET",
             "WEBx": "WEB",
             "TRx": "TR",
@@ -151,6 +155,11 @@ class FileUtil:
             "MPB": "OHGB",
             "MAB": "OHGB",
             "WLCx": "WLC",
+            "SBLGNTl": "SBLGNT",
+            "CUVx": "CUV",
+            "和合本": "CUV",
+            "和合本串珠": "CUV",
+            "和合本〔简〕": "CUVs",
         }
         if text in matchTexts:
             text = matchTexts[text]

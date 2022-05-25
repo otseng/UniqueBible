@@ -100,7 +100,7 @@ class CrossPlatform:
             if not textCommand.startswith("_") and not re.search("^download:::|^qrcode:::", textCommand.lower()):
     
                 if view in ("main", "study"):
-                    compareParallel = (textCommand.lower().startswith("compare:::") or textCommand.lower().startswith("parallel:::"))
+                    compareParallel = (textCommand.lower().startswith("compare:::") or textCommand.lower().startswith("parallel:::") or textCommand.lower().startswith("sidebyside:::"))
                     if config.enforceCompareParallel and not config.tempRecord:
                         if not ":::" in textCommand:
                             view = "study"
@@ -149,11 +149,11 @@ class CrossPlatform:
         historyRecords = [(counter, record) for counter, record in enumerate(config.history[view])]
         if view == "external":
             html = "<br>".join([
-                                   "<button class='feature' onclick='openExternalRecord({0})'>{1}</button> [<ref onclick='editExternalRecord({0})'>edit</ref>]".format(
+                                   "<button class='ubaButton' onclick='openExternalRecord({0})'>{1}</button> [<ref onclick='editExternalRecord({0})'>edit</ref>]".format(
                                        counter, record) for counter, record in reversed(historyRecords)])
         else:
             html = "<br>".join(
-                ["<button class='feature' onclick='openHistoryRecord({0})'>{1}</button>".format(counter, record) for
+                ["<button class='ubaButton' onclick='openHistoryRecord({0})'>{1}</button>".format(counter, record) for
                  counter, record in reversed(historyRecords)])
         return html
 

@@ -43,6 +43,78 @@ class AlephMainWindow:
             )
             for feature, action in items:
                 addMenuItem(selectTheme, feature, self, action)
+
+            selectTheme.addSeparator()
+            themes = (
+                "Light MediumVioletRed",
+                "Light Tomato",
+                "Light DarkOrange",
+                "Light DarkRed",
+                "Light Indigo",
+                "Light DarkSlateBlue",
+                "Light DarkGreen",
+                "Light DarkOliveGreen",
+                "Light Teal",
+                "Light DarkBlue",
+                "Light MidnightBlue",
+                "Light DarkGoldenrod",
+                "Light SaddleBrown",
+                "Light Maroon",
+                "Light DarkSlateGray",
+            )
+            for theme in themes:
+                color = theme.split(" ")[-1]
+                addColorIconMenuItem(color, selectTheme, theme, self, partial(self.setTheme, theme), None, False)
+            subSubMenu = addSubMenu(selectTheme, "menu_more")
+            addAllThemeColorMenuItem("Light", subSubMenu, self, self.setTheme)
+            selectTheme.addSeparator()
+            themes = (
+                "Dark Pink",
+                "Dark LightYellow",
+                "Dark LightGoldenrodYellow",
+                "Dark Lavender",
+                "Dark Fuchsia",
+                "Dark GreenYellow",
+                "Dark SpringGreen",
+                "Dark Aqua",
+                "Dark Cyan",
+                "Dark LightCyan",
+                "Dark Aquamarine",
+                "Dark Turquoise",
+                "Dark LightBlue",
+                "Dark DeepSkyBlue",
+                "Dark Azure",
+            )
+            for theme in themes:
+                color = theme.split(" ")[-1]
+                addColorIconMenuItem(color, selectTheme, theme, self, partial(self.setTheme, theme), None, False)
+            subSubMenu = addSubMenu(selectTheme, "menu_more")
+            addAllThemeColorMenuItem("Dark", subSubMenu, self, self.setTheme)
+            selectTheme.addSeparator()
+            themes = (
+                "Night Pink",
+                "Night LightYellow",
+                "Night LightGoldenrodYellow",
+                "Night Lavender",
+                "Night Fuchsia",
+                "Night GreenYellow",
+                "Night SpringGreen",
+                "Night Aqua",
+                "Night Cyan",
+                "Night LightCyan",
+                "Night Aquamarine",
+                "Night Turquoise",
+                "Night LightBlue",
+                "Night DeepSkyBlue",
+                "Night Azure",
+            )
+            for theme in themes:
+                color = theme.split(" ")[-1]
+                addColorIconMenuItem(color, selectTheme, theme, self, partial(self.setTheme, theme), None, False)
+            subSubMenu = addSubMenu(selectTheme, "menu_more")
+            addAllThemeColorMenuItem("Night", subSubMenu, self, self.setTheme)
+            selectTheme.addSeparator()
+
             addMenuItem(selectTheme, "enableQtMaterial", self, lambda: self.enableQtMaterial(True))
         layoutMenu = menu1_defaults.addMenu(config.thisTranslation["menu1_menuLayout"])
         addMenuLayoutItems(self, layoutMenu)
@@ -82,6 +154,7 @@ class AlephMainWindow:
             ("displayUserNoteIndicator", self.toggleShowUserNoteIndicator, sc.toggleShowUserNoteIndicator),
             ("displayBibleNoteIndicator", self.toggleShowBibleNoteIndicator, sc.toggleShowBibleNoteIndicator),
             ("displayLexicalEntry", self.toggleHideLexicalEntryInBible, sc.toggleHideLexicalEntryInBible),
+            ("displayHebrewGreekWordAudio", self.toggleShowHebrewGreekWordAudioLinks, sc.toggleShowWordAudio),
             ("readTillChapterEnd", self.toggleReadTillChapterEnd, sc.toggleReadTillChapterEnd),
             ("menu2_hover", self.enableInstantButtonClicked, sc.enableInstantButtonClicked),
             ("menu_toggleEnforceCompareParallel", self.enforceCompareParallelButtonClicked, sc.enforceCompareParallel),
@@ -106,7 +179,7 @@ class AlephMainWindow:
             )
             for feature, action in items:
                 addMenuItem(subMenu, feature, self, action)
-            if config.isTtsInstalled:
+            if config.isOfflineTtsInstalled:
                 languages = self.getTtsLanguages()
                 languageCodes = list(languages.keys())
                 items = [languages[code][1] for code in languageCodes]
@@ -140,6 +213,7 @@ class AlephMainWindow:
         if config.developer:
             menu = addMenu(menu1, "developer")
             if config.docker:
+                icon = "/usr/share/pixmaps/pycharm.png"
                 addIconMenuItem(icon, menu, "Pycharm", self, self.pycharm, "", translation=False)
             addMenuItem(menu, "checkLanguageFiles", self, lambda: LanguageUtil.checkLanguageStringToAllFiles("checked"))
             addMenuItem(menu, "edit_language_file", self, self.selectLanguageFileToEdit)

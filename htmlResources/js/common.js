@@ -1,3 +1,14 @@
+/* Copy text to clipboard */
+
+function copyTextToClipboard(text) {
+  
+    /* Copy the text inside the text field */
+    navigator.clipboard.writeText(text);
+    
+    /* Alert the copied text */
+    alert("Copied " + "'" + text + "'");
+}
+
 /* SECTION - SCROLLING BIBLES */
 
 function scrollBibles() {
@@ -775,7 +786,8 @@ function bookAbbToNo(bookAbb) {
 }
 
 function bcv(b,c,v,opt1,opt2) {
-    tbcv(activeText,b,c,v,opt1,opt2);
+    //tbcv(activeText,b,c,v,opt1,opt2);
+    tbcv("",b,c,v,opt1,opt2);
 }
 
 function tbcv(text,b,c,v,opt1,opt2) {
@@ -789,7 +801,11 @@ function tbcv(text,b,c,v,opt1,opt2) {
     } else if (opt1 != undefined) {
         verseReference = verseReference+"-"+String(opt1);
     }
-    document.title = "BIBLE:::"+text+":::"+verseReference;
+    if (text == "") {
+        document.title = "BIBLE:::"+verseReference;
+    } else {
+        document.title = "BIBLE:::"+text+":::"+verseReference;
+    }
 }
 
 function imv(b,c,v,opt1,opt2) {
@@ -890,6 +906,22 @@ function luV(v) {
 
 function luW(v,wid,cl,lex,morph,bdb) {
     document.title = "WORD:::"+activeB+":::"+wid;
+}
+
+function wah(v,wid) {
+    document.title = "READWORD:::BHS5."+activeB+"."+activeC+"."+v+"."+wid;
+}
+
+function wag(v,wid) {
+    document.title = "READWORD:::OGNT."+activeB+"."+activeC+"."+v+"."+wid;
+}
+
+function wahl(v,wid) {
+    document.title = "READLEXEME:::BHS5."+activeB+"."+activeC+"."+v+"."+wid;
+}
+
+function wagl(v,wid) {
+    document.title = "READLEXEME:::OGNT."+activeB+"."+activeC+"."+v+"."+wid;
 }
 
 function checkCompare() {
@@ -1174,7 +1206,7 @@ function uba(file) {
 }
 
 function bn(b, c, v, n) {
-    document.title = "_biblenote:::"+b+"."+c+"."+v+"."+n;
+    document.title = "_biblenote:::"+activeText+":::"+b+"."+c+"."+v+"."+n;
 }
 
 function wordnote(module, wordID) {

@@ -1,9 +1,10 @@
-import config, platform
+import config, platform, os
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (QPushButton, QLineEdit, QComboBox, QGroupBox, QGridLayout, QHBoxLayout, QSlider, QVBoxLayout, QWidget)
 from gui.HighlightLauncher import HighlightLauncher
 from util.TtsLanguages import TtsLanguages
 from util.Languages import Languages
+from util.GoogleCloudTTSVoices import GoogleCloudTTS
 
 class MiscellaneousLauncher(QWidget):
 
@@ -56,7 +57,7 @@ class MiscellaneousLauncher(QWidget):
             button = QPushButton(config.thisTranslation["youtube_utility"])
             button.setToolTip(config.thisTranslation["youtube_utility"])
             button.clicked.connect(self.parent.parent.openYouTube)
-            subLayout.addWidget(button)
+        subLayout.addWidget(button)
         box.setLayout(subLayout)
         return box
 
@@ -75,36 +76,39 @@ class MiscellaneousLauncher(QWidget):
 
         self.ttsSlider = QSlider(Qt.Horizontal)
         self.ttsSlider.setToolTip(config.thisTranslation["adjustSpeed"])
-        self.ttsSlider.setMinimum(10)
-        self.ttsSlider.setMaximum(310)
-        self.ttsSlider.setValue(int(config.espeakSpeed if config.espeak else (160 + config.qttsSpeed * 150)))
-        self.ttsSlider.valueChanged.connect(self.changeEspeakSpeed if config.espeak else self.changeQttsSpeed)
+        if config.isGoogleCloudTTSAvailable:
+            if config.gcttsSpeed < 0.25:
+                config.gcttsSpeed = 0.25
+            elif config.gcttsSpeed > 3:
+                config.gcttsSpeed = 3
+            self.ttsSlider.setMinimum(25)
+            self.ttsSlider.setMaximum(300)
+            self.ttsSlider.setValue(int(config.gcttsSpeed * 100))
+            self.ttsSlider.valueChanged.connect(self.changeGoogleCloudTTSSpeed)
+        else:
+            self.ttsSlider.setMinimum(10)
+            self.ttsSlider.setMaximum(310)
+            self.ttsSlider.setValue(int(config.espeakSpeed if config.espeak else (160 + config.qttsSpeed * 150)))
+            self.ttsSlider.valueChanged.connect(self.changeEspeakSpeed if config.espeak else self.changeQttsSpeed)
         layout.addWidget(self.ttsSlider)
 
         subLayout = QHBoxLayout()
 
         self.languageCombo = QComboBox()
         subLayout.addWidget(self.languageCombo)
-        if not config.isTtsInstalled and not platform.system() == "Windows" and config.gTTS:
-            languages = {}
-            for language, languageCode in Languages.gTTSLanguageCodes.items():
-                languages[languageCode] = ("", language)
-        elif config.espeak:
-            languages = TtsLanguages().isoLang2epeakLang
-        else:
-            languages = TtsLanguages().isoLang2qlocaleLang
+        languages = self.parent.parent.getTtsLanguages()
         self.languageCodes = list(languages.keys())
         for code in self.languageCodes:
             self.languageCombo.addItem(languages[code][1])
         # Check if selected tts engine has the language user specify.
         if not (config.ttsDefaultLangauge in self.languageCodes):
-            config.ttsDefaultLangauge = "en"
+            config.ttsDefaultLangauge = "en-GB" if config.isGoogleCloudTTSAvailable else "en"
         # Set initial index
         # It is essential.  Otherwise, default tts language is changed by defaultTtsLanguageChanged method.
         ttsLanguageIndex = self.languageCodes.index(config.ttsDefaultLangauge)
         self.languageCombo.setCurrentIndex(ttsLanguageIndex)
         # Change default tts language as users select a new language
-        self.languageCombo.currentIndexChanged.connect(self.defaultTtsLanguageChanged)
+        #self.languageCombo.currentIndexChanged.connect(self.defaultTtsLanguageChanged)
 
         button = QPushButton(config.thisTranslation["speak"])
         button.setToolTip(config.thisTranslation["speak"])
@@ -123,14 +127,15 @@ class MiscellaneousLauncher(QWidget):
         config.ttsDefaultLangauge = self.languageCodes[index]
 
     def speakText(self):
+        
         text = self.ttsEdit.text()
         if text:
-            if not config.isTtsInstalled and not config.gTTS:
+            if config.noTtsFound:
                 self.parent.displayMessage(config.thisTranslation["message_noSupport"])
             else:
                 if ":::" in text:
                     text = text.split(":::")[-1]
-                if not config.isTtsInstalled and not platform.system() == "Windows" and config.gTTS:
+                if config.isGoogleCloudTTSAvailable or ((not config.isOfflineTtsInstalled or config.forceOnlineTts) and config.isGTTSInstalled):
                     command = "GTTS:::{0}:::{1}".format(self.languageCodes[self.languageCombo.currentIndex()], text)
                 else:
                     command = "SPEAK:::{0}:::{1}".format(self.languageCodes[self.languageCombo.currentIndex()], text)
@@ -145,6 +150,9 @@ class MiscellaneousLauncher(QWidget):
 
     def changeEspeakSpeed(self, value):
         config.espeakSpeed = value
+
+    def changeGoogleCloudTTSSpeed(self, value):
+        config.gcttsSpeed = value / 100
 
     def refresh(self):
         ttsLanguageIndex = self.languageCodes.index(config.ttsDefaultLangauge)

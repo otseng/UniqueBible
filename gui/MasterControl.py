@@ -35,7 +35,7 @@ class MasterControl(QWidget):
         self.isRefreshing = False
 
     def setupKeyboardShortcuts(self):
-        for index, shortcut in enumerate((sc.openControlPanelTab0, sc.openControlPanelTab1, sc.openControlPanelTab2, sc.openControlPanelTab3, sc.openControlPanelTab4, sc.openControlPanelTab5)):
+        for index, shortcut in enumerate((sc.openControlPanelTab0, sc.openControlPanelTab1, sc.openControlPanelTab2, sc.openControlPanelTab3, sc.openControlPanelTab4, sc.openControlPanelTab5, sc.openControlPanelTab6)):
             shortcut = QShortcut(QKeySequence(shortcut), self)
             shortcut.activated.connect(lambda index=index: self.tabs.setCurrentIndex(index))
 
@@ -59,7 +59,7 @@ class MasterControl(QWidget):
         self.textList = self.parent.textList
         self.textFullNameList = self.parent.textFullNameList
         self.strongBibles =  self.parent.strongBibles
-        if self.parent.versionCombo is not None and config.menuLayout in ("classic", "focus", "aleph"):
+        if self.parent.versionCombo is not None and config.menuLayout in ("classic", "focus", "aleph", "material"):
             for index, fullName in enumerate(self.textFullNameList):
                 self.parent.versionCombo.setItemData(index, fullName, Qt.ToolTipRole)
         # commentaries
@@ -104,6 +104,7 @@ class MasterControl(QWidget):
         subLayout = QHBoxLayout()
         subLayout.addWidget(self.commandFieldWidget())
         subLayout.addWidget(self.autoCloseCheckBox())
+        subLayout.addWidget(self.refreshButton())
         sharedWidgetLayout.addLayout(subLayout)
         sharedWidget.setLayout(sharedWidgetLayout)
         return sharedWidget
@@ -138,14 +139,14 @@ class MasterControl(QWidget):
         self.tabs.addTab(self.miscellaneousTab, config.thisTranslation["cp5"])
         self.tabs.setTabToolTip(5, sc.openControlPanelTab5)
         # 6
-        if config.isVlcInstalled:
-            mediaTab = MediaLauncher(self)
-            self.tabs.addTab(mediaTab, config.thisTranslation["mediaPlayer"])
-            self.tabs.setTabToolTip(6, sc.openControlPanelTab6)
+        mediaTab = MediaLauncher(self)
+        self.tabs.addTab(mediaTab, config.thisTranslation["media"])
+        self.tabs.setTabToolTip(6, sc.openControlPanelTab6)
         #7
-        self.morphologyTab = MorphologyLauncher(self)
-        self.tabs.addTab(self.morphologyTab, config.thisTranslation["cp7"])
-        self.tabs.setTabToolTip(7, sc.openControlPanelTab7)
+        # Removed morphology tab temporarily until a fix
+        #self.morphologyTab = MorphologyLauncher(self)
+        #self.tabs.addTab(self.morphologyTab, config.thisTranslation["cp7"])
+        #self.tabs.setTabToolTip(7, sc.openControlPanelTab7)
 
         # set action with changing tabs
         self.tabs.currentChanged.connect(self.tabChanged)
@@ -168,6 +169,14 @@ class MasterControl(QWidget):
         checkbox.stateChanged.connect(self.closeControlPanelAfterRunningCommandChanged)
         return checkbox
 
+    def refreshButton(self):
+        button = QPushButton()
+        button.setToolTip(config.thisTranslation["reloadResources"])
+        file = "material/navigation/refresh/materialiconsoutlined/48dp/2x/outline_refresh_black_48dp.png"
+        button.setIcon(self.parent.getQIcon(file))
+        button.clicked.connect(lambda: self.parent.reloadResources(True))
+        return button
+
     # Common layout
 
     def buttonsWidget(self, buttonElementTupleTuple, r2l=False, translation=True):
@@ -183,7 +192,7 @@ class MasterControl(QWidget):
         buttonsLayout = QBoxLayout(QBoxLayout.RightToLeft if r2l else QBoxLayout.LeftToRight)
         buttonsLayout.setSpacing(5)
         for label, action in buttonElementTuple:
-            buttonLabel = config.thisTranslation[label] if translation else label
+            buttonLabel = config.thisTranslation.get(label, label) if translation else label
             button = QPushButton(buttonLabel)
             button.clicked.connect(action)
             buttonsLayout.addWidget(button)

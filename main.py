@@ -24,6 +24,7 @@ import config
 # Setup config values
 from util.ConfigUtil import ConfigUtil
 ConfigUtil.setup()
+from gui.Styles import *
 
 # Check argument passed to UBA as a parameter
 initialCommand = " ".join(sys.argv[1:]).strip()
@@ -33,7 +34,7 @@ config.cli = False
 if initialCommand == "docker":
     docker = True
     initialCommand = "gui"
-    config.gTTS = True
+    #config.isGTTSInstalled = True
     config.fcitx = True
     config.docker = True
     config.updateWithGitPull = True
@@ -49,6 +50,7 @@ if initialCommand == "docker":
     if os.path.isdir("/opt/yay") and not WebtopUtil.isPackageInstalled("yay"):
         print("Installing yay ...")
         os.system("sudo chown -R abc:users /opt/yay && cd /opt/yay && makepkg -si --noconfirm --needed && cd -")
+    if WebtopUtil.isPackageInstalled("yay") and not WebtopUtil.isPackageInstalled("wps"):
         print("Installing fonts ...")
         os.system("yay -Syu --noconfirm --needed ttf-wps-fonts ttf-ms-fonts wps-office-fonts")
         print("Installing wps-office ...")
@@ -171,7 +173,7 @@ if (len(sys.argv) > 1) and sys.argv[1] == "http-server":
     startHttpServer()
     ConfigUtil.save()
     if config.restartHttpServer:
-        subprocess.Popen("{0} uba.py http-server".format(sys.executable), shell=True)
+        subprocess.Popen("{0} {1} http-server".format(sys.executable, config.httpServerUbaFile), shell=True)
     exit(0)
 
 def printContentOnConsole(text):
@@ -401,6 +403,7 @@ if config.virtualKeyboard:
     os.environ["QT_IM_MODULE"] = "qtvirtualkeyboard"
 
 # Start PySide2 gui
+config.startup = True
 app = QApplication(sys.argv)
 # Set application name
 app.setApplicationName("UniqueBible.app")
@@ -413,13 +416,18 @@ app.aboutToQuit.connect(exitApplication)
 if config.windowStyle and config.windowStyle in QStyleFactory.keys():
     app.setStyle(config.windowStyle)
 # Apply theme style
-if config.qtMaterial and config.qtMaterialTheme:
+config.defineStyle()
+if config.menuLayout == "material":
+    app.setPalette(Themes.getPalette())
+    app.setStyleSheet(config.materialStyle)
+elif config.qtMaterial and config.qtMaterialTheme:
     apply_stylesheet(app, theme=config.qtMaterialTheme)
     config.theme = "dark" if config.qtMaterialTheme.startswith("dark_") else "default"
 else:
     app.setPalette(Themes.getPalette())
+
 # Active verse number colour
-#config.activeVerseNoColour = config.activeVerseNoColourDark if config.theme == "dark" else config.activeVerseNoColourLight
+#config.activeVerseNoColour = config.darkThemeActiveVerseColor if config.theme == "dark" else config.lightThemeActiveVerseColor
 
 # Assign mainWindow to config.mainWindow, to make it acessible from user customised user script
 config.mainWindow = MainWindow()

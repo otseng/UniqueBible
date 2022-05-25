@@ -97,8 +97,13 @@ class BibleVerseParser:
                 return "{0} {1}".format(abbreviation, c)
             if args and len(args) == 2:
                 c2, v2 = args
-                if c2 == c and v2 > v:
-                    return "{0} {1}:{2}".format(abbreviation, c, v) if v == v2 else "{0} {1}:{2}-{3}".format(abbreviation, c, v, v2)
+                if c2 == c:
+                    if v2 > v:
+                        return "{0} {1}:{2}-{3}".format(abbreviation, c, v, v2)
+                    elif v2 == v:
+                        return "{0} {1}:{2}".format(abbreviation, c, v)
+                    else:
+                        return ""
                 elif c2 > c:
                     return "{0} {1}:{2}-{3}:{4}".format(abbreviation, c, v, c2, v2)
             else:
@@ -297,7 +302,7 @@ class BibleVerseParser:
     def runExtractAllReferences(self, text, tagged=False):
         if not tagged:
             text = self.parseText(text, False, True)
-        # return a list of tuples (b, c, v)
+        # return a list of tuples (b, c, v) or (b, cs, vs, ce, ve)
         return [literal_eval(m) for m in re.findall('bcv(\([0-9]+?,[ ]*[0-9]+?,[ ]*[0-9, ]*?\))', text)]
 
     def extractAllReferencesFast(self, text, tagged=False):

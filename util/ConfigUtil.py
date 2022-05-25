@@ -73,6 +73,10 @@ class ConfigUtil:
         # Set to true to enable global mode for http-server viewer.  If false, only viewers on same wifi can access the link"""
         if not hasattr(config, "httpServerViewerGlobalMode"):
             config.httpServerViewerGlobalMode = False
+        config.help["webUBAServer"] = """
+        # Specify a web server to work with the share links."""
+        if not hasattr(config, "webUBAServer"):
+            config.webUBAServer = "https://bible.gospelchurch.uk"
         config.help["httpServerViewerBaseUrl"] = """
         # Base URL for http-server viewer"""
         if not hasattr(config, "httpServerViewerBaseUrl"):
@@ -97,6 +101,10 @@ class ConfigUtil:
         # Specify a homepage, to which only developers can access."""
         if not hasattr(config, "webPrivateHomePage"):
             config.webPrivateHomePage = ""
+        config.help["httpServerUbaFile"] = """
+        # Specify a python file to start http-server mode."""
+        if not hasattr(config, "httpServerUbaFile"):
+            config.httpServerUbaFile = "uba.py"
         config.help["webUI"] = """
         # To specify web user interface."""
         if not hasattr(config, "webUI"):
@@ -206,18 +214,10 @@ class ConfigUtil:
         # Start UBA with full-screen on Linux os"""
         if not hasattr(config, "linuxStartFullScreen"):
             config.linuxStartFullScreen = False
-        config.help["gTTS"] = """
-        # Google text-to-speech feature
-        # gTTS and sox are required to run this feature.
-        # To install, e.g., on Arach Linux:
-        # 'pip3 install gTTS'
-        # 'sudo pacman -S sox'"""
-        if not hasattr(config, "gTTS"):
-            config.gTTS = False
-        config.help["gTTSDefaultLanguage"] = """
-        # Default Google text-to-speech language"""
-        if not hasattr(config, "gTTSDefaultLanguage"):
-            config.gTTSDefaultLanguage = "en"
+        config.help["forceOnlineTts"] = """
+        # This forces default text-to-speech feature uses online service, even if offline tts engine is installed."""
+        if not hasattr(config, "forceOnlineTts"):
+            config.forceOnlineTts = False
         config.help["espeak"] = """
         # Use espeak for text-to-speech feature instead of built-in qt tts engine
         # espeak is a text-to-speech tool that can run offline
@@ -234,8 +234,12 @@ class ConfigUtil:
         # espeak speed"""
         if not hasattr(config, "espeakSpeed"):
             config.espeakSpeed = 160
+        config.help["gcttsSpeed"] = """
+        # Google Cloud text-to-speech speed"""
+        if not hasattr(config, "gcttsSpeed"):
+            config.gcttsSpeed = 1.0
         config.help["qttsSpeed"] = """
-        # qtts speed"""
+        # Qt text-to-speech speed"""
         if not hasattr(config, "qttsSpeed"):
             config.qttsSpeed = 0.0
         config.help["useLangDetectOnTts"] = """
@@ -314,17 +318,15 @@ class ConfigUtil:
         config.help["audioBibleIcon"] = """
         # Specify the icon used for playing audio bible features"""
         if not hasattr(config, "audioBibleIcon"):
-            #config.audioBibleIcon = "&#9834;"
-            config.audioBibleIcon = "&#119136; "
-        elif not config.audioBibleIcon.endswith(" "):
-            config.audioBibleIcon = f"{config.audioBibleIcon} "
+            config.audioBibleIcon = '<span class="material-icons-outlined">audiotrack</span>&nbsp;'
+        elif not config.audioBibleIcon.endswith("&nbsp;"):
+            config.audioBibleIcon = f"{config.audioBibleIcon.strip()}&nbsp;"
         config.help["audioBibleIcon2"] = """
-        # Specify the icon used for playing audio bible features"""
+        # Specify the icon used for playing audio bible features, which work with config.readTillChapterEnd."""
         if not hasattr(config, "audioBibleIcon2"):
-            #config.audioBibleIcon2 = "&#9834;"
-            config.audioBibleIcon2 = "&#119137; "
-        elif not config.audioBibleIcon2.endswith(" "):
-            config.audioBibleIcon2 = f"{config.audioBibleIcon2} "
+            config.audioBibleIcon2 = '<span class="material-icons">audiotrack</span>&nbsp;'
+        elif not config.audioBibleIcon2.endswith("&nbsp;"):
+            config.audioBibleIcon2 = f"{config.audioBibleIcon2.strip()}&nbsp;"
         config.help["videoFolder"] = """
         # Specify the folder path of video files"""
         if not hasattr(config, "videoFolder"):
@@ -446,10 +448,16 @@ class ConfigUtil:
         # Options to use large sets of icons: True / False"""
         if not hasattr(config, "toolBarIconFullSize"):
             config.toolBarIconFullSize = False
+        config.help["iconButtonSize"] = """
+        # Options to set icon button size.  This value applies to icon width and height.
+        # Ideally, the value is a multiple of 3, within a range from 12 to 48.
+        # This value is used as a reference point to scale all other widgets when you use Material menu layout."""
+        if not hasattr(config, "iconButtonSize"):
+            config.iconButtonSize = 18
         config.help["maximumIconButtonWidth"] = """
         # Options to set maximum icon button width"""
         if not hasattr(config, "maximumIconButtonWidth"):
-            config.maximumIconButtonWidth = 36
+            config.maximumIconButtonWidth = 48
         config.help["toolbarIconSizeFactor"] = """
         # Toolbar icon size factor"""
         if not hasattr(config, "toolbarIconSizeFactor"):
@@ -466,6 +474,10 @@ class ConfigUtil:
         # Options to display the window showing instant information: 0, 1"""
         if not hasattr(config, "instantMode"):
             config.instantMode = 1
+        config.help["enableInstantHighlight"] = """
+        # Options to implement instant highlight feature: True / False"""
+        if not hasattr(config, "enableInstantHighlight"):
+            config.enableInstantHighlight = False
         config.help["instantInformationEnabled"] = """
         # Options to trigger instant information: True / False"""
         if not hasattr(config, "instantInformationEnabled"):
@@ -473,7 +485,7 @@ class ConfigUtil:
         config.help["fontSize"] = """
         # Default font size of content in main window and workspace"""
         if not hasattr(config, "fontSize"):
-            config.fontSize = 17
+            config.fontSize = 18
         config.help["font"] = """
         # Default font"""
         if not hasattr(config, "font"):
@@ -507,6 +519,18 @@ class ConfigUtil:
         # Options to display verse reference: True / False"""
         if not hasattr(config, "showVerseReference"):
             config.showVerseReference = True
+        config.help["hideVlcInterfaceReadingSingleVerse"] = """
+        # Options to hide VLC graphical interface on supported operating systems: True / False"""
+        if not hasattr(config, "hideVlcInterfaceReadingSingleVerse"):
+            config.hideVlcInterfaceReadingSingleVerse = True
+        config.help["showHebrewGreekWordAudioLinks"] = """
+        # Options to display word-by-word Hebrew & Greek audio links: True / False"""
+        if not hasattr(config, "showHebrewGreekWordAudioLinks"):
+            config.showHebrewGreekWordAudioLinks = False
+        config.help["showHebrewGreekWordAudioLinksInMIB"] = """
+        # Options to display word-by-word Hebrew & Greek audio links in bible module, MIB: True / False"""
+        if not hasattr(config, "showHebrewGreekWordAudioLinksInMIB"):
+            config.showHebrewGreekWordAudioLinksInMIB = False
         config.help["hideLexicalEntryInBible"] = """
         # Options to hide lexical entries or Strong's numbers: True / False"""
         if not hasattr(config, "hideLexicalEntryInBible"):
@@ -592,6 +616,16 @@ class ConfigUtil:
         # Correspond to ("SEARCH", "SEARCHALL", "ANDSEARCH", "ORSEARCH", "ADVANCEDSEARCH", "REGEXSEARCH")"""
         if not hasattr(config, "bibleSearchMode"):
             config.bibleSearchMode = 0
+        config.help["favouriteOriginalBible"] = """
+        # Set your favourite marvel bible version here
+        # MOB, MIB, MTB, MPB, MAB"""
+        if not hasattr(config, "favouriteOriginalBible"):
+            config.favouriteOriginalBible = "MIB"
+        config.help["favouriteOriginalBible2"] = """
+        # Set your second favourite marvel bible version here
+        # MOB, MIB, MTB, MPB, MAB"""
+        if not hasattr(config, "favouriteOriginalBible2"):
+            config.favouriteOriginalBible2 = "MPB"
         config.help["favouriteBible"] = """
         # Set your favourite bible version here"""
         if not hasattr(config, "favouriteBible"):
@@ -643,7 +677,12 @@ class ConfigUtil:
         config.help["addFavouriteToMultiRef"] = """
         # Options to display "favouriteBible" together with the main version for reading multiple references: True / False"""
         if not hasattr(config, "addFavouriteToMultiRef"):
-            config.addFavouriteToMultiRef = False
+            config.addFavouriteToMultiRef = True
+        config.help["compareParallelList"] = """
+        # Specify bible versions to work with parallel:::, compare:::, and sidebyside::: commands in material menu layout."""
+        if not hasattr(config, "compareParallelList"):
+            config.compareParallelList = list({config.favouriteBible, config.favouriteBible2, config.favouriteBible3})
+            config.compareParallelList.sort()
         config.help["enforceCompareParallel"] = """
         # Options to enforce comparison / parallel: True / False
         # When it is enabled after comparison / parallel feature is loaded once, subsequence entries of bible references will be treated as launching comparison / parallel even COMPARE::: or PARALLEL::: keywords is not used.
@@ -768,10 +807,10 @@ class ConfigUtil:
         # Last string entered for searching book"""
         if not hasattr(config, "bookSearchString"):
             config.bookSearchString = ""
-        config.help["instantHighlightString"] = """
-        # Instant Highlight: highlighted word in Main Window"""
-        if not hasattr(config, "instantHighlightString"):
-            config.instantHighlightString = ""
+#        config.help["instantHighlightString"] = """
+#        # Instant Highlight: highlighted word in Main Window"""
+#        if not hasattr(config, "instantHighlightString"):
+#            config.instantHighlightString = ""
         config.help["noteSearchString"] = """
         # Last string entered for searching note"""
         if not hasattr(config, "noteSearchString"):
@@ -846,6 +885,62 @@ class ConfigUtil:
         # Theme (default, dark)"""
         if not hasattr(config, "theme"):
             config.theme = "default"
+        config.help["widgetBackgroundColor"] = """
+        # Widget background color in 'material' menu layout."""
+        if not hasattr(config, "widgetBackgroundColor"):
+            config.widgetBackgroundColor = "#e7e7e7" if config.theme == "default" else "#2f2f2f"
+        config.help["widgetForegroundColor"] = """
+        # Widget foreground color in 'material' menu layout."""
+        if not hasattr(config, "widgetForegroundColor"):
+            config.widgetForegroundColor = "#483D8B" if config.theme == "default" else "#FFFFE0"
+        config.help["widgetBackgroundColorHover"] = """
+        # Widget background color when a widget is hovered in 'material' menu layout."""
+        if not hasattr(config, "widgetBackgroundColorHover"):
+            config.widgetBackgroundColorHover = "#f8f8a0" if config.theme == "default" else "#545454"
+        config.help["widgetForegroundColorHover"] = """
+        # Widget foreground color when a widget is hovered in 'material' menu layout."""
+        if not hasattr(config, "widgetForegroundColorHover"):
+            config.widgetForegroundColorHover = "#483D8B" if config.theme == "default" else "#FFFFE0"
+        config.help["widgetBackgroundColorPressed"] = """
+        # Widget background color when a widget is pressed in 'material' menu layout."""
+        if not hasattr(config, "widgetBackgroundColorPressed"):
+            config.widgetBackgroundColorPressed = "#d9d9d9" if config.theme == "default" else "#232323"
+        config.help["widgetForegroundColorPressed"] = """
+        # Widget foreground color when a widget is pressed in 'material' menu layout."""
+        if not hasattr(config, "widgetForegroundColorPressed"):
+            config.widgetForegroundColorPressed = "#483D8B" if config.theme == "default" else "#FFFFE0"
+        config.help["maskMaterialIconBackground"] = """
+        # config.maskMaterialIconColor applies to either background or foreground of material icons. 
+        # Set True to apply the mask to background. 
+        # Set False to apply the mask to foreground."""
+        if not hasattr(config, "maskMaterialIconBackground"):
+            config.maskMaterialIconBackground = False
+        config.help["maskMaterialIconColor"] = """
+        # Use this color for masking material icons."""
+        if not config.maskMaterialIconBackground:
+            config.maskMaterialIconColor = config.widgetForegroundColor
+        elif not hasattr(config, "maskMaterialIconColor"):
+            config.maskMaterialIconColor = "#483D8B" if config.theme == "default" else "#FFFFE0"
+        config.help["lightThemeTextColor"] = """
+        # Text colour displayed on light theme."""
+        if not hasattr(config, "lightThemeTextColor"):
+            config.lightThemeTextColor = "#000000"
+        config.help["darkThemeTextColor"] = """
+        # Text colour displayed on dark theme."""
+        if not hasattr(config, "darkThemeTextColor"):
+            config.darkThemeTextColor = "#ffffff"
+        config.help["lightThemeActiveVerseColor"] = """
+        # Active verse colour displayed on light theme."""
+        if not hasattr(config, "lightThemeActiveVerseColor"):
+            config.lightThemeActiveVerseColor = "#483D8B"
+        config.help["darkThemeActiveVerseColor"] = """
+        # Active verse colour displayed on dark theme."""
+        if not hasattr(config, "darkThemeActiveVerseColor"):
+            config.darkThemeActiveVerseColor = "#aaff7f"
+        config.help["textSelectionColor"] = """
+        # Colour for text selection."""
+        if not hasattr(config, "textSelectionColor"):
+            config.textSelectionColor = "#ffb7b7"
         config.help["qtMaterial"] = """
         # Apply qt-material theme."""
         if not hasattr(config, "qtMaterial"):
@@ -859,6 +954,12 @@ class ConfigUtil:
         # Disable modules update check"""
         if not hasattr(config, "disableModulesUpdateCheck"):
             config.disableModulesUpdateCheck = True
+        config.help["markdownifyHeadingStyle"] = """
+        # Specify heading style to work with markdownify
+        # Options: ATX, ATX_CLOSED, SETEXT, and UNDERLINED
+        # Read more at https://pypi.org/project/markdownify/"""
+        if not hasattr(config, "markdownifyHeadingStyle"):
+            config.markdownifyHeadingStyle = "UNDERLINED"
         config.help["forceGenerateHtml"] = """
         # Force generate main.html for all pages"""
         if not hasattr(config, "forceGenerateHtml"):
@@ -1009,14 +1110,6 @@ class ConfigUtil:
         # {0}""".format(language_en_GB.translation["addOHGBiToMorphologySearch"])
         if not hasattr(config, "addOHGBiToMorphologySearch"):
             config.addOHGBiToMorphologySearch = True
-        config.help["activeVerseNoColourLight"] = """
-        # Active verse number colour displayed on light theme."""
-        if not hasattr(config, "activeVerseNoColourLight"):
-            config.activeVerseNoColourLight = "#204a87"
-        config.help["activeVerseNoColourDark"] = """
-        # Active verse number colour displayed on dark theme."""
-        if not hasattr(config, "activeVerseNoColourDark"):
-            config.activeVerseNoColourDark = "#aaff7f"
         config.help["maximumOHGBiVersesDisplayedInSearchResult"] = """
         # Maximum number of OHGBi verses displayed in each search result."""
         if not hasattr(config, "maximumOHGBiVersesDisplayedInSearchResult"):
@@ -1103,19 +1196,25 @@ class ConfigUtil:
     # Save configurations on exit
     @staticmethod
     def save():
+        if config.menuLayout == "material" and not config.noQt:
+            texts = config.mainWindow.bibleVersionCombo.checkItems
+            config.compareParallelList = list(set(texts)) if texts else list({config.favouriteBible, config.favouriteBible2, config.favouriteBible3})
+            config.compareParallelList.sort()
         if config.removeHighlightOnExit:
             config.bookSearchString = ""
             config.noteSearchString = ""
-            config.instantHighlightString = ""
+            #config.instantHighlightString = ""
         configs = (
             # ("version", config.version),
             ("developer", config.developer),
             ("enableCmd", config.enableCmd),
             ("qtLibrary", config.qtLibrary),
             ("telnetServerPort", config.telnetServerPort),
+            ("httpServerUbaFile", config.httpServerUbaFile),
             ("httpServerPort", config.httpServerPort),
             ("httpServerViewerGlobalMode", config.httpServerViewerGlobalMode),
             ("httpServerViewerBaseUrl", config.httpServerViewerBaseUrl),
+            ("webUBAServer", config.webUBAServer),
             ("webUBAIcon", config.webUBAIcon),
             ("webOrganisationIcon", config.webOrganisationIcon),
             ("webOrganisationLink", config.webOrganisationLink),
@@ -1140,11 +1239,11 @@ class ConfigUtil:
             ("openLinuxPdf", config.openLinuxPdf),
             ("linuxStartFullScreen", config.linuxStartFullScreen),
             #("showTtsOnLinux", config.showTtsOnLinux),
-            ("gTTS", config.gTTS),
-            ("gTTSDefaultLanguage", config.gTTSDefaultLanguage),
+            ("forceOnlineTts", config.forceOnlineTts),
             ("espeak", config.espeak),
             ("espeakSpeed", config.espeakSpeed),
             ("qttsSpeed", config.qttsSpeed),
+            ("gcttsSpeed", config.gcttsSpeed),
             ("useLangDetectOnTts", config.useLangDetectOnTts),
             ("ttsDefaultLangauge", config.ttsDefaultLangauge),
             ("ttsEnglishAlwaysUS", config.ttsEnglishAlwaysUS),
@@ -1188,11 +1287,13 @@ class ConfigUtil:
             ("noToolBar", config.noToolBar),
             ("topToolBarOnly", config.topToolBarOnly),
             ("toolBarIconFullSize", config.toolBarIconFullSize),
+            ("iconButtonSize", config.iconButtonSize),
             ("maximumIconButtonWidth", config.maximumIconButtonWidth),
             ("toolbarIconSizeFactor", config.toolbarIconSizeFactor),
             ("sidebarIconSizeFactor", config.sidebarIconSizeFactor),
             ("parallelMode", config.parallelMode),
             ("instantMode", config.instantMode),
+            ("enableInstantHighlight", config.enableInstantHighlight),
             ("instantInformationEnabled", config.instantInformationEnabled),
             ("miniBrowserHome", config.miniBrowserHome),
             ("fontSize", config.fontSize),
@@ -1213,6 +1314,8 @@ class ConfigUtil:
             ("mainB", config.mainB),
             ("mainC", config.mainC),
             ("mainV", config.mainV),
+            ("favouriteOriginalBible", config.favouriteOriginalBible),
+            ("favouriteOriginalBible2", config.favouriteOriginalBible2),
             ("favouriteBible", config.favouriteBible),
             ("favouriteBible2", config.favouriteBible2),
             ("favouriteBible3", config.favouriteBible3),
@@ -1226,6 +1329,7 @@ class ConfigUtil:
             ("favouriteBibleSC2", config.favouriteBibleSC2),
             ("favouriteBibleSC3", config.favouriteBibleSC3),
             ("addFavouriteToMultiRef", config.addFavouriteToMultiRef),
+            ("compareParallelList", config.compareParallelList),
             ("addOHGBiToMorphologySearch", config.addOHGBiToMorphologySearch),
             ("maximumOHGBiVersesDisplayedInSearchResult", config.maximumOHGBiVersesDisplayedInSearchResult),
             ("showVerseReference", config.showVerseReference),
@@ -1233,6 +1337,9 @@ class ConfigUtil:
             ("showBibleNoteIndicator", config.showBibleNoteIndicator),
             ("enforceCompareParallel", config.enforceCompareParallel),
             ("readFormattedBibles", config.readFormattedBibles),
+            ("hideVlcInterfaceReadingSingleVerse", config.hideVlcInterfaceReadingSingleVerse),
+            ("showHebrewGreekWordAudioLinks", config.showHebrewGreekWordAudioLinks),
+            ("showHebrewGreekWordAudioLinksInMIB", config.showHebrewGreekWordAudioLinksInMIB),
             ("addTitleToPlainChapter", config.addTitleToPlainChapter),
             ("hideLexicalEntryInBible", config.hideLexicalEntryInBible),
             ("readTillChapterEnd", config.readTillChapterEnd),
@@ -1275,7 +1382,7 @@ class ConfigUtil:
             ("removeHighlightOnExit", config.removeHighlightOnExit),
             ("bookSearchString", config.bookSearchString),
             ("noteSearchString", config.noteSearchString),
-            ("instantHighlightString", config.instantHighlightString),
+            #("instantHighlightString", config.instantHighlightString),
             ("thirdDictionary", config.thirdDictionary),
             ("lexicon", config.lexicon),
             ("defaultLexiconStrongH", config.defaultLexiconStrongH),
@@ -1288,6 +1395,19 @@ class ConfigUtil:
             ("showInformation", config.showInformation),
             ("windowStyle", config.windowStyle),
             ("theme", config.theme),
+            ("maskMaterialIconColor", config.maskMaterialIconColor),
+            ("maskMaterialIconBackground", config.maskMaterialIconBackground),
+            ("widgetBackgroundColor", config.widgetBackgroundColor),
+            ("widgetForegroundColor", config.widgetForegroundColor),
+            ("widgetBackgroundColorHover", config.widgetBackgroundColorHover),
+            ("widgetForegroundColorHover", config.widgetForegroundColorHover),
+            ("widgetBackgroundColorPressed", config.widgetBackgroundColorPressed),
+            ("widgetForegroundColorPressed", config.widgetForegroundColorPressed),
+            ("lightThemeTextColor", config.lightThemeTextColor),
+            ("darkThemeTextColor", config.darkThemeTextColor),
+            ("lightThemeActiveVerseColor", config.lightThemeActiveVerseColor),
+            ("darkThemeActiveVerseColor", config.darkThemeActiveVerseColor),
+            ("textSelectionColor", config.textSelectionColor),
             ("qtMaterial", config.qtMaterial),
             ("qtMaterialTheme", config.qtMaterialTheme),
             ("disableModulesUpdateCheck", config.disableModulesUpdateCheck),
@@ -1299,6 +1419,7 @@ class ConfigUtil:
             ("miniControlInitialTab", config.miniControlInitialTab),
             ("addBreakAfterTheFirstToolBar", config.addBreakAfterTheFirstToolBar),
             ("addBreakBeforeTheLastToolBar", config.addBreakBeforeTheLastToolBar),
+            ("markdownifyHeadingStyle", config.markdownifyHeadingStyle),
             ("forceGenerateHtml", config.forceGenerateHtml),
             ("enableLogging", config.enableLogging),
             ("logCommands", config.logCommands),
@@ -1312,8 +1433,6 @@ class ConfigUtil:
             ("enableGist", config.enableGist),
             ("gistToken", config.gistToken),
             ("clearCommandEntry", config.clearCommandEntry),
-            ("activeVerseNoColourLight", config.activeVerseNoColourLight),
-            ("activeVerseNoColourDark", config.activeVerseNoColourDark),
             ("highlightCollections", config.highlightCollections),
             ("highlightLightThemeColours", config.highlightLightThemeColours),
             ("highlightDarkThemeColours", config.highlightDarkThemeColours),

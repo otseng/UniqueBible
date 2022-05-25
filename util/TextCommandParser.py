@@ -7,6 +7,7 @@ from util.CatalogUtil import CatalogUtil
 from util.GitHubRepoInfo import GitHubRepoInfo
 from util.HtmlGeneratorUtil import HtmlGeneratorUtil
 from util.TextUtil import TextUtil
+from util.FileUtil import FileUtil
 from util.LexicalData import LexicalData
 from functools import partial
 from util.BibleVerseParser import BibleVerseParser
@@ -100,6 +101,12 @@ class TextCommandParser:
             # Usage - TEXT:::[BIBLE_VERSION]
             # e.g. TEXT:::KJV
             # e.g. TEXT:::NET"""),
+            "studytext": (self.textStudyText, """
+            # [KEYWORD] STUDYTEXT
+            # Feature - Change the bible version of the last opened passage on study view.
+            # Usage - STUDYTEXT:::[BIBLE_VERSION]
+            # e.g. STUDYTEXT:::KJV
+            # e.g. STUDYTEXT:::NET"""),
             "compare": (self.textCompare, """
             # [KEYWORD] COMPARE
             # Feature - Compare bible versions of a single or multiple references.
@@ -112,6 +119,11 @@ class TextCommandParser:
             # e.g. COMPARE:::John 3:16
             # e.g. COMPARE:::KJV_NET_CUV:::John 3:16
             # e.g. COMPARE:::KJV_NET_CUV:::John 3:16; Rm 5:8"""),
+            "sidebyside": (self.textCompareSideBySide, """
+            # [KEYWORD] SIDEBYSIDE
+            # Feature - Compare bible versions side by side
+            # Usage - SIDEBYSIDE:::[BIBLE_VERSION(S)]:::[BIBLE_REFERENCE]
+            # Remarks: Multiple bible versions for comparison are separated by "_"."""),
             "difference": (self.textDiff, """
             # [KEYWORD] DIFFERENCE
             # Feature - same as [KEYWORD] DIFF
@@ -134,14 +146,10 @@ class TextCommandParser:
             # 4) Only the bible version last opened on main view is opened if "[BIBLE_VERSION(S)]:::" is omitted.
             # e.g. PARALLEL:::NIV_CCB_CEB:::John 3:16
             # e.g. PARALLEL:::NIV_CCB_CEB:::John 3:16; Rm 5:8"""),
-            "parallelverses": (self.textParallelVerses, """
-            # [KEYWORD] PARALLELVERSES
-            # Feature - Display bible versions of the same chapter in parallel columns with verses aligned"""),
-            "parallelverse": (self.textParallelVerses, ""),
             "passages": (self.textPassages, """
             # [KEYWORD] PASSAGES
             # Feature - Display different bible passages of the same bible version in parallel columns. It is created for studying similar passages.
-            # Usage - PARALLEL:::[BIBLE_VERSION]:::[BIBLE_REFERENCE]
+            # Usage - PASSAGES:::[BIBLE_VERSION]:::[BIBLE_REFERENCE]
             # Remarks:
             # 1) Only the bible version last opened on main view is opened if "[BIBLE_VERSION(S)]:::" is omitted.
             # 2) Only the first bible version specified in the command is taken, even multiple bible versions are entered and separated by "_".
@@ -463,6 +471,16 @@ class TextCommandParser:
             # e.g. VLC:::music/AmazingGrace.mp3
             # e.g. VLC:::video/ProdigalSon.mp4
             """),
+            "read": (self.textRead, """
+            # [KEYWORD] READ
+            # Feature - Read a single bible passage or multiple bible passages.
+            # Usage - BIBLE:::[BIBLE_VERSION(S)]:::[BIBLE_REFERENCE(S)]
+            # Remarks:
+            # 1) The bible version last opened on main view is opened by default if "[BIBLE_VERSION]:::" is omitted.
+            # e.g. READ:::Jn 3:16-18
+            # e.g. READ:::KJV:::Jn 3:16-18; Deut 6:4
+            # e.g. READ:::KJV_CUV:::Jn 3:16-18; Deut 6:4
+            """),
             "readchapter": (self.readChapter, """
             # [KEYWORD] READCHAPTER
             # Feature: read a bible chapter verse by verse
@@ -472,6 +490,16 @@ class TextCommandParser:
             # [KEYWORD] READVERSE
             # Feature: read a bible verse
             # e.g. READVERSE:::CUV.1.1.1
+            """),
+            "readword": (self.readWord, """
+            # [KEYWORD] READWORD
+            # Feature: read a word
+            # e.g. READWORD:::BHS5.1.1.1.1
+            """),
+            "readlexeme": (self.readLexeme, """
+            # [KEYWORD] READLEXEME
+            # Feature: read a lexeme
+            # e.g. READLEXEME:::BHS5.1.1.1.1
             """),
             "readbible": (self.readBible, """
             # [KEYWORD] READBIBLE
@@ -629,6 +657,37 @@ class TextCommandParser:
             # e.g. _menu:::43
             # e.g. _menu:::43.3
             # e.g. _menu:::43.3.16"""),
+            "_chapters": (self.textChapters, """
+            # [KEYWORD] _chapters
+            # Feature - Display all available chapters of a bible version.
+            # Usage - _chapters:::[BIBLE_VERSION]
+            # e.g. _chapters:::KJV
+            # e.g. _chapters:::NET"""),
+            "_verses": (self.textVerses, """
+            # [KEYWORD] _verses
+            # Feature - Display all available verses of a bible chapter.
+            # Usage - _verses:::[BIBLE_VERSION]:::[BIBLE_REFERENCE]
+            # e.g. _verses:::Jn 3
+            # e.g. _verses:::KJV:::Jn 3
+            # e.g. _verses:::NET:::Jn 3"""),
+            "_commentaries": (self.textCommentaries, """
+            # [KEYWORD] _commentaries
+            # Feature - Display all available commentary modules.
+            # Usage - _commentaries:::
+            # e.g. _commentaries:::"""),
+            "_commentarychapters": (self.textCommentaryChapters, """
+            # [KEYWORD] _commentarychapters
+            # Feature - Display all available chapters of a bible version.
+            # Usage - _commentarychapters:::[BIBLE_VERSION]
+            # e.g. _commentarychapters:::KJV
+            # e.g. _commentarychapters:::NET"""),
+            "_commentaryverses": (self.textCommentaryVerses, """
+            # [KEYWORD] _commentaryverses
+            # Feature - Display all available verses of a bible chapter.
+            # Usage - _commentaryverses:::[BIBLE_VERSION]:::[BIBLE_REFERENCE]
+            # e.g. _commentaryverses:::Jn 3
+            # e.g. _commentaryverses:::KJV:::Jn 3
+            # e.g. _commentaryverses:::NET:::Jn 3"""),
             "_commentary": (self.textCommentaryMenu, """
             # [KEYWORD] _commentary
             # e.g. _commentary:::CBSC.1.1.1"""),
@@ -701,7 +760,7 @@ class TextCommandParser:
             # e.g. _uba:::file://note_editor_key_combo.uba"""),
             "_biblenote": (self.textBiblenote, """
             # [KEYWORD] _biblenote
-            # e.g. _biblenote:::1.1.1.[1]"""),
+            # e.g. _biblenote:::KJV:::1.1.1.1"""),
             "_wordnote": (self.textWordNote, """
             # [KEYWORD] _wordnote
             # e.g. _wordnote:::LXX1:::l1"""),
@@ -743,10 +802,16 @@ class TextCommandParser:
             # Remarks: This command works ONLY when config.developer is set to True.
             # Example:
             # e.g. _setconfig:::favouriteBible:::'BSB'"""),
-            "fixlinksincommentary": (self.fixLinksInCommentary, """
-            # Usage - FIXLINKSINCOMMENTARY:::[commentary]
+            "_fixlinksincommentary": (self.fixLinksInCommentary, """
+            # Usage - _fixlinksincommentary:::[commentary]
             # Example:
-            # FIXLINKSINCOMMENTARY:::Dakes
+            # _fixlinksincommentary:::Dakes
+            """),
+            "_copy": (self.copyText, """
+            # Usage - _copy:::[text]
+            # Remarks: This commands works only on desktop or webtop version.
+            # Example:
+            # _copy:::Unique Bible App
             """),
         }
         for key, value in BibleBooks.eng.items():
@@ -920,6 +985,18 @@ class TextCommandParser:
     def invalidCommand(self, source="main"):
         return (source, "INVALID_COMMAND_ENTERED", {})
 
+    # return no audio
+    def noAudio(self, source="main"):
+        return (source, "NO_AUDIO", {})
+
+    # return no Hebrew audio
+    def noHebrewAudio(self, source="main"):
+        return (source, "NO_HEBREW_AUDIO", {})
+
+    # return no Greek audio
+    def noGreekAudio(self, source="main"):
+        return (source, "NO_GREEK_AUDIO", {})
+
     # sort out keywords from a single line command
     def splitCommand(self, command):
         commandList = re.split('[ ]*?:::[ ]*?', command, 1)
@@ -957,12 +1034,13 @@ class TextCommandParser:
         self.parent.updateStudyRefButton()
 
     # shared functions about bible text
-    def getConfirmedTexts(self, texts):
+    def getConfirmedTexts(self, texts, returnEmptyList=False):
         biblesSqlite = BiblesSqlite()
         bibleList = biblesSqlite.getBibleList()
-        del biblesSqlite
         confirmedTexts = [text for text in texts.split("_") if text in bibleList or text in self.getMarvelBibles()]
-        return confirmedTexts
+        if not confirmedTexts and not returnEmptyList:
+            confirmedTexts = [config.favouriteBible]
+        return sorted(list(set(confirmedTexts)))
 
     def extractAllVerses(self, text, tagged=False):
         return BibleVerseParser(config.parserStandarisation).extractAllReferences(text, tagged)
@@ -973,16 +1051,42 @@ class TextCommandParser:
     def bcvToVerseReference(self, b, c, v):
         return BibleVerseParser(config.parserStandarisation).bcvToVerseReference(b, c, v)
 
+    def isTextInCompareTexts(self, text, compareTexts):
+        return True if text in compareTexts[:-3].split("_") else False
+
+    def switchCompareView(self):
+        if self.parent.enforceCompareParallelButton:
+            self.parent.enforceCompareParallelButtonClicked()
+        else:
+            config.enforceCompareParallel = not config.enforceCompareParallel
+
     # default function if no special keyword is specified
     def textBibleVerseParser(self, command, text, view, parallel=False):
-        compareMatches = re.match("^[Cc][Oo][Mm][Pp][Aa][Rr][Ee]:::(.*?:::)", config.history["main"][-1])
-        if config.enforceCompareParallel and view in ("main", "http") and compareMatches and not parallel:
-            config.tempRecord = "COMPARE:::{0}{1}".format(compareMatches.group(1), command)
-            return self.textCompare("{0}{1}".format(compareMatches.group(1), command), view)
-        parallelMatches = re.match("^[Pp][Aa][Rr][Aa][Ll][Ll][Ee][Ll]:::(.*?:::)", config.history["main"][-1])
-        if config.enforceCompareParallel and view in ("main", "http") and parallelMatches and not parallel:
-            config.tempRecord = "PARALLEL:::{0}{1}".format(parallelMatches.group(1), command)
-            return self.textParallel("{0}{1}".format(parallelMatches.group(1), command), view)
+        if config.enforceCompareParallel and not parallel:
+            compareMatches = re.match("^[Cc][Oo][Mm][Pp][Aa][Rr][Ee]:::(.*?:::)", config.history["main"][-1])
+            if view in ("main", "http") and compareMatches:
+                compareTexts = compareMatches.group(1)
+                if self.isTextInCompareTexts(text, compareTexts):
+                    config.tempRecord = "COMPARE:::{0}{1}".format(compareTexts, command)
+                    return self.textCompare("{0}{1}".format(compareTexts, command), view)
+                else:
+                    self.switchCompareView()
+            parallelMatches = re.match("^[Pp][Aa][Rr][Aa][Ll][Ll][Ee][Ll]:::(.*?:::)", config.history["main"][-1])
+            if view in ("main", "http") and parallelMatches:
+                compareTexts = parallelMatches.group(1)
+                if self.isTextInCompareTexts(text, compareTexts):
+                    config.tempRecord = "PARALLEL:::{0}{1}".format(compareTexts, command)
+                    return self.textParallel("{0}{1}".format(compareTexts, command), view)
+                else:
+                    self.switchCompareView()
+            compareSideBySideMatches = re.match("^[Ss][Ii][Dd][Ee][Bb][Yy][Ss][Ii][Dd][Ee]:::(.*?:::)", config.history["main"][-1])
+            if view in ("main", "http") and compareSideBySideMatches:
+                compareTexts = compareSideBySideMatches.group(1)
+                if self.isTextInCompareTexts(text, compareTexts):
+                    config.tempRecord = "SIDEBYSIDE:::{0}{1}".format(compareTexts, command)
+                    return self.textCompareSideBySide("{0}{1}".format(compareTexts, command), view)
+                else:
+                    self.switchCompareView()
         if config.useLiteVerseParsing:
             verseList = self.extractAllVersesFast(command)
             if verseList[0][0] == 0:
@@ -1035,7 +1139,7 @@ class TextCommandParser:
             content = "<bibletext class='{0}'>{1}</bibletext>".format(text, content)
             if config.openBibleInMainViewOnly:
                 self.setMainVerse(text, bcvTuple)
-                self.setStudyVerse(text, bcvTuple)
+                #self.setStudyVerse(text, bcvTuple)
                 return ("main", content, {})
             else:
                 updateViewConfig, *_ = self.getViewConfig(view)
@@ -1043,6 +1147,16 @@ class TextCommandParser:
                 return (view, content, {'tab_title': text})
 
     def toggleBibleText(self, text):
+        isMarvelBibles = True if re.search("_instantVerse:::(MOB|MIB|MPB|MTB|MAB|OHGB|OHGBi):::", text) else False
+        isMIB = ("_instantVerse:::MIB:::" in text)
+        if (config.showHebrewGreekWordAudioLinks and isMarvelBibles) or (config.showHebrewGreekWordAudioLinksInMIB and isMIB):
+            text = re.sub("(<pm>|</pm>|<n>|</n>)", "", text)
+            text = re.sub("""(<heb id="wh)([0-9]+?)("[^<>]*?onclick="luW\()([0-9]+?)(,[^<>]*?>[^<>]+?</heb>[ ]*)""", r"""\1\2\3\4\5 <ref onclick="wah(\4,\2)">{0}</ref>""".format(config.audioBibleIcon), text)
+            text = re.sub("""(<grk id="w[0]*?)([1-9]+[0-9]*?)("[^<>]*?onclick="luW\()([0-9]+?)(,[^<>]*?>[^<>]+?</grk>[ ]*)""", r"""\1\2\3\4\5 <ref onclick="wag(\4,\2)">{0}</ref>""".format(config.audioBibleIcon), text)
+            if isMIB:
+                text = text.replace(config.audioBibleIcon, "＊＊＊")
+                text = re.sub("""([ ]*<ref onclick="wa[gh])(\([0-9]+?,[0-9]+?\)">[^<>]+?</ref>)(.*?</wform>.*?<wlex>.*?</wlex></ref>)""", r"\1\2\3\1l\2", text)
+                text = text.replace("＊＊＊", config.audioBibleIcon)
         if not config.showVerseReference:
             text = re.sub('<vid .*?>.*?</vid>', '', text)
         if not config.showBibleNoteIndicator:
@@ -1071,14 +1185,12 @@ class TextCommandParser:
     def getChaptersMenu(self, b, c, text):
         biblesSqlite = BiblesSqlite()
         chapteruMenu = biblesSqlite.getChaptersMenu(b, c, text)
-        del biblesSqlite
         return chapteruMenu
 
     # access to formatted chapter or plain verses of a bible text, called by textBibleVerseParser
     def textPlainBible(self, verseList, text):
         biblesSqlite = BiblesSqlite()
         verses = biblesSqlite.readMultipleVerses(text, verseList)
-        del biblesSqlite
         return verses
 
     def textFormattedBible(self, verse, text, source=""):
@@ -1091,11 +1203,9 @@ class TextCommandParser:
         #    b, c, v, *_ = verse
         #    bibleSqlite = Bible(text)
         #    b, c, v, content = bibleSqlite.readTextVerse(b, c, v)
-        #    del bibleSqlite
         if text in formattedBibles and text not in ("OHGB", "OHGBi", "LXX") and config.readFormattedBibles:
             bibleSqlite = Bible(text)
             content = bibleSqlite.readFormattedChapter(verse)
-            del bibleSqlite
         else:
             # use plain bibles database when corresponding formatted version is not available
             language = Bible(text).getLanguage()
@@ -1149,36 +1259,30 @@ class TextCommandParser:
         self.stopTtsAudio()
 
         # Language codes: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
-        language = "en"
-        text = command
         if command.count(":::") != 0:
             language, text = self.splitCommand(command)
+        else:
+            language = "en-GB" if config.isGoogleCloudTTSAvailable else "en"
+            text = command
         
         # fine-tune
-        text = re.sub("[\[\]\(\)'\"]", "", text)
-        if not os.path.isfile(os.path.join(os.getcwd(), "credentials_GoogleCloudTextToSpeech.json")):
-            language = re.sub("\-.*?$", "", language)
-        if language in ("iw", "he"):
-            text = HebrewTransliteration().transliterateHebrew(text)
-            language = "el"
-        elif language == "el" or language.startswith("el-"):
-            text = TextUtil.removeVowelAccent(text)
+        text, language = self.parent.fineTuneGtts(text, language)
 
         try:
-            credentials = os.path.join(os.getcwd(), "credentials_GoogleCloudTextToSpeech.json")
-            if os.path.isfile(credentials):
-                self.saveCloudTTSAudio(text, language)
+            if config.isGoogleCloudTTSAvailable:
+                self.parent.saveCloudTTSAudio(text, language)
             else:
-                self.saveGTTSAudio(text, language)
+                self.parent.saveGTTSAudio(text, language)
 
-            audioFile = self.getGttsFilename()
+            audioFile = self.parent.getGttsFilename()
             if os.path.isfile(audioFile):
-                self.openVlcPlayer(audioFile, "main")
+                self.openVlcPlayer(audioFile, "main", gui=False)
         except:
             self.parent.displayMessage(config.thisTranslation["message_fail"])
 
 # Keep the following codes for future reference
-#        if not platform.system() == "Windows" and config.gTTS:
+# The following method does not work on Windows
+#        if not platform.system() == "Windows" and config.isGTTSInstalled:
 #            if not self.isCommandInstalled("gtts-cli"):
 #                installmodule("gTTS")
 #            if self.isCommandInstalled("gtts-cli") and self.isCommandInstalled("play"):
@@ -1192,77 +1296,6 @@ class TextCommandParser:
 #                message = "Install gTTS and sox FIRST! \nFor example, on Arch Linux, run:\n'pip3 install gTSS' and \n'sudo pacman -S sox'"
 #                self.parent.displayMessage(message)
         return ("", "", {})
-
-    def getGttsFilename(self):
-        folder = os.path.join(config.musicFolder, "tmp")
-        if not os.path.isdir(folder):
-            os.makedirs(folder, exist_ok=True)
-        return os.path.join(folder, "gtts.mp3")
-
-    def saveGTTSAudio(self, inputText, languageCode):
-        try:
-            from gtts import gTTS
-            moduleInstalled = True
-        except:
-            moduleInstalled = False
-        if not moduleInstalled:
-            installmodule("--upgrade gTTS")
-
-        from gtts import gTTS
-        tts = gTTS(inputText, lang=languageCode)
-        tts.save(self.getGttsFilename())
-
-    def saveCloudTTSAudio(self, inputText, languageCode):
-        try:
-            from google.cloud import texttospeech
-            moduleInstalled = True
-        except:
-            moduleInstalled = False
-        if not moduleInstalled:
-            installmodule("--upgrade google-cloud-texttospeech")
-
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(os.getcwd(), "credentials_GoogleCloudTextToSpeech.json")
-
-        # Modified from ource: https://cloud.google.com/text-to-speech/docs/create-audio-text-client-libraries#client-libraries-install-python
-        """Synthesizes speech from the input string of text or ssml.
-        Make sure to be working in a virtual environment.
-
-        Note: ssml must be well-formed according to:
-            https://www.w3.org/TR/speech-synthesis/
-        """
-        from google.cloud import texttospeech
-
-        # Instantiates a client
-        client = texttospeech.TextToSpeechClient()
-
-        # Set the text input to be synthesized
-        synthesis_input = texttospeech.SynthesisInput(text=inputText)
-
-        # Build the voice request, select the language code (e.g. "yue-HK") and the ssml
-        # voice gender ("neutral")
-        voice = texttospeech.VoiceSelectionParams(
-            language_code=languageCode, ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
-        )
-
-        # Select the type of audio file you want returned
-        audio_config = texttospeech.AudioConfig(
-            audio_encoding=texttospeech.AudioEncoding.MP3,
-            # For more config, read https://cloud.google.com/text-to-speech/docs/reference/rest/v1/text/synthesize#audioconfig
-            speaking_rate=1,
-        )
-
-        # Perform the text-to-speech request on the text input with the selected
-        # voice parameters and audio file type
-        response = client.synthesize_speech(
-            input=synthesis_input, voice=voice, audio_config=audio_config
-        )
-
-        # The response's audio_content is binary.
-        # Save into mp3
-        with open(self.getGttsFilename(), "wb") as out:
-            # Write the response to the output file.
-            out.write(response.audio_content)
-            #print('Audio content written to file "{0}"'.format(outputFile))
 
     # speak:::
     # run text to speech feature
@@ -1355,7 +1388,8 @@ class TextCommandParser:
         return ("", "", {})
 
     def stopTtsAudio(self):
-        if (config.espeak or config.gTTS) and (self.cliTtsProcess is not None):
+        self.parent.closeMediaPlayer()
+        if config.espeak and (self.cliTtsProcess is not None):
             # The following two lines do not work:
             #self.cliTtsProcess.kill()
             #self.cliTtsProcess.terminate()
@@ -1434,7 +1468,10 @@ class TextCommandParser:
             else:
                 try:
                     os.system(r"cd {2}; {0} {1}".format(downloadCommand, youTubeLink, outputFolder))
-                    os.system(r"{0} {1}".format(config.open, outputFolder))
+                    if config.docker:
+                        WebtopUtil.openDir(dir)
+                    else:
+                        os.system(r"{0} {1}".format(config.open, outputFolder))
                 except:
                     self.parent.displayMessage(config.thisTranslation["noSupportedUrlFormat"], title="ERROR:")
         else:
@@ -1445,47 +1482,167 @@ class TextCommandParser:
             else:
                 webbrowser.open(wikiPage)
 
+    # READ:::
+    def textRead(self, command, source):
+        if command.count(":::") == 0:
+            updateViewConfig, viewText, *_ = self.getViewConfig(source)
+            command = "{0}:::{1}".format(viewText, command)
+        texts, references = self.splitCommand(command)
+        texts = list(set([FileUtil.getMP3TextFile(text) for text in self.getConfirmedTexts(texts)]))
+        verseList = self.extractAllVerses(references)
+        if verseList:
+            allPlayList = []
+            for verse in verseList:
+                for text in texts:
+                    everySingleVerseList = Bible(text).getEverySingleVerseList((verse,))
+                    playlist = []
+                    for b, c, v in everySingleVerseList:
+                        folder = os.path.join(config.audioFolder, "bibles", text, "default", "{0}_{1}".format(b, c))
+                        audioFile = os.path.join(folder, "{0}_{1}_{2}_{3}.mp3".format(text, b, c, v))
+                        if os.path.isfile(audioFile):
+                            playlist.append(audioFile)
+                    allPlayList += playlist
+            if config.enableHttpServer:
+                target = "study"
+                allPlayList = [(os.path.basename(fullpath), fullpath) for fullpath in allPlayList]
+                content = HtmlGeneratorUtil().getAudioPlayer(allPlayList)
+            else:
+                target = ""
+                content = ""
+                self.parent.playAudioBibleFilePlayList(allPlayList)
+            return (target, content, {})
+        else:
+            return self.invalidCommand()
+
     # READCHAPTER:::
     def readChapter(self, command, source):
         try:
+            content = ""
+            target = "study" if config.enableHttpServer else ""
             items = command.split(".")
             if len(items) == 3:
                 text, b, c = items
-                self.parent.playAudioBibleChapterVerseByVerse(text, b, c)
+                if config.enableHttpServer:
+                    playlist = self.parent.playAudioBibleChapterVerseByVerse(text, b, c)
+                    content = HtmlGeneratorUtil().getAudioPlayer(playlist)
+                else:
+                    self.parent.playAudioBibleChapterVerseByVerse(text, b, c)
             elif len(items) == 4:
                 text, b, c, startVerse = items
-                self.parent.playAudioBibleChapterVerseByVerse(text, b, c, int(startVerse))
-            return ("", "", {})
+                if config.enableHttpServer:
+                    playlist = self.parent.playAudioBibleChapterVerseByVerse(text, b, c, int(startVerse))
+                    content = HtmlGeneratorUtil().getAudioPlayer(playlist)
+                else:
+                    self.parent.playAudioBibleChapterVerseByVerse(text, b, c, int(startVerse))
+            return (target, content, {})
         except:
             return self.invalidCommand()
 
     # READVERSE:::
     def readVerse(self, command, source):
-        try:
-            text, b, c, v = command.split(".")
-            folder = os.path.join(config.audioFolder, "bibles", text, "default", "{0}_{1}".format(b, c))
-            audioFile = os.path.join(folder, "{0}_{1}_{2}_{3}.mp3".format(text, b, c, v))
-            if WebtopUtil.isPackageInstalled("vlc"):
-                os.system("pkill vlc")
-                WebtopUtil.runNohup(f"vlc {audioFile}")
-                return ("", "", {})
+        text, b, c, v = command.split(".")
+        folder = os.path.join(config.audioFolder, "bibles", text, "default", "{0}_{1}".format(b, c))
+        filename = "{0}_{1}_{2}_{3}.mp3".format(text, b, c, v)
+        audioFile = os.path.join(folder, filename)
+        if os.path.isfile(audioFile):
+            if config.enableHttpServer:
+                playlist = [(filename, audioFile)]
+                content = HtmlGeneratorUtil().getAudioPlayer(playlist)
+                return ("study", content, {})
             else:
-                self.openVlcPlayer(audioFile, "main")
-        except:
-            return self.invalidCommand()
+                try:
+                    player = "cvlc" if config.hideVlcInterfaceReadingSingleVerse else "vlc"
+                    if WebtopUtil.isPackageInstalled(player):
+                        os.system("pkill vlc")
+                        WebtopUtil.run(f"{player} {audioFile}")
+                        return ("", "", {})
+                    else:
+                        self.openVlcPlayer(audioFile, "main", (player == "vlc"))
+                except:
+                    return self.invalidCommand()
+        else:
+            return self.noAudio()
+
+    # READWORD:::
+    def readWord(self, command, source):
+        text, b, c, v, wordID = command.split(".")
+        folder = os.path.join(config.audioFolder, "bibles", text, "default", "{0}_{1}".format(b, c))
+        filename = "{0}_{1}_{2}_{3}_{4}.mp3".format(text, b, c, v, wordID)
+        audioFile = os.path.join(folder, filename)
+        if os.path.isfile(audioFile):
+            if config.enableHttpServer:
+                playlist = [(filename, audioFile)]
+                content = HtmlGeneratorUtil().getAudioPlayer(playlist)
+                return ("study", content, {})
+            else:
+                try:
+                    if WebtopUtil.isPackageInstalled("cvlc"):
+                        os.system("pkill vlc")
+                        WebtopUtil.run(f"cvlc {audioFile}")
+                        return ("", "", {})
+                    else:
+                        self.openVlcPlayer(audioFile, "main", False)
+                except:
+                    return self.invalidCommand()
+        else:
+            if text == "BHS5":
+                return self.noHebrewAudio()
+            if text == "OGNT":
+                return self.noGreekAudio()
+            else:
+                return self.noAudio()
+
+    # READLEXEME:::
+    def readLexeme(self, command, source):
+        text, b, c, v, wordID = command.split(".")
+        folder = os.path.join(config.audioFolder, "bibles", text, "default", "{0}_{1}".format(b, c))
+        filename = "lex_{0}_{1}_{2}_{3}_{4}.mp3".format(text, b, c, v, wordID)
+        audioFile = os.path.join(folder, filename)
+        if os.path.isfile(audioFile):
+            if config.enableHttpServer:
+                playlist = [(filename, audioFile)]
+                content = HtmlGeneratorUtil().getAudioPlayer(playlist)
+                return ("study", content, {})
+            else:
+                try:
+                    if WebtopUtil.isPackageInstalled("cvlc"):
+                        os.system("pkill vlc")
+                        WebtopUtil.run(f"cvlc {audioFile}")
+                        return ("", "", {})
+                    else:
+                        self.openVlcPlayer(audioFile, "main", False)
+                except:
+                    return self.invalidCommand()
+        else:
+            if text == "BHS5":
+                return self.noHebrewAudio()
+            if text == "OGNT":
+                return self.noGreekAudio()
+            else:
+                return self.noAudio()
 
     # VLC:::
-    def openVlcPlayer(self, command, source):
+    def openBuiltinPlayer(self, command, gui):
+        from gui.VlcPlayer import VlcPlayer
+        if self.parent.vlcPlayer is not None:
+            # Fix issue: https://github.com/eliranwong/UniqueBible/issues/947
+            #self.parent.vlcPlayer.stop()
+            #self.parent.vlcPlayer.loadAndPlayFile(filename)
+            self.parent.vlcPlayer.close()
+        self.parent.vlcPlayer = VlcPlayer(self.parent, command)
+        if gui:
+            self.parent.vlcPlayer.show()
+
+    def openVlcPlayer(self, command, source, gui=True):
         try:
-            if config.isVlcInstalled:
-                from gui.VlcPlayer import VlcPlayer
-                if self.parent.vlcPlayer is not None:
-                    # Fix issue: https://github.com/eliranwong/UniqueBible/issues/947
-                    #self.parent.vlcPlayer.stop()
-                    #self.parent.vlcPlayer.loadAndPlayFile(filename)
-                    self.parent.vlcPlayer.close()
-                self.parent.vlcPlayer = VlcPlayer(self, command)
-                self.parent.vlcPlayer.show()
+            if WebtopUtil.isPackageInstalled("vlc"):
+                vlcCmd = "vlc" if gui else "cvlc"
+                if '"' in command:
+                    self.openBuiltinPlayer(command, gui)
+                else:
+                    WebtopUtil.run('{0} "{1}"'.format(vlcCmd, command))
+            else:
+                self.openBuiltinPlayer(command, gui)
         except:
             WebtopUtil.openFile(command)
         return ("", "", {})
@@ -1602,7 +1759,10 @@ class TextCommandParser:
     # BIBLE:::
     def textBible(self, command, source):
         if command.count(":::") == 0:
-            updateViewConfig, viewText, *_ = self.getViewConfig(source)
+            if config.openBibleInMainViewOnly:
+                updateViewConfig, viewText, *_ = self.getViewConfig("main")
+            else:
+                updateViewConfig, viewText, *_ = self.getViewConfig(source)
             command = "{0}:::{1}".format(viewText, command)
         texts, references = self.splitCommand(command)
         texts = self.getConfirmedTexts(texts)
@@ -1647,13 +1807,147 @@ class TextCommandParser:
                 updateViewConfig, viewText, viewReference, *_ = self.getViewConfig(source)
                 return self.textBibleVerseParser(viewReference, texts[0], source)
 
+    # _chapters:::
+    def textChapters(self, command, source):
+        texts = self.getConfirmedTexts(command)
+        if not texts:
+            return self.invalidCommand()
+        else:
+            booksMap = {
+                "ENG": BibleBooks.eng,
+                "TC": BibleBooks.tc,
+                "SC": BibleBooks.sc,
+            }
+            books = booksMap.get(config.standardAbbreviation, BibleBooks.eng)
+
+            text = texts[0]
+            bible = Bible(text)
+            info = bible.bibleInfo()
+            bookList = bible.getBookList()
+            html = """<h2 style='text-align: center;'>{0} <button title='{1}' type='button' class='ubaButton' onclick='document.title="_menu:::"'><span class="material-icons-outlined">more_vert</span></button></h2>""".format(info, config.thisTranslation["menu_more"])
+            for bNo in bookList:
+                bkNoStr = str(bNo)
+                if bkNoStr in books:
+                    abb = books[bkNoStr][0]
+                    chapterList = bible.getChapterList(bNo)
+                    commandPrefix = f"_verses:::{text}:::{abb} "
+                    html += HtmlGeneratorUtil.getBibleChapterTable(books[bkNoStr][1], abb, chapterList, commandPrefix)
+            return (source, html, {})
+
+    # _verses:::
+    def textVerses(self, command, source):
+        if command.count(":::") == 0:
+            updateViewConfig, viewText, *_ = self.getViewConfig(source)
+            command = "{0}:::{1}".format(viewText, command)
+        texts, references = self.splitCommand(command)
+        texts = self.getConfirmedTexts(texts)
+        verseList = self.extractAllVerses(references)
+        if texts and verseList:
+            text = texts[0]
+            booksMap = {
+                "ENG": BibleBooks.eng,
+                "TC": BibleBooks.tc,
+                "SC": BibleBooks.sc,
+            }
+            books = booksMap.get(config.standardAbbreviation, BibleBooks.eng)
+            b, c, *_ = verseList[0]
+            abb = books[str(b)][0]
+            bible = Bible(text)
+            chapterVerseList = bible.getVerseList(b, c)
+            window = "STUDY" if source.lower() == "study" else "BIBLE"
+            commandPrefix = f"{window}:::{text}:::{abb} {c}:"
+            html = "<h2 style='text-align: center;'>{0}</h2>".format(text)
+            html += HtmlGeneratorUtil.getBibleVerseTable(books[str(b)][1], abb, c, chapterVerseList, commandPrefix)
+            return (source, html, {})
+        else:
+            return self.invalidCommand()
+
+    # _commentaries:::
+    def textCommentaries(self, command, source):
+        html = ""
+        for index, text in enumerate(self.parent.commentaryList):
+            fullName = self.parent.commentaryFullNameList[index]
+            html += """<p style='text-align: center;'><button title='{0}' type='button' class='ubaButton' onclick='document.title="_commentarychapters:::{0}"'>{1}</button></p>""".format(text, fullName)
+        return ("study", html, {})
+
+    # _commentarychapters:::
+    def textCommentaryChapters(self, command, source):
+        if not command in self.parent.commentaryList:
+            return self.invalidCommand()
+        else:
+            booksMap = {
+                "ENG": BibleBooks.eng,
+                "TC": BibleBooks.tc,
+                "SC": BibleBooks.sc,
+            }
+            books = booksMap.get(config.standardAbbreviation, BibleBooks.eng)
+
+            commentary = Commentary(command)
+            bookList = commentary.getBookList()
+            info = commentary.commentaryInfo()
+            if info == "https://Marvel.Bible Commentary" and command in Commentary.marvelCommentaries:
+                info = Commentary.marvelCommentaries[command]
+            #moreLink = """<p style='text-align: center;'>[ <ref onclick="window.parent.submitCommand('.library')">{0}</ref> ]</p>""".format(config.thisTranslation["change"]) if config.enableHttpServer else ""
+            html = """<h2 style='text-align: center;'>{0} <button title='{1}' type='button' class='ubaButton' onclick='document.title="_commentaries:::"'><span class="material-icons-outlined">more_vert</span></button></h2>""".format(info, config.thisTranslation["menu_more"])
+            for bNo in bookList:
+                bkNoStr = str(bNo)
+                if bkNoStr in books:
+                    abb = books[bkNoStr][0]
+                    chapterList = commentary.getChapterList(bNo)
+                    commandPrefix = f"_commentaryverses:::{command}:::{abb} "
+                    html += HtmlGeneratorUtil.getBibleChapterTable(books[bkNoStr][1], abb, chapterList, commandPrefix)
+            return ("study", html, {})
+
+    # _commentaryverses:::
+    def textCommentaryVerses(self, command, source):
+        if command.count(":::") == 0:
+            updateViewConfig, viewText, *_ = self.getViewConfig(source)
+            command = "{0}:::{1}".format(viewText, command)
+        text, references = self.splitCommand(command)
+        verseList = self.extractAllVerses(references)
+        if text in self.parent.commentaryList and verseList:
+            b, c, *_ = verseList[0]
+            if b > 0 and b <= 66:
+                booksMap = {
+                    "ENG": BibleBooks.eng,
+                    "TC": BibleBooks.tc,
+                    "SC": BibleBooks.sc,
+                }
+                books = booksMap.get(config.standardAbbreviation, BibleBooks.eng)
+                abb = books[str(b)][0]
+                bible = Bible("KJV")
+                chapterVerseList = bible.getVerseList(b, c)
+                commandPrefix = f"COMMENTARY:::{text}:::{abb} {c}:"
+                html = "<h2 style='text-align: center;'>{0}</h2>".format(text)
+                html += HtmlGeneratorUtil.getBibleVerseTable(books[str(b)][1], abb, c, chapterVerseList, commandPrefix)
+                return ("study", html, {})
+        else:
+            return self.invalidCommand()
+
     # MAIN:::
     def textMain(self, command, source):
         return self.textAnotherView(command, source, "main")
 
     # STUDY:::
     def textStudy(self, command, source):
+        if config.openBibleInMainViewOnly:
+            self.parent.enableStudyBibleButtonClicked()
         return self.textAnotherView(command, source, "study")
+
+    # STUDYTEXT:::
+    def textStudyText(self, command, source):
+        command = "{0}:::{1}".format(command, self.bcvToVerseReference(config.studyB, config.studyC, config.studyV))
+        return self.textStudy(command, "study")
+
+    # _copy:::
+    def copyText(self, command, source):
+        try:
+            from qtpy.QtWidgets import QApplication
+            QApplication.clipboard().setText(command)
+            self.parent.displayMessage(config.thisTranslation["copied"])
+        except:
+            return self.invalidCommand()
+        return ("", "", {})
 
     # TRANSLATE:::
     # Translate text using IBM Watson service
@@ -1780,7 +2074,6 @@ class TextCommandParser:
                 (fontFile, fontSize, css) = Bible(text).getFontInfo()
                 config.mainCssBibleFontStyle += css
             verses = biblesSqlite.compareVerse(verseList, confirmedTexts)
-            del biblesSqlite
             updateViewConfig, viewText, *_ = self.getViewConfig(source)
             if confirmedTexts == ["ALL"]:
                 updateViewConfig(viewText, verseList[-1])
@@ -1788,8 +2081,8 @@ class TextCommandParser:
                 updateViewConfig(confirmedTexts[0], verseList[-1])
             return ("main", verses, {})
 
-    # PARALLELVERSES:::
-    def textParallelVerses(self, command, source):
+    # SIDEBYSIDE:::
+    def textCompareSideBySide(self, command, source):
         if command.count(":::") == 0:
             return ("", "", {})
         else:
@@ -1806,7 +2099,6 @@ class TextCommandParser:
                 (fontFile, fontSize, css) = Bible(text).getFontInfo()
                 config.mainCssBibleFontStyle += css
             verses = biblesSqlite.parallelVerse(verseList, confirmedTexts)
-            del biblesSqlite
             updateViewConfig, viewText, *_ = self.getViewConfig(source)
             if confirmedTexts == ["ALL"]:
                 updateViewConfig(viewText, verseList[-1])
@@ -1829,7 +2121,6 @@ class TextCommandParser:
         else:
             biblesSqlite = BiblesSqlite()
             verses = biblesSqlite.diffVerse(verseList, confirmedTexts)
-            del biblesSqlite
             updateViewConfig, viewText, *_ = self.getViewConfig(source)
             if confirmedTexts == ["ALL"]:
                 updateViewConfig(viewText, verseList[-1])
@@ -1890,9 +2181,14 @@ class TextCommandParser:
                 bibleVerseParser = BibleVerseParser(config.parserStandarisation)
                 biblesSqlite = BiblesSqlite()
                 passages = bibleVerseParser.extractAllReferences(references)
-                tableList = [("<th><ref onclick='document.title=\"BIBLE:::{0}\"'>{0}</ref></th>".format(bibleVerseParser.bcvToVerseReference(*passage)), "<td style='vertical-align: text-top;'>{0}</td>".format(biblesSqlite.readMultipleVerses(text, [passage], displayRef=False))) for passage in passages]
-                versions, verses = zip(*tableList)
-                return ("study", "<table style='width:100%; table-layout:fixed;'><tr>{0}</tr><tr>{1}</tr></table>".format("".join(versions), "".join(verses)), {})
+                if passages:
+                    tableList = [("<th><ref onclick='document.title=\"BIBLE:::{0}\"'>{0}</ref></th>".format(bibleVerseParser.bcvToVerseReference(*passage)), "<td style='vertical-align: text-top;'>{0}</td>".format(biblesSqlite.readMultipleVerses(text, [passage], displayRef=False))) for passage in passages]
+                    versions, verses = zip(*tableList)
+                    b, c, v, *_ = passages[-1]
+                    updateViewConfig(text, (b, c, v))
+                    return (source, "<table style='width:100%; table-layout:fixed;'><tr>{0}</tr><tr>{1}</tr></table>".format("".join(versions), "".join(verses)), {})
+                else:
+                    return self.invalidCommand()
 
     # _harmony:::
     def textHarmony(self, command, source):
@@ -1915,7 +2211,6 @@ class TextCommandParser:
                 biblesSqlite = BiblesSqlite()
                 cs = CollectionsSqlite()
                 topic, passagesString = cs.readData("PARALLEL", references.split("."))
-                del cs
                 passages = bibleVerseParser.extractAllReferences(passagesString, tagged=True)
                 tableList = [("<th><ref onclick='document.title=\"BIBLE:::{0}\"'>{0}</ref></th>".format(bibleVerseParser.bcvToVerseReference(*passage)), "<td style='vertical-align: text-top;'>{0}</td>".format(biblesSqlite.readMultipleVerses(text, [passage], displayRef=False))) for passage in passages]
                 versions, verses = zip(*tableList)
@@ -1945,25 +2240,18 @@ class TextCommandParser:
                 biblesSqlite = BiblesSqlite()
                 cs = CollectionsSqlite()
                 topic, passagesString = cs.readData("PROMISES", references.split("."))
-                del cs
                 passages = bibleVerseParser.extractAllReferences(passagesString, tagged=True)
                 return ("study", "<h2>{0}</h2>{1}".format(topic, biblesSqlite.readMultipleVerses(text, passages)), {})
 
     # _biblenote:::
     def textBiblenote(self, command, source):
-        if source == "http":
-            source = "main"
-        texts = {
-            "main": config.mainText,
-            "study": config.studyText,
-        }
-        if source in texts:
-            bible = Bible(texts[source])
-            note = bible.readBiblenote(command)
-            del bible
+        text, references = self.splitCommand(command)
+        if text in self.getConfirmedTexts(text):
+            bible = Bible(text)
+            note = bible.readBiblenote(references)
             return ("study", note, {})
         else:
-            return ("", "", {})
+            return self.invalidCommand()
 
     # openbooknote:::
     def openBookNoteRef(self, command, source):
@@ -2220,7 +2508,6 @@ class TextCommandParser:
             wordID = commandList[1]
             wordID = re.sub('^[h0]+?([^h0])', r'\1', wordID, flags=re.M)
             info = morphologySqlite.instantWord(int(commandList[0]), int(wordID))
-            del morphologySqlite
             return ("instant", info, {})
         else:
             return ("", "", {})
@@ -2230,7 +2517,6 @@ class TextCommandParser:
         if self.getConfirmedTexts(command):
             biblesSqlite = BiblesSqlite()
             info = biblesSqlite.bibleInfo(command)
-            del biblesSqlite
             if info:
                 return ("instant", info, {})
             else:
@@ -2247,7 +2533,6 @@ class TextCommandParser:
             else:
                 commentarySqlite = Commentary(command)
                 info = commentarySqlite.commentaryInfo()
-                del commentarySqlite
                 if info:
                     return ("instant", info, {})
                 else:
@@ -2364,7 +2649,6 @@ class TextCommandParser:
         text, *_ = command.split(".")
         commentary = Commentary(text)
         commentaryMenu = commentary.getMenu(command)
-        del commentary
         return ("study", commentaryMenu, {})
 
     # _book:::
@@ -2372,7 +2656,6 @@ class TextCommandParser:
         bookData = BookData()
         bookMenu = bookData.getMenu(command)
         config.bookChapNum = 0
-        del bookData
         self.parent.updateBookButton()
         return ("study", bookMenu, {'tab_title':command[:20]})
 
@@ -2414,7 +2697,6 @@ class TextCommandParser:
         module, entry = self.splitCommand(command)
         imageSqlite = ImageSqlite()
         imageSqlite.exportImage(module, entry)
-        del imageSqlite
         if module == "EXLBL":
             imageFile = "htmlResources/images/exlbl/EXLBL_{0}".format(entry)
         else:
@@ -2444,7 +2726,6 @@ class TextCommandParser:
             content = commentary.getContent(bcvTuple)
             if not content == "INVALID_COMMAND_ENTERED":
                 self.setCommentaryVerse(module, bcvTuple)
-            del commentary
             return ("study", content, {'tab_title':'Com:' + module})
 
     # COMMENTARY2:::
@@ -2464,7 +2745,6 @@ class TextCommandParser:
                 content = commentary.getContent(bcvTuple)
                 if not content == "INVALID_COMMAND_ENTERED":
                     self.setCommentaryVerse(module, bcvTuple)
-                del commentary
                 return ("study", content, {})
         else:
             return self.invalidCommand()
@@ -2493,9 +2773,7 @@ class TextCommandParser:
                 searchSqlite = SearchSqlite()
                 exactMatch = searchSqlite.getContent(module, entry)
                 similarMatch = searchSqlite.getSimilarContent(module, entry)
-                del searchSqlite
                 content += "<h2>Search <span style='color: brown;'>{0}</span> for <span style='color: brown;'>{1}</span></h2><p>{4}</p><p><b>Exact match:</b><br><br>{2}</p><p><b>Partial match:</b><br><br>{3}".format(module, entry, exactMatch, similarMatch, selectList)
-        del indexes
         if len(content) > 0:
             return ("study", content, {'tab_title': 'Search:' + origModule + ':' + entry})
         else:
@@ -2522,7 +2800,6 @@ class TextCommandParser:
         else:
             biblesSqlite = BiblesSqlite()
             searchResult = "<hr>".join([biblesSqlite.countSearchBible(text, searchEntry, interlinear, booksRange) for text in texts])
-            del biblesSqlite
             return ("study", searchResult, {})
 
     # SEARCHALL:::
@@ -2593,7 +2870,6 @@ class TextCommandParser:
         else:
             biblesSqlite = BiblesSqlite()
             searchResult = "<hr>".join([biblesSqlite.searchBible(text, mode, searchEntry, favouriteVersion, referenceOnly, booksRange) for text in texts])
-            del biblesSqlite
             return ("study", searchResult, {})
 
     # SEARCHHIGHLIGHT:::
@@ -2617,7 +2893,6 @@ class TextCommandParser:
         bNo = int(book)
         morphologySqlite = MorphologySqlite()
         bcvTuple, content = morphologySqlite.wordData(bNo, int(wordId))
-        del morphologySqlite
 
         # extra data for Greek words
         if bNo >= 40:
@@ -2682,7 +2957,6 @@ class TextCommandParser:
                 content += "<hr>".join([lexicon.getReverseContent(entry) for entry in entryList])
             else:
                 content += "<hr>".join([lexicon.getContent(entry, showLexiconMenu) for entry in entryList])
-            del lexicon
         if not content or content == "INVALID_COMMAND_ENTERED":
             return self.invalidCommand()
         else:
@@ -2706,7 +2980,6 @@ class TextCommandParser:
             config.lexicon = module
             lexicon = Lexicon(module)
             content += lexicon.searchTopic(search)
-            del lexicon
         if not content or content == "INVALID_COMMAND_ENTERED":
             return self.invalidCommand()
         else:
@@ -2727,10 +3000,8 @@ class TextCommandParser:
     def getLexiconMorphologyContent(self, lexicon, lexicalEntry, morphologyModule, morphologyCode):
         lexicon = Lexicon(lexicon)
         lexiconContent = "<hr>".join([lexicon.getContent(entry) for entry in lexicalEntry.split("_")])
-        del lexicon
         searchSqlite = SearchSqlite()
         morphologyDescription = "<hr>".join([searchSqlite.getContent("m"+morphologyModule.upper(), code) for code in morphologyCode.split("_")])
-        del searchSqlite
         return ("study", "{0}<hr>{1}".format(morphologyDescription, lexiconContent), {})
 
     # _wordnote:::
@@ -2739,7 +3010,6 @@ class TextCommandParser:
             module, wordID = self.splitCommand(command)
             bibleSqlite = Bible(module)
             data = bibleSqlite.readWordNote(wordID)
-            del bibleSqlite
             if data:
                 return ("study", data, {})
             else:
@@ -2775,7 +3045,6 @@ class TextCommandParser:
     def textMorphologyFeature(self, command, source, mode):
         morphologySqlite = MorphologySqlite()
         searchResult = morphologySqlite.searchMorphology(mode, command)
-        del morphologySqlite
         return ("study", searchResult, {})
 
     # _searchword:::
@@ -2874,7 +3143,6 @@ class TextCommandParser:
                     config.topic = "EXLBT"
                 exlbData = ExlbData()
                 content = exlbData.getContent(commandList[0], commandList[1])
-                del exlbData
                 if config.theme in ("dark", "night"):
                     content = self.adjustDarkThemeColorsForExl(content)
                 return ("study", content, {})
@@ -2894,7 +3162,6 @@ class TextCommandParser:
             else:
                 testament = "NT"
             content = "<h2>Clause id: c{0}</h2>{1}".format(entry, clauseData.getContent(testament, entry))
-            del clauseData
             self.setStudyVerse(config.studyText, (b, c, v))
             return ("study", content, {})
         else:
@@ -2904,14 +3171,12 @@ class TextCommandParser:
     def textDictionary(self, command, source):
         indexes = IndexesSqlite()
         dictionaryList = dict(indexes.dictionaryList).keys()
-        del indexes
         module = command[:3]
         if module in dictionaryList:
             if not module == "HBN":
                 config.dictionary = module
             dictionaryData = DictionaryData()
             content = dictionaryData.getContent(command)
-            del dictionaryData
             return ("study", content, {})
         else:
             return self.invalidCommand("study")
@@ -2923,12 +3188,10 @@ class TextCommandParser:
             module, entry = commandList
             indexes = IndexesSqlite()
             encyclopediaList = dict(indexes.encyclopediaList).keys()
-            del indexes
             if module in encyclopediaList:
                 config.encyclopedia = module
                 encyclopediaData = EncyclopediaData()
                 content = encyclopediaData.getContent(module, entry)
-                del encyclopediaData
                 return ("study", content, {})
             else:
                 return self.invalidCommand("study")
@@ -2957,7 +3220,6 @@ class TextCommandParser:
             pdfFilename = None
             if isPDF:
                 pdfFilename = entry
-            del bookData
             if not content:
                 return self.invalidCommand("study")
             else:
@@ -2994,7 +3256,6 @@ class TextCommandParser:
             config.bookSearchString = searchString
             modules = modules.split(",")
             content = "<hr>".join([bookData.getSearchedMenu(module, searchString, chapterOnly=chapterOnly) for module in modules])
-            del bookData
             if not content:
                 return ("study", config.thisTranslation["search_notFound"], {})
                 #return self.invalidCommand("study")
@@ -3016,7 +3277,6 @@ class TextCommandParser:
             config.noteSearchString = command
             noteSqlite = NoteSqlite()
             books = noteSqlite.getSearchedBookList(command)
-            del noteSqlite
             return ("study", "<p>\"<b style='color: brown;'>{0}</b>\" is found in <b style='color: brown;'>{1}</b> note(s) on book(s)</p><p>{2}</p>".format(command, len(books), "; ".join(books)), {})
 
     # SEARCHCHAPTERNOTE:::
@@ -3027,7 +3287,6 @@ class TextCommandParser:
             config.noteSearchString = command
             noteSqlite = NoteSqlite()
             chapters = noteSqlite.getSearchedChapterList(command)
-            del noteSqlite
             return ("study", "<p>\"<b style='color: brown;'>{0}</b>\" is found in <b style='color: brown;'>{1}</b> note(s) on chapter(s)</p><p>{2}</p>".format(command, len(chapters), "; ".join(chapters)), {})
 
     # SEARCHVERSENOTE:::
@@ -3038,7 +3297,6 @@ class TextCommandParser:
             config.noteSearchString = command
             noteSqlite = NoteSqlite()
             verses = noteSqlite.getSearchedVerseList(command)
-            del noteSqlite
             return ("study", "<p>\"<b style='color: brown;'>{0}</b>\" is found in <b style='color: brown;'>{1}</b> note(s) on verse(s)</p><p>{2}</p>".format(command, len(verses), "; ".join(verses)), {})
 
     # CROSSREFERENCE:::
@@ -3068,8 +3326,6 @@ class TextCommandParser:
                     crossReferenceList.insert(0, tuple(verse))
                     content += biblesSqlite.readMultipleVerses(config.mainText, crossReferenceList)
                 content += "<hr>"
-        del crossReferenceSqlite
-        del biblesSqlite
         self.setStudyVerse(config.studyText, verseList[-1])
         return ("study", content, {})
 
@@ -3093,8 +3349,6 @@ class TextCommandParser:
                     crossReferenceList.insert(0, tuple(verse))
                     content += biblesSqlite.readMultipleVerses(config.mainText, crossReferenceList)
                 content += "<hr>"
-            del crossReferenceSqlite
-            del biblesSqlite
             self.setStudyVerse(config.studyText, verseList[-1])
             return ("study", content, {})
 
@@ -3123,9 +3377,23 @@ class TextCommandParser:
             biblesSqlite = BiblesSqlite()
             verseData = VerseData(filename)
             feature = "{0}{1}".format(filename[0].upper(), filename[1:])
-            content = "<hr>".join(["<h2>{0}: <ref onclick='document.title=\"{1}\"'>{1}</ref></h2>{2}".format(feature, biblesSqlite.bcvToVerseReference(b, c, v), verseData.getContent((b, c, v))) for b, c, v in verseList])
-            del verseData
-            del biblesSqlite
+            #content = "<hr>".join(["<h2>{0}: <ref onclick='document.title=\"{1}\"'>{1}</ref></h2>{2}".format(feature, biblesSqlite.bcvToVerseReference(b, c, v), verseData.getContent((b, c, v))) for b, c, v in verseList])
+            contentList = []
+            for b, c, v in verseList:
+                subContent = "<h2>{0}: <ref onclick='document.title=\"{1}\"'>{1}</ref></h2>{2}".format(feature, biblesSqlite.bcvToVerseReference(b, c, v), verseData.getContent((b, c, v)))
+                if filename == "discourse":
+                    subContent = re.sub("(<pm>|</pm>|<n>|</n>)", "", subContent)
+                if b < 40:
+                    subContent = re.sub("""(<heb id="wh)([0-9]+?)("[^<>]*?>[^<>]+?</heb>[ ]*)""", r"""\1\2\3 <ref onclick="document.title='READWORD:::BHS5.{0}.{1}.{2}.\2'">{3}</ref>""".format(b, c, v, config.audioBibleIcon), subContent)
+                else:
+                    subContent = re.sub("""(<grk id="w[0]*?)([1-9]+[0-9]*?)("[^<>]*?>[^<>]+?</grk>[ ]*)""", r"""\1\2\3 <ref onclick="document.title='READWORD:::OGNT.{0}.{1}.{2}.\2'">{3}</ref>""".format(b, c, v, config.audioBibleIcon), subContent)
+                if filename == "words":
+                    if b < 40:
+                        subContent = re.sub("""(<ref onclick="document.title=')READWORD(.*?)(<tlit>[^<>]*?</tlit><br><hlr><heb>[^<>]+?</heb>)""", r"\1READWORD\2\3 \1READLEXEME\2", subContent)
+                    else:
+                        subContent = re.sub("""(<ref onclick="document.title=')READWORD(.*?)(<tlit>[^<>]*?</tlit><br><hlr><grk>[^<>]+?</grk>)""", r"\1READWORD\2\3 \1READLEXEME\2", subContent)
+                contentList.append(subContent)
+            content = "<hr>".join(contentList)
             self.setStudyVerse(config.studyText, verseList[-1])
             return content
 
@@ -3141,8 +3409,6 @@ class TextCommandParser:
             for verse in verseList:
                 b, c, v = verse
                 content += "<h2>{0} - <ref onclick='document.title=\"{1}\"'>{1}</ref></h2>{2}<hr>".format(config.thisTranslation["menu4_indexes"], parser.bcvToVerseReference(b, c, v), indexesSqlite.getAllIndexes(verse))
-            del indexesSqlite
-            del parser
             self.setStudyVerse(config.studyText, verseList[-1])
             return ("study", content, {})
 
@@ -3158,8 +3424,6 @@ class TextCommandParser:
             for verse in verseList:
                 b, c, v = verse
                 content += "<h2>Indexes: <ref onclick='document.title=\"{0}\"'>{0}</ref></h2>{1}<hr>".format(parser.bcvToVerseReference(b, c, v, isChapter=True), indexesSqlite.getChapterIndexes(verse[:2]))
-            del indexesSqlite
-            del parser
             self.setStudyVerse(config.studyText, verseList[-1])
             return ("study", content, {})
 
@@ -3180,7 +3444,6 @@ class TextCommandParser:
             if entry and module:
                 thirdPartyDictionary = ThirdPartyDictionary(module)
                 content += thirdPartyDictionary.search(entry, showMenu)
-                del thirdPartyDictionary
         if len(content) > 0:
             return ("study", content, {})
         else:
@@ -3197,7 +3460,6 @@ class TextCommandParser:
         else:
             thirdPartyDictionary = ThirdPartyDictionary(module)
             content = thirdPartyDictionary.getData(entry)
-            del thirdPartyDictionary
             return ("study", content, {})
 
     # _HIGHLIGHT:::
@@ -3369,7 +3631,7 @@ class TextCommandParser:
         else:
             return ("", "", {})
 
-    # FIXLINKSINCOMMENTARY:::
+    # _fixlinksincommentary:::
     def fixLinksInCommentary(self, command, source):
         commentary = Commentary(command)
         if commentary.connection is None:
@@ -3377,6 +3639,7 @@ class TextCommandParser:
         else:
             commentary.fixLinksInCommentary()
             self.parent.displayMessage(config.thisTranslation["message_done"])
+        return ("", "", {})
 
     # DEVOTIONAL:::
     def openDevotional(self, command, source):

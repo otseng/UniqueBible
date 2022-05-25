@@ -79,7 +79,7 @@ class ConfigFlagsWindow(QDialog):
             ("regexSearchBibleIfCommandNotFound", config.regexSearchBibleIfCommandNotFound, self.regexSearchBibleIfCommandNotFoundChanged, False, config.thisTranslation["regexSearchBibleIfCommandNotFound"]),
             ("preferHtmlMenu", config.preferHtmlMenu, self.preferHtmlMenuChanged, False, config.thisTranslation["preferHtmlMenu"]),
             ("showVerseNumbersInRange", config.showVerseNumbersInRange, self.showVerseNumbersInRangeChanged, True, config.thisTranslation["showVerseNumbersInRange"]),
-            ("addFavouriteToMultiRef", config.addFavouriteToMultiRef, self.addFavouriteToMultiRefChanged, False, config.thisTranslation["addFavouriteToMultiRef"]),
+            ("addFavouriteToMultiRef", config.addFavouriteToMultiRef, self.addFavouriteToMultiRefChanged, True, config.thisTranslation["addFavouriteToMultiRef"]),
             ("enableVerseHighlighting", config.enableVerseHighlighting, self.enableVerseHighlightingChanged, True, config.thisTranslation["enableVerseHighlighting"]),
             ("regexCaseSensitive", config.regexCaseSensitive, self.regexCaseSensitiveChanged, False, config.thisTranslation["regexCaseSensitive"]),
             ("alwaysDisplayStaticMaps", config.alwaysDisplayStaticMaps, self.alwaysDisplayStaticMapsChanged, False, config.thisTranslation["alwaysDisplayStaticMaps"]),
@@ -88,6 +88,8 @@ class ConfigFlagsWindow(QDialog):
             ("showUserNoteIndicator", config.showUserNoteIndicator, self.parent.toggleShowUserNoteIndicator, True, config.thisTranslation["displayUserNoteIndicator"]),
             ("showBibleNoteIndicator", config.showBibleNoteIndicator, self.parent.toggleShowBibleNoteIndicator, True, config.thisTranslation["displayBibleNoteIndicator"]),
             ("showVerseReference", config.showVerseReference, self.parent.toggleShowVerseReference, True, config.thisTranslation["displayVerseReference"]),
+            ("showHebrewGreekWordAudioLinks", config.showHebrewGreekWordAudioLinks, self.parent.toggleShowHebrewGreekWordAudioLinks, False, config.thisTranslation["showHebrewGreekWordAudioLinks"]),
+            ("showHebrewGreekWordAudioLinksInMIB", config.showHebrewGreekWordAudioLinksInMIB, self.parent.toggleShowHebrewGreekWordAudioLinksInMIB, False, config.thisTranslation["showHebrewGreekWordAudioLinksInMIB"]),
             ("hideLexicalEntryInBible", config.hideLexicalEntryInBible, self.parent.toggleHideLexicalEntryInBible, False, config.thisTranslation["displayLexicalEntry"]),
             ("openBibleNoteAfterSave", config.openBibleNoteAfterSave, self.openBibleNoteAfterSaveChanged, False, config.thisTranslation["openBibleNoteAfterSave"]),
             ("openBibleNoteAfterEditorClosed", config.openBibleNoteAfterEditorClosed, self.openBibleNoteAfterEditorClosedChanged, False, config.thisTranslation["openBibleNoteAfterEditorClosed"]),
@@ -120,8 +122,9 @@ class ConfigFlagsWindow(QDialog):
             ("disableLoadLastOpenFilesOnStartup", config.disableLoadLastOpenFilesOnStartup, self.disableLoadLastOpenFilesOnStartupChanged, False, config.thisTranslation["disableLoadLastOpenFilesOnStartup"]),
             ("disableOpenPopupWindowOnStartup", config.disableOpenPopupWindowOnStartup, self.disableOpenPopupWindowOnStartupChanged, True, config.thisTranslation["disableOpenPopupWindowOnStartup"]),
             ("showMiniKeyboardInMiniControl", config.showMiniKeyboardInMiniControl, self.showMiniKeyboardInMiniControlChanged, False, config.thisTranslation["showMiniKeyboardInMiniControl"]),
+            ("hideVlcInterfaceReadingSingleVerse", config.hideVlcInterfaceReadingSingleVerse, self.hideVlcInterfaceReadingSingleVerseChanged, True, config.thisTranslation["hideVlcInterfaceReadingSingleVerse"]),
         ]
-        if config.isTtsInstalled:
+        if config.isOfflineTtsInstalled:
             options += [
                 ("useLangDetectOnTts", config.useLangDetectOnTts, self.useLangDetectOnTtsChanged, False, config.thisTranslation["useLangDetectOnTts"]),
                 ("ttsEnglishAlwaysUS", config.ttsEnglishAlwaysUS, self.ttsEnglishAlwaysUSChanged, False, config.thisTranslation["ttsEnglishAlwaysUS"]),
@@ -129,16 +132,16 @@ class ConfigFlagsWindow(QDialog):
                 ("ttsChineseAlwaysMandarin", config.ttsChineseAlwaysMandarin, self.ttsChineseAlwaysMandarinChanged, False, config.thisTranslation["ttsChineseAlwaysMandarin"]),
                 ("ttsChineseAlwaysCantonese", config.ttsChineseAlwaysCantonese, self.ttsChineseAlwaysCantoneseChanged, False, config.thisTranslation["ttsChineseAlwaysCantonese"]),
             ]
+        if config.isOnlineTtsInstalled:
+            options += [
+                ("forceOnlineTts", config.forceOnlineTts, self.forceOnlineTtsChanged, False, config.thisTranslation["forceOnlineTts"]),
+            ]
         if platform.system() == "Linux":
             options += [
                 ("linuxStartFullScreen", config.linuxStartFullScreen, self.linuxStartFullScreenChanged, False, config.thisTranslation["linuxStartFullScreen"]),
                 ("fcitx", config.fcitx, self.fcitxChanged, False, config.thisTranslation["fcitx"]),
                 ("ibus", config.ibus, self.ibusChanged, False, config.thisTranslation["ibus"]),
                 ("espeak", config.espeak, self.espeakChanged, False, config.thisTranslation["espeak"]),
-            ]
-        if not platform.system() == "Windows":
-            options += [
-                ("gTTS", config.gTTS, self.gTTSChanged, False, config.thisTranslation["gTTS"]),
             ]
         if config.developer:
             options += [
@@ -406,6 +409,9 @@ class ConfigFlagsWindow(QDialog):
         else:
             config.parserStandarisation = "YES"
 
+    def hideVlcInterfaceReadingSingleVerseChanged(self):
+        config.hideVlcInterfaceReadingSingleVerse = not config.hideVlcInterfaceReadingSingleVerse
+
     def startFullScreenChanged(self):
         config.startFullScreen = not config.startFullScreen
         self.handleRestart()
@@ -418,8 +424,8 @@ class ConfigFlagsWindow(QDialog):
         config.espeak = not config.espeak
         self.handleRestart()
 
-    def gTTSChanged(self):
-        config.gTTS = not config.gTTS
+    def forceOnlineTtsChanged(self):
+        config.forceOnlineTts = not config.forceOnlineTts
         self.handleRestart()
 
     def enableLoggingChanged(self):
@@ -445,7 +451,7 @@ class ConfigFlagsWindow(QDialog):
 
     def enablePluginsChanged(self):
         config.enablePlugins = not config.enablePlugins
-        self.parent.setMenuLayout(config.menuLayout)
+        self.parent.setupMenuLayout(config.menuLayout)
 
     def clearCommandEntryChanged(self):
         config.clearCommandEntry = not config.clearCommandEntry
@@ -475,7 +481,7 @@ class ConfigFlagsWindow(QDialog):
             config.menuUnderline = "&"
         else:
             config.menuUnderline = ""
-        self.parent.setMenuLayout(config.menuLayout)
+        self.parent.setupMenuLayout(config.menuLayout)
 
     def includeStrictDocTypeInNoteChanged(self):
         config.includeStrictDocTypeInNote = not config.includeStrictDocTypeInNote

@@ -1,3 +1,691 @@
+Changes in 30.03:
+* Added support of Markdown:
+1) Open markdown file and display on Study Window
+2) Save Bible Window / Study Window content in a markdown file
+3) Added "Convert from Markdown" feature in Note Editor
+
+Changes in 30.02:
+* Fixed a few colours.
+
+Changes in 30.01:
+* Added a wiki link to context menu.
+
+Changes in 30.00:
+* Added "Save File" items in Material menu layout menu.
+* Simplified "Compare Reference ..." features on context menu.
+    When these features are triggered, the following bible versions are used for comparison:
+    - for Material menu layout users, versions selected in "Multiple Bible Version Selection" drop down menu are used.
+    - for other menu layout users, favourite bibles defined in config.py are used. 
+
+Changes in 29.99:
+* Improved Material menu layouts
+    - display "tick" signs to show the currently selected values in preferences and bible toggle menu items, where applicable.
+    - changed some preference settings to be selectable directly from menu.
+* Re-organised and improved context menu.
+* Now display context menu shortcuts on context menu item, where applicable.
+
+Changes in 29.98:
+* Improved Material menu layout:
+    - improved item description
+    - added instant hightlight shortcut
+    - add subheading option is displayed only in plain text mode
+
+Changes in 29.97:
+* Added an "Instant Highlight" button, right next to command entry field on material menu layout.
+    - With this button, users can toggle instant highlight on both Bible Window and Study Window of text entered in command field.
+    - For example, try to enter "a" in command field, toggle the button and see the changes.
+
+Changes in 29.96:
+* Support instant highlight on both Bible Window and Study Window, via context menu.
+* If no text is selection, a text dialog will come up to ask for an entry.
+* Removed three "Find Text ..." context plugins.
+
+Changes in 29.95:
+* Fixed installing wps-office for webtop users.
+
+Changes in 29.94:
+* Display ip address on information dialog.
+
+Changes in 29.93:
+* Apply colour customisation on verse number display.
+
+Changes in 29.92:
+* Adjusted text colour in sample.color.
+
+Changes in 29.91:
+* Adjusted original bibles colour display on dark theme.
+
+Changes in 29.90:
+* Changes in configuration settings:
+    - Added "lightThemeTextColor" for users to customise text colour in Light theme.
+    - Added "darkThemeTextColor" for users to customise text colour in Dark theme.
+    - Renamed "activeVerseColorLight" to "lightThemeActiveVerseColor"
+    - Renamed "activeVerseColorDark" to "darkThemeActiveVerseColor"
+    Remarks: Renaming of the two labels above affects users who previously define "activeVerseColorLight" or "activeVerseColorDark".
+                They may need to re-customise the colours.
+* Colour customisation dialog now supports customisation of "lightThemeTextColor" and "darkThemeTextColor".
+* Colour customisation file now includes theme data.
+* Undated the colour customisation sample file "sample.color".
+* Added a colour customisation sample file "sample_eliran.color".
+
+Changes in 29.88, 89:
+* Fixed Material Colour dialog - apply colour change immediately without a restart.
+
+Changes in 29.87:
+* Added support for Windows users to use GTTS::: command.
+* Added "Select Default Text-to-speech Voice" menu item in Material menu layout.
+* Now update context menu about default tts voice automatically.
+* Improved handling text-to-speech engine detection.
+* Changing text-to-speech voice in Master Control Miscellaneous tab no longer changes Default Text-to-speech Voice.
+    - Use menu item to change the Default Text-to-speech Voice.
+
+Changes in 29.86:
+* Added "Reload Resources" button on Master Control.
+* Added "Open All" buttons to Master Control Media tab.
+* Added support of Goggle Cloud text-to-speech feature in Master Control Miscellaneous tab, mini Control, Note Editor.
+* Added support of changing speed for Goggle Cloud text-to-speech feature.
+* Master Control Library tab now shows both abbreviations and full names of commentaries.
+* Master Control Miscellaneous tab "Stop" button now closes media player if one is opened.
+* Removed config.gTTSDefaultLanguage.
+
+Changes in 29.85:
+* Added tooltips to all ListView in Master Control.
+* Added hover styles to ListView.
+* Fixed keyboard shortcut to navigate to Media tab when Master Control is opened.
+* Improved handling of bible link:
+    - When secondary bible on Study Window is not enabled, bible links opened the bible version currently selected on Main Window.
+
+Changes in 29.84:
+* Improved Study Window tabs' tooltips.
+* Changed a toolbar button to open Master Control media tab, instead of media player.
+    - This skips a step for users who want to open a media file.
+    - Users can still use menu item or shortcut to open media player directly.
+* Fixed opening media file with filename containing "'".
+
+Changes in 29.83:
+* Added context plugin "English Dictionaries" with a shortcut "Ctrl+Shift+D.
+* Added menu items and shortcuts to launch and stop media player.
+* Added support of using full vlc with Master Control Media tab.
+* Added wordnet third party dictionary.
+* Fixed and improved VLC::: command.
+
+Changes in 29.82:
+* Removed a built-in shortcut in Micron set.
+
+Changes in 29.81:
+* Shorten main window tab title.
+
+Changes in 29.80:
+* Improved updating main reference button.
+* Fixed the issue that chapter and verse menu are opened in new tabs.
+
+Changes in 29.79:
+* Added config.favouriteOriginalBible2 for users to configure secondary favourite Hebrew and Greek bible.
+* Added a gui dialog to configure config.favouriteOriginalBible2.
+* Added menu items and shortcuts to launch secondary favourite bible directly.
+
+Changes in 29.78:
+* Added a configuration item config.favouriteOriginalBible for users to users to specify their most favourite Marvel Bible.
+    - Default is 'MIB'.
+* Added menu items for users to select and open "Favourite Hebrew & Greek Bible"
+* Added "Micron" shortcuts "Ctrl+7" and "Ctrl+8" to open users favourite Hebrew & Greek bible directly.
+* Changed the previous Open Marvel Interlinear Bible on Study Window icon.
+* The previous Open Marvel Interlinear Bible on Study Window button now opens the bible version, defined in config.favouriteOriginalBible.
+* Removed Morphology tab for now, as it does not reflect morphology items UBA use.  We may fix it.
+    Meanwhile, sers can search morphology with commands or by double-clicking a word in marvel bibles.
+* Display media player tab on Master Control menu only if config.isVlcInstalled is True.
+* Fixed context menu shortcuts to support customised shortcuts.
+
+Changes in 29.77:
+* Improved switching between single chapter and comparison view.  
+    - BIBLE::: command switches back to single chapter view if text specified in BIBLE::: command is not in the texts in previous comparison view.
+* Fixed side by side comparison to work with config.enforceCompareParallel.
+* Fixed context menu shortcuts which failed startup for users who use customised shortcuts.
+
+Changes in 29.76:
+* Micron shortcuts:
+    - Assign "Ctrl+1", "Ctrl+2", "Ctrl+3" to open favourite bibles 1, 2, 3 in main bible window.
+    - Assign "Ctrl+4", "Ctrl+5", "Ctrl+6" to open favourite bibles 1, 2, 3 in main bible window.
+
+Changes in 29.75:
+* Fixed "sample.color".
+
+Changes in 29.74:
+* Added "STUDYTEXT:::" command to open bible text on Study view quickly.
+* Integrate config.favouriteBible, config.favouriteBible2 and config.favouriteBible3 in Master Control "Bible" and "Search" tabs:
+    - Users can now open or favourtie bibles directly.
+    - Remarks: Users can define config.favouriteBible, config.favouriteBible2 and config.favouriteBible3 via menu UniqueBible > Other Preferences.
+* Added favourite bibles into Material menu layout "Bible" menu.
+* Shorten the commad "COMPARESIDEBYSIDE:::" to "SIDEBYSIDE:::".
+
+Changes in 29.73:
+* Removed a print command.
+
+Changes in 29.72:
+* Added shortcut support of context menu built-in features.
+* Micron shorcuts:
+    - Added two shortcuts for context menu:
+        "Ctrl+Shift+S" for searching the bible currently selected in the main bible window.
+        "Ctrl+Shift+T" for launching text-to-speech feature to read with default language.
+    - Changed "Swap Bibles" shortcut to "Ctrl+Shift+W
+
+Changes in 29.71:
+* Renamed config names "activeVerseColourLight" and "activeVerseColourLight" to "activeVerseColorLight" and "activeVerseColorDark".
+* Make Colour Customisation Dialog config button labels more readable.
+* Added a sample set of colours, defined by a 10-year-old kid.
+
+Changes in 29.70:
+* Fixed speaking default English with Google cloud text-to-speech service.
+
+Changes in 29.69:
+* Fixed updating main text when a tab is changed in the main bible window.
+
+Changes in 29.68:
+* Update main text and reference button when a tab is changed in the main bible window.
+* Improved display of PASSAGES::: command content.
+
+Changes in 29.67:
+* Fixed updating label colours in Colour Customisation diaolog after selection of new colours.
+
+Changes in 29.65, 29.66:
+* Fixed reload current records, when config.openBibleInMainViewOnly is toggled.
+
+Changes in 29.64:
+* Fixed opening bible link with bible version selected on the main window when config.openBibleInMainViewOnly is set to True.
+* Added a Micron shortcut to show / all all toolbars, as escape key in webtop fullscreen mode exits the fullscreen.
+
+Changes in 29.63:
+* Apply colour customisation to standard html hyperlinks.
+
+Changes in 29.62:
+* Allow users to configure private page in config.webUBAServer.
+
+Changes in 29.60, 61:
+* Added "Swap" bibles feature and shortcut support to material menu layout.
+* Micron shortcuts:
+    - Changed the shortcut to open Master Control Morpholo"G"y tab to "Ctrl+Shift+G"
+    - Added "Ctrl+Shift+S" to "S"wap bible versions between Main and Study windows.
+* Changed two item translation description.
+
+Changes in 29.58, 59:
+* Added a bible toggle feature "Insert Favourite Version in Fetching Verses" on material menu layout menu.
+    - It toggles configuration flag "config.addFavouriteToMultiRef" and refresh current display.
+    - For example, enter "John 3:16-18; Deu 6:4" in search command field and press enter,
+        or opens a cross-reference result,
+        then toggle this feature to see the difference.
+    - The bible version being inserted is determined by config.favouriteBible and config.config.favouriteBible2
+        If the currently selection bible version is different from the version specified in config.favouriteBible, verses of the config.favouriteBible version are inserted.
+        If the currently selection bible version is the same as the version specified in config.favouriteBible, verses of the config.favouriteBible2 version are inserted.
+        On material menu layout, users can specify their favorite versions of config.favouriteBible and config.favouriteBible2 via menu:
+            UniqueBible > Other Preferences > Select Favourite Bible & Select Favourite Bible 2
+* Added shortcut support for toggling "Insert Favourite Version in Fetching Verses".
+    - Micron uses "Ctrl+Shift+I" to toggle this feature by default.
+* Fixed an issue of verse reference display.
+
+Changes in 29.57:
+* Add import, export to Bible collection
+* Use .filter extension for Live filter import, export
+* Add shortcut to Bible collection in Material layout
+
+Changes in 29.56:
+* Add clear and export buttons to Live Filter
+
+Changes in 29.55:
+* Added "Save as" and "Load my settings" buttons to Material colour customisation dialog.  
+    Users can use them to save or load a copy of their customised settings.
+
+Changes in 29.54:
+* Fixed updating the colour label of textSelectionColor displayed on Material menu layout colour customisation dialog.
+
+Changes in 29.53:
+* Enhanced search result display:
+    - add audio buttons to search result.
+    - now works better when config.addFavouriteToMultiRef is set to True.
+        Previously, there was no secondary version displayed when main text is the same as favourite text.
+        Search result now display config.favouriteBible2 if config.favouriteBible is the same os the text being searched.
+
+Changes in 29.52:
+* Added config.textSelectionColor for users to specify text selection colour on material menu layout.
+* Added textSelectionColor option in colour customisation dialog, available on material menu layout.
+
+Changes in 29.51:
+* Fix commentary in miniControl
+
+Changes in 29.50:
+* Added 426 built-in colour themes, which support Material menu layout.
+* New colour theme options are added to Material / Focus / Aleph / Classic menu layout.
+* Colour icons are now displayed next to colour theme name on menu.
+
+Changes in 29.48, 29.49:
+* Changed default dark theme colours of material menu layout.
+
+Changes in 29.47:
+* Apply colour customisation to hyperlinks when material menu layout is used.
+    The hyperlink colours could be overridden by use of UniqueBible/htmlResources/css/custom.css
+
+Changes in 29.46:
+* Removed requirement of restart for colour and icon size customisation on material menu layout.
+
+Changes in 29.45:
+* Important fix on displaying multiple verse reference.
+
+Changes in 29.44:
+* Added a READ::: command:
+            # [KEYWORD] READ
+            # Feature - Read a single bible passage or multiple bible passages, with support of multiple bible versions.
+            # Usage - BIBLE:::[BIBLE_VERSION(S)]:::[BIBLE_REFERENCE(S)]
+            # Remarks:
+            # 1) The bible version last opened on main view is opened by default if "[BIBLE_VERSION]:::" is omitted.
+            # e.g. READ:::Jn 3:16-18
+            # e.g. READ:::KJV:::Jn 3:16-18; Deut 6:4
+            # e.g. READ:::KJV_CUV:::Jn 3:16-18; Deut 6:4
+* Fixed an issue about saving config in http-server.
+
+Changes in 29.43:
+* Fixed duplicated versions selected for comparison view.
+* Relocated "Reload Resources" to "Resources" menu on Material menu layout.
+
+Changes in 29.41, 42:
+* Fixed dynamic loading of menu layout without a restart.
+
+Changes in 29.40:
+* Set maximum width to limit the width of a few combo boxes on material menu layout toolbar.
+
+Changes in 29.38, 39:
+* Added "Live Filter" icon button on the Material menu layout top toolbar.
+* Added "Ctrl+Shift+F" shortcut to open "Live Filter" dialog in "micron" shortcut set.
+* Removed duplicated entry in "micron" shortcut set.  Changed "toggleHideLexicalEntryInBible" to "Ctrl+Shift+X"
+
+Changes in 29.37:
+* Changing theme now does not require a restart.
+* Improved colour customisation in drop down selection widgets.
+* Removed duplicated codes for colour customisation.
+
+Changes in 29.36:
+* Upgraded quality of materials icons, used by material menu layout, for scaling to differnt sizes.
+* Added support to customise Icon size and other widget size in Material menu layout.  Users can either:
+    - manually edit "iconButtonSize" value when UBA is not running, or
+    - use GUI dialog available on material menu layout, UniqueBible > Appearance > Customise Icon Size.
+    - This config value specifies the width and height of material icons.
+    - All other widgets are scaled relatively to this value too.
+    - Ideally, the value is a multiple of 3, within a range from 12 to 48.
+* Fixed issues about font size too small in table or list view.  Font size now changes relatively to button icon size value.
+* Apply colour and font customisation to more widgets, e.g. QToolTip, QToolButton, QTextEdit, QListView, QSlider
+* Added "Live Filter" to Material menu layout Bible menu.
+    - Watch https://www.youtube.com/watch?v=A08KTzWLwDc for demonstration about "Live Filter" feature.
+
+Changes in 29.35:
+* Improved Material menu layout main menu arrangement, e.g.:
+    - Preferences are divided into two main sections, Appearance & Other Preferences.
+    - Renamed "Reference Button Action" to "Select Control Preference"
+* Added 20 new themes.
+
+Changes in 29.34:
+* Initial support of global changes of widget colours, colour customisation now applies to::
+    - QPushButton
+    - QComboBox
+    - QRadioButton
+    - QMenu
+    - QTabBar
+    - QLineEdit
+    - QSplitter
+    - QTableView
+    - QCheckBox
+    - QGroupBox
+* Added 20 new themes, which work with Material menu layout only:
+            "Light MediumVioletRed",
+            "Light DarkRed",
+            "Light Indigo",
+            "Light DarkGreen",
+            "Light DarkOliveGreen",
+            "Light Teal",
+            "Light DarkBlue",
+            "Light MidnightBlue",
+            "Light Maroon",
+            "Light DarkSlateGray",
+            "Dark Pink",
+            "Dark LightYellow",
+            "Dark LightGoldenrodYellow",
+            "Dark Lavender",
+            "Dark GreenYellow",
+            "Dark SpringGreen",
+            "Dark Aqua",
+            "Dark LightCyan",
+            "Dark LightBlue",
+            "Dark Azure",
+* Renamed config attributes:
+    from "activeVerseNoColourLight, activeVerseNoColourDark, maskBackground, materialIconMaskColor, pushButtonBackgroundColor, pushButtonForegroundColor, pushButtonBackgroundColorHover, pushButtonForegroundColorHover, pushButtonBackgroundColorPressed, pushButtonForegroundColorPressed" 
+    to "activeVerseColorLight, activeVerseColorDark, maskMaterialIconBackground, maskMaterialIconColor, widgetBackgroundColor, widgetForegroundColor, widgetBackgroundColorHover, widgetForegroundColorHover, widgetBackgroundColorPressed, widgetForegroundColorPressed"
+* Removed QtMaterialTheme options from Material menu layout, as QtMaterialTheme would be in conflict with Colour Customisation with Material menu layout.
+* Added a button to open Interlinear Data directly.
+* Relocated the open-MIB-on-study-window button.
+* Colour customisation dialog now include activeVerseNoColour item.
+* Created a new wiki on colour customisation: https://github.com/eliranwong/UniqueBible/wiki/Customise-Interface-Colours
+* Changed the Colour Customisation dialog about link to: https://github.com/eliranwong/UniqueBible/wiki/Customise-Interface-Colours
+* Improved Interlinear Data plugin:
+    - Added a clear button to search entry field
+    - Now display currentlly active verse data by default
+
+Changes in 29.32, 33:
+* Fixed icon colour of some buttons in material menu layout.
+
+Changes in 29.31:
+Improved material menu layout:
+* Added a new drop down menu for selection of multiple bible versions to work with the four new buttons.
+* Added four new buttons:
+    - Single Version button.  Open a bible chapter of the bible version currectly selected.  It is basically the same action as the main reference button action when config.refButtonClickAction is set to "direct" on other menu layouts.
+    - Parallel Versions button.  Open a parallel chapter view of different bible versions selected from the newly added multiple bible version selection drop down menu.
+    - Side by Side Comparison button.  Display a verse-by-verse comparison view of different bible versions, with a side by side layout.
+    - Row by Row Comparison button.  Display a verse-by-verse comparison view of different bible versions, with a row by row layout.
+* Integrated config.enforceCompareParallel into running COMPARESIDEBYSIDE::: command.
+* Improved handling of config.enforceCompareParallel:
+    - Clicking the newly added "Single Version" button set config.enforceCompareParallel to False automatically.
+    - Clicking the newly added "Parallel Versions / Side by Side Comparison / Row by Row Comparison" buttons set config.enforceCompareParallel to True automatically.
+* Clicking the "Contrasts" button now directly contrast the currently opened bible version with all other versions of the currently opened verse.
+* Main reference button now always open chapter menu even config.refButtonClickAction is set to "direct" to avoid duplication.
+* Relocated book / chapter / Verse note buttons to second menu bar from the top.
+* Renamed PARALLELVERSES::: command to COMPARESIDEBYSIDE::: command.
+* Added config.compareParallelList to record users selection of bible versions to work with compare / parallel features with material menu layout.
+* Changed a few icons on material menu layout.
+
+Changes in 29.30:
+* Integrated button colour customisation in Master Control tabs.
+* Redirect to config.favouriteBible, if bible version requested is not installed.
+* Fixed http-server .play feature on bible version title having non-English title.
+
+Changes in 29.29:
+* Fixed QR code window so that it can be opened as a normal window rather than fullscreen.
+
+Changes in 29.28:
+* Improved Button Colour Customisation dialog:
+    Apply colour changes on "Default" and "About" buttons immediately after a setting is changed.
+
+Changes in 29.26, 29.27:
+* Fixed updated material menu layout colours after settings are changed.
+
+Changes in 29.25:
+* Fixed Button Colour Customisation dialog.
+
+Changes in 29.24:
+* Removed from Material menu layout the duplicated item for setting config.
+* Added to Material menu layout a graphical user interface dialog for button color customisation.
+    Read more about button colour customisation at: 
+    https://github.com/eliranwong/UniqueBible/wiki/Button-Colour-Customisation
+
+Changes in 29.23:
+* Fixed shared link creation on http-server page with non-mini layout.
+
+Changes in 29.22:
+* Fixed creation of shared links on http-server for command containing non-English characters.
+
+Changes in 29.21:
+* Improved handling of share link creation on http-server.
+
+Changes in 29.20:
+* Increased html button font size.
+
+Changes in 29.19:
+* Fixed opening commentary via chapter or verse selection menu on http-server.
+
+Changes in 29.18:
+* Removed a "Copy" button, which is duplicated, on _qr::: command content.
+
+Changes in 29.17:
+* Fixed http-server shared links with spaces.
+
+Changes in 29.16:
+Multiple improvements on Material menu layout:
+    * Added "Swap" button on material menu layout, to swap bible chapter between Bible Window and Study window.
+    * Added "Go online" and "Share" button on material menu layout.
+    * Added config.webUBAServer to specify a web server to work with the share links created on desktop version.
+    * Added "More ..." button, right next to bible title on bible chapter menu, so that users can change bible versions easily.
+    * Added "More ..." button, right next to commentary title on commentary chapter menu.
+    * Added _copy::: and _commentaries::: commands.
+    * Fixed opening bible chapters menu for some bible modules having non-standard book numbers.
+    * Fixed qrcode::: content copy button action on desktop version.
+    * Changed compare all version button icon on material menu layout.
+    * Improved handling when study bible reference button is clicked:
+        - When "Sync Study Window Bible with Bible Window" is turned on, bible is opened directly with the same passage with the Bible Window.
+        - When "Sync Study Window Bible with Bible Window" is turned off, chapter and verse selection are displayed first.
+        - This logic is currently implemented on material menu layout only.
+
+Changes in 29.15:
+* Fixed qrcode::: command
+* qrcode::: command content now includes a hyperlink and a copy button.
+* Changed http-server qr code button to share button.
+
+Changes in 29.14:
+* Fixed downloading material icons.
+
+Changes in 29.13:
+* Added dividers to different sessions of http-server search page.
+
+Changes in 29.12:
+* Display bible version full name on chapters menu.
+
+Changes in 29.11:
+* Modified commentary chapter heading link.
+
+Changes in 29.10:
+* Further improvement of Material menu layout to work with Mini Control:
+    - Button, instead of dropdown menu, is displayed for bible selection when config.refButtonClickAction is set to "mini".
+    - Button, instead of dropdown menu, is displayed for commentary selection when config.refButtonClickAction is set to "mini".
+* Improved commentary selection with Mini Control:
+    - If "Sync Commentary with Bible Window" feature is turned on and a commentary is selected, commentary is opened directly with the same passage with the Bible Window.
+    - If "Sync Commentary with Bible Window" feature is turned off and a commentary is selected, chapter and verse selection for a commentary are displayed first.
+    - This same logic is used by Master Control.
+
+Changes in 29.09:
+* Mini Control "Active Only" button now work with materialIconMaskColor, pushButtonBackgroundColor, pushButtonForegroundColor, pushButtonBackgroundColorHover, pushButtonForegroundColorHover, pushButtonBackgroundColorPressed, pushButtonForegroundColorPressed.
+
+Changes in 29.08:
+* Integrated config.refButtonClickAction into Material menu layout.
+
+Changes in 29.07:
+* Fixed loading chapter audio on http-server.  Error was introduced in a recent update.
+
+Changes in 29.05, 29.06:
+* Improved Material menu layout:
+    - Added chapter and verse selector for opening a passage on bible window.
+    - Added chapter and verse selector for opening a passage on study window.
+    - Added commentary drop down selection menu.
+    - "Sync Commentary with Bible Window" button is now placed right next to the new commentary drop down menu.
+* Improved commentary selection:
+    - If "Sync Commentary with Bible Window" feature is turned on and a commentary is selected, commentary is opened directly with the same passage with the Bible Window.
+    - If "Sync Commentary with Bible Window" feature is turned off and a commentary is selected, chapter and verse selection for a commentary are displayed first.
+* Also improved bible and commentary selection on http-server interface.
+* Added found commands, which works on both desktop and http-server versions:
+    - _chapters:::
+    - _verses:::
+    - _commentarychapters:::
+    - _commentaryverses:::
+* Now changing config.pushButtonBackgroundColor and config.pushButtonForegroundColor also changes button colour on chapter / verse selection menu.
+* All previous html buttons now use config.pushButtonBackgroundColor and config.pushButtonForegroundColor for colours.
+
+Changes in 29.04:
+* Built-in mini browser now uses material icons when Material menu layout is used.
+
+Changes in 29.03:
+* Fixed icon color customisation with Material menu layout.
+* Wrote a wiki page on how to change icon colours: 
+https://github.com/eliranwong/UniqueBible/wiki/Button-Colour-Customisation
+
+Changes in 29.02:
+* Built-in media player now uses material icons when Material menu layout is used.
+
+Changes in 29.01:
+* Changed http-server QR scanner page background color to match dark theme.
+* Completed Material menu layout note editor ui.
+* Material menu layout now replaces Focus menu layout as default menu layout.
+Remarks: Material menu layout is designed based on Focus menu layout with several improvements, e.g.:
+    - Bible version dropdown button is added
+    - Use of icons are more consistent
+    - Users can customise button color by modifying config values of materialIconMaskColor, pushButtonBackgroundColor, pushButtonForegroundColor, pushButtonBackgroundColorHover, pushButtonForegroundColorHover, pushButtonBackgroundColorPressed, pushButtonForegroundColorPressed
+    - easier to be maintained
+
+Changes in 29.00:
+* Fixed loding developer menu on Aleph menu layout.
+* Updated Material menu layout:
+    - Complete main window ui.
+    - Configs for customisation of ui color: materialIconMaskColor, pushButtonBackgroundColor, pushButtonForegroundColor, pushButtonBackgroundColorHover, pushButtonForegroundColorHover, pushButtonBackgroundColorPressed, pushButtonForegroundColorPressed
+
+Changes in 28.99:
+* Initial support of "Material" menu layout.  When finished, it will replace "Focus" as default menu layout.
+* Multiple config values added for customisation of "Material" menu layout button color.
+* Fixed changing instant information button icon on Focus menu layout.
+
+Changes in 28.96, 28.97, 28.98:
+Fixed all known display issues of http-server audio player.
+    - Fixed WLC font display
+    - Fixed single or double quote display issue
+    - Fixed last bible verse text in a playlist was partially hidden
+
+Changes in 28.95:
+* Fixed loading last visited verse issue on iPhone.
+* Http-server content no longer uses cookie on client side.
+* Private and public access to http-server now have two separate data to keep records of the last visited bible verse and commentary module.
+
+Changes in 28.94:
+* Http-server audio playlist current title is now made clear for reading.
+
+Changes in 28.93:
+* Now show bible verse text in http-server audio playlist.
+
+Changes in 28.92:
+* Now show actual Hebrew / Greek word in http-server audio playlist.
+
+Changes in 28.91:
+* Fixed loading bible note in http-server when private data are loaded.
+
+Changes in 28.90:
+* Added a ".play" command and a button to http-server to play all available bible audio linked with the current content.
+* Relocate QR code scanner link in http-server.
+
+Changes in 28.89:
+* Added a context plugin "Read All Verses" to read all available single verse audio linked in the currently opened content.
+
+Changes in 28.88:
+* Added a command keyword "CHAPTERS:::".
+* Added a command ".chapters" in http-server, to open a menu of all available chapters
+* Changed the passage selection button on http-server side bar to a button for displaying chapter menu.
+
+Changes in 28.87:
+* Added chapter navigation to http-server media player page.
+* Added table of content on bible audio.
+* Added ".audio" command to http-server.
+
+Changes in 28.86:
+* Fixed default config.audioBibleIcon on fresh installation.
+
+Changes in 28.85:
+* Relocated buttons on http-server index page side panel.
+* Added new associations of bible audio modules.
+
+Changes in 28.83, 28.84:
+* Fixed display of lexeme title on html media player in http-server.
+* http-server index page buttons now use Google material icons.
+* http-server index page side panel buttons relocated.
+
+Changes in 28.82:
+* Workaround issue of loading OHGB and OHGBi in bible.gospelchurch.uk
+
+Changes in 28.81:
+* Added Google material icons fonts
+* Added support of offline use of Google material icons fonts
+
+Changes in 28.80:
+* Added support of READLEXEME::: and READWORD::: commands in http-server.
+* Added support of word-by-word audio to http-server.
+* Added ".wordaudiolinks" command to http-server.
+* Fixed plain mode chapter reading showing audio icons in http-server.
+* Added config value config.showHebrewGreekWordAudioLinksInMIB.  If it is set to True, MIB will display audio icons even config.config.showHebrewGreekWordAudioLinks is set to False.
+* Application of config.showHebrewGreekWordAudioLinks now check if bible text is one of the marvel bibles. 
+* UBA now uses Google material icon for audio bible icons by default in http-server.
+
+Changes in 28.79:
+* http-server built-in audio player now display playlist by default.
+
+Changes in 28.78:
+* Fix font issue in desktop mode
+
+Changes in 28.77:
+* Added association of Chinese bible versions for audio features.
+
+Changes in 28.76:
+* Fixed a startup issue introduced by a recent update.
+
+Changes in 28.75:
+* Updated javascript files for http-server.
+
+Changes in 28.74:
+* Added support of Google material icons to http-server display content.
+
+Changes in 28.73:
+* Added support to specify the python file to start http-server.
+* Added initial support of verse-by-verse audio bible in htttp-server, will test on https://bible.gospelchurch.uk
+
+Changes in 28.72:
+* Added support of audio links to instant verse feature.
+* Removed duplicated spaces after audio icons for multiple verse display.
+
+Changes in 28.71:
+* Fixed missing word audio links in discourse content.
+
+Changes in 28.70:
+* Removed duplicated spaces after audio icons.
+* Added four more verse-by-verse audio bibles:
+    SBLGNT (Greek; fast; verse-by-verse)
+    SBLGNT (Greek; slow; verse-by-verse)
+    WLC (Hebrew; fast; verse-by-verse)
+    WLC (Hebrew; slow; verse-by-verse)
+
+Changes in 28.69:
+* Fixed display of audio bible icons on Linux.
+
+Changes in 28.68:
+* Fixed missing playing audio in a playlist, as described in issue:
+    https://github.com/eliranwong/UniqueBible/issues/976
+
+Changes in 28.67:
+* Fine tune word-by-word Hebrew and Greek audio.
+* Hide built-in media player interface for reading a single word or lexeme.
+* Built-in media player now works with config.hideVlcInterfaceReadingSingleVerse.
+
+Changes in 28.66:
+* Added a wiki page on word-by-word Hebrew and Greek audio:
+    https://github.com/eliranwong/UniqueBible/wiki/Word-by-word-Hebrew-and-Greek-Audio
+* Tips: Use "Ctrl + Shift + A" with "Focus" menu layout to toggle audio links in marvel bibles.
+
+Changes in 28.65:
+* Added word-by-word Hebrew and Greek audio to bibles, OHGB and OHGBi.
+* Added word-by-word Hebrew and Greek audio to OHGBi in morphology search result.
+* Fixed reloading current records.
+
+Changes in 28.64:
+* Fixed some other missing Greek word audio links.
+
+Changes in 28.63:
+* Fixed missing Greek word audio links before punctuation marks.
+
+Changes in 28.62:
+* Added config item config.hideVlcInterfaceForSingleVerseReading to hide VlcInterface for single verse reading.  Currently, this works only on webtop version, desktop version on Linux and macOS.
+* Added audio links to lexemes on "Words" feature content.
+* Added config item config.showHebrewGreekWordAudioLinks to toggle feature to show or hide audio links for indiviudal Hebrew and Greek words in marvel bibles, MOB, MIB, MPB, MTB & MAB.
+* Hide word-by-word Hebrew / Greek audio links on http server content page.
+* Prompt users to download word-by-word Hebrew / Greek audio when a word audio link is clicked and its audio file is not installed.
+
+Changes in 28.61:
+* Added READWORD::: and READLEXEME::: commands to work with audio of individual Hebrew / Greek words and lexemes.
+* Added audio link to _instantWord::: content.  Therefore, instant lookup of a Hebrew / Greek word shows audio links for its word and lexeme.
+* Tips: To keep instant lookup information of a particular word, use enable / disable instant lookup feature.  In Focus menu layout, shortcut combo is Ctrl + =.
+* Integrated Hebrew word-by-word audio into Word, Words, Translation, Discourse features.
+* Added download of MP3 word-by-word audio of the Hebrew bible BHS5.  Storage required: 15.08GB in total.
+* Fixed use of MP3 audio bible - BBE (British accent; verse-by-verse).
+* On webtop version, use "thunar" to open directories after YouTube audio / video is downloaded.
+
+Changes in 28.60:
+* Support creation of all Hebrew and Greek word audio.
+
 Changes in 28.59:
 * Added WLC and WLCx bibles to right-to-left reading list.
 

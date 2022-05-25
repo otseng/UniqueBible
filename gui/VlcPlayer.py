@@ -56,31 +56,43 @@ class VlcPlayer(QWidget):
 
         self.openbutton = QtWidgets.QPushButton()
         self.openbutton.setToolTip(config.thisTranslation["open"])
-        file = os.path.join("htmlResources", "buttons", "playlist.png")
-        self.openbutton.setIcon(QIcon(file))
+        if config.menuLayout == "material":
+            file = "material/file/file_open/materialiconsoutlined/48dp/2x/outline_file_open_black_48dp.png"
+        else:
+            file = os.path.join("buttons", "playlist.png")
+        self.openbutton.setIcon(self.parent.getQIcon(file))
         self.openbutton.clicked.connect(self.open_file)
         self.hbuttonbox.addWidget(self.openbutton)
 
         self.playbutton = QtWidgets.QPushButton()
         self.playbutton.setToolTip(config.thisTranslation["play"])
-        file = os.path.join("htmlResources", "buttons", "play.png")
-        self.playbutton.setIcon(QIcon(file))
+        if config.menuLayout == "material":
+            file = "material/av/play_circle_outline/materialiconsoutlined/48dp/2x/outline_play_circle_outline_black_48dp.png"
+        else:
+            file = os.path.join("buttons", "play.png")
+        self.playbutton.setIcon(self.parent.getQIcon(file))
         self.playbutton.clicked.connect(self.play_pause)
         self.playbutton.setEnabled(True)
         self.hbuttonbox.addWidget(self.playbutton)
 
         self.stopbutton = QtWidgets.QPushButton()
         self.stopbutton.setToolTip(config.thisTranslation["stop"])
-        file = os.path.join("htmlResources", "buttons", "stop.png")
-        self.stopbutton.setIcon(QIcon(file))
+        if config.menuLayout == "material":
+            file = "material/av/stop_circle/materialiconsoutlined/48dp/2x/outline_stop_circle_black_48dp.png"
+        else:
+            file = os.path.join("buttons", "stop.png")
+        self.stopbutton.setIcon(self.parent.getQIcon(file))
         self.stopbutton.clicked.connect(self.stop)
         self.stopbutton.setEnabled(False)
         self.hbuttonbox.addWidget(self.stopbutton)
 
         self.nextbutton = QtWidgets.QPushButton()
         # self.nextbutton.setToolTip(config.thisTranslation["next"])
-        file = os.path.join("htmlResources", "buttons", "next.png")
-        self.nextbutton.setIcon(QIcon(file))
+        if config.menuLayout == "material":
+            file = "material/av/skip_next/materialiconsoutlined/48dp/2x/outline_skip_next_black_48dp.png"
+        else:
+            file = os.path.join("buttons", "next.png")
+        self.nextbutton.setIcon(self.parent.getQIcon(file))
         self.nextbutton.clicked.connect(self.playNextInPlaylist)
         self.nextbutton.setEnabled(False)
         self.hbuttonbox.addWidget(self.nextbutton)
@@ -91,6 +103,7 @@ class VlcPlayer(QWidget):
         self.volumeslider.setValue(self.mediaplayer.audio_get_volume())
         self.volumeslider.setToolTip(config.thisTranslation["volume"])
         self.hbuttonbox.addWidget(self.volumeslider)
+        self.volumeslider.setValue(70)
         self.volumeslider.valueChanged.connect(self.set_volume)
 
         self.vboxlayout = QtWidgets.QVBoxLayout()
@@ -104,8 +117,11 @@ class VlcPlayer(QWidget):
         if self.mediaplayer.is_playing():
             self.stopbutton.setEnabled(False)
             self.mediaplayer.pause()
-            file = os.path.join("htmlResources", "buttons", "play.png")
-            self.playbutton.setIcon(QIcon(file))
+            if config.menuLayout == "material":
+                file = "material/av/play_circle_outline/materialiconsoutlined/48dp/2x/outline_play_circle_outline_black_48dp.png"
+            else:
+                file = os.path.join("buttons", "play.png")
+            self.playbutton.setIcon(self.parent.getQIcon(file))
             self.is_paused = True
             self.timer.stop()
         else:
@@ -115,15 +131,21 @@ class VlcPlayer(QWidget):
 
             self.stopbutton.setEnabled(True)
             self.mediaplayer.play()
-            file = os.path.join("htmlResources", "buttons", "pause.png")
-            self.playbutton.setIcon(QIcon(file))
+            if config.menuLayout == "material":
+                file = "material/av/pause_circle/materialiconsoutlined/48dp/2x/outline_pause_circle_black_48dp.png"
+            else:
+                file = os.path.join("buttons", "pause.png")
+            self.playbutton.setIcon(self.parent.getQIcon(file))
             self.timer.start()
             self.is_paused = False
 
     def stop(self):
         self.mediaplayer.stop()
-        file = os.path.join("htmlResources", "buttons", "play.png")
-        self.playbutton.setIcon(QIcon(file))
+        if config.menuLayout == "material":
+            file = "material/av/play_circle_outline/materialiconsoutlined/48dp/2x/outline_play_circle_outline_black_48dp.png"
+        else:
+            file = os.path.join("buttons", "play.png")
+        self.playbutton.setIcon(self.parent.getQIcon(file))
         self.stopbutton.setEnabled(False)
 
     def open_file(self):
@@ -161,7 +183,8 @@ class VlcPlayer(QWidget):
             self.mediaplayer.set_media(self.media)
             self.media.parse()
             self.mediaplayer.play()
-            self.mediaplayer.set_position(0)
+            # Disable the following line to fix issue: https://github.com/eliranwong/UniqueBible/issues/976
+            #self.mediaplayer.set_position(0)
             self.setWindowTitle(self.media.get_meta(0))
 
             # The media player has to be 'connected' to the QFrame (otherwise the

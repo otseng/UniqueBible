@@ -75,7 +75,76 @@ class ClassicMainWindow:
             )
             for feature, action in items:
                 addMenuItem(subMenu, feature, self, action, shortcut)
-        
+
+            subMenu.addSeparator()
+            themes = (
+                "Light MediumVioletRed",
+                "Light Tomato",
+                "Light DarkOrange",
+                "Light DarkRed",
+                "Light Indigo",
+                "Light DarkSlateBlue",
+                "Light DarkGreen",
+                "Light DarkOliveGreen",
+                "Light Teal",
+                "Light DarkBlue",
+                "Light MidnightBlue",
+                "Light DarkGoldenrod",
+                "Light SaddleBrown",
+                "Light Maroon",
+                "Light DarkSlateGray",
+            )
+            for theme in themes:
+                color = theme.split(" ")[-1]
+                addColorIconMenuItem(color, subMenu, theme, self, partial(self.setTheme, theme), None, False)
+            subSubMenu = addSubMenu(subMenu, "menu_more")
+            addAllThemeColorMenuItem("Light", subSubMenu, self, self.setTheme)
+            subMenu.addSeparator()
+            themes = (
+                "Dark Pink",
+                "Dark LightYellow",
+                "Dark LightGoldenrodYellow",
+                "Dark Lavender",
+                "Dark Fuchsia",
+                "Dark GreenYellow",
+                "Dark SpringGreen",
+                "Dark Aqua",
+                "Dark Cyan",
+                "Dark LightCyan",
+                "Dark Aquamarine",
+                "Dark Turquoise",
+                "Dark LightBlue",
+                "Dark DeepSkyBlue",
+                "Dark Azure",
+            )
+            for theme in themes:
+                color = theme.split(" ")[-1]
+                addColorIconMenuItem(color, subMenu, theme, self, partial(self.setTheme, theme), None, False)
+            subSubMenu = addSubMenu(subMenu, "menu_more")
+            addAllThemeColorMenuItem("Dark", subSubMenu, self, self.setTheme)
+            subMenu.addSeparator()
+            themes = (
+                "Night Pink",
+                "Night LightYellow",
+                "Night LightGoldenrodYellow",
+                "Night Lavender",
+                "Night Fuchsia",
+                "Night GreenYellow",
+                "Night SpringGreen",
+                "Night Aqua",
+                "Night Cyan",
+                "Night LightCyan",
+                "Night Aquamarine",
+                "Night Turquoise",
+                "Night LightBlue",
+                "Night DeepSkyBlue",
+                "Night Azure",
+            )
+            for theme in themes:
+                color = theme.split(" ")[-1]
+                addColorIconMenuItem(color, subMenu, theme, self, partial(self.setTheme, theme), None, False)
+            subSubMenu = addSubMenu(subMenu, "menu_more")
+            addAllThemeColorMenuItem("Night", subSubMenu, self, self.setTheme)
         subMenu = addSubMenu(menu, "menu1_selectMenuLayout")
         addMenuLayoutItems(self, subMenu)
         subMenu.addSeparator()

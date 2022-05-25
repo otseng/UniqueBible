@@ -27,6 +27,9 @@ class MediaLauncher(QWidget):
         button = QPushButton(config.thisTranslation["open"])
         button.clicked.connect(lambda: self.playMedia("music"))
         buttons.addWidget(button)
+        button = QPushButton(config.thisTranslation["openAll"])
+        button.clicked.connect(lambda: self.playAllMedia("music"))
+        buttons.addWidget(button)
         musicLayout.addLayout(buttons)
         leftColumnWidget.setLayout(musicLayout)
 
@@ -36,6 +39,9 @@ class MediaLauncher(QWidget):
         buttons = QHBoxLayout()
         button = QPushButton(config.thisTranslation["open"])
         button.clicked.connect(lambda: self.playMedia("video"))
+        buttons.addWidget(button)
+        button = QPushButton(config.thisTranslation["openAll"])
+        button.clicked.connect(lambda: self.playAllMedia("video"))
         buttons.addWidget(button)
         videoLayout.addLayout(buttons)
         rightColumnWidget.setLayout(videoLayout)
@@ -50,6 +56,7 @@ class MediaLauncher(QWidget):
         model = QStandardItemModel(list)
         for file in self.musicList:
             item = QStandardItem(file)
+            item.setToolTip(file)
             model.appendRow(item)
         list.setModel(model)
         list.selectionModel().selectionChanged.connect(self.playSelectedMusic)
@@ -61,6 +68,7 @@ class MediaLauncher(QWidget):
         model = QStandardItemModel(list)
         for file in self.videoList:
             item = QStandardItem(file)
+            item.setToolTip(file)
             model.appendRow(item)
         list.setModel(model)
         list.selectionModel().selectionChanged.connect(self.playSelectedVideo)
@@ -79,9 +87,13 @@ class MediaLauncher(QWidget):
         self.parent.runTextCommand(command)
 
     def playMedia(self, directory):
-        command = "VLC:::{0}/{1}".format(directory, self.mediaFile)
+        command = "VLC:::{0}".format(os.path.join(directory, self.mediaFile))
         self.parent.runTextCommand(command)
 
+    def playAllMedia(self, directory):
+        playlist = self.musicList if directory == "music" else self.videoList
+        playlist = [os.path.join(directory, filename) for filename in playlist]
+        self.parent.parent.playAudioBibleFilePlayList(playlist)
 
 
 ## Standalone development code

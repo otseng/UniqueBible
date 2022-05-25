@@ -118,26 +118,19 @@ class MiniControl(QWidget):
             commandLayout2.addStretch()
             commandBox.addLayout(commandLayout2)
 
-        if config.showMiniKeyboardInMiniControl and (config.isTtsInstalled or config.gTTS):
+        if config.showMiniKeyboardInMiniControl and not config.noTtsFound:
             ttsLayout = QBoxLayout(QBoxLayout.LeftToRight)
             ttsLayout.setSpacing(5)
     
             self.languageCombo = QComboBox()
             ttsLayout.addWidget(self.languageCombo)
-            if not config.isTtsInstalled and not platform.system() == "Windows" and config.gTTS:
-                languages = {}
-                for language, languageCode in Languages.gTTSLanguageCodes.items():
-                    languages[languageCode] = ("", language)
-            elif config.espeak:
-                languages = TtsLanguages().isoLang2epeakLang
-            else:
-                languages = TtsLanguages().isoLang2qlocaleLang
+            languages = self.parent.getTtsLanguages()
             self.languageCodes = list(languages.keys())
             for code in self.languageCodes:
                 self.languageCombo.addItem(languages[code][1])
             # Check if selected tts engine has the language user specify.
             if not (config.ttsDefaultLangauge in self.languageCodes):
-                config.ttsDefaultLangauge = "en"
+                config.ttsDefaultLangauge = "en-GB" if config.isGoogleCloudTTSAvailable else "en"
             # Set initial item
             initialIndex = self.languageCodes.index(config.ttsDefaultLangauge)
             self.languageCombo.setCurrentIndex(initialIndex)
@@ -265,7 +258,8 @@ class MiniControl(QWidget):
         box_layout.setSpacing(1)
         row_layout = self.newRowLayout()
         button = QPushButton(config.thisTranslation["activeOnly"])
-        button.setStyleSheet(textButtonStyle)
+        if not config.menuLayout == "material":
+            button.setStyleSheet(textButtonStyle)
         button.clicked.connect(self.activeCommentaries)
         row_layout.addWidget(button)
         box_layout.addLayout(row_layout)
@@ -348,7 +342,8 @@ class MiniControl(QWidget):
         box_layout.setSpacing(1)
         row_layout = self.newRowLayout()
         button = QPushButton(config.thisTranslation["activeOnly"])
-        button.setStyleSheet(textButtonStyle)
+        if not config.menuLayout == "material":
+            button.setStyleSheet(textButtonStyle)
         button.clicked.connect(self.activeBookIntros)
         row_layout.addWidget(button)
         box_layout.addLayout(row_layout)
@@ -484,7 +479,7 @@ class MiniControl(QWidget):
         text = self.searchLineEdit.text()
         if ":::" in text:
             text = text.split(":::")[-1]
-        if not config.isTtsInstalled and not platform.system() == "Windows" and config.gTTS:
+        if config.isGoogleCloudTTSAvailable or ((not config.isOfflineTtsInstalled or config.forceOnlineTts) and config.isGTTSInstalled):
             command = "GTTS:::{0}:::{1}".format(self.languageCodes[self.languageCombo.currentIndex()], text)
         else:
             command = "SPEAK:::{0}:::{1}".format(self.languageCodes[self.languageCombo.currentIndex()], text)
@@ -515,6 +510,8 @@ class MiniControl(QWidget):
     def commentaryAction(self, commentary):
         command = "COMMENTARY:::{0}:::{1}".format(commentary, self.parent.verseReference("main")[1])
         self.runCommmand(command)
+        # index = self.parent.commentaryList.index(commentary)
+        # self.parent.changeCommentaryVersion(index)
         command = "_commentaryinfo:::{0}".format(commentary)
         self.parent.runTextCommand(command)
 
@@ -616,7 +613,7 @@ if __name__ == "__main__":
    config.parserStandarisation = 'NO'
    config.standardAbbreviation = 'ENG'
    config.marvelData = "/Users/otseng/dev/UniqueBible/marvelData/"
-   config.isTtsInstalled = False
+   config.isOfflineTtsInstalled = False
 
    ConfigUtil.setup()
    config.noQt = False

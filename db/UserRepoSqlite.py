@@ -1,0 +1,81 @@
+import os, sqlite3
+import config
+
+
+class UserRepoSqlite:
+
+    TABLE_NAME = "UserRepo"
+    CREATE_TABLE = f"""CREATE TABLE IF NOT EXISTS {TABLE_NAME}
+        (id Integer Primary Key Autoincrement,
+        active Integer,
+        name NVARCHAR(100),
+        type NVARCHAR(20),
+        directory NVARCHAR(100), 
+        repo NVARCHAR(200))"""
+
+    def __init__(self):
+        self.filename = os.path.join(config.marvelData, "userrepo.sqlite")
+        self.connection = sqlite3.connect(self.filename)
+        self.cursor = self.connection.cursor()
+        if not self.checkTableExists():
+            self.createTable()
+
+    def __del__(self):
+        self.connection.commit()
+        self.connection.close()
+
+    def createTable(self):
+        self.cursor.execute(UserRepoSqlite.CREATE_TABLE)
+
+    def checkTableExists(self):
+        self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='{0}'".format(self.TABLE_NAME))
+        if self.cursor.fetchone():
+            return True
+        else:
+            return False
+
+    def insert(self, name, type, directory, repo, active=True):
+        insert = f"""INSERT INTO {self.TABLE_NAME} 
+            (active, name, type, directory, repo) 
+            VALUES (?, ?, ?, ?, ?)"""
+        self.cursor.execute(insert, (active, name, type, directory, repo))
+        self.connection.commit()
+
+    def update(self, id, name, type, directory, repo, active=True):
+        update = f"""UPDATE {self.TABLE_NAME} SET
+            active=?, name=?, type=?, directory=?, repo=?
+            WHERE id=?"""
+        self.cursor.execute(update, (active, name, type, directory, repo, id))
+        self.connection.commit()
+
+    def delete(self, id):
+        delete = f"DELETE FROM {self.TABLE_NAME} WHERE id=?"
+        self.cursor.execute(delete, (id,))
+        self.connection.commit()
+
+    def deleteAll(self):
+        delete = f"DELETE FROM {self.TABLE_NAME}"
+        self.cursor.execute(delete)
+        self.connection.commit()
+
+    def getAll(self):
+        query = f"SELECT id, active, name, type, directory, repo FROM {self.TABLE_NAME}"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+
+if __name__ == "__main__":
+
+    config.marvelData = "/home/oliver/dev/UniqueBible"
+    # config.marvelData = "/Users/otseng/dev/UniqueBible/marvelData/"
+
+    db = UserRepoSqlite()
+    db.deleteAll()
+    db.insert("my bible 1", "bibles", "bibles2", "otseng/testing")
+    repos = db.getAll()
+    for repo in repos:
+        print(f"{repo[0]}:{repo[1]}:{repo[2]}:{repo[3]}:{repo[4]}:{repo[5]}")
+    db.update(repo[0], "update bible", "bibles", "bibles3", "otseng/testing2", False)
+    repos = db.getAll()
+    for repo in repos:
+        print(f"{repo[0]}:{repo[1]}:{repo[2]}:{repo[3]}:{repo[4]}:{repo[5]}")

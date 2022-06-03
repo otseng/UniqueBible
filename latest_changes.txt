@@ -1,3 +1,42 @@
+Changes in 30.30:
+* Added support of using context plugins with system tray to run featues on clipboard text.
+* System tray "Search Other Resources" now does not require clipboard content.
+* Fixed downloading the icon for "Bible Collections" on material menu layout top toolbar.
+* Changed shortcuts for a few context plugins.
+
+Changes in 30.29:
+* Minor update - changed a dialog title.
+
+Changes in 30.28:
+* System tray enhancement:
+    - Added search section to search for clipboard text in the bible and other resources.
+    - Added config.enableSystemTrayOnLinux for Linux uses to enable system tray.
+        System tray is enabled by default on Windows and macOS.
+        System tray is not enabled by default on Linux, as not all Linux desktops support system tray.
+        Linux users can enable UBA system tray manually via "Set Config Flags Window".
+    - Bring UBA window to the front when main window is called.
+* Fixed downloading UBA icons.
+
+Changes in 30.27:
+* Fixed startup issues on macOS, caused by command "vlc kill".
+
+Changes in 30.26:
+* Added system tray for macOS and Windows users.
+* Added customisation of application icons, configurable via material menu.
+* Added features to read clipboard content with default text-to-speech voice, and open bible references on clipboard.
+* Fixed bash script shortcut.
+* Fixed webtop version startup issue.
+
+Changes in 30.25:
+* Added support of three text-to-speech buttons on second top toolbar.
+    For material menu layout users only:
+    Users can set up three buttons for three different voices of their own choices, e.g. English, Hebrew & Greek.
+    Read https://github.com/eliranwong/UniqueBible/wiki/Text-to-Speech#select-second-and-third-text-to-speech-voices
+* Added config.doNotStop3rdPartyMediaPlayerOnExit so users can use third party VLC player to listen to bible audio even UBA is closed.
+* Added shortcut support of popover window.
+* Added shortcut display to menu plugins where applicable.
+* Fixed launching "Presentation" from popover window.
+
 Changes in 30.24:
 * Update instant text-to-speech button tooltip when default text-to-speech voice is changed.
 

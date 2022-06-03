@@ -43,6 +43,14 @@ class ConfigUtil:
         # It is created to help documentation.
         config.help = {}
 
+        config.help["desktopUBAIcon"] = """
+        # Desktop version UBA icon filename.  UniqueBible.app provides official icons in different colours.  We ask our users to use one of our official icons to acknowledge our development."""
+        if not hasattr(config, "desktopUBAIcon"):
+            config.desktopUBAIcon = os.path.join("htmlResources", "UniqueBibleApp.png")
+        config.help["webUBAIcon"] = """
+        # Web version UBA icon filename.  UniqueBible.app provides official icons in different colours.  We ask our users to use one of our official icons to acknowledge our development."""
+        if not hasattr(config, "webUBAIcon"):
+            config.webUBAIcon = "UniqueBibleApp.png"
         config.help["developer"] = """
         # Option to enable developer menu and options"""
         if not hasattr(config, "developer"):
@@ -89,10 +97,6 @@ class ConfigUtil:
         # Base URL for http-server viewer"""
         if not hasattr(config, "httpServerViewerBaseUrl"):
             config.httpServerViewerBaseUrl = "https://marvelbible.com/uba_viewer"
-        config.help["webUBAIcon"] = """
-        # Web version UBA icon filename.  UBA icons are provided in different colours for users to choose one for display.  Users are required to display an officially provided UBA icon to acknowledge the source of this application."""
-        if not hasattr(config, "webUBAIcon"):
-            config.webUBAIcon = "UniqueBibleApp.png"
         config.help["webOrganisationIcon"] = """
         # Customise an organisation icon filename.  The filename given should be a path relative to directory 'htmlResouces/'."""
         if not hasattr(config, "webOrganisationIcon"):
@@ -222,6 +226,10 @@ class ConfigUtil:
         # Start UBA with full-screen on Linux os"""
         if not hasattr(config, "linuxStartFullScreen"):
             config.linuxStartFullScreen = False
+        config.help["enableSystemTrayOnLinux"] = """
+        # Enable UBA system tray on Linux os"""
+        if not hasattr(config, "enableSystemTrayOnLinux"):
+            config.enableSystemTrayOnLinux = False
         config.help["forceOnlineTts"] = """
         # This forces default text-to-speech feature uses online service, even if offline tts engine is installed."""
         if not hasattr(config, "forceOnlineTts"):
@@ -262,6 +270,14 @@ class ConfigUtil:
         # Default text-to-speech language"""
         if not hasattr(config, "ttsDefaultLangauge"):
             config.ttsDefaultLangauge = "en"
+        config.help["ttsDefaultLangauge2"] = """
+        # Second text-to-speech language"""
+        if not hasattr(config, "ttsDefaultLangauge2"):
+            config.ttsDefaultLangauge2 = ""
+        config.help["ttsDefaultLangauge3"] = """
+        # Third text-to-speech language"""
+        if not hasattr(config, "ttsDefaultLangauge3"):
+            config.ttsDefaultLangauge3 = ""
         config.help["ttsChineseAlwaysCantonese"] = """
         # Force text-to-speech feature to use Cantonese for all Chinese text."""
         if not hasattr(config, "ttsChineseAlwaysCantonese"):
@@ -543,6 +559,10 @@ class ConfigUtil:
         # Options to force UBA to use builtin media player even third-party VLC player is installed: True / False"""
         if not hasattr(config, "forceUseBuiltinMediaPlayer"):
             config.forceUseBuiltinMediaPlayer = False
+        config.help["doNotStop3rdPartyMediaPlayerOnExit"] = """
+        # Options to not stop 3rd-party media player on exit: True / False"""
+        if not hasattr(config, "doNotStop3rdPartyMediaPlayerOnExit"):
+            config.doNotStop3rdPartyMediaPlayerOnExit = False
         config.help["hideVlcInterfaceReadingSingleVerse"] = """
         # Options to hide VLC graphical interface on supported operating systems: True / False"""
         if not hasattr(config, "hideVlcInterfaceReadingSingleVerse"):
@@ -1228,6 +1248,8 @@ class ConfigUtil:
             #config.instantHighlightString = ""
         configs = (
             # ("version", config.version),
+            ("desktopUBAIcon", config.desktopUBAIcon),
+            ("webUBAIcon", config.webUBAIcon),
             ("developer", config.developer),
             ("enableCmd", config.enableCmd),
             ("qtLibrary", config.qtLibrary),
@@ -1239,7 +1261,6 @@ class ConfigUtil:
             ("httpServerViewerGlobalMode", config.httpServerViewerGlobalMode),
             ("httpServerViewerBaseUrl", config.httpServerViewerBaseUrl),
             ("webUBAServer", config.webUBAServer),
-            ("webUBAIcon", config.webUBAIcon),
             ("webOrganisationIcon", config.webOrganisationIcon),
             ("webOrganisationLink", config.webOrganisationLink),
             ("webFullAccess", config.webFullAccess),
@@ -1261,6 +1282,7 @@ class ConfigUtil:
             ("openMacos", config.openMacos),
             ("openLinux", config.openLinux),
             ("openLinuxPdf", config.openLinuxPdf),
+            ("enableSystemTrayOnLinux", config.enableSystemTrayOnLinux),
             ("linuxStartFullScreen", config.linuxStartFullScreen),
             #("showTtsOnLinux", config.showTtsOnLinux),
             ("forceOnlineTts", config.forceOnlineTts),
@@ -1271,6 +1293,8 @@ class ConfigUtil:
             ("macOSttsSpeed", config.macOSttsSpeed),
             ("useLangDetectOnTts", config.useLangDetectOnTts),
             ("ttsDefaultLangauge", config.ttsDefaultLangauge),
+            ("ttsDefaultLangauge2", config.ttsDefaultLangauge2),
+            ("ttsDefaultLangauge3", config.ttsDefaultLangauge3),
             ("ttsEnglishAlwaysUS", config.ttsEnglishAlwaysUS),
             ("ttsEnglishAlwaysUK", config.ttsEnglishAlwaysUK),
             ("ttsChineseAlwaysMandarin", config.ttsChineseAlwaysMandarin),
@@ -1365,6 +1389,7 @@ class ConfigUtil:
             ("enforceCompareParallel", config.enforceCompareParallel),
             ("readFormattedBibles", config.readFormattedBibles),
             ("forceUseBuiltinMediaPlayer", config.forceUseBuiltinMediaPlayer),
+            ("doNotStop3rdPartyMediaPlayerOnExit", config.doNotStop3rdPartyMediaPlayerOnExit),
             ("hideVlcInterfaceReadingSingleVerse", config.hideVlcInterfaceReadingSingleVerse),
             ("showHebrewGreekWordAudioLinks", config.showHebrewGreekWordAudioLinks),
             ("showHebrewGreekWordAudioLinksInMIB", config.showHebrewGreekWordAudioLinksInMIB),

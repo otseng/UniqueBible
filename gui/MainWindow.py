@@ -101,7 +101,7 @@ class MainWindow(QMainWindow):
         # set os open command
         self.setOsOpenCmd()
         # set translation of interface
-        self.setTranslation()
+        #self.setTranslation()
         # setup a parser for text commands
         self.textCommandParser = TextCommandParser(self)
         # set up resource lists
@@ -127,8 +127,7 @@ class MainWindow(QMainWindow):
 
         # setup UI
         self.setWindowTitle("UniqueBible.app [version {0:.2f}]".format(config.version))
-        appIconFile = os.path.join("htmlResources", "UniqueBibleApp.png")
-        appIcon = QIcon(appIconFile)
+        appIcon = QIcon(config.desktopUBAIcon)
         QGuiApplication.setWindowIcon(appIcon)
         # setup user menu & toolbars
 
@@ -411,8 +410,12 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         if self.noteEditor:
             if self.noteEditor.close():
-                event.accept()
-                QGuiApplication.instance().quit()
+                if config.enableSystemTray:
+                    event.ignore()
+                    self.hide()
+                else:
+                    event.accept()
+                    QGuiApplication.instance().quit()
             else:
                 event.ignore()
                 # Bring forward the note editor.
@@ -420,8 +423,12 @@ class MainWindow(QMainWindow):
                 self.noteEditor.hide()
                 self.noteEditor.show()
         else:
-            event.accept()
-            QGuiApplication.instance().quit()
+            if config.enableSystemTray:
+                event.ignore()
+                self.hide()
+            else:
+                event.accept()
+                QGuiApplication.instance().quit()
 
     def quitApp(self):
         QGuiApplication.instance().quit()
@@ -928,13 +935,21 @@ class MainWindow(QMainWindow):
 
     def setAppWindowStyle(self, style):
         config.windowStyle = "" if style == "default" else style
-        self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+        #self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
         if config.menuLayout == "material":
             self.setupMenuLayout("material")
+        self.handleRestart()
+
+    def setApplicationIcon(self, icon):
+        config.desktopUBAIcon = icon
+        if config.menuLayout == "material":
+            self.setupMenuLayout("material")
+        self.handleRestart()
 
     def setQtMaterialTheme(self, theme):
         config.qtMaterialTheme = theme
-        self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+        #self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+        self.handleRestart()
 
     def enableQtMaterial(self, qtMaterial=True):
         if qtMaterial:
@@ -975,11 +990,13 @@ class MainWindow(QMainWindow):
 
     def setDefaultTheme(self):
         config.theme = "default"
-        self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+        #self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+        self.handleRestart()
 
     def setDarkTheme(self):
         config.theme = "dark"
-        self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+        #self.displayMessage(config.thisTranslation["message_themeTakeEffectAfterRestart"])
+        self.handleRestart()
 
     def setTheme(self, theme, setColours=True):
         theme = theme.split(" ")
@@ -1196,7 +1213,7 @@ class MainWindow(QMainWindow):
     # warning for next action without saving modified notes
     def warningNotSaved(self):
         msgBox = QMessageBox(QMessageBox.Warning,
-                             "QMessageBox.warning()",
+                             "Warning",
                              "Notes are currently opened and modified.  Do you really want to continue, without saving the changes?",
                              QMessageBox.NoButton, self)
         msgBox.addButton("Cancel", QMessageBox.AcceptRole)
@@ -1383,6 +1400,50 @@ class MainWindow(QMainWindow):
         # note: can use QGuiApplication.instance().clipboard().setText to set text in clipboard
         if clipboardText:
             self.openTextOnStudyView(self.htmlWrapper(clipboardText, True), tab_title="clipboard")
+        else:
+            self.displayMessage(config.thisTranslation["noClipboardContent"])
+
+    def openReferencesOnClipboard(self):
+        clipboardText = QApplication.clipboard().text()
+        if clipboardText:
+            parser = BibleVerseParser(config.parserStandarisation)
+            verseList = parser.extractAllReferences(clipboardText, False)
+            if not verseList:
+                self.displayMessage(config.thisTranslation["message_noReference"])
+            else:
+                references = "; ".join([parser.bcvToVerseReference(*verse) for verse in verseList])
+                self.runTextCommand(references)
+        else:
+            self.displayMessage(config.thisTranslation["noClipboardContent"])
+
+    def readClipboardContent(self):
+        clipboardText = QApplication.clipboard().text()
+        if clipboardText:
+            if config.isOnlineTtsInstalled and not config.isGoogleCloudTTSAvailable and not config.forceOnlineTts:
+                keyword = "SPEAK"
+            else:
+                keyword = "GTTS"
+            command = "{0}:::{1}".format(keyword, clipboardText)
+            self.runTextCommand(command)
+        else:
+            self.displayMessage(config.thisTranslation["noClipboardContent"])
+
+    def searchBibleForClipboardContent(self):
+        clipboardText = QApplication.clipboard().text()
+        if clipboardText:
+            self.runTextCommand("SEARCH:::{0}".format(clipboardText))
+        else:
+            self.displayMessage(config.thisTranslation["noClipboardContent"])
+
+    def searchResourcesForClipboardContent(self):
+        clipboardText = QApplication.clipboard().text()
+        self.openControlPanelTab(3)
+        self.controlPanel.toolTab.searchField.setText(clipboardText if clipboardText else "")
+
+    def runContextPluginOnClipboardContent(self, plugin):
+        clipboardText = QApplication.clipboard().text()
+        if clipboardText:
+            self.mainView.currentWidget().runPlugin(plugin, clipboardText)
         else:
             self.displayMessage(config.thisTranslation["noClipboardContent"])
 
@@ -2339,7 +2400,7 @@ class MainWindow(QMainWindow):
                                           20, 1)
         if ok:
             config.numberOfTab = integer
-            self.displayMessage(config.thisTranslation["message_restart"])
+            self.handleRestart()
 
     def setIconButtonSize(self, size=None):
         if size is None:
@@ -4150,6 +4211,45 @@ vid:hover, a:hover, a:active, ref:hover, entry:hover, ch:hover, text:hover, addo
             self.setupMenuLayout("material")
             self.instantTtsButton.setToolTip("{0} - {1}".format(config.thisTranslation["context1_speak"], config.ttsDefaultLangauge))
 
+    def setDefaultTtsLanguage2(self, language):
+        config.ttsDefaultLangauge2 = language
+        if config.menuLayout == "material":
+            self.setupMenuLayout("material")
+            if hasattr(config, "instantTtsButton2"):
+                self.instantTtsButton2.setToolTip("{0} - {1}".format(config.thisTranslation["context1_speak"], config.ttsDefaultLangauge))
+            else:
+                self.handleRestart()
+
+    def setDefaultTtsLanguage3(self, language):
+        config.ttsDefaultLangauge3 = language
+        if config.menuLayout == "material":
+            self.setupMenuLayout("material")
+            if hasattr(config, "instantTtsButton3"):
+                self.instantTtsButton3.setToolTip("{0} - {1}".format(config.thisTranslation["context1_speak"], config.ttsDefaultLangauge))
+            else:
+                self.handleRestart()
+
+    # handling restart
+    def handleRestart(self):
+        if hasattr(config, "cli") and self.warningRestart():
+            self.restartApp()
+        else:
+            self.displayMessage(config.thisTranslation["message_restart"])
+
+    def warningRestart(self):
+        msgBox = QMessageBox(QMessageBox.Warning,
+                             "Warning",
+                             "Restart Unique Bible App to make the changes effective?",
+                             QMessageBox.NoButton, self)
+        msgBox.addButton("Later", QMessageBox.AcceptRole)
+        msgBox.addButton("&Now", QMessageBox.RejectRole)
+        if msgBox.exec_() == QMessageBox.AcceptRole:
+            # Cancel
+            return False
+        else:
+            # Continue
+            return True
+
     def setDefaultTtsLanguageDialog(self):
         languages = self.getTtsLanguages()
         languageCodes = list(languages.keys())
@@ -4922,11 +5022,26 @@ vid:hover, a:hover, a:active, ref:hover, entry:hover, ch:hover, text:hover, addo
             # offline tts
             self.mainView.currentWidget().textToSpeech(True)
 
+    def instantTTS2(self):
+        if config.isGoogleCloudTTSAvailable or ((not config.isOfflineTtsInstalled or config.forceOnlineTts) and config.isGTTSInstalled):
+            # online tts
+            self.mainView.currentWidget().googleTextToSpeechLanguage(config.ttsDefaultLangauge2, True)
+        else:
+            # offline tts
+            self.mainView.currentWidget().textToSpeechLanguage(config.ttsDefaultLangauge2, True)
+
+    def instantTTS3(self):
+        if config.isGoogleCloudTTSAvailable or ((not config.isOfflineTtsInstalled or config.forceOnlineTts) and config.isGTTSInstalled):
+            # online tts
+            self.mainView.currentWidget().googleTextToSpeechLanguage(config.ttsDefaultLangauge3, True)
+        else:
+            # offline tts
+            self.mainView.currentWidget().textToSpeechLanguage(config.ttsDefaultLangauge3, True)
+
     def openVlcPlayer(self, filename=""):
         try:
             if config.macVlc and not config.forceUseBuiltinMediaPlayer:
-                if config.isMacvlcInstalled:
-                    os.system("vlc kill")
+                os.system("pkill VLC")
                 if filename:
                     WebtopUtil.run(f'{config.macVlc} "{filename}"')
                 else:
@@ -4946,8 +5061,8 @@ vid:hover, a:hover, a:active, ref:hover, entry:hover, ch:hover, text:hover, addo
             self.displayMessage(config.thisTranslation["noMediaPlayer"])
 
     def closeMediaPlayer(self):
-        if config.isMacvlcInstalled:
-            os.system("vlc kill")
+        if config.macVlc:
+            os.system("pkill VLC")
         if WebtopUtil.isPackageInstalled("vlc") and WebtopUtil.isPackageInstalled("pkill"):
             os.system("pkill vlc")
         if self.vlcPlayer is not None:
@@ -4982,8 +5097,6 @@ vid:hover, a:hover, a:active, ref:hover, entry:hover, ch:hover, text:hover, addo
     def playAudioBibleFilePlayList(self, playlist, gui=True):
         self.closeMediaPlayer()
         if config.macVlc and not config.forceUseBuiltinMediaPlayer:
-            #if config.isMacvlcInstalled:
-            #    os.system("vlc kill")
             audioFiles = '" "'.join(playlist)
             audioFiles = '"{0}"'.format(audioFiles)
             WebtopUtil.run(f"{config.macVlc} {audioFiles}")
@@ -5015,8 +5128,6 @@ vid:hover, a:hover, a:active, ref:hover, entry:hover, ch:hover, text:hover, addo
                     if file:
                         fileList.append(file)
                 audioFiles = ' '.join(fileList)
-                #if config.isMacvlcInstalled:
-                #    os.system("vlc kill")
                 WebtopUtil.run(f"{config.macVlc} {audioFiles}")
             elif WebtopUtil.isPackageInstalled("vlc") and not config.forceUseBuiltinMediaPlayer:
                 fileList = []
@@ -5170,3 +5281,10 @@ vid:hover, a:hover, a:active, ref:hover, entry:hover, ch:hover, text:hover, addo
     def testing(self):
         #pass
         print("testing")
+
+    # Work with system tray
+    def showFromTray(self):
+        self.show()
+        self.showMaximized()
+        self.activateWindow()
+        self.raise_()

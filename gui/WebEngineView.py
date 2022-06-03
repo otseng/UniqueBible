@@ -1072,9 +1072,9 @@ class WebEngineView(QWebEngineView):
                 except:
                     self.displayMessage(config.thisTranslation["message_fail"])
 
-    def textToSpeechLanguage(self, language):
+    def textToSpeechLanguage(self, language, activeSelection=False):
         if config.isOfflineTtsInstalled:
-            selectedText = self.selectedTextProcessed()
+            selectedText = self.selectedTextProcessed(activeSelection)
             if not selectedText:
                 self.messageNoSelection()
             speakCommand = "SPEAK:::{0}:::{1}".format(language, selectedText)
@@ -1445,7 +1445,6 @@ class WebEngineView(QWebEngineView):
                 self.parent.parent.textCommandChanged(references, "main")
             else:
                 self.displayMessage(config.thisTranslation["message_noReference"])
-            del parser
         else:
             self.messageNoSelection()
 
@@ -1459,7 +1458,6 @@ class WebEngineView(QWebEngineView):
             else:
                 references = "; ".join([parser.bcvToVerseReference(*verse) for verse in verseList])
                 QApplication.clipboard().setText(references)
-            del parser
         else:
             self.messageNoSelection()
 

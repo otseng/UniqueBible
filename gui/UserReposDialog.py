@@ -24,7 +24,7 @@ class UserReposDialog(QDialog):
         self.parent = parent
         # self.setWindowTitle(config.thisTranslation["userDefinedResources"])
         self.setWindowTitle("User Defined Resources")
-        self.setMinimumSize(400, 400)
+        self.setMinimumSize(600, 400)
         self.db = UserRepoSqlite()
         self.userRepos = None
         self.setupUI()
@@ -46,12 +46,9 @@ class UserReposDialog(QDialog):
         self.selectionModel = self.reposTable.selectionModel()
         self.selectionModel.selectionChanged.connect(self.handleSelection)
         mainLayout.addWidget(self.reposTable)
-        self.reloadFilters()
+        self.reloadRepos()
 
         buttonsLayout = QHBoxLayout()
-        clearButton = QPushButton(config.thisTranslation["clear"])
-        clearButton.clicked.connect(self.clearFilter)
-        buttonsLayout.addWidget(clearButton)
         addButton = QPushButton(config.thisTranslation["add"])
         addButton.clicked.connect(self.addNewFilter)
         buttonsLayout.addWidget(addButton)
@@ -85,19 +82,21 @@ class UserReposDialog(QDialog):
     def close(self):
         pass
 
-    def reloadFilters(self):
+    def reloadRepos(self):
         self.userRepos = self.db.getAll()
         self.dataViewModel.clear()
         rowCount = 0
         for id, active, name, type, directory, repo in self.userRepos:
             item = QStandardItem(name)
-            item.setToolTip(name)
-            # item.setCheckable(True)
             self.dataViewModel.setItem(rowCount, 0, item)
-            item = QStandardItem(repo)
+            item = QStandardItem(type)
             self.dataViewModel.setItem(rowCount, 1, item)
+            item = QStandardItem(directory)
+            self.dataViewModel.setItem(rowCount, 2, item)
+            item = QStandardItem(repo)
+            self.dataViewModel.setItem(rowCount, 3, item)
             rowCount += 1
-        self.dataViewModel.setHorizontalHeaderLabels(["Name", "Repo"])
+        self.dataViewModel.setHorizontalHeaderLabels(["Name", "Type", "Directory", "Repo"])
         self.reposTable.resizeColumnsToContents()
 
     def handleSelection(self, selected, deselected):
@@ -118,7 +117,7 @@ class UserReposDialog(QDialog):
         if dialog.exec():
             data = dialog.getInputs()
             self.db.insert(data[0], data[1])
-            self.reloadFilters()
+            self.reloadRepos()
 
     def removeFilter(self):
         reply = QMessageBox.question(self, "Delete",
@@ -126,7 +125,7 @@ class UserReposDialog(QDialog):
                                      QMessageBox.Yes | QMessageBox.No)
         if reply == QMessageBox.Yes:
             self.db.delete(self.selectedFilter)
-            self.reloadFilters()
+            self.reloadRepos()
 
     def editFilter(self):
         fields = [(config.thisTranslation["filter2"], self.selectedFilter),
@@ -136,13 +135,7 @@ class UserReposDialog(QDialog):
             data = dialog.getInputs()
             self.db.delete(self.selectedFilter)
             self.db.insert(data[0], data[1])
-            self.reloadFilters()
-
-    def clearFilter(self):
-        for index in range(self.dataViewModel.rowCount()):
-            item = self.dataViewModel.item(index)
-            item.setCheckState(Qt.CheckState.Unchecked)
-        self.runFilter()
+            self.reloadRepos()
 
     def importFile(self):
         options = QFileDialog.Options()
@@ -163,7 +156,7 @@ class UserReposDialog(QDialog):
                         self.db.insert(filter, pattern)
             except Exception as e:
                 print(e)
-            self.reloadFilters()
+            self.reloadRepos()
 
     def exportFile(self):
         options = QFileDialog.Options()

@@ -66,16 +66,16 @@ class UserRepoSqlite:
 
 if __name__ == "__main__":
 
-    config.marvelData = "/home/oliver/dev/UniqueBible"
+    config.marvelData = "/home/oliver/dev/UniqueBible/marvelData/"
     # config.marvelData = "/Users/otseng/dev/UniqueBible/marvelData/"
 
     db = UserRepoSqlite()
-    db.deleteAll()
-    db.insert("my bible 1", "bibles", "bibles2", "otseng/testing")
+    # db.deleteAll()
+    db.insert("my bible 4", "pdf", "pdf1", "pdf/testing")
     repos = db.getAll()
     for repo in repos:
         print(f"{repo[0]}:{repo[1]}:{repo[2]}:{repo[3]}:{repo[4]}:{repo[5]}")
-    db.update(repo[0], "update bible", "bibles", "bibles3", "otseng/testing2", False)
-    repos = db.getAll()
-    for repo in repos:
-        print(f"{repo[0]}:{repo[1]}:{repo[2]}:{repo[3]}:{repo[4]}:{repo[5]}")
+    # db.update(repo[0], "update bible", "bibles", "bibles3", "otseng/testing2", False)
+    # repos = db.getAll()
+    # for repo in repos:
+    #     print(f"{repo[0]}:{repo[1]}:{repo[2]}:{repo[3]}:{repo[4]}:{repo[5]}")

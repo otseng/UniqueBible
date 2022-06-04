@@ -26,8 +26,8 @@ class UserReposDialog(QDialog):
         super().__init__()
         self.parent = parent
         # self.setWindowTitle(config.thisTranslation["userDefinedResources"])
-        self.setWindowTitle("User Defined Resources")
-        self.setMinimumSize(600, 400)
+        self.setWindowTitle("User Custom Repos")
+        self.setMinimumSize(650, 400)
         self.db = UserRepoSqlite()
         self.userRepos = None
         self.setupUI()
@@ -36,7 +36,7 @@ class UserReposDialog(QDialog):
         mainLayout = QVBoxLayout()
 
         # title = QLabel(config.thisTranslation["userDefinedResources"])
-        title = QLabel("User Defined Resources")
+        title = QLabel("User Custom Repos")
         mainLayout.addWidget(title)
 
         self.reposTable = QTableView()
@@ -86,7 +86,7 @@ class UserReposDialog(QDialog):
         self.setLayout(mainLayout)
 
     def close(self):
-        pass
+        self.parent.setupMenuLayout(config.menuLayout)
 
     def reloadRepos(self):
         self.userRepos = self.db.getAll()
@@ -101,10 +101,10 @@ class UserReposDialog(QDialog):
             self.dataViewModel.setItem(rowCount, 2, item)
             item = QStandardItem(repo)
             self.dataViewModel.setItem(rowCount, 3, item)
-            item = QStandardItem(directory)
-            self.dataViewModel.setItem(rowCount, 4, item)
+            # item = QStandardItem(directory)
+            # self.dataViewModel.setItem(rowCount, 4, item)
             rowCount += 1
-        self.dataViewModel.setHorizontalHeaderLabels(["ID", "Name", "Type", "Repo", "Directory"])
+        self.dataViewModel.setHorizontalHeaderLabels(["ID", "Name", "Type", "Repo"])
         self.reposTable.resizeColumnsToContents()
 
     def handleSelection(self, selected, deselected):
@@ -114,22 +114,20 @@ class UserReposDialog(QDialog):
             self.selectedRepoName = self.dataViewModel.item(row, 1).text()
             self.selectedRepoType = self.dataViewModel.item(row, 2).text()
             self.selectedRepoUrl = self.dataViewModel.item(row, 3).text()
-            self.selectedRepoDirectory = self.dataViewModel.item(row, 4).text()
+            # self.selectedRepoDirectory = self.dataViewModel.item(row, 4).text()
 
     def repoSelectionChanged(self, item):
         pass
 
     def addNewRepo(self):
-        # fields = [(config.thisTranslation["filter2"], ""),
-        #           (config.thisTranslation["pattern"], "")]
         fields = [("Name", ""),
                   ("Type", GitHubRepoInfo.types),
                   ("Repo", ""),
-                  ("Directory", "")]
+                  ]
         dialog = MultiLineInputDialog("New Repo", fields)
         if dialog.exec():
             data = dialog.getInputs()
-            self.db.insert(data[0], data[1], data[2], data[3])
+            self.db.insert(data[0], data[1], data[2])
             self.reloadRepos()
 
     def removeRepo(self):
@@ -143,8 +141,7 @@ class UserReposDialog(QDialog):
     def editRepo(self):
         fields = [("Name", self.selectedRepoName),
                   ("Type", GitHubRepoInfo.types, self.selectedRepoType),
-                  ("Repo", self.selectedRepoUrl),
-                  ("Directory", self.selectedRepoDirectory)]
+                  ("Repo", self.selectedRepoUrl)]
         dialog = MultiLineInputDialog("Edit Repo", fields)
         if dialog.exec():
             data = dialog.getInputs()
@@ -160,6 +157,8 @@ class UserReposDialog(QDialog):
         except:
             pass
         QMessageBox.information(self, "Test User Repo", message)
+        data = (self.selectedRepoName,) + GitHubRepoInfo.buildInfo(self.selectedRepoUrl, self.selectedRepoType, "")
+        print(data)
 
     def importFile(self):
         options = QFileDialog.Options()
@@ -203,6 +202,9 @@ class UserReposDialog(QDialog):
 class Dummy:
 
     def __init__(self):
+        pass
+
+    def setupMenuLayout(self, layout):
         pass
 
     def disableBiblesInParagraphs(self):

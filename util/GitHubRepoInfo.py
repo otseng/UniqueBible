@@ -17,4 +17,21 @@ class GitHubRepoInfo:
     devotionals = ("otseng/UniqueBible_Devotionals", "devotionals", "gitHubDevotionals", "devotion")
 
     types = ["bibles", "books", "commentaries", "devotionals", "epub", "pdf",
-             "plugins-context", "plugins-menu"]
+             "plugins-context", "plugins-layout", "plugins-menu", "plugins-startup", "plugins-shutdown"]
+
+    @staticmethod
+    def buildInfo(repo, type, directory=""):
+        infoMap = {"bibles": ("bibles", "githubBibles", "bible"),
+                   "books": ("books", "githubBooks", "book"),
+                   "commentaries": ("commentaries", "githubCommentaries", "commentary"),
+                   "devotionals": ("devotionals", "gitHubDevotionals", "devotion"),
+                   "epub": ("epub", "githubEpub", "epub"),
+                   "pdf": ("pdf", "githubPdf", "pdf"),
+                   "plugins-context": ("../plugins/context", "gitHubPluginsContext", "py"),
+                   "plugins-layout": ("../plugins/layout", "gitHubPluginsLayout", "py"),
+                   "plugins-menu": ("../plugins/menu", "gitHubPluginsMenu", "py"),
+                   "plugins-startup": ("../plugins/startup", "gitHubPluginsStartup", "py"),
+                   "plugins-shutdown": ("../plugins/shutdown", "gitHubPluginsShutdown", "py")
+                   }
+        data = (repo,) + infoMap[type]
+        return data

@@ -35,14 +35,14 @@ class UserRepoSqlite:
         else:
             return False
 
-    def insert(self, name, type, repo, directory, active=True):
+    def insert(self, name, type, repo, directory="", active=True):
         insert = f"""INSERT INTO {self.TABLE_NAME} 
             (active, name, type, repo, directory) 
             VALUES (?, ?, ?, ?, ?)"""
         self.cursor.execute(insert, (active, name, type, repo, directory))
         self.connection.commit()
 
-    def update(self, id, name, type, repo, directory, active=True):
+    def update(self, id, name, type, repo, directory="", active=True):
         update = f"""UPDATE {self.TABLE_NAME} SET
             active=?, name=?, type=?, repo=?, directory=?
             WHERE id=?"""

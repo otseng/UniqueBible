@@ -1,5 +1,7 @@
 import os
 import config
+from util.GitHubRepoInfo import GitHubRepoInfo
+
 if config.qtLibrary == "pyside6":
     from PySide6.QtCore import Qt
     from PySide6.QtGui import QStandardItemModel, QStandardItem
@@ -50,13 +52,13 @@ class UserReposDialog(QDialog):
 
         buttonsLayout = QHBoxLayout()
         addButton = QPushButton(config.thisTranslation["add"])
-        addButton.clicked.connect(self.addNewFilter)
+        addButton.clicked.connect(self.addNewRepo)
         buttonsLayout.addWidget(addButton)
         removeButton = QPushButton(config.thisTranslation["remove"])
-        removeButton.clicked.connect(self.removeFilter)
+        removeButton.clicked.connect(self.removeRepo)
         buttonsLayout.addWidget(removeButton)
         editButton = QPushButton(config.thisTranslation["edit"])
-        editButton.clicked.connect(self.editFilter)
+        editButton.clicked.connect(self.editRepo)
         buttonsLayout.addWidget(editButton)
         mainLayout.addLayout(buttonsLayout)
 
@@ -86,40 +88,47 @@ class UserReposDialog(QDialog):
         self.userRepos = self.db.getAll()
         self.dataViewModel.clear()
         rowCount = 0
-        for id, active, name, type, directory, repo in self.userRepos:
-            item = QStandardItem(name)
+        for id, active, name, type, repo, directory in self.userRepos:
+            item = QStandardItem(str(id))
             self.dataViewModel.setItem(rowCount, 0, item)
-            item = QStandardItem(type)
+            item = QStandardItem(name)
             self.dataViewModel.setItem(rowCount, 1, item)
-            item = QStandardItem(directory)
+            item = QStandardItem(type)
             self.dataViewModel.setItem(rowCount, 2, item)
             item = QStandardItem(repo)
             self.dataViewModel.setItem(rowCount, 3, item)
+            item = QStandardItem(directory)
+            self.dataViewModel.setItem(rowCount, 4, item)
             rowCount += 1
-        self.dataViewModel.setHorizontalHeaderLabels(["Name", "Type", "Directory", "Repo"])
+        self.dataViewModel.setHorizontalHeaderLabels(["ID", "Name", "Type", "Repo", "Directory"])
         self.reposTable.resizeColumnsToContents()
 
     def handleSelection(self, selected, deselected):
         for item in selected:
             row = item.indexes()[0].row()
-            filter = self.dataViewModel.item(row, 0)
-            self.selectedFilter = filter.text()
-            pattern = self.dataViewModel.item(row, 1)
-            self.selectedPattern = pattern.text()
+            self.selectedRepoId = self.dataViewModel.item(row, 0).text()
+            self.selectedRepoName = self.dataViewModel.item(row, 1).text()
+            self.selectedRepoType = self.dataViewModel.item(row, 2).text()
+            self.selectedRepoUrl = self.dataViewModel.item(row, 3).text()
+            self.selectedRepoDirectory = self.dataViewModel.item(row, 4).text()
 
     def repoSelectionChanged(self, item):
         pass
 
-    def addNewFilter(self):
-        fields = [(config.thisTranslation["filter2"], ""),
-                  (config.thisTranslation["pattern"], "")]
-        dialog = MultiLineInputDialog("New Filter", fields)
+    def addNewRepo(self):
+        # fields = [(config.thisTranslation["filter2"], ""),
+        #           (config.thisTranslation["pattern"], "")]
+        fields = [("Name", ""),
+                  ("Type", GitHubRepoInfo.types),
+                  ("Repo", ""),
+                  ("Directory", "")]
+        dialog = MultiLineInputDialog("New Repo", fields)
         if dialog.exec():
             data = dialog.getInputs()
-            self.db.insert(data[0], data[1])
+            self.db.insert(data[0], data[1], data[2], data[3])
             self.reloadRepos()
 
-    def removeFilter(self):
+    def removeRepo(self):
         reply = QMessageBox.question(self, "Delete",
                                      'Delete {0} {1}'.format(self.selectedFilter, config.thisTranslation["filter2"]),
                                      QMessageBox.Yes | QMessageBox.No)
@@ -127,14 +136,15 @@ class UserReposDialog(QDialog):
             self.db.delete(self.selectedFilter)
             self.reloadRepos()
 
-    def editFilter(self):
-        fields = [(config.thisTranslation["filter2"], self.selectedFilter),
-                  (config.thisTranslation["pattern"], self.selectedPattern)]
-        dialog = MultiLineInputDialog("Edit Filter", fields)
+    def editRepo(self):
+        fields = [("Name", self.selectedRepoName),
+                  ("Type", GitHubRepoInfo.types, self.selectedRepoType),
+                  ("Repo", self.selectedRepoUrl),
+                  ("Directory", self.selectedRepoDirectory)]
+        dialog = MultiLineInputDialog("Edit Repo", fields)
         if dialog.exec():
             data = dialog.getInputs()
-            self.db.delete(self.selectedFilter)
-            self.db.insert(data[0], data[1])
+            self.db.update(self.selectedRepoId, data[0], data[1], data[2], data[3])
             self.reloadRepos()
 
     def importFile(self):

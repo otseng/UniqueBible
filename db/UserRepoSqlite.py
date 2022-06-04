@@ -10,8 +10,9 @@ class UserRepoSqlite:
         active Integer,
         name NVARCHAR(100),
         type NVARCHAR(20),
-        directory NVARCHAR(100), 
-        repo NVARCHAR(200))"""
+        repo NVARCHAR(200),
+        directory NVARCHAR(100))
+        """
 
     def __init__(self):
         self.filename = os.path.join(config.marvelData, "userrepo.sqlite")
@@ -34,18 +35,18 @@ class UserRepoSqlite:
         else:
             return False
 
-    def insert(self, name, type, directory, repo, active=True):
+    def insert(self, name, type, repo, directory, active=True):
         insert = f"""INSERT INTO {self.TABLE_NAME} 
-            (active, name, type, directory, repo) 
+            (active, name, type, repo, directory) 
             VALUES (?, ?, ?, ?, ?)"""
-        self.cursor.execute(insert, (active, name, type, directory, repo))
+        self.cursor.execute(insert, (active, name, type, repo, directory))
         self.connection.commit()
 
-    def update(self, id, name, type, directory, repo, active=True):
+    def update(self, id, name, type, repo, directory, active=True):
         update = f"""UPDATE {self.TABLE_NAME} SET
-            active=?, name=?, type=?, directory=?, repo=?
+            active=?, name=?, type=?, repo=?, directory=?
             WHERE id=?"""
-        self.cursor.execute(update, (active, name, type, directory, repo, id))
+        self.cursor.execute(update, (active, name, type, repo, directory, id))
         self.connection.commit()
 
     def delete(self, id):
@@ -59,7 +60,7 @@ class UserRepoSqlite:
         self.connection.commit()
 
     def getAll(self):
-        query = f"SELECT id, active, name, type, directory, repo FROM {self.TABLE_NAME}"
+        query = f"SELECT id, active, name, type, repo, directory FROM {self.TABLE_NAME} order by name"
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
@@ -71,11 +72,11 @@ if __name__ == "__main__":
 
     db = UserRepoSqlite()
     # db.deleteAll()
-    db.insert("my bible 4", "pdf", "pdf1", "pdf/testing")
+    db.insert("my bible 3", "pdf", "pdf/testing3", "custom")
     repos = db.getAll()
     for repo in repos:
         print(f"{repo[0]}:{repo[1]}:{repo[2]}:{repo[3]}:{repo[4]}:{repo[5]}")
-    # db.update(repo[0], "update bible", "bibles", "bibles3", "otseng/testing2", False)
+    # db.update(repo[0], "update bible", "bibles", "otseng/testing2", "custom", False)
     # repos = db.getAll()
     # for repo in repos:
     #     print(f"{repo[0]}:{repo[1]}:{repo[2]}:{repo[3]}:{repo[4]}:{repo[5]}")

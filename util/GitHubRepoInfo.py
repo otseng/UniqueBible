@@ -15,3 +15,6 @@ class GitHubRepoInfo:
     pluginsShutdown = ("otseng/UniqueBible_Plugins_Shutdown", "../plugins/shutdown", "gitHubPluginsShutdown", "py")
     pluginsLayout = ("otseng/UniqueBible_Plugins_Layout", "../plugins/layout", "gitHubPluginsLayout", "py")
     devotionals = ("otseng/UniqueBible_Devotionals", "devotionals", "gitHubDevotionals", "devotion")
+
+    types = ["bibles", "books", "commentaries", "devotionals", "epub", "pdf",
+             "plugins-context", "plugins-menu"]

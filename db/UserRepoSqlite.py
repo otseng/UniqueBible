@@ -64,6 +64,14 @@ class UserRepoSqlite:
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
+    def checkRepoExists(self, name, type, repo, directory):
+        query = f"SELECT * FROM {self.TABLE_NAME} WHERE name=? and type=? and repo=? and directory=?"
+        self.cursor.execute(query, (name, type, repo, directory))
+        if self.cursor.fetchone():
+            return True
+        else:
+            return False
+
 
 if __name__ == "__main__":
 

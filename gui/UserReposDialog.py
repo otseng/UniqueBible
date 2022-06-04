@@ -130,10 +130,10 @@ class UserReposDialog(QDialog):
 
     def removeRepo(self):
         reply = QMessageBox.question(self, "Delete",
-                                     'Delete {0} {1}'.format(self.selectedFilter, config.thisTranslation["filter2"]),
+                                     f'Delete {self.selectedRepoName}?',
                                      QMessageBox.Yes | QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self.db.delete(self.selectedFilter)
+            self.db.delete(self.selectedRepoId)
             self.reloadRepos()
 
     def editRepo(self):
@@ -151,19 +151,20 @@ class UserReposDialog(QDialog):
         options = QFileDialog.Options()
         filename, filtr = QFileDialog.getOpenFileName(self,
                                                       config.thisTranslation["import"],
-                                                      config.thisTranslation["liveFilter"],
-                                                      "File (*.filter)",
+                                                      "User Repo",
+                                                      "File (*.repo)",
                                                       "", options)
         if filename:
             try:
                 with open(filename, errors='ignore') as f:
                     for line in f:
                         data = line.split(":::")
-                        filter = data[0].strip()
-                        pattern = data[1].strip()
-                        if self.db.checkFilterExists(filter):
-                            self.db.delete(filter)
-                        self.db.insert(filter, pattern)
+                        name = data[0].strip()
+                        type = data[1].strip()
+                        repo = data[2].strip()
+                        directory = data[3].strip()
+                        if not self.db.checkRepoExists(name, type, repo, directory):
+                            self.db.insert(name, type, repo, directory)
             except Exception as e:
                 print(e)
             self.reloadRepos()
@@ -172,14 +173,14 @@ class UserReposDialog(QDialog):
         options = QFileDialog.Options()
         fileName, *_ = QFileDialog.getSaveFileName(self,
                                            config.thisTranslation["export"],
-                                           config.thisTranslation["liveFilter"],
-                                           "File (*.filter)", "", options)
+                                           "User Repo",
+                                           "File (*.repo)", "", options)
         if fileName:
             if not "." in os.path.basename(fileName):
-                fileName = fileName + ".filter"
+                fileName = fileName + ".repo"
             data = ""
-            for name, description in self.db.getAll():
-                data += f"{name}:::{description}\n"
+            for id, active, name, type, repo, directory in self.db.getAll():
+                data += f"{name}:::{type}:::{repo}:::{directory}\n"
             f = open(fileName, "w", encoding="utf-8")
             f.write(data)
             f.close()

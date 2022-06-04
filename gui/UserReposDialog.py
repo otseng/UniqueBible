@@ -1,6 +1,7 @@
 import os
 import config
 from util.GitHubRepoInfo import GitHubRepoInfo
+from util.GithubUtil import GithubUtil
 
 if config.qtLibrary == "pyside6":
     from PySide6.QtCore import Qt
@@ -60,6 +61,9 @@ class UserReposDialog(QDialog):
         editButton = QPushButton(config.thisTranslation["edit"])
         editButton.clicked.connect(self.editRepo)
         buttonsLayout.addWidget(editButton)
+        testButton = QPushButton("Test")
+        testButton.clicked.connect(self.testRepo)
+        buttonsLayout.addWidget(testButton)
         mainLayout.addLayout(buttonsLayout)
 
         buttonsLayout = QHBoxLayout()
@@ -146,6 +150,16 @@ class UserReposDialog(QDialog):
             data = dialog.getInputs()
             self.db.update(self.selectedRepoId, data[0], data[1], data[2], data[3])
             self.reloadRepos()
+
+    def testRepo(self):
+        try:
+            message = f"Could not connect to {self.selectedRepoName}"
+            github = GithubUtil(self.selectedRepoUrl)
+            if github.repo is not None:
+                message = f"{self.selectedRepoName} connection OK"
+        except:
+            pass
+        QMessageBox.information(self, "Test User Repo", message)
 
     def importFile(self):
         options = QFileDialog.Options()

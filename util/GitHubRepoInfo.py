@@ -16,8 +16,8 @@ class GitHubRepoInfo:
     pluginsLayout = ("otseng/UniqueBible_Plugins_Layout", "../plugins/layout", "gitHubPluginsLayout", "py")
     devotionals = ("otseng/UniqueBible_Devotionals", "devotionals", "gitHubDevotionals", "devotion")
 
-    types = ["bibles", "books", "commentaries", "devotionals", "epub", "pdf",
-             "plugins-context", "plugins-layout", "plugins-menu", "plugins-startup", "plugins-shutdown"]
+    types = ["bibles", "books", "commentaries", "devotionals", "epub", "pdf", "mp3", "mp4"]
+             # "plugins-context", "plugins-layout", "plugins-menu", "plugins-startup", "plugins-shutdown"]
 
     @staticmethod
     def buildInfo(repo, type, directory=""):
@@ -27,6 +27,8 @@ class GitHubRepoInfo:
                    "devotionals": ("devotionals", "gitHubDevotionals", "devotion"),
                    "epub": ("epub", "githubEpub", "epub"),
                    "pdf": ("pdf", "githubPdf", "pdf"),
+                   "mp3": ("../music", "download_mp3", "mp3"),
+                   "mp4": ("../video", "download_mp4", "mp4"),
                    "plugins-context": ("../plugins/context", "gitHubPluginsContext", "py"),
                    "plugins-layout": ("../plugins/layout", "gitHubPluginsLayout", "py"),
                    "plugins-menu": ("../plugins/menu", "gitHubPluginsMenu", "py"),
@@ -36,6 +38,23 @@ class GitHubRepoInfo:
         repo = GitHubRepoInfo.fixRepoUrl(repo)
         data = (repo,) + infoMap[type]
         return data
+
+    @staticmethod
+    def getLibraryType(type):
+        map = {"bibles": "BIBLE",
+               "books": "BOOK",
+               "commentaries": "COMM",
+               "devotionals": "DEVOTIONAL",
+               "pdf": "PDF",
+               "mp3": "MP3",
+               "mp4": "MP4",
+               "plugins-context": "PLUGIN",
+               "plugins-layout": "PLUGIN",
+               "plugins-menu": "PLUGIN",
+               "plugins-startup": "PLUGIN",
+               "plugins-shutdown": "PLUGIN",
+               }
+        return map[type]
 
     @staticmethod
     def fixRepoUrl(url):

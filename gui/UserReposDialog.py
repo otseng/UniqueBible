@@ -1,5 +1,8 @@
 import os
+import pprint
+
 import config
+from util.CatalogUtil import CatalogUtil
 from util.GitHubRepoInfo import GitHubRepoInfo
 from util.GithubUtil import GithubUtil
 
@@ -67,6 +70,9 @@ class UserReposDialog(QDialog):
         mainLayout.addLayout(buttonsLayout)
 
         buttonsLayout = QHBoxLayout()
+        buildIndexButton = QPushButton("Build Index")
+        buildIndexButton.clicked.connect(self.buildIndex)
+        buttonsLayout.addWidget(buildIndexButton)
         importButton = QPushButton(config.thisTranslation["import"])
         importButton.clicked.connect(self.importFile)
         buttonsLayout.addWidget(importButton)
@@ -157,6 +163,18 @@ class UserReposDialog(QDialog):
                 self.parent.runTextCommand(f"_website:::https://github.com/{self.selectedRepoUrl}")
         except Exception as ex:
             QMessageBox.information(self, "Custom User Repo", f"Could not connect to {self.selectedRepoName}")
+
+    def buildIndex(self):
+        data = []
+        for id, active, name, type, repo, directory in self.userRepos:
+            try:
+                data += CatalogUtil.loadRemoteFiles(GitHubRepoInfo.getLibraryType(type),
+                                                GitHubRepoInfo.buildInfo(repo, type, directory))
+            except:
+                pass
+        with open("util/GitHubCustomRepoCache.py", "w", encoding="utf-8") as fileObj:
+            fileObj.write("gitHubCustomRepoCacheData = {0}\n".format(pprint.pformat(data)))
+        QMessageBox.information(self, "Custom User Repo", f"Built custom repo index")
 
     def importFile(self):
         options = QFileDialog.Options()

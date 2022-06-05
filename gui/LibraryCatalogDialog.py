@@ -36,7 +36,7 @@ class LibraryCatalogDialog(QDialog):
         self.isUpdating = False
         self.catalogEntryId = None
         self.localCatalog = CatalogUtil.loadLocalCatalog()
-        self.remoteCatalog = gitHubRepoCacheData
+        self.remoteCatalog = self.getCacheData()
         self.localCatalogData = self.getLocalCatalogItems()
         self.remoteCatalogData = self.getRemoteCatalogItems()
         self.location = "local"
@@ -135,6 +135,13 @@ class LibraryCatalogDialog(QDialog):
         mainLayout.addLayout(buttonLayout)
 
         self.setLayout(mainLayout)
+
+    def getCacheData(self):
+        cacheData = gitHubRepoCacheData
+        if os.path.exists("util/GitHubCustomRepoCache.py"):
+            from util.GitHubCustomRepoCache import gitHubCustomRepoCacheData
+            cacheData += gitHubCustomRepoCacheData
+        return cacheData
 
     def setLocation(self, location):
         self.location = location

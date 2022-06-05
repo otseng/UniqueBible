@@ -111,7 +111,7 @@ class UserReposDialog(QDialog):
         for item in selected:
             row = item.indexes()[0].row()
             self.selectedRepoId = self.dataViewModel.item(row, 0).text()
-            self.selectedRepoName = self.dataViewModel.item(row, 1).text()
+            self.selectedRepoName = GitHubRepoInfo.fixRepoUrl(self.dataViewModel.item(row, 1).text())
             self.selectedRepoType = self.dataViewModel.item(row, 2).text()
             self.selectedRepoUrl = self.dataViewModel.item(row, 3).text()
             # self.selectedRepoDirectory = self.dataViewModel.item(row, 4).text()

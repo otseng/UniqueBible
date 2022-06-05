@@ -33,5 +33,11 @@ class GitHubRepoInfo:
                    "plugins-startup": ("../plugins/startup", "gitHubPluginsStartup", "py"),
                    "plugins-shutdown": ("../plugins/shutdown", "gitHubPluginsShutdown", "py")
                    }
+        repo = GitHubRepoInfo.fixRepoUrl(repo)
         data = (repo,) + infoMap[type]
         return data
+
+    @staticmethod
+    def fixRepoUrl(url):
+        url = url.replace("https://github.com/", "")
+        return url

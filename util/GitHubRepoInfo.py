@@ -16,8 +16,8 @@ class GitHubRepoInfo:
     pluginsLayout = ("otseng/UniqueBible_Plugins_Layout", "../plugins/layout", "gitHubPluginsLayout", "py")
     devotionals = ("otseng/UniqueBible_Devotionals", "devotionals", "gitHubDevotionals", "devotion")
 
-    types = ["bibles", "books", "commentaries", "devotionals", "epub", "pdf", "mp3", "mp4"]
-             # "plugins-context", "plugins-layout", "plugins-menu", "plugins-startup", "plugins-shutdown"]
+    types = ["bibles", "books", "commentaries", "devotionals", "pdf", "docx", "mp3", "mp4"]
+             # "epub", "plugins-context", "plugins-layout", "plugins-menu", "plugins-startup", "plugins-shutdown"]
 
     @staticmethod
     def buildInfo(repo, type, directory=""):
@@ -27,6 +27,7 @@ class GitHubRepoInfo:
                    "devotionals": ("devotionals", "gitHubDevotionals", "devotion"),
                    "epub": ("epub", "githubEpub", "epub"),
                    "pdf": ("pdf", "githubPdf", "pdf"),
+                   "docx": ("docx", "wordDocument", "docx"),
                    "mp3": ("../music", "download_mp3", "mp3"),
                    "mp4": ("../video", "download_mp4", "mp4"),
                    "plugins-context": ("../plugins/context", "gitHubPluginsContext", "py"),
@@ -46,6 +47,8 @@ class GitHubRepoInfo:
                "commentaries": "COMM",
                "devotionals": "DEVOTIONAL",
                "pdf": "PDF",
+               "docx": "DOCX",
+               "epub": "EPUB",
                "mp3": "MP3",
                "mp4": "MP4",
                "plugins-context": "PLUGIN",

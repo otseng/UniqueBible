@@ -911,4 +911,5 @@ translation = {
     "displayChapterMenuTogetherWithBibleChapter": "Visualizza il menu capitolo sopra e sotto il capitolo bibbia",
     "User Custom Repos": "Repos personalizzato utente",
     "Build Index": "Indice di build",
+    "repository": "Repository",
 }

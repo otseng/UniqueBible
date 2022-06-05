@@ -911,4 +911,5 @@ translation = {
     "displayChapterMenuTogetherWithBibleChapter": "Afișați meniul capitolului de mai sus și sub capitolul biblic",
     "User Custom Repos": "Utilizator personalizat Repos",
     "Build Index": "Indicele de construcție",
+    "repository": "Depozit",
 }

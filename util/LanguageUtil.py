@@ -230,4 +230,4 @@ if __name__ == "__main__":
             print("Error executing: " + str(e))
     else:
         # printCodesSupportedLanguages()
-        addLanguageStringToAllFiles("Build Index", "Build Index")
+        addLanguageStringToAllFiles("repository", "Repository")

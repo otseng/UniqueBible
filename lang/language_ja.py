@@ -911,4 +911,5 @@ translation = {
     "displayChapterMenuTogetherWithBibleChapter": "ビブルの章の上と下にある章の章",
     "User Custom Repos": "ユーザー・カスタム Repos",
     "Build Index": "ビルド索引",
+    "repository": "リポジトリー",
 }

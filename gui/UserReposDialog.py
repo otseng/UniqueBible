@@ -1,6 +1,5 @@
 import os
 import pprint
-
 import config
 from util.CatalogUtil import CatalogUtil
 from util.GitHubRepoInfo import GitHubRepoInfo

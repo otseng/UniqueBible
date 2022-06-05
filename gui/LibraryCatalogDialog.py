@@ -256,7 +256,7 @@ class LibraryCatalogDialog(QDialog):
                 colCount = 0
         self.dataViewModel.setHorizontalHeaderLabels(
             ["#", config.thisTranslation["file"],
-             config.thisTranslation["directory"],
+             f"{config.thisTranslation['directory']}/{config.thisTranslation['repository']}",
              # config.thisTranslation["description"]
              ])
         self.dataView.resizeColumnsToContents()

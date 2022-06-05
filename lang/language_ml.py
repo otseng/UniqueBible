@@ -911,4 +911,5 @@ translation = {
     "displayChapterMenuTogetherWithBibleChapter": "à '- à', à ', à', à ', à', à ', à',",
     "User Custom Repos": "ഉപയോക്താവു് തയ്യാറാക്കുക",
     "Build Index": "ഇന്ഡെക്സ് നിര്മ്മിക്കുകName",
+    "repository": "ശേഖരം",
 }

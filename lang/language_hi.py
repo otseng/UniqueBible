@@ -911,4 +911,5 @@ translation = {
     "displayChapterMenuTogetherWithBibleChapter": "द्विबल अध्याय से ऊपर और नीचे का अध्याय मेनू दिखाएँ",
     "User Custom Repos": "उपयोगकर्ता कस्टम रीपोस",
     "Build Index": "निर्देशिका बिल्ड करें",
+    "repository": "भंडार",
 }

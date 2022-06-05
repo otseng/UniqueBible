@@ -911,4 +911,5 @@ translation = {
     "displayChapterMenuTogetherWithBibleChapter": "在聖經章內容上方及下方的顯示章數選項",
     "User Custom Repos": "使用者自訂儲存庫",
     "Build Index": "建置索引",
+    "repository": "儲存庫",
 }

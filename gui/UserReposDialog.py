@@ -61,8 +61,8 @@ class UserReposDialog(QDialog):
         editButton = QPushButton(config.thisTranslation["edit"])
         editButton.clicked.connect(self.editRepo)
         buttonsLayout.addWidget(editButton)
-        testButton = QPushButton("Test")
-        testButton.clicked.connect(self.testRepo)
+        testButton = QPushButton("Show")
+        testButton.clicked.connect(self.showRepo)
         buttonsLayout.addWidget(testButton)
         mainLayout.addLayout(buttonsLayout)
 
@@ -148,17 +148,15 @@ class UserReposDialog(QDialog):
             self.db.update(self.selectedRepoId, data[0], data[1], data[2], data[3])
             self.reloadRepos()
 
-    def testRepo(self):
+    def showRepo(self):
         try:
-            message = f"Could not connect to {self.selectedRepoName}"
             github = GithubUtil(self.selectedRepoUrl)
-            if github.repo is not None:
-                message = f"{self.selectedRepoName} connection OK"
-        except:
-            pass
-        QMessageBox.information(self, "Test User Repo", message)
-        data = (self.selectedRepoName,) + GitHubRepoInfo.buildInfo(self.selectedRepoUrl, self.selectedRepoType, "")
-        print(data)
+            if github.repo is None:
+                QMessageBox.information(self, "Custom User Repo", f"Could not connect to {self.selectedRepoName}")
+            else:
+                self.parent.runTextCommand(f"_website:::https://github.com/{self.selectedRepoUrl}")
+        except Exception as ex:
+            QMessageBox.information(self, "Custom User Repo", f"Could not connect to {self.selectedRepoName}")
 
     def importFile(self):
         options = QFileDialog.Options()
@@ -208,6 +206,9 @@ class Dummy:
         pass
 
     def disableBiblesInParagraphs(self):
+        pass
+
+    def runTextCommand(self):
         pass
 
 if __name__ == '__main__':

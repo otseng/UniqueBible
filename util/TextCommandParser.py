@@ -1128,8 +1128,8 @@ class TextCommandParser:
                 # Force book to 1 if it's 0 (when viewing a commentary intro)
                 if bcvTuple[1] == 0:
                     bcvTuple = (bcvTuple[0], 1, 1)
-                chapters = self.getChaptersMenu(bcvTuple[0], bcvTuple[1], text)
-                content = "{0}<hr>{1}<hr>{0}".format(chapters, self.textFormattedBible(bcvTuple, text, view))
+                chapters = self.getChaptersMenu(bcvTuple[0], bcvTuple[1], text) if config.displayChapterMenuTogetherWithBibleChapter else ""
+                content = "{0}{2}{1}{2}{0}".format(chapters, self.textFormattedBible(bcvTuple, text, view), "<hr>" if config.displayChapterMenuTogetherWithBibleChapter else "")
             else:
                 # i.e. when more than one verse reference is found
                 content = self.textPlainBible(verseList, text)

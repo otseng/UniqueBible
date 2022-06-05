@@ -1,3 +1,29 @@
+Changes in 30.39:
+* Fixed display favouriteBible bible version in fetching multiple verses.
+
+Changes in 30.38:
+* Fixed running "which" command on Windows.
+* Disable system tray on webtop version.
+
+Changes in 30.37:
+* Fixed Windows shortcut *.bat file.
+* Added support to restart UBA on Windows with use of the created "UniqueBibleApp.bat".
+* AudioConverter is now installed only when UBA is running on macOS.
+
+Changes in 30.36:
+* Changed default menu layout to "Material".
+
+Changes in 30.35:
+* Toggle fullscreen between fullscreen and maximised window instead of normal window.
+
+Changes in 30.33, 30.34:
+* Added config.displayChapterMenuTogetherWithBibleChapter to toggle "Display chapter menu above and below bible chapter"
+* Configurable via material menu layout.
+
+Changes in 30.32:
+* Prompt text entry if clipboard text is empty for running system tray features.
+* Added "Run Clipboard Text-to-speech" to system tray.
+
 Changes in 30.31:
 * Shows main window before running context plugins on clipboard content.
 

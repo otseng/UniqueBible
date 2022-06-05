@@ -912,4 +912,5 @@ translation = {
     "User Custom Repos": "उपयोगकर्ता कस्टम रीपोस",
     "Build Index": "निर्देशिका बिल्ड करें",
     "repository": "भंडार",
+    "Configure User Custom Repos": "उपयोगकर्ता कस्टम रीपोस कॉन्फ़िगर करें",
 }

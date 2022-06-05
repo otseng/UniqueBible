@@ -912,4 +912,5 @@ translation = {
     "User Custom Repos": "사용자 정의 Repos",
     "Build Index": "빌드 색인",
     "repository": "저장소",
+    "Configure User Custom Repos": "사용자 사용자 정의 Repos 구성",
 }

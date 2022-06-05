@@ -912,4 +912,5 @@ translation = {
     "User Custom Repos": "Repos personalizados del usuario",
     "Build Index": "Índice de construcción",
     "repository": "Repositorio",
+    "Configure User Custom Repos": "Configurar repos personalizados de usuario",
 }

@@ -912,4 +912,5 @@ translation = {
     "User Custom Repos": "Пользовательская реплика пользователя",
     "Build Index": "Индекс компоновки",
     "repository": "Репозиторий",
+    "Configure User Custom Repos": "Конфигурировать пользовательское пользовательское поле",
 }

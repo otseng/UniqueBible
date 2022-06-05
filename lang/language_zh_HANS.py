@@ -912,4 +912,5 @@ translation = {
     "User Custom Repos": "用户定制 Repos",
     "Build Index": "构建索引",
     "repository": "存储库",
+    "Configure User Custom Repos": "配置用户定制 Repos",
 }

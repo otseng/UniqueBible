@@ -912,4 +912,5 @@ translation = {
     "User Custom Repos": "Utilizator personalizat Repos",
     "Build Index": "Indicele de construcție",
     "repository": "Depozit",
+    "Configure User Custom Repos": "Configurează Repourile personalizate ale utilizatorului",
 }

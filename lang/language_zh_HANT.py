@@ -912,4 +912,5 @@ translation = {
     "User Custom Repos": "使用者自訂儲存庫",
     "Build Index": "建置索引",
     "repository": "儲存庫",
+    "Configure User Custom Repos": "配置使用者自訂儲存庫",
 }

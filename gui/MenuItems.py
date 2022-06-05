@@ -121,7 +121,8 @@ def addGithubDownloadMenuItems(self, subMenu):
         for feature, action in items:
             addMenuItem(subMenu, feature, self, action)
         subMenu.addSeparator()
-        addMenuItem(subMenu, "Configure User Custom Repos", self, self.showUserReposDialog, None, False)
+        addMenuItem(subMenu, config.thisTranslation["Configure User Custom Repos"],
+                    self, self.showUserReposDialog, None, False)
         userRepoSqlite = UserRepoSqlite()
         repos = userRepoSqlite.getAll()
         if len(repos) > 0:

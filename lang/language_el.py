@@ -912,4 +912,5 @@ translation = {
     "User Custom Repos": "Προσαρμοσμένη χρήστης Repos",
     "Build Index": "Δείκτης δόμησης",
     "repository": "Χώρος αποθήκευσης:",
+    "Configure User Custom Repos": "Ρύθμιση προσαρμοσμένων Repos",
 }

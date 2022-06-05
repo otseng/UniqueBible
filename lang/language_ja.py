@@ -912,4 +912,5 @@ translation = {
     "User Custom Repos": "ユーザー・カスタム Repos",
     "Build Index": "ビルド索引",
     "repository": "リポジトリー",
+    "Configure User Custom Repos": "ユーザー・カスタム・レポスの構成",
 }

@@ -909,4 +909,6 @@ translation = {
     "searchMore": "Поиск Подробнее ...",
     "runClipbaordTextToSpeech": "Запустить текст в виде текста в буфере обмена",
     "displayChapterMenuTogetherWithBibleChapter": "Показать меню главы выше и ниже библию главы",
+    "User Custom Repos": "Пользовательская реплика пользователя",
+    "Build Index": "Индекс компоновки",
 }

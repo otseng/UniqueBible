@@ -909,4 +909,6 @@ translation = {
     "searchMore": "さらに検索 ...",
     "runClipbaordTextToSpeech": "クリップボードのテキストから音声への実行",
     "displayChapterMenuTogetherWithBibleChapter": "ビブルの章の上と下にある章の章",
+    "User Custom Repos": "ユーザー・カスタム Repos",
+    "Build Index": "ビルド索引",
 }

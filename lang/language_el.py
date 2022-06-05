@@ -909,4 +909,6 @@ translation = {
     "searchMore": "Αναζήτηση περισσότερο ...",
     "runClipbaordTextToSpeech": "Εκτέλεση κειμένου Clipboard-σε-ομιλία",
     "displayChapterMenuTogetherWithBibleChapter": "Εμφάνιση μενού κεφαλαίων πάνω και κάτω bible κεφάλαιο",
+    "User Custom Repos": "Προσαρμοσμένη χρήστης Repos",
+    "Build Index": "Δείκτης δόμησης",
 }

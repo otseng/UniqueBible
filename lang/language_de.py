@@ -909,4 +909,6 @@ translation = {
     "searchMore": "Mehr suchen ...",
     "runClipbaordTextToSpeech": "Text-zu-Sprache-Zwischenablage ausführen",
     "displayChapterMenuTogetherWithBibleChapter": "Kapitel über und unterhalb des Bibelkapitels anzeigen",
+    "User Custom Repos": "Benutzerangepasste Repos",
+    "Build Index": "Buildindex",
 }

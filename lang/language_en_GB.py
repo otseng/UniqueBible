@@ -909,4 +909,6 @@ translation = {
     "searchMore": "Search More ...",
     "runClipbaordTextToSpeech": "Run Clipboard Text-to-speech",
     "displayChapterMenuTogetherWithBibleChapter": "Display Chapter Menu Above and Below Bible Chapter",
+    "User Custom Repos": "User Custom Repos",
+    "Build Index": "Build Index",
 }

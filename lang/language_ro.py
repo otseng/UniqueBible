@@ -909,4 +909,6 @@ translation = {
     "searchMore": "Caută Mai Mult ...",
     "runClipbaordTextToSpeech": "Rulează Clipboard Text-to-speech",
     "displayChapterMenuTogetherWithBibleChapter": "Afișați meniul capitolului de mai sus și sub capitolul biblic",
+    "User Custom Repos": "Utilizator personalizat Repos",
+    "Build Index": "Indicele de construcție",
 }

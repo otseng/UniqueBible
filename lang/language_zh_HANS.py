@@ -909,4 +909,6 @@ translation = {
     "searchMore": "搜索更多 ...",
     "runClipbaordTextToSpeech": "使用语音功能阅读剪贴簿内的文字",
     "displayChapterMenuTogetherWithBibleChapter": "在圣经章内容上方及下方的显示章数选项",
+    "User Custom Repos": "用户定制 Repos",
+    "Build Index": "构建索引",
 }

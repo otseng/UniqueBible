@@ -28,8 +28,7 @@ class UserReposDialog(QDialog):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
-        # self.setWindowTitle(config.thisTranslation["userDefinedResources"])
-        self.setWindowTitle("User Custom Repos")
+        self.setWindowTitle(config.thisTranslation["User Custom Repos"])
         self.setMinimumSize(650, 400)
         self.db = UserRepoSqlite()
         self.userRepos = None
@@ -38,8 +37,7 @@ class UserReposDialog(QDialog):
     def setupUI(self):
         mainLayout = QVBoxLayout()
 
-        # title = QLabel(config.thisTranslation["userDefinedResources"])
-        title = QLabel("User Custom Repos")
+        title = QLabel(config.thisTranslation["User Custom Repos"])
         mainLayout.addWidget(title)
 
         self.reposTable = QTableView()
@@ -64,13 +62,13 @@ class UserReposDialog(QDialog):
         editButton = QPushButton(config.thisTranslation["edit"])
         editButton.clicked.connect(self.editRepo)
         buttonsLayout.addWidget(editButton)
-        testButton = QPushButton("Show")
+        testButton = QPushButton(config.thisTranslation["show"])
         testButton.clicked.connect(self.showRepo)
         buttonsLayout.addWidget(testButton)
         mainLayout.addLayout(buttonsLayout)
 
         buttonsLayout = QHBoxLayout()
-        buildIndexButton = QPushButton("Build Index")
+        buildIndexButton = QPushButton(config.thisTranslation["Build Index"])
         buildIndexButton.clicked.connect(self.buildIndex)
         buttonsLayout.addWidget(buildIndexButton)
         importButton = QPushButton(config.thisTranslation["import"])
@@ -120,7 +118,7 @@ class UserReposDialog(QDialog):
             self.selectedRepoName = GitHubRepoInfo.fixRepoUrl(self.dataViewModel.item(row, 1).text())
             self.selectedRepoType = self.dataViewModel.item(row, 2).text()
             self.selectedRepoUrl = self.dataViewModel.item(row, 3).text()
-            # self.selectedRepoDirectory = self.dataViewModel.item(row, 4).text()
+            self.selectedRepoDirectory = self.dataViewModel.item(row, 4).text()
 
     def repoSelectionChanged(self, item):
         pass
@@ -158,11 +156,13 @@ class UserReposDialog(QDialog):
         try:
             github = GithubUtil(self.selectedRepoUrl)
             if github.repo is None:
-                QMessageBox.information(self, "Custom User Repo", f"Could not connect to {self.selectedRepoName}")
+                QMessageBox.information(self, config.thisTranslation["User Custom Repos"],
+                                        f"Could not connect to {self.selectedRepoName}")
             else:
                 self.parent.runTextCommand(f"_website:::https://github.com/{self.selectedRepoUrl}")
         except Exception as ex:
-            QMessageBox.information(self, "Custom User Repo", f"Could not connect to {self.selectedRepoName}")
+            QMessageBox.information(self, config.thisTranslation["User Custom Repos"],
+                                    f"Could not connect to {self.selectedRepoName}")
 
     def buildIndex(self):
         data = []
@@ -174,13 +174,14 @@ class UserReposDialog(QDialog):
                 pass
         with open("util/GitHubCustomRepoCache.py", "w", encoding="utf-8") as fileObj:
             fileObj.write("gitHubCustomRepoCacheData = {0}\n".format(pprint.pformat(data)))
-        QMessageBox.information(self, "Custom User Repo", f"Built custom repo index")
+        QMessageBox.information(self, config.thisTranslation["User Custom Repos"],
+                                f"Built custom repo index")
 
     def importFile(self):
         options = QFileDialog.Options()
         filename, filtr = QFileDialog.getOpenFileName(self,
                                                       config.thisTranslation["import"],
-                                                      "User Repo",
+                                                      config.thisTranslation["User Custom Repos"],
                                                       "File (*.repo)",
                                                       "", options)
         if filename:
@@ -202,7 +203,7 @@ class UserReposDialog(QDialog):
         options = QFileDialog.Options()
         fileName, *_ = QFileDialog.getSaveFileName(self,
                                            config.thisTranslation["export"],
-                                           "User Repo",
+                                           config.thisTranslation["User Custom Repos"],
                                            "File (*.repo)", "", options)
         if fileName:
             if not "." in os.path.basename(fileName):

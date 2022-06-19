@@ -10,20 +10,18 @@ from db.BiblesSqlite import BiblesSqlite
 class IndexerUtil:
 
     @staticmethod
-    def createBibleIndex(bibleName):
-        maxBooksToProcess = 1
-        debug = True
+    def createBibleIndex(bibleName, startBookNum=1, endBookNum=66):
         biblesSqlite = BiblesSqlite()
         bibleInfo = biblesSqlite.bibleInfo(bibleName)
         indexSqlite = IndexSqlite("bible", bibleName, True)
-        if debug:
-            indexSqlite.deleteAll()
         if bibleInfo:
             print(f"Creating index for {bibleName}")
             bookList = biblesSqlite.getBookList(bibleName)
             for bookNum in bookList:
-                if bookNum > maxBooksToProcess:
+                if bookNum > endBookNum:
                     break
+                if bookNum < startBookNum:
+                    continue
                 chapterList = biblesSqlite.getChapterList(bookNum, bibleName)
                 print(f"Indexing {bookNum}:{chapterList}")
                 for chapterNum in chapterList:
@@ -40,8 +38,30 @@ class IndexerUtil:
         else:
             print(f"Could not find Bible {bibleName}")
 
+    @staticmethod
+    def testDelete(bibleName):
+        indexSqlite = IndexSqlite("bible", bibleName, True)
+        indexSqlite.deleteBook(1)
+
+    @staticmethod
+    def testCreate(bibleName, start, end):
+        indexerUtil = IndexerUtil()
+        indexerUtil.createBibleIndex(bibleName, start, end)
+
+    @staticmethod
+    def testGetVerses(bibleName, word):
+        indexSqlite = IndexSqlite("bible", bibleName)
+        if indexSqlite.exists:
+            verses = indexSqlite.getVerses(word)
+            whereList = []
+            for verse in verses:
+                whereList.append(f"(Book={verse[0]} and Chapter={verse[1]} and Verse={verse[2]})")
+            sql = 'SELECT * FROM Verses WHERE ' + " OR ".join(whereList)
+            print(sql)
+
 if __name__ == "__main__":
 
     bibleName = "KJVx"
-    IndexerUtil.createBibleIndex(bibleName)
+    # IndexerUtil.testGetVerses(bibleName, "H430")
+    IndexerUtil.testCreate(bibleName, 40, 66)
     print("Done")

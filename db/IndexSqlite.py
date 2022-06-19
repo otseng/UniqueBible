@@ -3,6 +3,8 @@ import os, sqlite3, config, logging
 class IndexSqlite:
 
     def __init__(self, type, filename, createFile=False):
+        self.exists = False
+
         if "." not in filename:
             filename += ".index"
         indexDir = os.path.join(config.marvelData, "indexes")
@@ -13,7 +15,7 @@ class IndexSqlite:
             os.mkdir(indexDir)
         filePath = os.path.join(indexDir, filename)
         if not os.path.exists(filePath) and not createFile:
-            raise Exception(f"Could not open {filePath}")
+            return
 
         self.type = type
         self.filename = filename
@@ -21,10 +23,16 @@ class IndexSqlite:
         self.cursor = self.connection.cursor()
         self.logger = logging.getLogger('uba')
         if not self.checkTableExists():
-            self.createTable()
+            if not createFile:
+                return
+            else:
+                self.createTable()
+
+        self.exists = True
 
     def __del__(self):
-        self.connection.close()
+        if self.exists:
+            self.connection.close()
 
     def createTable(self):
         if self.type == "bible":
@@ -43,8 +51,19 @@ class IndexSqlite:
         self.cursor.executemany(insert, content)
         self.connection.commit()
 
+    def getVerses(self, word):
+        sql = "SELECT Book, Chapter, Verse FROM Index_Data WHERE Word=? ORDER BY Book, Chapter, Verse"
+        self.cursor.execute(sql, (word,))
+        data = self.cursor.fetchall()
+        return data
+
     def deleteAll(self):
         delete = "DELETE FROM Index_Data"
         self.cursor.execute(delete)
+        self.connection.commit()
+
+    def deleteBook(self, book):
+        delete = "DELETE FROM Index_Data WHERE Book=?"
+        self.cursor.execute(delete, (book,))
         self.connection.commit()
 

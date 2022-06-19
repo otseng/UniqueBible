@@ -6,6 +6,8 @@ import os, sqlite3, config, re, logging
 from pathlib import Path
 from functools import partial
 
+from db.IndexSqlite import IndexSqlite
+
 if __name__ == "__main__":
     from util.ConfigUtil import ConfigUtil
     config.marvelData = "/Users/otseng/dev/UniqueBible/marvelData/"
@@ -946,8 +948,25 @@ class Bible:
         html = """<h1>Strong's Concordance - {5}</h1><h2><ref onclick='lex("{0}")'>{0}</ref> x {2} Hit(s) in {1} Verse(s)</h2>{6}<h3>Translation:</h3><p>{3}</p><h3>Verses:</h3><p>{4}</p>""".format(strongNo, verseHits, snHits, " <mbn>|</mbn> ".join(uniqueWdList), "<br>".join(verses), self.text, lexicalData)
         return html
 
-    def searchStrongNumber(self, sNumList):    
-        self.cursor.execute('SELECT * FROM Verses')
+    def searchStrongNumber(self, sNumList):
+        indexSqlite = IndexSqlite("bible", self.text)
+        if indexSqlite.exists:
+            word = sNumList[0].replace('[', '').replace(']', '')
+            verses = indexSqlite.getVerses(word)
+            whereList = []
+            # sqlite has a limit of 1000 expressions
+            if len(verses) == 0:
+                sql = "SELECT * FROM Verses LIMIT 0"
+            elif len(verses) < 1000:
+                for verse in verses:
+                    whereList.append(f"(Book={verse[0]} and Chapter={verse[1]} and Verse={verse[2]})")
+                sql = 'SELECT * FROM Verses WHERE ' + " OR ".join(whereList)
+            else:
+                sql = 'SELECT * FROM Verses'
+            # print(sql)
+            self.cursor.execute(sql)
+        else:
+            self.cursor.execute('SELECT * FROM Verses')
     
         #csv = ['Idx,Book,Ref.,KJB Verse,KJB Word,Original,Transliteration,Definition']
         csv = []

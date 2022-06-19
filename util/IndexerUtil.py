@@ -44,11 +44,6 @@ class IndexerUtil:
         indexSqlite.deleteBook(1)
 
     @staticmethod
-    def testCreate(bibleName, start, end):
-        indexerUtil = IndexerUtil()
-        indexerUtil.createBibleIndex(bibleName, start, end)
-
-    @staticmethod
     def testGetVerses(bibleName, word):
         indexSqlite = IndexSqlite("bible", bibleName)
         if indexSqlite.exists:
@@ -62,6 +57,5 @@ class IndexerUtil:
 if __name__ == "__main__":
 
     bibleName = "KJVx"
-    # IndexerUtil.testGetVerses(bibleName, "H430")
-    IndexerUtil.testCreate(bibleName, 40, 66)
+    IndexerUtil.createBibleIndex(bibleName, 1, 66)
     print("Done")

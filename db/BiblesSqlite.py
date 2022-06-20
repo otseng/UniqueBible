@@ -957,25 +957,28 @@ class Bible:
         if indexSqlite.exists:
             word = sNumList[0].replace('[', '').replace(']', '')
             verses = indexSqlite.getVerses(word)
-            whereList = []
-            if len(verses) == 0:
+            verseCount = len(verses)
+            if verseCount == 0:
                 sql = "SELECT * FROM Verses LIMIT 0"
-            elif len(verses) < 1000:    # sqlite has a limit of 1000 expressions
-                for verse in verses:
-                    whereList.append(f"(Book={verse[0]} and Chapter={verse[1]} and Verse={verse[2]})")
-                sql = 'SELECT * FROM Verses WHERE ' + " OR ".join(whereList)
             else:
-                sql = 'SELECT * FROM Verses'
-            # print(sql)
-            self.cursor.execute(sql)
+                blockStart = 0
+                blockSize = 900
+                while blockStart < verseCount:
+                    blockEnd = blockStart + blockSize
+                    if blockEnd > verseCount:
+                        blockEnd = verseCount
+                    whereList = []
+                    for verse in verses[blockStart:blockEnd]:
+                        whereList.append(f"(Book={verse[0]} and Chapter={verse[1]} and Verse={verse[2]})")
+                    sql = 'SELECT * FROM Verses WHERE ' + " OR ".join(whereList)
+                    self.cursor.execute(sql)
+                    for b, c, v, vsTxt in self.cursor:
+                        self.generateStrongsVerse(sNumList, csv, wdListAll, hits, b, c, v, vsTxt)
+                    blockStart += blockSize
         else:
             self.cursor.execute('SELECT * FROM Verses')
-    
-        for b, c, v, vsTxt in self.cursor:
-            self.generateStrongsVerse(sNumList, csv, wdListAll, hits, b, c, v, vsTxt)
-            # (csv, wdListAll, vh, sn) = self.generateStrongsVerse(sNumList, csv, wdListAll, b, c, v, vsTxt)
-            # verseHits += vh
-            # snHits += sn
+            for b, c, v, vsTxt in self.cursor:
+                self.generateStrongsVerse(sNumList, csv, wdListAll, hits, b, c, v, vsTxt)
 
         return (hits['verseHits'], hits['snHits'], list(set(wdListAll)), csv)
 

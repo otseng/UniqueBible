@@ -954,10 +954,9 @@ class Bible:
             word = sNumList[0].replace('[', '').replace(']', '')
             verses = indexSqlite.getVerses(word)
             whereList = []
-            # sqlite has a limit of 1000 expressions
             if len(verses) == 0:
                 sql = "SELECT * FROM Verses LIMIT 0"
-            elif len(verses) < 1000:
+            elif len(verses) < 1000:    # sqlite has a limit of 1000 expressions
                 for verse in verses:
                     whereList.append(f"(Book={verse[0]} and Chapter={verse[1]} and Verse={verse[2]})")
                 sql = 'SELECT * FROM Verses WHERE ' + " OR ".join(whereList)

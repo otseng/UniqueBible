@@ -950,6 +950,11 @@ class Bible:
 
     def searchStrongNumber(self, sNumList):
         indexSqlite = IndexSqlite("bible", self.text)
+        csv = []
+        wdListAll = []
+        verseHits = 0
+        snHits = 0
+
         if indexSqlite.exists:
             word = sNumList[0].replace('[', '').replace(']', '')
             verses = indexSqlite.getVerses(word)
@@ -967,48 +972,52 @@ class Bible:
         else:
             self.cursor.execute('SELECT * FROM Verses')
     
-        #csv = ['Idx,Book,Ref.,KJB Verse,KJB Word,Original,Transliteration,Definition']
-        csv = []
-        wdListAll = []
+        for b, c, v, vsTxt in self.cursor:
+            (vh, sn) = self.generateStrongsVerse(sNumList, csv, wdListAll, b, c, v, vsTxt)
+            verseHits += vh
+            snHits += sn
+
+        return (verseHits, snHits, list(set(wdListAll)), csv)
+
+    def generateStrongsVerse(self, sNumList, csv, wdListAll, b, c, v, vsTxt):
+
         verseHits = 0
         snHits = 0
+        vsTxt = re.sub("([HG][0-9]+?) ", r" [\1] ", vsTxt)
+        vsTxt = re.sub("([HG][0-9]+?)[a-z] ", r" [\1] ", vsTxt)
 
-        for b, c, v, vsTxt in self.cursor:
-            vsTxt = re.sub("([HG][0-9]+?) ", r" [\1] ", vsTxt)
-            vsTxt = re.sub("([HG][0-9]+?)[a-z] ", r" [\1] ", vsTxt)
-            
-            if any(sn in vsTxt for sn in sNumList):
-                vsTxt = re.sub(r'\[\([HG]\d+\)\]', r'', vsTxt)
-                vsTxt = re.sub(r'\[\([GH]\d+\)\]|<fn>\d+</fn>|<.+?>|[\r\n]', r'', vsTxt)
-                wdGrpList = re.findall(r'[^\]]+\]', vsTxt)
-                
-                wdList = []
-                wdGrpListFix = []
-                for wdGrp in wdGrpList:
-                    if all(sn not in wdGrp for sn in sNumList):
-                        wdGrp = re.sub(r'\[[HG][0-9]+?\]|\[[HG][0-9]+?[a-z]\]', r'', wdGrp)
-                    else:
-                        wds, *_ = wdGrp.split('[')
-                        wdGrp = re.sub(r'(\W?\s?)(.+)', r'\1<z>\2</z>', wdGrp )
-                        if wds.strip():
-                            wdList.append( '%s' % (re.sub(r'[^\w\s]','', wds).strip()))
-                        
-                    wdGrpListFix.append(wdGrp)
-                
-                vsTxtFix = ''.join(wdGrpListFix)
-                
-                #wdHits = re.findall(r'[^\s]\*\*([^\[]+)', vsTxtFix)
-                snHits += len(re.findall(r'\[[GH]\d+\]', vsTxtFix))
-                #', '.join(wdList)
-                wdListAll += wdList
-                
-                verseReference = self.bcvToVerseReference(b, c, v)
-                line = """<ref onclick="document.title='BIBLE:::{0}'">({0})</ref> {1}""".format(verseReference, vsTxtFix)
-                
-                csv.append(line)
-                verseHits +=1
-        
-        return (verseHits, snHits, list(set(wdListAll)), csv)
+        if any(sn in vsTxt for sn in sNumList):
+            vsTxt = re.sub(r'\[\([HG]\d+\)\]', r'', vsTxt)
+            vsTxt = re.sub(r'\[\([GH]\d+\)\]|<fn>\d+</fn>|<.+?>|[\r\n]', r'', vsTxt)
+            wdGrpList = re.findall(r'[^\]]+\]', vsTxt)
+
+            wdList = []
+            wdGrpListFix = []
+            for wdGrp in wdGrpList:
+                if all(sn not in wdGrp for sn in sNumList):
+                    wdGrp = re.sub(r'\[[HG][0-9]+?\]|\[[HG][0-9]+?[a-z]\]', r'', wdGrp)
+                else:
+                    wds, *_ = wdGrp.split('[')
+                    wdGrp = re.sub(r'(\W?\s?)(.+)', r'\1<z>\2</z>', wdGrp)
+                    if wds.strip():
+                        wdList.append('%s' % (re.sub(r'[^\w\s]', '', wds).strip()))
+
+                wdGrpListFix.append(wdGrp)
+
+            vsTxtFix = ''.join(wdGrpListFix)
+
+            # wdHits = re.findall(r'[^\s]\*\*([^\[]+)', vsTxtFix)
+            snHits += len(re.findall(r'\[[GH]\d+\]', vsTxtFix))
+            # ', '.join(wdList)
+            wdListAll += wdList
+
+            verseReference = self.bcvToVerseReference(b, c, v)
+            line = """<ref onclick="document.title='BIBLE:::{0}'">({0})</ref> {1}""".format(verseReference, vsTxtFix)
+
+            csv.append(line)
+            verseHits += 1
+
+            return (verseHits, snHits)
 
     def importPlainFormat(self, verses, description=""):
         query = "SELECT name FROM sqlite_master WHERE type='table' AND name=?"

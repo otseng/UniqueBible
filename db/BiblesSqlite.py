@@ -631,7 +631,7 @@ input.addEventListener('keyup', function(event) {0}
         titleList = self.getVerseList(b, c, "title")
         verseList = self.readTextChapter(text, b, c)
         for verseTuple in verseList:
-            b, c, v, verseText = verseTuple
+            b, c, v, verseText, _ = verseTuple
 
             if config.showHebrewGreekWordAudioLinks and text in ("OHGB", "OHGBi"):
                 if b < 40:
@@ -959,23 +959,24 @@ class Bible:
 
         if indexSqlite.exists:
             word = sNumList[0].replace('[', '').replace(']', '')
-            verses = indexSqlite.getVerses(word)
+            verses = indexSqlite.getRefs(word)
             verseCount = len(verses)
             if verseCount == 0:
                 sql = "SELECT * FROM Verses LIMIT 0"
             else:
                 blockStart = 0
-                blockSize = 900
+                blockSize = 10000
                 while blockStart < verseCount:
                     blockEnd = blockStart + blockSize
                     if blockEnd > verseCount:
                         blockEnd = verseCount
                     whereList = []
                     for verse in verses[blockStart:blockEnd]:
-                        whereList.append(f"(Book={verse[0]} and Chapter={verse[1]} and Verse={verse[2]})")
-                    sql = 'SELECT * FROM Verses WHERE ' + " OR ".join(whereList)
+                        whereList.append(f"'{verse[0]}'")
+                    sql = 'SELECT * FROM Verses WHERE Ref IN ({})'.format(",".join(whereList))
+                    print(sql)
                     self.cursor.execute(sql)
-                    for b, c, v, vsTxt in self.cursor:
+                    for b, c, v, vsTxt, _ in self.cursor:
                         self.generateStrongsVerse(sNumList, csv, wdListAll, hits, b, c, v, vsTxt)
                     blockStart += blockSize
         else:
@@ -1190,6 +1191,15 @@ class Bible:
     def getSearchVerses(self, query, binding):
         self.cursor.execute(query, binding)
         return self.cursor.fetchall()
+
+    def updateRef(self):
+        if not self.checkColumnExists("Verses", "Ref"):
+            self.addColumnToTable("Verses", "Ref", "TEXT")
+        update = "UPDATE Verses SET Ref=Book || '-' || Chapter || '-' || Verse"
+        self.cursor.execute(update)
+        create = 'CREATE INDEX Verses_Index ON Verses (Ref ASC)'
+        self.cursor.execute(create)
+        self.connection.commit()
 
     def checkTableExists(self, table):
         if self.cursor:

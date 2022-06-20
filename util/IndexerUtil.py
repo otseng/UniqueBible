@@ -4,7 +4,7 @@ from db.IndexSqlite import IndexSqlite
 if __name__ == "__main__":
     config.noQt = True
 
-from db.BiblesSqlite import BiblesSqlite
+from db.BiblesSqlite import BiblesSqlite, Bible
 
 
 class IndexerUtil:
@@ -44,18 +44,29 @@ class IndexerUtil:
         indexSqlite.deleteBook(1)
 
     @staticmethod
+    def updateIndexRef(bibleName):
+        indexSqlite = IndexSqlite("bible", bibleName)
+        indexSqlite.updateRef()
+
+    @staticmethod
+    def updateBibleRef(bibleName):
+        Bible(bibleName).updateRef()
+
+    @staticmethod
     def testGetVerses(bibleName, word):
         indexSqlite = IndexSqlite("bible", bibleName)
         if indexSqlite.exists:
             verses = indexSqlite.getVerses(word)
             whereList = []
             for verse in verses:
-                whereList.append(f"(Book={verse[0]} and Chapter={verse[1]} and Verse={verse[2]})")
-            sql = 'SELECT * FROM Verses WHERE ' + " OR ".join(whereList)
+                whereList.append(f"'{verse[0]}-{verse[1]}-{verse[2]}'")
+            sql = 'SELECT * FROM Verses WHERE REF IN ({})'.format(",".join(whereList))
             print(sql)
 
 if __name__ == "__main__":
 
     bibleName = "KJVx"
-    IndexerUtil.createBibleIndex(bibleName, 1, 66)
+    # IndexerUtil.createBibleIndex(bibleName, 1, 66)
+    # IndexerUtil.testGetVerses(bibleName, "Adam")
+    IndexerUtil.updateBibleRef(bibleName)
     print("Done")

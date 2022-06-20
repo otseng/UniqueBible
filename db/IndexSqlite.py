@@ -36,23 +36,29 @@ class IndexSqlite:
 
     def createTable(self):
         if self.type == "bible":
-            sql = "CREATE TABLE IF NOT EXISTS Index_Data (Word NVARCHAR(50), Book INT, Chapter INT, Verse INT)"
+            sql = "CREATE TABLE IF NOT EXISTS Index_Data (Word NVARCHAR(50), Book INT, Chapter INT, Verse INT, Ref TEXT)"
             self.cursor.execute(sql)
-
-    def checkTableExists(self):
-        if self.type == "bible":
-            self.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='Index_Data'")
-            if self.cursor.fetchone():
-                return True
-        return False
 
     def insertBibleData(self, content):
         insert = "INSERT INTO Index_Data (Word, Book, Chapter, Verse) VALUES (?, ?, ?, ?)"
         self.cursor.executemany(insert, content)
         self.connection.commit()
 
+    def updateRef(self):
+        if not self.checkColumnExists("Index_Data", "Ref"):
+            self.addColumnToTable("Index_Data", "Ref", "TEXT")
+        update = "UPDATE Index_Data SET Ref=Book || '-' || Chapter || '-' || Verse"
+        self.cursor.execute(update)
+        self.connection.commit()
+
     def getVerses(self, word):
         sql = "SELECT Book, Chapter, Verse FROM Index_Data WHERE Word=? ORDER BY Book, Chapter, Verse"
+        self.cursor.execute(sql, (word,))
+        data = self.cursor.fetchall()
+        return data
+
+    def getRefs(self, word):
+        sql = "SELECT Ref FROM Index_Data WHERE Word=? ORDER BY Book, Chapter, Verse"
         self.cursor.execute(sql, (word,))
         data = self.cursor.fetchall()
         return data
@@ -67,3 +73,20 @@ class IndexSqlite:
         self.cursor.execute(delete, (book,))
         self.connection.commit()
 
+    def checkTableExists(self):
+        if self.type == "bible":
+            self.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='Index_Data'")
+            if self.cursor.fetchone():
+                return True
+        return False
+
+    def checkColumnExists(self, table, column):
+        self.cursor.execute("SELECT * FROM pragma_table_info(?) WHERE name=?", (table, column))
+        if self.cursor.fetchone():
+            return True
+        else:
+            return False
+
+    def addColumnToTable(self, table, column, column_type):
+        sql = "ALTER TABLE " + table + " ADD COLUMN " + column + " " + column_type
+        self.cursor.execute(sql)

@@ -3,6 +3,7 @@ Reading data from bibles.sqlite
 """
 import glob
 import os, sqlite3, config, re, logging
+from datetime import datetime
 from pathlib import Path
 from functools import partial
 
@@ -949,6 +950,8 @@ class Bible:
         return html
 
     def searchStrongNumber(self, sNumList):
+        startTime = datetime.now()
+
         indexSqlite = IndexSqlite("bible", self.text)
         csv = []
         wdListAll = []
@@ -979,6 +982,9 @@ class Bible:
             self.cursor.execute('SELECT * FROM Verses')
             for b, c, v, vsTxt in self.cursor:
                 self.generateStrongsVerse(sNumList, csv, wdListAll, hits, b, c, v, vsTxt)
+
+        endTime = datetime.now()
+        print((endTime - startTime).total_seconds())
 
         return (hits['verseHits'], hits['snHits'], list(set(wdListAll)), csv)
 

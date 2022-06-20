@@ -952,8 +952,7 @@ class Bible:
         indexSqlite = IndexSqlite("bible", self.text)
         csv = []
         wdListAll = []
-        verseHits = 0
-        snHits = 0
+        hits = {'verseHits': 0, 'snHits': 0}
 
         if indexSqlite.exists:
             word = sNumList[0].replace('[', '').replace(']', '')
@@ -973,16 +972,15 @@ class Bible:
             self.cursor.execute('SELECT * FROM Verses')
     
         for b, c, v, vsTxt in self.cursor:
-            (vh, sn) = self.generateStrongsVerse(sNumList, csv, wdListAll, b, c, v, vsTxt)
-            verseHits += vh
-            snHits += sn
+            self.generateStrongsVerse(sNumList, csv, wdListAll, hits, b, c, v, vsTxt)
+            # (csv, wdListAll, vh, sn) = self.generateStrongsVerse(sNumList, csv, wdListAll, b, c, v, vsTxt)
+            # verseHits += vh
+            # snHits += sn
 
-        return (verseHits, snHits, list(set(wdListAll)), csv)
+        return (hits['verseHits'], hits['snHits'], list(set(wdListAll)), csv)
 
-    def generateStrongsVerse(self, sNumList, csv, wdListAll, b, c, v, vsTxt):
+    def generateStrongsVerse(self, sNumList, csv, wdListAll, hits, b, c, v, vsTxt):
 
-        verseHits = 0
-        snHits = 0
         vsTxt = re.sub("([HG][0-9]+?) ", r" [\1] ", vsTxt)
         vsTxt = re.sub("([HG][0-9]+?)[a-z] ", r" [\1] ", vsTxt)
 
@@ -1007,7 +1005,7 @@ class Bible:
             vsTxtFix = ''.join(wdGrpListFix)
 
             # wdHits = re.findall(r'[^\s]\*\*([^\[]+)', vsTxtFix)
-            snHits += len(re.findall(r'\[[GH]\d+\]', vsTxtFix))
+            hits['snHits'] += len(re.findall(r'\[[GH]\d+\]', vsTxtFix))
             # ', '.join(wdList)
             wdListAll += wdList
 
@@ -1015,9 +1013,7 @@ class Bible:
             line = """<ref onclick="document.title='BIBLE:::{0}'">({0})</ref> {1}""".format(verseReference, vsTxtFix)
 
             csv.append(line)
-            verseHits += 1
-
-            return (verseHits, snHits)
+            hits['verseHits'] += 1
 
     def importPlainFormat(self, verses, description=""):
         query = "SELECT name FROM sqlite_master WHERE type='table' AND name=?"

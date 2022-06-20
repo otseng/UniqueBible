@@ -79,7 +79,7 @@ class BiblesSqlite:
     def proceedMigration(self, biblesWithBothVersions):
             for bible in biblesWithBothVersions:
                 # retrieve plain verses from bibles.sqlite
-                query = "SELECT * FROM {0} ORDER BY Book, Chapter, Verse".format(bible)
+                query = "SELECT Book, Chapter, Verse, Scripture FROM {0} ORDER BY Book, Chapter, Verse".format(bible)
                 self.cursor.execute(query)
                 verses = self.cursor.fetchall()
                 # import into formatted bible database
@@ -181,7 +181,7 @@ input.addEventListener('keyup', function(event) {0}
     def readTextChapter(self, text, b, c):
         plainBibleList, formattedBibleList = self.getTwoBibleLists()
         if text in plainBibleList:
-            query = "SELECT * FROM {0} WHERE Book=? AND Chapter=? ORDER BY Verse".format(text)
+            query = "SELECT Book, Chapter, Verse, Scripture FROM {0} WHERE Book=? AND Chapter=? ORDER BY Verse".format(text)
             self.cursor.execute(query, (b, c))
             textChapter = self.cursor.fetchall()
             if not textChapter:
@@ -194,7 +194,7 @@ input.addEventListener('keyup', function(event) {0}
     def readTextVerse(self, text, b, c, v):
         plainBibleList, *_ = self.getTwoBibleLists()
         if text in plainBibleList or text == "title":
-            query = "SELECT * FROM {0} WHERE Book=? AND Chapter=? AND Verse=?".format(text)
+            query = "SELECT Book, Chapter, Verse, Scripture FROM {0} WHERE Book=? AND Chapter=? AND Verse=?".format(text)
             self.cursor.execute(query, (b, c, v))
             textVerse = self.cursor.fetchone()
             if not textVerse:
@@ -453,9 +453,9 @@ input.addEventListener('keyup', function(event) {0}
 
         formatedText = "<b>{1}</b> <span style='color: brown;' onmouseover='textName(\"{0}\")'>{0}</span><br><br>".format(text, config.thisTranslation["html_searchBible2"])
         if text in plainBibleList:
-            query = "SELECT * FROM {0}".format(text)
+            query = "SELECT Book, Chapter, Verse, Scripture FROM {0}".format(text)
         elif text in formattedBibleList:
-            query = "SELECT * FROM Verses"
+            query = "SELECT Book, Chapter, Verse, Scripture FROM Verses"
         query += " WHERE "
         t = ()
         if mode == "BASIC":
@@ -631,7 +631,7 @@ input.addEventListener('keyup', function(event) {0}
         titleList = self.getVerseList(b, c, "title")
         verseList = self.readTextChapter(text, b, c)
         for verseTuple in verseList:
-            b, c, v, verseText, _ = verseTuple
+            b, c, v, verseText = verseTuple
 
             if config.showHebrewGreekWordAudioLinks and text in ("OHGB", "OHGBi"):
                 if b < 40:
@@ -741,6 +741,7 @@ class Bible:
 
     def __init__(self, text):
         # connect [text].bible
+        self.logger = logging.getLogger('uba')
         self.text = text
         self.connection = None
         self.cursor = None
@@ -951,19 +952,16 @@ class Bible:
 
     def searchStrongNumber(self, sNumList):
         startTime = datetime.now()
-
-        indexSqlite = IndexSqlite("bible", self.text)
         csv = []
         wdListAll = []
         hits = {'verseHits': 0, 'snHits': 0}
-
+        indexSqlite = IndexSqlite("bible", self.text)
         if indexSqlite.exists:
+            self.updateRef()   # verify verses table has ref column
             word = sNumList[0].replace('[', '').replace(']', '')
             verses = indexSqlite.getRefs(word)
             verseCount = len(verses)
-            if verseCount == 0:
-                sql = "SELECT * FROM Verses LIMIT 0"
-            else:
+            if verseCount > 0:
                 blockStart = 0
                 blockSize = 10000
                 while blockStart < verseCount:
@@ -980,12 +978,12 @@ class Bible:
                         self.generateStrongsVerse(sNumList, csv, wdListAll, hits, b, c, v, vsTxt)
                     blockStart += blockSize
         else:
-            self.cursor.execute('SELECT * FROM Verses')
+            self.cursor.execute('SELECT Book, Chapter, Verse, Scripture FROM Verses')
             for b, c, v, vsTxt in self.cursor:
                 self.generateStrongsVerse(sNumList, csv, wdListAll, hits, b, c, v, vsTxt)
 
         endTime = datetime.now()
-        print((endTime - startTime).total_seconds())
+        self.logger.debug(f"searchStrongNumber-{self.text}-{sNumList}: " + str((endTime - startTime).total_seconds()))
 
         return (hits['verseHits'], hits['snHits'], list(set(wdListAll)), csv)
 
@@ -1041,7 +1039,7 @@ class Bible:
         self.connection.commit()
 
     def readTextChapter(self, b, c):
-        query = "SELECT * FROM Verses WHERE Book=? AND Chapter=? ORDER BY Verse"
+        query = "SELECT Book, Chapter, Verse, Scripture FROM Verses WHERE Book=? AND Chapter=? ORDER BY Verse"
         self.cursor.execute(query, (b, c))
         textChapter = self.cursor.fetchall()
         if not textChapter:
@@ -1064,7 +1062,7 @@ class Bible:
 
     def readTextVerse(self, b, c, v):
         if self.checkTableExists("Verses"):
-            query = "SELECT * FROM Verses WHERE Book=? AND Chapter=? AND Verse=?"
+            query = "SELECT Book, Chapter, Verse, Scripture FROM Verses WHERE Book=? AND Chapter=? AND Verse=?"
             self.cursor.execute(query, (b, c, v))
             textVerse = self.cursor.fetchone()
             if not textVerse:
@@ -1195,11 +1193,11 @@ class Bible:
     def updateRef(self):
         if not self.checkColumnExists("Verses", "Ref"):
             self.addColumnToTable("Verses", "Ref", "TEXT")
-        update = "UPDATE Verses SET Ref=Book || '-' || Chapter || '-' || Verse"
-        self.cursor.execute(update)
-        create = 'CREATE INDEX Verses_Index ON Verses (Ref ASC)'
-        self.cursor.execute(create)
-        self.connection.commit()
+            update = "UPDATE Verses SET Ref=Book || '-' || Chapter || '-' || Verse"
+            self.cursor.execute(update)
+            create = 'CREATE INDEX Verses_Index ON Verses (Ref ASC)'
+            self.cursor.execute(create)
+            self.connection.commit()
 
     def checkTableExists(self, table):
         if self.cursor:
@@ -1417,7 +1415,7 @@ class MorphologySqlite:
         return "<ref id='v{0}.{1}.{2}' onclick='document.title=\"BIBLE:::{3}:::{4}\"' onmouseover='document.title=\"_instantVerse:::{3}:::{0}.{1}.{2}\"' ondblclick='document.title=\"_menu:::{3}.{0}.{1}.{2}\"'>".format(b, c, v, text, verseReference)
 
     def readTextVerse(self, text, b, c, v):
-        query = "SELECT * FROM {0} WHERE Book=? AND Chapter=? AND Verse=?".format(text)
+        query = "SELECT Book, Chapter, Verse, Scripture FROM {0} WHERE Book=? AND Chapter=? AND Verse=?".format(text)
         self.cursor.execute(query, (b, c, v))
         textVerse = self.cursor.fetchone()
         if not textVerse:

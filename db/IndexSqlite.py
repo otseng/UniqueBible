@@ -49,6 +49,8 @@ class IndexSqlite:
             self.addColumnToTable("Index_Data", "Ref", "TEXT")
         update = "UPDATE Index_Data SET Ref=Book || '-' || Chapter || '-' || Verse"
         self.cursor.execute(update)
+        create = 'CREATE INDEX "Index_Word" ON "Index_Data" ("Word")'
+        self.cursor.execute(create)
         self.connection.commit()
 
     def getVerses(self, word):

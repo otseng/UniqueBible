@@ -77,7 +77,7 @@ if initialCommand == "setup-only":
 logger = logging.getLogger('uba')
 if config.enableLogging:
     logger.setLevel(logging.DEBUG)
-    logHandler = handlers.TimedRotatingFileHandler('uba', when='D', interval=1, backupCount=0)
+    logHandler = handlers.TimedRotatingFileHandler('uba.log', when='D', interval=1, backupCount=0)
     logHandler.setLevel(logging.DEBUG)
     logger.addHandler(logHandler)
     logging.getLogger("requests").setLevel(logging.WARNING)

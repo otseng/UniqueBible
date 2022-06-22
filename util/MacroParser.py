@@ -129,4 +129,4 @@ class Dummy:
 if __name__ == "__main__":
 
     parser = MacroParser(Dummy())
-    parser.parse("/home/oliver/dev/UniqueBible/macros/Test.ubam")
+    parser.parse("/home/oliver/dev/UniqueBible/macros/save/TestNestedIf.ubam")

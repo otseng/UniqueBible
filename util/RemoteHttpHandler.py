@@ -72,6 +72,8 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         try:
             if os.path.exists(self.whiteListFile):
                 self.whiteListIPs = [ip.strip() for ip in open(self.whiteListFile, "r").readlines()]
+            else:
+                Path(self.whiteListFile).touch()
             if os.path.exists(self.blackListFile):
                 self.blackListIPs = [ip.strip() for ip in open(self.blackListFile, "r").readlines()]
         except Exception as ex:

@@ -33,6 +33,10 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
     session = None
     users = []
     adminUsers = []
+    whiteListFile = "ip_whitelist.txt"
+    whiteListIPs = []
+    blackListFile = "ip_blacklist.txt"
+    blackListIPs = []
 
     def __init__(self, *args, **kwargs):
         self.logger = logging.getLogger('uba')
@@ -65,6 +69,14 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
                 config.httpServerViewerGlobalMode = False
         if not hasattr(config, "setMainVerse"):
             config.setMainVerse = False
+        try:
+            if os.path.exists(self.whiteListFile):
+                self.whiteListIPs = open(self.whiteListFile, "r").readlines()
+            if os.path.exists(self.blackListFile):
+                self.blackListIPs = open(self.blackListFile, "r").readlines()
+        except Exception as ex:
+            print(f"Could not read white/blacklists")
+            print(ex)
         super().__init__(*args, directory="htmlResources", **kwargs)
 
     def getCommands(self):
@@ -244,42 +256,58 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         return
 
     def do_GET(self):
-        self.clientIP = self.client_address[0]
-        self.session = self.getSession()
-        if self.session is None:
-            self.blankPage()
-            return
-        if self.clientIP not in self.users:
-            self.users.append(self.clientIP)
-        if self.clientIP == self.users[0]:
-            self.primaryUser = True
-        self.updateData()
-        if self.ignoreCommand(self.path):
-            self.blankPage()
-            return
-        elif self.path == "" or self.path == "/" or self.path.startswith("/index.html") or config.displayLanguage != "en_GB":
-            if self.primaryUser or not config.webPresentationMode:
-                query_components = parse_qs(urlparse(self.path).query)
-                if 'cmd' in query_components:
-                    self.command = query_components["cmd"][0].strip()
-                    self.command = self.command.replace("+", " ")
-                    if self.command:
-                        if self.command.lower().endswith("bible:::") and self.command.count(":::") >= 2:
-                            commandSplit = self.command.split(":::")
-                            text = commandSplit[1]
-                            if not "_" in text and not text in self.textCommandParser.parent.textList:
-                                commandSplit[1] = self.getFavouriteBible()
-                                self.command = ":::".join(commandSplit)
-                        self.loadContent()
+        try:
+            raise Exception("testing")
+            self.clientIP = self.client_address[0]
+            if self.clientIP not in self.whiteListIPs and self.clientIP in self.blackListIPs:
+                self.blankPage()
+                return
+            self.session = self.getSession()
+            if self.session is None:
+                self.blankPage()
+                return
+            if self.clientIP not in self.users:
+                self.users.append(self.clientIP)
+            if self.clientIP == self.users[0]:
+                self.primaryUser = True
+            self.updateData()
+            if self.ignoreCommand(self.path):
+                self.blankPage()
+                return
+            elif self.path == "" or self.path == "/" or self.path.startswith("/index.html") or config.displayLanguage != "en_GB":
+                if self.primaryUser or not config.webPresentationMode:
+                    query_components = parse_qs(urlparse(self.path).query)
+                    if 'cmd' in query_components:
+                        self.command = query_components["cmd"][0].strip()
+                        self.command = self.command.replace("+", " ")
+                        if self.command:
+                            if self.command.lower().endswith("bible:::") and self.command.count(":::") >= 2:
+                                commandSplit = self.command.split(":::")
+                                text = commandSplit[1]
+                                if not "_" in text and not text in self.textCommandParser.parent.textList:
+                                    commandSplit[1] = self.getFavouriteBible()
+                                    self.command = ":::".join(commandSplit)
+                            self.loadContent()
+                        else:
+                            self.loadLastVerse()
                     else:
                         self.loadLastVerse()
                 else:
-                    self.loadLastVerse()
+                    # Web presentation mode is enabled and user is not the host.
+                    self.mainPage()
             else:
-                # Web presentation mode is enabled and user is not the host.
-                self.mainPage()
-        else:
-            return super().do_GET()
+                return super().do_GET()
+        except Exception as ex:
+            self.checkAntiSpamBlacklist(self.clientIP)
+            print(ex)
+            self.blankPage()
+            return
+
+    def checkAntiSpamBlacklist(clientIP):
+        import pydnsbl
+        ip_checker = pydnsbl.DNSBLIpChecker()
+        result = ip_checker.check(clientIP)
+        print(result)
 
     def loadLastVerseHtml(self):
         return """<!DOCTYPE html><html><head><link rel="icon" href="icons/{0}"><title>UniqueBible.app</title>

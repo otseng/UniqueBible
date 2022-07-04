@@ -71,9 +71,9 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             config.setMainVerse = False
         try:
             if os.path.exists(self.whiteListFile):
-                self.whiteListIPs = open(self.whiteListFile, "r").readlines()
+                self.whiteListIPs = [ip.strip() for ip in open(self.whiteListFile, "r").readlines()]
             if os.path.exists(self.blackListFile):
-                self.blackListIPs = open(self.blackListFile, "r").readlines()
+                self.blackListIPs = [ip.strip() for ip in open(self.blackListFile, "r").readlines()]
         except Exception as ex:
             print(f"Could not read white/blacklists")
             print(ex)
@@ -252,15 +252,25 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         return False
 
     def do_POST(self):
-        self.blankPage()
+        self.handleBadRequests()
+
+    def do_HEAD(self):
+        self.handleBadRequests()
+
+    def handleBadRequests(self):
+        self.clientIP = self.client_address[0]
+        if self.clientIP in self.whiteListIPs:
+            self.blankPage()
+            return
+        self.addIpToBlackList(self.clientIP)
+        self.redirectHeader()
         return
 
     def do_GET(self):
         try:
-            raise Exception("testing")
             self.clientIP = self.client_address[0]
             if self.clientIP not in self.whiteListIPs and self.clientIP in self.blackListIPs:
-                self.blankPage()
+                self.redirectHeader()
                 return
             self.session = self.getSession()
             if self.session is None:
@@ -298,16 +308,26 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             else:
                 return super().do_GET()
         except Exception as ex:
-            self.checkAntiSpamBlacklist(self.clientIP)
             print(ex)
-            self.blankPage()
-            return
+            if self.checkAntiSpamBlacklist(self.clientIP):
+                self.redirectHeader()
+            else:
+                self.blankPage()
 
-    def checkAntiSpamBlacklist(clientIP):
+    def checkAntiSpamBlacklist(self, clientIP):
         import pydnsbl
         ip_checker = pydnsbl.DNSBLIpChecker()
         result = ip_checker.check(clientIP)
-        print(result)
+        if result and result.blacklisted:
+            self.addIpToBlacklist(clientIP)
+            return True
+        return False
+
+    def addIpToBlackList(self, clientIP):
+        if clientIP not in self.blackListIPs:
+            file = open(self.blackListFile, 'a')
+            file.write(f"{clientIP}\n")
+            file.close()
 
     def loadLastVerseHtml(self):
         return """<!DOCTYPE html><html><head><link rel="icon" href="icons/{0}"><title>UniqueBible.app</title>
@@ -813,6 +833,12 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-cache, no-store, must-revalidate"),
         self.send_header("Pragma", "no-cache"),
         self.send_header("Expires", "0")
+        self.end_headers()
+
+    def redirectHeader(self, redirectUrl="http://john316.com"):
+        self.send_response(301)
+        self.send_header("Expires", "0")
+        self.send_header("Location", redirectUrl)
         self.end_headers()
 
     def blankPage(self):

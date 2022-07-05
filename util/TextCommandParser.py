@@ -1858,12 +1858,7 @@ class TextCommandParser:
         if not texts:
             return self.invalidCommand()
         else:
-            booksMap = {
-                "ENG": BibleBooks.abbrev["eng"],
-                "TC": BibleBooks.abbrev["tc"],
-                "SC": BibleBooks.abbrev["sc"],
-            }
-            books = booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
+            books = BibleBooks.booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
 
             text = texts[0]
             bible = Bible(text)

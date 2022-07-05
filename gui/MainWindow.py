@@ -891,6 +891,7 @@ class MainWindow(QMainWindow):
     def installGithubBibleAbbreviations(self):
         self.installFromGitHub(GitHubRepoInfo.bibleAbbreviations)
         BibleBooks.initialized = False
+        self.setupMenuLayout(config.menuLayout)
 
     def showUserReposDialog(self):
         from gui.UserReposDialog import UserReposDialog
@@ -4524,7 +4525,7 @@ vid:hover, a:hover, a:active, ref:hover, entry:hover, ch:hover, text:hover, addo
 
     # Set bible book abbreviations
     def setBibleAbbreviations(self):
-        items = ("ENG", "TC", "SC")
+        items = BibleBooks().booksMap.keys()
         item, ok = QInputDialog.getItem(self, "UniqueBible",
                                         config.thisTranslation["menu1_setAbbreviations"], items,
                                         items.index(config.standardAbbreviation), False)

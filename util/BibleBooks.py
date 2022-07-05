@@ -2423,7 +2423,7 @@ class BibleBooks:
         if lang is None:
             lang = config.standardAbbreviation
         books = []
-        standardAbbreviation = BibleBooks.booksMap.get(lang)
+        standardAbbreviation = BibleBooks().booksMap.get(lang)
         if standardAbbreviation:
             for item in standardAbbreviation.keys():
                 books.append(standardAbbreviation[item][0])
@@ -2451,7 +2451,7 @@ class BibleBooks:
                     if len(abbreviations) > 0:
                         BibleBooks.abbrev[lang] = abbreviations
             for key in BibleBooks.abbrev.keys():
-                BibleBooks.booksMap[key.upper()] = BibleBooks.abbrev[key]
+                BibleBooks().booksMap[key.upper()] = BibleBooks.abbrev[key]
             BibleBooks.initialized = True
 
 
@@ -2466,7 +2466,7 @@ if __name__ == '__main__':
     config.thisTranslation = LanguageUtil.loadTranslation("en_US")
 
     bibleBooks = BibleBooks()
-    print(BibleBooks.booksMap)
+    print(BibleBooks().booksMap)
 
     # ot = []
     # nt = []

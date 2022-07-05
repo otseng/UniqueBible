@@ -1858,7 +1858,7 @@ class TextCommandParser:
         if not texts:
             return self.invalidCommand()
         else:
-            books = BibleBooks.booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
+            books = BibleBooks().booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
 
             text = texts[0]
             bible = Bible(text)
@@ -1884,7 +1884,7 @@ class TextCommandParser:
         verseList = self.extractAllVerses(references)
         if texts and verseList:
             text = texts[0]
-            books = BibleBooks.booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
+            books = BibleBooks().booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
             b, c, *_ = verseList[0]
             abb = books[str(b)][0]
             bible = Bible(text)
@@ -1910,7 +1910,7 @@ class TextCommandParser:
         if not command in self.parent.commentaryList:
             return self.invalidCommand()
         else:
-            books = BibleBooks.booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
+            books = BibleBooks().booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
 
             commentary = Commentary(command)
             bookList = commentary.getBookList()
@@ -1938,7 +1938,7 @@ class TextCommandParser:
         if text in self.parent.commentaryList and verseList:
             b, c, *_ = verseList[0]
             if b > 0 and b <= 66:
-                books = BibleBooks.booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
+                books = BibleBooks().booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
                 abb = books[str(b)][0]
                 bible = Bible("KJV")
                 chapterVerseList = bible.getVerseList(b, c)

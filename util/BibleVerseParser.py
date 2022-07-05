@@ -114,7 +114,7 @@ class BibleVerseParser:
     # update self.standardAbbreviation
     def updateStandardAbbreviation(self):
         self.checkConfig()
-        self.standardAbbreviation = BibleBooks.booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
+        self.standardAbbreviation = BibleBooks().booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
         self.standardFullBookName = {key: value[1] for key, value in self.standardAbbreviation.items()}
         self.standardAbbreviation = {key: value[0] for key, value in self.standardAbbreviation.items()}
 

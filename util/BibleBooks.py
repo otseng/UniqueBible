@@ -2451,7 +2451,7 @@ class BibleBooks:
                     if len(abbreviations) > 0:
                         BibleBooks.abbrev[lang] = abbreviations
             for key in BibleBooks.abbrev.keys():
-                BibleBooks().booksMap[key.upper()] = BibleBooks.abbrev[key]
+                BibleBooks.booksMap[key.upper()] = BibleBooks.abbrev[key]
             BibleBooks.initialized = True
 
 

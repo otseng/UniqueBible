@@ -1,6 +1,8 @@
 import glob
 import os
 from pathlib import Path
+import config
+
 
 class BibleBooks:
 
@@ -2417,9 +2419,7 @@ class BibleBooks:
         else:
             return 100
 
-    def getStandardBookAbbreviations(lang=None):
-        import config
-
+    def getStandardBookAbbreviations(self, lang=None):
         if lang is None:
             lang = config.standardAbbreviation
         books = []

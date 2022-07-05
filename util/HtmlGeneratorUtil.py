@@ -13,11 +13,11 @@ class HtmlGeneratorUtil:
     def getAudioPlayer(playlist):
         # Get book name translation
         booksMap = {
-            "ENG": BibleBooks.eng,
-            "TC": BibleBooks.tc,
-            "SC": BibleBooks.sc,
+            "ENG": BibleBooks.abbrev["eng"],
+            "TC": BibleBooks.abbrev["tc"],
+            "SC": BibleBooks.abbrev["sc"],
         }
-        books = booksMap.get(config.standardAbbreviation, BibleBooks.eng)
+        books = booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
 
         # Audio Player souce codes: https://github.com/likev/html5-audio-player
         html = """

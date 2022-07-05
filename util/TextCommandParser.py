@@ -823,7 +823,7 @@ class TextCommandParser:
             # _copy:::Unique Bible App
             """),
         }
-        for key, value in BibleBooks.eng.items():
+        for key, value in BibleBooks.abbrev["eng"].items():
             book = value[0]
             self.interpreters[book.lower()] = (partial(self.textSearchSingleBook, key), """
             # [KEYWORD] {0}
@@ -1859,11 +1859,11 @@ class TextCommandParser:
             return self.invalidCommand()
         else:
             booksMap = {
-                "ENG": BibleBooks.eng,
-                "TC": BibleBooks.tc,
-                "SC": BibleBooks.sc,
+                "ENG": BibleBooks.abbrev["eng"],
+                "TC": BibleBooks.abbrev["tc"],
+                "SC": BibleBooks.abbrev["sc"],
             }
-            books = booksMap.get(config.standardAbbreviation, BibleBooks.eng)
+            books = booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
 
             text = texts[0]
             bible = Bible(text)
@@ -1889,12 +1889,7 @@ class TextCommandParser:
         verseList = self.extractAllVerses(references)
         if texts and verseList:
             text = texts[0]
-            booksMap = {
-                "ENG": BibleBooks.eng,
-                "TC": BibleBooks.tc,
-                "SC": BibleBooks.sc,
-            }
-            books = booksMap.get(config.standardAbbreviation, BibleBooks.eng)
+            books = BibleBooks.booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
             b, c, *_ = verseList[0]
             abb = books[str(b)][0]
             bible = Bible(text)
@@ -1920,12 +1915,7 @@ class TextCommandParser:
         if not command in self.parent.commentaryList:
             return self.invalidCommand()
         else:
-            booksMap = {
-                "ENG": BibleBooks.eng,
-                "TC": BibleBooks.tc,
-                "SC": BibleBooks.sc,
-            }
-            books = booksMap.get(config.standardAbbreviation, BibleBooks.eng)
+            books = BibleBooks.booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
 
             commentary = Commentary(command)
             bookList = commentary.getBookList()
@@ -1953,12 +1943,7 @@ class TextCommandParser:
         if text in self.parent.commentaryList and verseList:
             b, c, *_ = verseList[0]
             if b > 0 and b <= 66:
-                booksMap = {
-                    "ENG": BibleBooks.eng,
-                    "TC": BibleBooks.tc,
-                    "SC": BibleBooks.sc,
-                }
-                books = booksMap.get(config.standardAbbreviation, BibleBooks.eng)
+                books = BibleBooks.booksMap.get(config.standardAbbreviation, BibleBooks.abbrev["eng"])
                 abb = books[str(b)][0]
                 bible = Bible("KJV")
                 chapterVerseList = bible.getVerseList(b, c)
@@ -2647,7 +2632,7 @@ class TextCommandParser:
             if dotCount == 3 and config.enableHttpServer:
                 text, b, c, v = command.split(".")
                 config.mainText, config.mainB, config.mainC, config.mainV = text, int(b), int(c), int(v)
-                bibleCommand = "BIBLE:::{0}:::{1} {2}:{3}".format(text, BibleBooks.eng[b][0], config.mainC, config.mainV)
+                bibleCommand = "BIBLE:::{0}:::{1} {2}:{3}".format(text, BibleBooks.abbrev["eng"][b][0], config.mainC, config.mainV)
                 self.parent.addHistoryRecord("main", bibleCommand)
             menu = HtmlGeneratorUtil().getMenu(command, source)
             return (source, menu, {})
@@ -2660,7 +2645,7 @@ class TextCommandParser:
         if dotCount == 3 and config.enableHttpServer:
             text, b, c, v = command.split(".")
             config.mainText, config.mainB, config.mainC, config.mainV = text, int(b), int(c), int(v)
-            bibleCommand = "BIBLE:::{0}:::{1} {2}:{3}".format(text, BibleBooks.eng[b][0], config.mainC, config.mainV)
+            bibleCommand = "BIBLE:::{0}:::{1} {2}:{3}".format(text, BibleBooks.abbrev["eng"][b][0], config.mainC, config.mainV)
             self.parent.addHistoryRecord("main", bibleCommand)
         if dotCount != 3 or config.verseNoDoubleClickAction == "_menu" or (config.enableHttpServer and config.verseNoDoubleClickAction.startswith("_cp")):
             if dotCount == 2 and not config.preferHtmlMenu and not config.enableHttpServer:

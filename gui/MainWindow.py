@@ -888,6 +888,10 @@ class MainWindow(QMainWindow):
     def installGithubDevotionals(self):
         self.installFromGitHub(GitHubRepoInfo.devotionals)
 
+    def installGithubBibleAbbreviations(self):
+        self.installFromGitHub(GitHubRepoInfo.bibleAbbreviations)
+        BibleBooks.initialized = False
+
     def showUserReposDialog(self):
         from gui.UserReposDialog import UserReposDialog
         self.userReposDialog = UserReposDialog(self)
@@ -5675,7 +5679,7 @@ vid:hover, a:hover, a:active, ref:hover, entry:hover, ch:hover, text:hover, addo
         # Text command autocompletion/autosuggest
         textCommandParser = TextCommandParser(self)
         textCommands = [key + ":::" for key in textCommandParser.interpreters.keys()]
-        bibleBooks = BibleBooks.getStandardBookAbbreviations()
+        bibleBooks = BibleBooks().getStandardBookAbbreviations()
         textCommandAutosuggestion = QCompleter(textCommands + bibleBooks)
         textCommandAutosuggestion.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         return textCommandAutosuggestion

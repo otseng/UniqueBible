@@ -6,6 +6,8 @@ from distutils import util
 from functools import partial
 from pathlib import Path
 
+from util.PluginEventHandler import PluginEventHandler
+
 if config.qtLibrary == "pyside6":
     from PySide6.QtCore import QUrl, Qt, QEvent, QThread, QDir, QTimer
     from PySide6.QtGui import QIcon, QGuiApplication, QFont, QKeySequence, QColor, QPixmap, QCursor, QAction, QShortcut
@@ -3900,6 +3902,7 @@ class MainWindow(QMainWindow):
                 self.newTabException = True
             # parse command
             view, content, dict = self.textCommandParser.parser(textCommand, source)
+            PluginEventHandler.handleEvent("command", textCommand)
             # process content
             if content == "INVALID_COMMAND_ENTERED":
                 self.displayMessage("{0} '{1}'".format(config.thisTranslation["message_invalid"], textCommand))

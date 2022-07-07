@@ -1,5 +1,5 @@
 Changes in 31.11:
-* Added plugin events handler
+* Added plugin event handler
 - https://github.com/eliranwong/UniqueBible/wiki/Plugin-Event-Handler
 
 Changes in 31.10:

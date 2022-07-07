@@ -13,11 +13,13 @@ if config.qtLibrary == "pyside6":
     from PySide6.QtGui import QIcon, QGuiApplication, QFont, QKeySequence, QColor, QPixmap, QCursor, QAction, QShortcut
     from PySide6.QtWidgets import QInputDialog, QLineEdit, QMainWindow, QMessageBox, QWidget, QFileDialog, QLabel, QFrame, QFontDialog, QApplication, QPushButton, QColorDialog, QComboBox, QToolButton, QMenu, QCompleter
     from PySide6.QtWebEngineCore import QWebEnginePage
+    from PySide6.QtGui import QClipboard
 else:
     from qtpy.QtCore import QUrl, Qt, QEvent, QThread, QDir, QTimer
     from qtpy.QtGui import QIcon, QGuiApplication, QFont, QKeySequence, QColor, QPixmap, QCursor
     from qtpy.QtWidgets import QAction, QInputDialog, QLineEdit, QMainWindow, QMessageBox, QWidget, QFileDialog, QLabel, QFrame, QFontDialog, QApplication, QPushButton, QShortcut, QColorDialog, QComboBox, QToolButton, QMenu, QCompleter
     from qtpy.QtWebEngineWidgets import QWebEnginePage
+    from qtpy.QtGui import QClipboard
 from gui.WorkSpace import Workspace
 from db.DevotionalSqlite import DevotionalSqlite
 from gui.BibleCollectionDialog import BibleCollectionDialog
@@ -1553,6 +1555,11 @@ class MainWindow(QMainWindow):
                 clipboardText = text
         config.clipboardText = clipboardText
         return clipboardText
+
+    def setClipboardText(self, text):
+        QApplication.clipboard().setText(text)
+        QApplication.clipboard().setText(text, QClipboard.Selection)
+        QApplication.clipboard().setText(text, QClipboard.Clipboard)
 
     def pasteFromClipboard(self):
         clipboardText = self.getClipboardText()

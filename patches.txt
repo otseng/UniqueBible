@@ -1109,7 +1109,6 @@
 (31.00, "file", "db/NoteSqlite.py")
 (31.01, "file", "gui/NoteEditor.py")
 (31.01, "file", "gui/NoteEditorDocker.py")
-(31.02, "file", "gui/MaterialMainWindow.py")
 (31.02, "file", "db/JournalSqlite.py")
 (31.02, "file", "gui/HistoryLauncher.py")
 (31.06, "file", ".gitignore")
@@ -1157,3 +1156,6 @@
 (31.10, "file", "latest_changes.txt")
 (31.10, "file", "util/BibleBooks.py")
 (31.10, "file", "patches.txt")
+(31.11, "folder", "plugins/event")
+(31.11, "file", "gui/MaterialMainWindow.py")
+

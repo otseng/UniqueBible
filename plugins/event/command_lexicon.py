@@ -7,9 +7,11 @@ import config
 if config.qtLibrary == "pyside6":
     from PySide6.QtWidgets import QApplication
     from PySide6.QtCore import QThread
+    from PySide6.QtGui import QClipboard
 else:
     from qtpy.QtWidgets import QApplication
     from qtpy.QtCore import QThread
+    from qtpy.QtGui import QClipboard
 
 if ":::" in config.eventCommand:
     commandList = config.eventCommand.split(":::")
@@ -41,7 +43,8 @@ if ":::" in config.eventCommand:
         output = output.replace(TRLIT_DIR, "")
         output = output.replace("//", "/../")
         QApplication.clipboard().setText(output)
-        QThread.msleep(1)
+        QApplication.clipboard().setText(output, QClipboard.Selection)
+        QApplication.clipboard().setText(output, QClipboard.Clipboard)
         print("Exists: " + file)
     else:
         print("Need to create!!! " + file)

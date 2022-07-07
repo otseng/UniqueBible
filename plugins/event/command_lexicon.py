@@ -2,17 +2,13 @@ import html
 import os
 import re
 from urllib import request
-import ssl
-
 import config
 
 if config.qtLibrary == "pyside6":
     from PySide6.QtWidgets import QApplication
-    from PySide6.QtCore import QThread
     from PySide6.QtGui import QClipboard
 else:
     from qtpy.QtWidgets import QApplication
-    from qtpy.QtCore import QThread
     from qtpy.QtGui import QClipboard
 
 def remove_tags(raw_html):
@@ -51,7 +47,6 @@ if ":::" in config.eventCommand:
         text = text.replace("//", "/../")
         config.mainWindow.setClipboardText(text)
     else:
-        # ssl._create_default_https_context = ssl._create_unverified_context
         url = "https://www.blueletterbible.org/lexicon/" + strongs
         try:
             response = request.urlopen(url)
@@ -88,8 +83,6 @@ if ":::" in config.eventCommand:
             outfile.write("Definition:" + s_definition + "\n\n")
             outfile.write("Part of speech: " + s_speech + "\n\n")
             outfile.write("Occurs " + s_count1 + " times in " + s_count2 + " verses\n\n")
-            # if first == 'g':
-            #     outfile.write("Derived words: \n\n")
             outfile.write("## Articles\n\n")
 
             if first == 'g':
@@ -104,7 +97,6 @@ if ":::" in config.eventCommand:
             if first == 'h':
                 outfile.write("[Study Light](https://www.studylight.org/lexicons/hebrew/" + number + ".html)\n\n")
                 outfile.write("[Bible Hub](https://biblehub.com/str/hebrew/" + number + ".htm)\n\n")
-                # outfile.write("[Morfix]()\n\n")
                 outfile.write("[NET Bible](http://classic.net.bible.org/strong.php?id=0" + number + ")\n\n")
                 outfile.write("[Bible Bento](https://biblebento.com/dictionary/H" + number + ".html)\n\n")
                 outfile.write("[Bible Study Company](https://biblestudycompany.com/reader/strongs/" + number + "/hebrew)\n\n")
@@ -128,6 +120,4 @@ if ":::" in config.eventCommand:
 
             # config.mainWindow.openBrowser(url)
         except Exception as ex:
-            print("Could not open " + url)
-
-
+            print(ex)

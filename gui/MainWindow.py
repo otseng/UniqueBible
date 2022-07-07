@@ -3909,7 +3909,12 @@ class MainWindow(QMainWindow):
                 self.newTabException = True
             # parse command
             view, content, dict = self.textCommandParser.parser(textCommand, source)
+            # plugin event hook
+            config.eventView = view
+            config.eventContent = content
+            config.eventDict = dict
             PluginEventHandler.handleEvent("command", textCommand)
+            content = config.eventContent
             # process content
             if content == "INVALID_COMMAND_ENTERED":
                 self.displayMessage("{0} '{1}'".format(config.thisTranslation["message_invalid"], textCommand))

@@ -5,9 +5,6 @@ from datetime import datetime
 from distutils import util
 from functools import partial
 from pathlib import Path
-
-from util.PluginEventHandler import PluginEventHandler
-
 if config.qtLibrary == "pyside6":
     from PySide6.QtCore import QUrl, Qt, QEvent, QThread, QDir, QTimer
     from PySide6.QtGui import QIcon, QGuiApplication, QFont, QKeySequence, QColor, QPixmap, QCursor, QAction, QShortcut
@@ -46,6 +43,7 @@ from gui.ConfigFlagsWindow import ConfigFlagsWindow
 from gui.EnableIndividualPlugins import EnableIndividualPlugins
 from gui.EditGuiLanguageFileDialog import EditGuiLanguageFileDialog
 from gui.InfoDialog import InfoDialog
+from util.PluginEventHandler import PluginEventHandler
 # These "unused" window imports are actually used.  Do not delete these lines.
 from gui.DisplayShortcutsWindow import DisplayShortcutsWindow
 from gui.GistWindow import GistWindow

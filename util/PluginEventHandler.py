@@ -3,6 +3,7 @@ import os
 import re
 import config
 
+
 class PluginEventHandler:
 
     eventHandlers = None

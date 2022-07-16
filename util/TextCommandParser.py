@@ -624,6 +624,10 @@ class TextCommandParser:
             # Feature - Open today's devotional entry
             # e.g. DEVOTIONAL:::Meyer
             """),
+            "voicecommand": (self.voiceCommand, """
+            # [KEYWORD] VOICECOMMAND
+            # Use speech to text to run a command
+            """),
             #
             # Keywords starting with "_" are mainly internal commands for GUI operations
             # They are not recorded in history records.
@@ -3720,6 +3724,15 @@ class TextCommandParser:
             date = ""
         self.parent.openDevotional(devotional, date)
         return ("", "", {})
+
+    # VOICECOMMAND:::
+    def voiceCommand(self, command, source):
+        try:
+            from util.VoiceCommandUtil import VoiceCommandUtil
+            VoiceCommandUtil(self.parent).transcribeFromMicrophoneUsingMicrophoneStream()
+        except Exception as ex:
+            print(ex)
+            self.parent.displayMessage("Voice command not configured")
 
 
 if __name__ == "__main__":

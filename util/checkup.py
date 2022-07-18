@@ -603,8 +603,8 @@ for module, feature, isInstalled in required or config.updateDependenciesOnStart
 
 disabledModules = []
 if os.path.exists("disabled_modules.txt"):
-    with open('disabled_modules.txt') as my_file:
-        disabledModules = [line.strip() for line in my_file.readlines()]
+    with open('disabled_modules.txt') as disabledModulesFile:
+        disabledModules = [line.strip() for line in disabledModulesFile.readlines()]
 # Check if optional modules are installed
 optional = [
     ("html-text", "Read html text", isHtmlTextInstalled),

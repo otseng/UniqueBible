@@ -6,11 +6,14 @@ import threading
 import wave
 import sys
 import pyaudio
+
 import config
 if config.qtLibrary == "pyside6":
     from PySide6 import QtCore
+    from PySide6.QtCore import QThread, QObject
 else:
     from qtpy.PySide import QtCore
+    from qtpy.QtCore import QThread
 
 if __name__ == "__main__":
     config.noQt = False
@@ -71,6 +74,7 @@ class VoiceCommandUtil:
         self.bibleMap = {}
         for bible in bibles:
             self.bibleMap[bible.lower()] = bible
+        self.frames = []
 
     def buildTextCommand(self, phrase):
         for search in self.wordReplacement.keys():
@@ -116,15 +120,6 @@ class VoiceCommandUtil:
             else:
                 newPhrase.append(word)
         return " ".join(newPhrase)
-
-    # GUI mode transcription
-    def transcribeFromMicrophoneUsingMicrophoneRecorder(self):
-        self.mic = MicrophoneRecorder()
-        self.mic.start()
-
-        timer = QtCore.QTimer()
-        timer.timeout.connect(self.handleNewData)
-        timer.start(100)
 
     # This works in standalone mode for dev purposes, but will not work in GUI
     def transcribeFromMicrophoneUsingMicrophoneStream(self):
@@ -292,6 +287,26 @@ class VoiceCommandUtil:
             return frame_rate, channels
 
 
+# GUI mode transcription
+class TranscribeFromMicrophone(QObject):
+    def start(self):
+        self.mic = MicrophoneRecorder()
+        self.mic.start()
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.handleNewData)
+        self.timer.start(100)
+        self.frames = []
+
+    def stop(self):
+        self.timer.stop()
+        self.finished.emit()
+
+    def handleNewData(self):
+        frames = self.mic.get_frames()
+        # for frame in frames:
+        #     print(frame)
+        self.frames.append(frames)
+
 # https://flothesof.github.io/pyqt-microphone-fft-application.html
 class MicrophoneRecorder(object):
     def __init__(self, rate=4000, chunksize=1024):
@@ -311,7 +326,7 @@ class MicrophoneRecorder(object):
 
     def new_frame(self, data, frame_count, time_info, status):
         import numpy as np
-        data = np.fromstring(data, 'int16')
+        data = np.frombuffer(data, 'int16')
         with self.lock:
             self.frames.append(data)
             if self.stop:
@@ -403,8 +418,19 @@ class MicrophoneStream(object):
 
 
 if __name__ == "__main__":
+    from PySide6.QtWidgets import QApplication
+
     print("Start")
-    VoiceCommandUtil().transcribeFromMicrophoneUsingMicrophoneStream()
-    # VoiceCommandUtil().transcribeFromMicrophoneUsingMicrophoneRecorder()
+
+    # VoiceCommandUtil().transcribeFromMicrophoneUsingMicrophoneStream()
+
+    thread = QThread()
+    transcribe = TranscribeFromMicrophone()
+    transcribe.moveToThread(thread)
+    thread.started.connect(transcribe.start)
+    thread.start()
+    app = QApplication(sys.argv)
+    app.exec()
+
     # VoiceCommandUtil().transcribeFile("temp/harvard.wav")
     print("End")

@@ -290,28 +290,59 @@ class VoiceCommandUtil:
 # GUI mode transcription
 class TranscribeFromMicrophone(QObject):
     def start(self):
+        from google.cloud import speech
+
+        from google.oauth2 import service_account
+        self.logger = logging.getLogger('uba')
+        self.credentials = None
+        keyFile = 'google-cloud-key.json'
+        if not os.path.exists(keyFile):
+            raise Exception(f"{keyFile} does not exist")
+        self.credentials = service_account.Credentials.from_service_account_file(keyFile)
+
         self.mic = MicrophoneRecorder()
         self.mic.start()
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.handleNewData)
-        self.timer.start(100)
+        self.timer.start(50)
         self.frames = []
+        self.count = 0
+        self.client = speech.SpeechClient(credentials=self.credentials)
 
     def stop(self):
         self.timer.stop()
         self.finished.emit()
 
     def handleNewData(self):
-        frames = self.mic.get_frames()
-        # for frame in frames:
-        #     print(frame)
-        self.frames.append(frames)
+        from google.cloud import speech
+
+        data = self.mic.get_frames()
+        self.count = self.count + 1
+        if self.count > 20 * 3:
+            print(".")
+            print(data)
+            byteData = bytes(data)
+            audio = speech.RecognitionAudio(content=byteData)
+            config = speech.RecognitionConfig(
+                encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+                language_code="en-US",
+                sample_rate_hertz=VoiceCommandUtil.RATE
+            )
+
+            response = self.client.recognize(config=config, audio=audio)
+
+            for result in response.results:
+                print(u"Transcript: {}".format(result.alternatives[0].transcript))
+
 
 # https://flothesof.github.io/pyqt-microphone-fft-application.html
-class MicrophoneRecorder(object):
-    def __init__(self, rate=4000, chunksize=1024):
-        self.rate = rate
-        self.chunksize = chunksize
+class MicrophoneRecorder:
+    RATE = 16000
+    CHUNK = int(RATE / 10)  # 100ms
+
+    def __init__(self):
+        self.rate = self.RATE
+        self.chunksize = self.CHUNK
         self.p = pyaudio.PyAudio()
         self.stream = self.p.open(format=pyaudio.paInt16,
                                   channels=1,
@@ -321,14 +352,14 @@ class MicrophoneRecorder(object):
                                   stream_callback=self.new_frame)
         self.lock = threading.Lock()
         self.stop = False
-        self.frames = []
+        self.frames = bytearray()
         atexit.register(self.close)
 
     def new_frame(self, data, frame_count, time_info, status):
         import numpy as np
         data = np.frombuffer(data, 'int16')
         with self.lock:
-            self.frames.append(data)
+            self.frames.extend(data)
             if self.stop:
                 return None, pyaudio.paComplete
         return None, pyaudio.paContinue
@@ -336,7 +367,7 @@ class MicrophoneRecorder(object):
     def get_frames(self):
         with self.lock:
             frames = self.frames
-            self.frames = []
+            self.frames = bytearray()
             return frames
 
     def start(self):
@@ -348,7 +379,7 @@ class MicrophoneRecorder(object):
         self.stream.close()
         self.p.terminate()
 
-
+# Command line transcription
 class MicrophoneStream(object):
     """Opens a recording stream as a generator yielding the audio chunks."""
 
@@ -422,15 +453,15 @@ if __name__ == "__main__":
 
     print("Start")
 
-    # VoiceCommandUtil().transcribeFromMicrophoneUsingMicrophoneStream()
+    VoiceCommandUtil().transcribeFromMicrophoneUsingMicrophoneStream()
 
-    thread = QThread()
-    transcribe = TranscribeFromMicrophone()
-    transcribe.moveToThread(thread)
-    thread.started.connect(transcribe.start)
-    thread.start()
-    app = QApplication(sys.argv)
-    app.exec()
+    # thread = QThread()
+    # transcribe = TranscribeFromMicrophone()
+    # transcribe.moveToThread(thread)
+    # thread.started.connect(transcribe.start)
+    # thread.start()
+    # app = QApplication(sys.argv)
+    # app.exec()
 
     # VoiceCommandUtil().transcribeFile("temp/harvard.wav")
     print("End")

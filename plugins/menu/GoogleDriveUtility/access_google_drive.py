@@ -1,6 +1,10 @@
 from __future__ import print_function
+
+import mimetypes
+import pathlib
 import pickle, io, sys
 import os.path
+import re
 from shutil import copyfile
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -12,16 +16,9 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 # If modifying these scopes, delete the file token.pickle.
 # Read options of scopes at https://developers.google.com/drive/api/v3/about-auth
-#SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
 SCOPES = ["https://www.googleapis.com/auth/drive"]
 
-#noteFile = os.path.join(os.getcwd(), "marvelData", "note.sqlite")
-noteFileCloudId = os.path.join("plugins", "menu", "NotesUtility", "noteFileGoogleCloudId.txt")
-
 def getService():
-    """Shows basic usage of the Drive v3 API.
-    Prints the names and ids of the first 10 files the user has access to.
-    """
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -44,16 +41,27 @@ def getService():
     return build('drive', 'v3', credentials=creds)
 
 def listFiles(service):
-    # query: https://developers.google.com/drive/api/v3/search-files
-    results = service.files().list(q="name='note.sqlite'", fields="files(id, name)").execute()
+    folder = getBackupFolder(service)
+    results = service.files().list(q=f"'{folder}' in parents", fields="files(id, name)").execute()
     items = results.get('files', [])
     return [item["id"] for item in items]
 
-def uploadNotes(service):
-    # Check cloud id of old notes
+def createBackupFolder(service):
+    file_metadata = {'name': 'UBA-backups', 'mimeType': 'application/vnd.google-apps.folder'}
+    service.files().create(body=file_metadata, fields='id').execute()
+
+def getBackupFolder(service):
+    results = service.files().list(q="name='UBA-backups' and mimeType='application/vnd.google-apps.folder'", fields="files(id, name)").execute()
+    items = results.get('files', [])
+    if len(items) > 0:
+        return items[0]['id']
+    else:
+        return 0
+
+def uploadFiles(service):
     oldFile_id = ""
-    if os.path.isfile(noteFileCloudId):
-        with open(noteFileCloudId, "r", encoding="utf-8") as fileObject:
+    if os.path.isfile(cloudIdFile):
+        with open(cloudIdFile, "r", encoding="utf-8") as fileObject:
             oldFile_id = fileObject.readline().rstrip()
     
     # Check if an older version exists
@@ -61,12 +69,11 @@ def uploadNotes(service):
     fileExists = oldFile_id in currentFiles
 
     file_metadata = {
-        "name": "note.sqlite",
+        "name": backupFile,
+        "parents": [getBackupFolder(service)]
     }
-    # sqlite3 mimetype: http://fileformats.archiveteam.org/wiki/DB_(SQLite)
-    # others: https://www3.sqlite.org/src/mimetype_list
-    media = MediaFileUpload(noteFile,
-                            mimetype="application/x-sqlite3",
+    media = MediaFileUpload(backupFile,
+                            mimetype=getMimeType(backupFile),
                             resumable=True)
     # update an existing file / create a new file
     if fileExists:
@@ -76,8 +83,29 @@ def uploadNotes(service):
     # Return new file id
     print(file.get('id'))
 
-def downloadNotes(service):
-    with open(noteFileCloudId, "r", encoding="utf-8") as fileObject:
+def convertFilePath(path):
+    path = re.sub(r"[/\\]", "_", path)
+    path += ".txt"
+    return path
+
+# mimetypes: https://www3.sqlite.org/src/mimetype_list
+def getMimeType(file):
+    extension = pathlib.Path(file).suffix
+    if extension in [".sqlite", ".lexicon", ".data", ".commentary", ".book", ".bible"]:
+        return "application/x-sqlite3"
+    elif extension in [".mp3"]:
+        return "audio/mpeg"
+    elif extension in [".mp4"]:
+        return "video/mp4"
+    elif extension in [".css"]:
+        return "text/css"
+    elif extension in [".js"]:
+        return "text/javascript"
+    else:
+        return mimetypes.guess_type(file)[0]
+
+def downloadFiles(service):
+    with open(cloudIdFile, "r", encoding="utf-8") as fileObject:
         file_id = fileObject.readline().rstrip()
     request = service.files().get_media(fileId=file_id)
     fh = io.BytesIO()
@@ -89,20 +117,23 @@ def downloadNotes(service):
         print("Downloaded {0}%".format(downloadPercentage))
     if downloadPercentage == 100:
         # Backup an earlier version
-        copyfile(noteFile, "{0}_backup".format(noteFile))
+        if os.path.exists(backupFile):
+            copyfile(backupFile, "{0}_backup".format(backupFile))
         # Write a new file
-        with open(noteFile, "wb") as f:
+        with open(backupFile, "wb") as f:
             f.write(fh.getbuffer())
 
 
 if __name__ == '__main__':
-    #argument = " ".join(sys.argv[1:])
-    argument, marvelData = " ".join(sys.argv[1:]).split(" ", 1)
-    noteFile = os.path.join(os.getcwd(), "marvelData", "note.sqlite") if marvelData == "marvelData" else os.path.join(marvelData, "note.sqlite")
+
     service = getService()
+    if getBackupFolder(service) == 0:
+        createBackupFolder(service)
+    argument, backupFile = " ".join(sys.argv[1:]).split(" ", 1)
+    cloudIdFile = os.path.join("plugins", "menu", "GoggleDriveUtility", convertFilePath(backupFile))
     options = {
-        "upload": uploadNotes,
-        "download": downloadNotes,
+        "upload": uploadFiles,
+        "download": downloadFiles,
     }
     if argument in options:
         options[argument](service)

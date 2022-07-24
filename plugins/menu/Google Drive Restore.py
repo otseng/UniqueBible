@@ -1,5 +1,5 @@
 import subprocess, sys, os, config
-from plugins.menu.NotesUtility.install import *
+from plugins.menu.GoogleDriveUtility.install import *
 try:
     from googleapiclient.discovery import build
     from google_auth_oauthlib.flow import InstalledAppFlow
@@ -8,29 +8,36 @@ try:
 except:
     modulesInstalled = False
 
-def downloadNotes():
+def downloadFiles():
+    message = ""
     try:
-        upload = subprocess.Popen("{0} {1} download {2}".format(sys.executable, os.path.join("plugins", "menu", "NotesUtility", "access_google_drive.py"), config.marvelData), shell=True)
-        *_, stderr = upload.communicate()
-        if not stderr:
-            config.mainWindow.displayMessage("Restored!")
-            config.mainWindow.reloadCurrentRecord()
-        else:
-            config.mainWindow.displayMessage("Failed to download bible notes!")
-    except:
-        config.mainWindow.displayMessage("Failed to download bible notes!")
+        filesToBackupFile = os.path.join("plugins", "menu", "GoogleDriveUtility", "files_to_backup.txt")
+        filesToBackupList = []
+        if os.path.exists(filesToBackupFile):
+            with open(filesToBackupFile) as input:
+                filesToBackupList = [line.strip() for line in input.readlines()]
+        for file in filesToBackupList:
+            download = subprocess.Popen("{0} {1} download {2}".format(sys.executable, os.path.join("plugins", "menu", "GoogleDriveUtility", "access_google_drive.py"), file), shell=True)
+            *_, stderr = download.communicate()
+            if not stderr:
+                message += f"Downloaded {file}\n"
+            else:
+                print(stderr)
+                message += f"Could not download {file}\n"
+    except Exception as ex:
+        print(ex)
+        message = "Failed to download: " + ex
+    config.mainWindow.reloadCurrentRecord()
+    config.mainWindow.displayMessage(message)
 
 credentials = os.path.join("credentials.json")
-noteFileCloudId = os.path.join("plugins", "menu", "NotesUtility", "noteFileGoogleCloudId.txt")
 if not os.path.isfile(credentials):
-    config.mainWindow.displayMessage("You have not yet enabled Goolge Drive API! \nRead for more information at: https://github.com/eliranwong/UniqueBible/wiki/Notes-Backup-with-Google-Drive")
+    config.mainWindow.displayMessage("You have not yet enabled Google Drive API! \nRead for more information at: https://github.com/eliranwong/UniqueBible/wiki/Notes-Backup-with-Google-Drive")
     config.mainWindow.openWebsite("https://github.com/eliranwong/UniqueBible/wiki/Notes-Backup-with-Google-Drive")
-elif not os.path.isfile(noteFileCloudId):
-    config.mainWindow.displayMessage("You do not have a backup in Google Drive yet!")
 else:
     if not modulesInstalled:
         print("Installing missing modules ...")
         installGoogleDriveModules()
-        downloadNotes()
+        downloadFiles()
     else:
-        downloadNotes()
+        downloadFiles()

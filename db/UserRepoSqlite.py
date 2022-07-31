@@ -1,4 +1,4 @@
-import os, apsw
+import os, sqlite3
 import config
 from util.GitHubRepoInfo import GitHubRepoInfo
 
@@ -17,13 +17,13 @@ class UserRepoSqlite:
 
     def __init__(self):
         self.filename = os.path.join(config.marvelData, "userrepo.sqlite")
-        self.connection = apsw.Connection(self.filename)
+        self.connection = sqlite3.connect(self.filename)
         self.cursor = self.connection.cursor()
         if not self.checkTableExists():
             self.createTable()
 
     def __del__(self):
-#        #self.cursor.execute("COMMIT")
+        self.connection.commit()
         self.connection.close()
 
     def createTable(self):
@@ -42,7 +42,7 @@ class UserRepoSqlite:
             (active, name, type, repo, directory) 
             VALUES (?, ?, ?, ?, ?)"""
         self.cursor.execute(insert, (active, name, type, repo, directory))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def update(self, id, name, type, repo, directory="", active=True):
         repo = GitHubRepoInfo.fixRepoUrl(repo)
@@ -50,17 +50,17 @@ class UserRepoSqlite:
             active=?, name=?, type=?, repo=?, directory=?
             WHERE id=?"""
         self.cursor.execute(update, (active, name, type, repo, directory, id))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def delete(self, id):
         delete = f"DELETE FROM {self.TABLE_NAME} WHERE id=?"
         self.cursor.execute(delete, (id,))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def deleteAll(self):
         delete = f"DELETE FROM {self.TABLE_NAME}"
         self.cursor.execute(delete)
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def getAll(self):
         query = f"SELECT id, active, name, type, repo, directory FROM {self.TABLE_NAME} order by name"

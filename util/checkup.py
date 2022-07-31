@@ -395,20 +395,6 @@ def isPaddleocrInstalled():
     except:
         return False
 
-def isApswInstalled():
-    try:
-        import apsw
-        return True
-    except:
-        return False
-
-def isPyluachInstalled():
-    try:
-        from pyluach import dates, hebrewcal, parshios
-        return True
-    except:
-        return False
-
 def isChineseEnglishLookupInstalled():
     try:
         from chinese_english_lookup import Dictionary
@@ -428,27 +414,6 @@ def isLemmagen3Installed():
 
 def isAudioConverterInstalled():
     return True if WebtopUtil.isPackageInstalled("audioconvert") else False
-
-def isPydnsblInstalled():
-    try:
-        import pydnsbl
-        return True
-    except:
-        return False
-
-def isGmplotInstalled():
-    try:
-        import gmplot
-        return True
-    except:
-        return False
-
-def isHaversineInstalled():
-    try:
-        from haversine import haversine
-        return True
-    except:
-        return False
 
 # Set config values for optional features
 def setInstallConfig(module, isInstalled):
@@ -510,16 +475,6 @@ def setInstallConfig(module, isInstalled):
         config.isTextractInstalled = isInstalled
     elif module in ("tabulate", "-U tabulate", "--upgrade tabulate"):
         config.isTabulateInstalled = isInstalled
-    elif module in ("apsw", "-U apsw", "--upgrade apsw"):
-        config.isApswInstalled = isInstalled
-    elif module in ("pyluach", "-U pyluach", "--upgrade pyluach"):
-        config.isPyluachInstalled = isInstalled
-    elif module in ("pydnsbl", "-U pydnsbl", "--upgrade pydnsbl"):
-        config.isPydnsblInstalled = isInstalled
-    elif module in ("gmplot", "-U gmplot", "--upgrade gmplot"):
-        config.isGmplotInstalled = isInstalled
-    elif module in ("haversine", "-U haversine", "--upgrade haversine"):
-        config.isHaversineInstalled = isInstalled
 
 # Specify qtLibrary for particular os
 if config.docker and config.usePySide2onWebtop:
@@ -530,12 +485,12 @@ elif platform.system() == "Darwin" and config.usePySide6onMacOS:
     config.qtLibrary = "pyside6"
     config.fixLoadingContent = True
 # Check if required modules are installed
-required = [
+required = (
     ("config", "Configurations", isConfigInstalled),
     ("gdown", "Download UBA modules from Google drive", isGdownInstalled),
     ("babel", "Internationalization and localization library", isBabelInstalled),
     ("requests", "Download / Update files", isRequestsInstalled),
-] if config.noQt else [
+) if config.noQt else [
     ("config", "Configurations", isConfigInstalled),
     #("PySide2", "Qt Graphical Interface Library", isPySide2Installed) if config.qtLibrary.startswith("pyside") else ("PyQt5", "Qt Graphical Interface Library", isPyQt5Installed),
     #("qtpy", "Qt Graphical Interface Layer", isQtpyInstalled),
@@ -601,10 +556,6 @@ for module, feature, isInstalled in required or config.updateDependenciesOnStart
             print("Required feature '{0}' is not enabled.\nRun 'pip3 install {1}' to install it first!".format(feature, module))
             exit(1)
 
-disabledModules = []
-if os.path.exists("disabled_modules.txt"):
-    with open('disabled_modules.txt') as disabledModulesFile:
-        disabledModules = [line.strip() for line in disabledModulesFile.readlines()]
 # Check if optional modules are installed
 optional = [
     ("html-text", "Read html text", isHtmlTextInstalled),
@@ -631,11 +582,6 @@ optional = [
     ("chinese-english-lookup", "Chinese-to-English word definition", isChineseEnglishLookupInstalled),
     ("textract", "Extract text from document", isTextractInstalled),
     ("tabulate", "Pretty-print tabular data", isTabulateInstalled),
-    ("apsw", "Another Python SQLite Wrapper", isApswInstalled),
-    ("pyluach", "Hebrew (Jewish) calendar dates", isPyluachInstalled),
-    ("pydnsbl", "Checks if ip is listed in anti-spam dns blacklists.", isPydnsblInstalled),
-    ("gmplot", "Mark locations on Google Maps", isGmplotInstalled),
-    ("haversine", "Calculate the distance between two points", isHaversineInstalled),
 ] if config.noQt else [
     ("html-text", "Read html text", isHtmlTextInstalled),
     ("beautifulsoup4", "HTML / XML Parser", isBeautifulsoup4Installed),
@@ -665,18 +611,11 @@ optional = [
     ("chinese-english-lookup", "Chinese-to-English word definition", isChineseEnglishLookupInstalled),
     ("textract", "Extract text from document", isTextractInstalled),
     ("tabulate", "Pretty-print tabular data", isTabulateInstalled),
-    ("apsw", "Another Python SQLite Wrapper", isApswInstalled),
-    ("pyluach", "Hebrew (Jewish) calendar dates", isPyluachInstalled),
-    ("gmplot", "Mark locations on Google Maps", isGmplotInstalled),
-    ("haversine", "Calculate the distance between two points", isHaversineInstalled),
 ]
 if platform.system() == "Darwin":
     optional.append(("AudioConverter", "Convert Audio Files to MP3", isAudioConverterInstalled))
 for module, feature, isInstalled in optional:
-    if module in disabledModules:
-        print(f"{module} has been manually disabled")
-        available = False
-    elif not isInstalled() or config.updateDependenciesOnStartup:
+    if not isInstalled() or config.updateDependenciesOnStartup:
         if config.updateDependenciesOnStartup and not (module.startswith("-U ") or module.startswith("--upgrade ")):
             module = "--upgrade {0}".format(module)
         pip3InstallModule(module)

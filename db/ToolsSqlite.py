@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
 import logging
 from logging import handlers
-import os, apsw, re
+import os, sqlite3, re
 from db.BiblesSqlite import BiblesSqlite
 from util.BibleVerseParser import BibleVerseParser
 from util.TextUtil import TextUtil
@@ -37,7 +37,7 @@ class VerseONTData:
     def __init__(self, filename):
         # connect bibles.sqlite
         self.database = os.path.join(config.marvelData, "data", "{0}.data".format(filename))
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -67,7 +67,7 @@ class CrossReferenceSqlite:
         self.connection = None
         self.database = os.path.join(config.marvelData, filename)
         if os.path.exists(self.database):
-            self.connection = apsw.Connection(self.database)
+            self.connection = sqlite3.connect(self.database)
             self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -104,7 +104,7 @@ class CollectionsSqlite:
     def __init__(self):
         # connect collections.sqlite
         self.database = os.path.join(config.marvelData, "collections3.sqlite")
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -120,15 +120,13 @@ class CollectionsSqlite:
             return information
 
     def getChapterParallels(self, b, c):
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT Tool, Number, Topic FROM PARALLEL WHERE Passages LIKE ?"
+        query = "SELECT Tool, Number, Topic FROM PARALLEL WHERE Passages LIKE ?"
         searchString = '%<ref onclick="bcv({0},{1},%'.format(b, c)
         self.cursor.execute(query, (searchString,))
         return "<br>".join(['<ref onclick="harmony({0}, {1})">[Go to]</ref> {2}'.format(tool, number, topic) for tool, number, topic in self.cursor.fetchall()])
 
     def getChapterPromises(self, b, c):
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT Tool, Number, Topic FROM PROMISES WHERE Passages LIKE ?"
+        query = "SELECT Tool, Number, Topic FROM PROMISES WHERE Passages LIKE ?"
         searchString = '%<ref onclick="bcv({0},{1},%'.format(b, c)
         self.cursor.execute(query, (searchString,))
         return "<br>".join(['<ref onclick="promise({0}, {1})">[Go to]</ref> {2}'.format(tool, number, topic) for tool, number, topic in self.cursor.fetchall()])
@@ -138,7 +136,7 @@ class ImageSqlite:
     def __init__(self):
         # connect images.sqlite
         self.database = os.path.join(config.marvelData, "images.sqlite")
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -170,7 +168,7 @@ class IndexesSqlite:
     def __init__(self):
         # connect images.sqlite
         self.database = os.path.join(config.marvelData, "indexes2.sqlite")
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
         self.setResourceList()
 
@@ -287,7 +285,7 @@ class IndexesSqlite:
     def getChapterContent(self, table, bcTuple):
         query = "SELECT * FROM {0} WHERE Book = ? AND Chapter = ?".format(table)
         self.cursor.execute(query, bcTuple)
-        #parser = BibleVerseParser(config.parserStandarisation)
+        parser = BibleVerseParser(config.parserStandarisation)
         content = "<br>".join(['[<ref onclick="bcv({0},{1},{2})">{1}:{2}</ref>] {3}'.format(b, c, v, re.sub("<p>|</p>", " ", text)) for b, c, v, text in self.cursor.fetchall()])
         if not content:
             return "[not applicable]"
@@ -297,41 +295,13 @@ class IndexesSqlite:
             else:
                 return content
 
-    def getBookLocations(self, b):
-        query = "SELECT Information FROM exlbl WHERE Book = ?"
-        keys = (b,)
-        self.cursor.execute(query, keys)
-        return self.cursor.fetchall()
-
-    def getChapterLocations(self, b, c, startV=None, endV=None):
-        if startV is not None and endV is not None:
-            query = "SELECT Information FROM exlbl WHERE Book = ? AND Chapter = ? AND Verse >= ? AND Verse <= ?"
-            keys = (b, c, startV, endV)
-        elif startV is not None:
-            query = "SELECT Information FROM exlbl WHERE Book = ? AND Chapter = ? AND Verse >= ?"
-            keys = (b, c, startV)
-        elif endV is not None:
-            query = "SELECT Information FROM exlbl WHERE Book = ? AND Chapter = ? AND Verse <= ?"
-            keys = (b, c, endV)
-        else:
-            query = "SELECT Information FROM exlbl WHERE Book = ? AND Chapter = ?"
-            keys = (b, c)
-        self.cursor.execute(query, keys)
-        return self.cursor.fetchall()
-
-    def getVerseLocations(self, b, c, v):
-        query = "SELECT Information FROM exlbl WHERE Book = ? AND Chapter = ? AND Verse = ?"
-        keys = (b, c, v)
-        self.cursor.execute(query, keys)
-        return self.cursor.fetchall()
-
 
 class SearchSqlite:
 
     def __init__(self):
         # connect images.sqlite
         self.database = os.path.join(config.marvelData, "search.sqlite")
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -347,8 +317,7 @@ class SearchSqlite:
             return content[0]
 
     def getSimilarContent(self, module, entry):
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT link FROM {0} WHERE EntryID LIKE ? AND EntryID != ?".format(module)
+        query = "SELECT link FROM {0} WHERE EntryID LIKE ? AND EntryID != ?".format(module)
         self.cursor.execute(query, ("%{0}%".format(entry), entry))
         contentList = [m[0] for m in self.cursor.fetchall()]
         if not contentList:
@@ -362,7 +331,7 @@ class DictionaryData:
     def __init__(self):
         # connect images.sqlite
         self.database = os.path.join(config.marvelData, "data", "dictionary.data")
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -398,7 +367,7 @@ class EncyclopediaData:
     def __init__(self):
         # connect images.sqlite
         self.database = os.path.join(config.marvelData, "data", "encyclopedia.data")
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -443,7 +412,7 @@ class WordONTData:
         self.testament = testament
         # connect images.sqlite
         self.database = os.path.join(config.marvelData, "data", "word{0}.data".format(self.testament))
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -466,7 +435,7 @@ class ExlbData:
     def __init__(self):
         # connect images.sqlite
         self.database = os.path.join(config.marvelData, "data", "exlb3.data")
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -549,7 +518,7 @@ class Commentary:
             self.text = text
             if self.text in self.getCommentaryList():
                 self.database = os.path.join(config.commentariesFolder, "c{0}.commentary".format(text))
-                self.connection = apsw.Connection(self.database)
+                self.connection = sqlite3.connect(self.database)
                 self.cursor = self.connection.cursor()
         if Commentary.fileLookup is None:
             self.reloadFileLookup()
@@ -557,7 +526,7 @@ class Commentary:
     @staticmethod
     def createCommentary(commentary, content):
         database = os.path.join(config.commentariesFolder, "c{0}.commentary".format(commentary))
-        with apsw.Connection(database) as connection:
+        with sqlite3.connect(database) as connection:
             cursor = connection.cursor()
             if not ToolsSqlite.checkTableExists(cursor, "Commentary"):
                 cursor.execute(Commentary.CREATE_COMMENTARY_TABLE)
@@ -566,7 +535,7 @@ class Commentary:
                 sql = ("INSERT INTO Details (Title, Abbreviation, Information, Version, OldTestament, NewTestament,"
                        "Apocrypha, Strongs) VALUES (?, ?, ?, 1, 1, 1, 0, 0)")
                 cursor.execute(sql, (commentary, commentary, commentary))
-#            cursor.execute("COMMIT")
+            connection.commit()
             deleteData = []
             insertData = []
             for data in content:
@@ -577,7 +546,7 @@ class Commentary:
             cursor.executemany(delete, deleteData)
             insert = "INSERT INTO Commentary (Book, Chapter, Scripture) VALUES (?, ?, ?)"
             cursor.executemany(insert, insertData)
-#            cursor.execute("COMMIT")
+            connection.commit()
 
     def reloadFileLookup(self):
             Commentary.fileLookup = {}
@@ -590,7 +559,7 @@ class Commentary:
                     description = Commentary.marvelCommentaries[commentary]
                 else:
                     database = os.path.join(config.commentariesFolder, "c{0}.commentary".format(commentary))
-                    connection = apsw.Connection(database)
+                    connection = sqlite3.connect(database)
                     cursor = connection.cursor()
                     query = "SELECT title FROM Details"
                     cursor.execute(query)
@@ -641,7 +610,7 @@ class Commentary:
         activeCommentaries = []
         for commentary in sorted(commentaryList):
             database = os.path.join(config.commentariesFolder, "c{0}.commentary".format(commentary))
-            connection = apsw.Connection(database)
+            connection = sqlite3.connect(database)
             cursor = connection.cursor()
             query = "select book from commentary where book=? and chapter=?"
             cursor.execute(query, (book, chapter))
@@ -718,7 +687,7 @@ class Commentary:
             if c > 0:
                 chapter = "<h2>{0}{1}</ref></h2>".format(self.formChapterTag(b, c), self.bcvToVerseReference(b, c, v).split(":", 1)[0])
             else:
-                chapter = "<h2>{0}</h2>".format(BibleBooks.abbrev["eng"][b][0])
+                chapter = "<h2>{0}</h2>".format(BibleBooks.eng[b][0])
             query = "SELECT Scripture FROM Commentary WHERE Book=? AND Chapter=?"
             self.cursor.execute(query, verse[0:2])
             scripture = self.cursor.fetchone()
@@ -744,7 +713,7 @@ class Commentary:
             scripture = BibleVerseParser("no").replaceTextWithReference(scripture, False)
             update = "Update Commentary SET Scripture = ? WHERE Book = ? AND Chapter = ?"
             self.cursor.execute(update, (scripture, record[0], record[1]))
-#            self.cursor.execute("COMMIT")
+            self.cursor.connection.commit()
             if int(record[1]) >= 1:
                 self.logger.info("Fix commentary {0} - {1}:{2}".format(self.text, record[0], record[1]))
 
@@ -757,7 +726,7 @@ class Commentary:
             scripture = re.sub(r"<grk>(.*?)</span>", r"<grk>\1</grk>", scripture)
             update = "Update Commentary SET Scripture = ? WHERE Book = ? AND Chapter = ?"
             self.cursor.execute(update, (scripture, record[0], record[1]))
-#            self.cursor.execute("COMMIT")
+            self.cursor.connection.commit()
             if int(record[1]) >= 1:
                 self.logger.info("Fix commentary {0} - {1}:{2}".format(self.text, record[0], record[1]))
 
@@ -789,7 +758,7 @@ class Lexicon:
         self.module = module
 
         self.database = os.path.join(config.marvelData, "lexicons", "{0}.lexicon".format(module))
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -798,13 +767,13 @@ class Lexicon:
     @staticmethod
     def createLexicon(lexicon, content):
         database = os.path.join(config.marvelData, "lexicons", "{0}.lexicon".format(lexicon))
-        with apsw.Connection(database) as connection:
+        with sqlite3.connect(database) as connection:
             cursor = connection.cursor()
             if not ToolsSqlite.checkTableExists(cursor, "Lexicon"):
                 cursor.execute(Lexicon.CREATE_LEXICON_TABLE)
                 sql = ("INSERT INTO Lexicon (Topic, Definition) VALUES (?, ?)")
                 cursor.execute(sql, ('info', lexicon))
-#            cursor.execute("COMMIT")
+            connection.commit()
             deleteData = []
             insertData = []
             for data in content:
@@ -815,7 +784,7 @@ class Lexicon:
             cursor.executemany(delete, deleteData)
             insert = "INSERT INTO Lexicon (Topic, Definition) VALUES (?, ?)"
             cursor.executemany(insert, insertData)
-#            cursor.execute("COMMIT")
+            connection.commit()
 
     def getInfo(self):
         try:
@@ -839,21 +808,14 @@ class Lexicon:
         except:
             return ""
 
-    def getAllTopics(self):
-        query = "SELECT Topic FROM Lexicon"
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
-
     def searchTopic(self, search):
         try:
             searchString = "%{0}%".format(search)
-            query = TextUtil.getQueryPrefix()
-            query += "SELECT DISTINCT Topic FROM Lexicon WHERE Topic LIKE ? ORDER BY Topic"
+            query = "SELECT DISTINCT Topic FROM Lexicon WHERE Topic like ? ORDER BY Topic"
             self.cursor.execute(query, (searchString,))
             topics = self.cursor.fetchall()
             contentText = """<h2>{0}</h2>""".format(self.module)
-            query = TextUtil.getQueryPrefix()
-            query += "SELECT DISTINCT Topic FROM Lexicon WHERE DEFINITION LIKE ? and TOPIC NOT LIKE ? ORDER BY Topic LIMIT 0, 500"
+            query = "SELECT DISTINCT Topic FROM Lexicon WHERE DEFINITION like ? and TOPIC NOT LIKE ? ORDER BY Topic LIMIT 0, 500"
             self.cursor.execute(query, (searchString, searchString))
             topics += self.cursor.fetchall()
             for topic in topics:
@@ -895,8 +857,7 @@ class Lexicon:
 
     def getReverseContent(self, entry):
         search = "%{0}%".format(entry)
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT Topic, Definition FROM Lexicon WHERE Definition LIKE ?"
+        query = "SELECT Topic, Definition FROM Lexicon WHERE Definition like ?"
         self.cursor.execute(query, (search,))
         records = self.cursor.fetchall()
         contentText = """<h2>{0}</h2>""".format(self.module)
@@ -1003,7 +964,7 @@ class Book:
         if not os.path.exists(self.database):
             self.module = ""
         else:
-            self.connection = apsw.Connection(self.database)
+            self.connection = sqlite3.connect(self.database)
             self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -1019,13 +980,12 @@ class Book:
 
     def getSearchedTopicList(self, searchString, chapterOnly=False):
         try:
-            query = TextUtil.getQueryPrefix()
             searchString = "%{0}%".format(searchString)
             if chapterOnly:
-                query += "SELECT DISTINCT Chapter FROM Reference WHERE Chapter LIKE ? ORDER BY ROWID"
+                query = "SELECT DISTINCT Chapter FROM Reference WHERE Chapter LIKE ? ORDER BY ROWID"
                 self.cursor.execute(query, (searchString,))
             else:
-                query += "SELECT DISTINCT Chapter FROM Reference WHERE Chapter LIKE ? OR Content LIKE ? ORDER BY ROWID"
+                query = "SELECT DISTINCT Chapter FROM Reference WHERE Chapter LIKE ? OR Content LIKE ? ORDER BY ROWID"
                 self.cursor.execute(query, (searchString, searchString))
             return [topic[0] for topic in self.cursor.fetchall()]
         except:

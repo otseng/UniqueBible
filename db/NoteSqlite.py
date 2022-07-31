@@ -1,4 +1,4 @@
-import os, re, apsw, config
+import os, re, sqlite3, config
 from util.BibleVerseParser import BibleVerseParser
 from util.DateUtil import DateUtil
 from util.TextUtil import TextUtil
@@ -9,7 +9,7 @@ class NoteSqlite:
     def __init__(self):
         # connect the note file specified in config.py > config.bibleNotes
         self.database = os.path.join(config.marvelData, config.bibleNotes)
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
         create = (
             "CREATE TABLE IF NOT EXISTS BookNote (Book INT, Note TEXT)",
@@ -27,7 +27,7 @@ class NoteSqlite:
         if not self.checkColumnExists("BookNote", "Updated"):
             self.addColumnToTable("BookNote", "Updated", "INT")
             self.addColumnToTable("BookNote", "GistId", "NVARCHAR(40)")
-#        #self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def __del__(self):
         self.connection.close()
@@ -87,75 +87,72 @@ class NoteSqlite:
     def saveBookNote(self, b, note, updated=DateUtil.epoch()):
         delete = "DELETE FROM BookNote WHERE Book=?"
         self.cursor.execute(delete, (b,))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
         if note and note != config.thisTranslation["empty"] and self.isNotEmptyNote(note):
             insert = "INSERT INTO BookNote (Book, Note, Updated) VALUES (?, ?, ?)"
             self.cursor.execute(insert, (b, note, updated))
-#            self.cursor.execute("COMMIT")
+            self.connection.commit()
 
     def saveChapterNote(self, b, c, note, updated=DateUtil.epoch()):
         delete = "DELETE FROM ChapterNote WHERE Book=? AND Chapter=?"
         self.cursor.execute(delete, (b, c))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
         if note and note != config.thisTranslation["empty"] and self.isNotEmptyNote(note):
             insert = "INSERT INTO ChapterNote (Book, Chapter, Note, Updated) VALUES (?, ?, ?, ?)"
             self.cursor.execute(insert, (b, c, note, updated))
-#            self.cursor.execute("COMMIT")
+            self.connection.commit()
 
     def setBookNoteUpdate(self, b, c, updated):
         update = "UPDATE BookNote set Updated=? WHERE Book=?"
         self.cursor.execute(update, (updated, b))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def setChapterNoteUpdate(self, b, c, updated):
         update = "UPDATE ChapterNote set Updated=? WHERE Book=? and Chapter=?"
         self.cursor.execute(update, (updated, b, c))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def setChapterNoteContent(self, b, c, content, updated):
         update = "UPDATE ChapterNote set Note=?, Updated=? WHERE Book=? and Chapter=?"
         self.cursor.execute(update, (content, updated, b, c))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def saveVerseNote(self, b, c, v, note, updated=DateUtil.epoch()):
         delete = "DELETE FROM VerseNote WHERE Book=? AND Chapter=? AND Verse=?"
         self.cursor.execute(delete, (b, c, v))
-#        #self.cursor.execute("COMMIT")
+        self.connection.commit()
         if note and note != config.thisTranslation["empty"] and self.isNotEmptyNote(note):
             insert = "INSERT INTO VerseNote (Book, Chapter, Verse, Note, Updated) VALUES (?, ?, ?, ?, ?)"
             self.cursor.execute(insert, (b, c, v, note, updated))
-#            #self.cursor.execute("COMMIT")
+            self.connection.commit()
 
     def setVerseNoteUpdate(self, b, c, v, updated):
         update = "UPDATE VerseNote set Updated = ? WHERE Book=? and Chapter=? and Verse=?"
         self.cursor.execute(update, (updated, b, c, v))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def setVerseNoteContent(self, b, c, v, content, updated):
         update = "UPDATE VerseNote set Note=?, Updated=? WHERE Book=? and Chapter=? and Verse=?"
         self.cursor.execute(update, (content, updated, b, c, v))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
     
     def getSearchedBookList(self, searchString):
         searchString = "%{0}%".format(searchString)
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT DISTINCT Book FROM BookNote WHERE Note LIKE ? ORDER BY Book"
+        query = "SELECT DISTINCT Book FROM BookNote WHERE Note LIKE ? ORDER BY Book"
         self.cursor.execute(query, (searchString,))
         standardAbbreviation = BibleVerseParser(config.parserStandarisation).standardAbbreviation
         return ["<ref onclick='document.title=\"_openbooknote:::{0}\"'>{1}</ref>".format(book[0], standardAbbreviation[str(book[0])]) for book in self.cursor.fetchall()]
 
     def getSearchedChapterList(self, searchString):
         searchString = "%{0}%".format(searchString)
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT DISTINCT Book, Chapter FROM ChapterNote WHERE Note LIKE ? ORDER BY Book, Chapter"
+        query = "SELECT DISTINCT Book, Chapter FROM ChapterNote WHERE Note LIKE ? ORDER BY Book, Chapter"
         self.cursor.execute(query, (searchString,))
         parser = BibleVerseParser(config.parserStandarisation)
         return ["<ref onclick='document.title=\"_openchapternote:::{0}.{1}\"'>{2}</ref>".format(book, chapter, parser.bcvToVerseReference(book, chapter, 1)[:-2]) for book, chapter in self.cursor.fetchall()]
 
     def getSearchedVerseList(self, searchString):
         searchString = "%{0}%".format(searchString)
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT DISTINCT Book, Chapter, Verse FROM VerseNote WHERE Note LIKE ? ORDER BY Book, Chapter, Verse"
+        query = "SELECT DISTINCT Book, Chapter, Verse FROM VerseNote WHERE Note LIKE ? ORDER BY Book, Chapter, Verse"
         self.cursor.execute(query, (searchString,))
         parser = BibleVerseParser(config.parserStandarisation)
         return ["<ref onclick='document.title=\"_openversenote:::{0}.{1}.{2}\"'>{3}</ref>".format(book, chapter, verse, parser.bcvToVerseReference(book, chapter, verse)) for book, chapter, verse in self.cursor.fetchall()]
@@ -233,15 +230,15 @@ class NoteSqlite:
 
     def deleteBookNotes(self):
         self.cursor.execute("DELETE FROM BookNote")
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def deleteChapterNotes(self):
         self.cursor.execute("DELETE FROM ChapterNote")
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def deleteVerseNotes(self):
         self.cursor.execute("DELETE FROM VerseNote")
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def checkColumnExists(self, table, column):
         self.cursor.execute("SELECT * FROM pragma_table_info(?) WHERE name=?", (table, column))

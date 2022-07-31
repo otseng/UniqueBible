@@ -2,7 +2,7 @@
 Reading data from bibles.sqlite
 """
 import glob
-import os, apsw, config, re, logging
+import os, sqlite3, config, re, logging
 from datetime import datetime
 from pathlib import Path
 from functools import partial
@@ -33,8 +33,7 @@ class BiblesSqlite:
         defaultDatabase = os.path.join(config.marvelData, "bibles.sqlite")
         langDatabase = os.path.join(config.marvelData, "bibles_{0}.sqlite".format(language))
         self.database = langDatabase if language and os.path.isfile(langDatabase) else defaultDatabase
-        self.connection = apsw.Connection(self.database)
-        self.connection.createscalarfunction("REGEXP", TextUtil.regexp)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
         self.marvelBibles = ("MOB", "MIB", "MAB", "MPB", "MTB", "LXX1", "LXX1i", "LXX2", "LXX2i")
         self.logger = logging.getLogger('uba')
@@ -48,18 +47,6 @@ class BiblesSqlite:
     def getBibleList(self, includeMarvelBibles=True):
         bibles = self.getPlainBibleList() + self.getFormattedBibleList(includeMarvelBibles)
         return sorted(set(bibles))
-
-    def getKJVchapters(self, b):
-        query = "SELECT DISTINCT Chapter FROM kjvbcv WHERE Book=? ORDER BY Chapter"
-        self.cursor.execute(query, (b,))
-        chapters = self.cursor.fetchall()
-        return [c for c, *_ in chapters] if chapters else []
-
-    def getKJVverses(self, b, c):
-        query = "SELECT Verse FROM kjvbcv WHERE Book=? AND Chapter=? ORDER BY Verse"
-        self.cursor.execute(query, (b, c))
-        verses = self.cursor.fetchall()
-        return [v for v, *_ in verses] if verses else []
 
     # legacy list before version 0.56
     def getBibleList2(self):
@@ -100,7 +87,7 @@ class BiblesSqlite:
                 # delete plain verses from bibles.sqlite
                 delete = "DROP TABLE {0}".format(bible)
                 self.cursor.execute(delete)
-#                self.cursor.execute("COMMIT")
+                self.connection.commit()
             self.connection.execute("VACUUM")
 
     def installKJVversification(self):
@@ -143,10 +130,10 @@ class BiblesSqlite:
             else:
                 create = "CREATE TABLE {0} (Book INT, Chapter INT, Verse INT, Scripture TEXT)".format(abbreviation)
                 self.cursor.execute(create)
-#            self.cursor.execute("COMMIT")
+            self.connection.commit()
             insert = "INSERT INTO {0} (Book, Chapter, Verse, Scripture) VALUES (?, ?, ?, ?)".format(abbreviation)
             self.cursor.executemany(insert, verses)
-#            self.cursor.execute("COMMIT")
+            self.connection.commit()
         else:
             Bible(abbreviation).importPlainFormat(verses, description)
 
@@ -449,8 +436,7 @@ input.addEventListener('keyup', function(event) {0}
     def countSearchBook(self, text, book, searchString):
         plainBibleList, formattedBibleList = self.getTwoBibleLists()
         if text in plainBibleList:
-            query = TextUtil.getQueryPrefix()
-            query += "SELECT Verse FROM {0} WHERE Book = ? AND Scripture LIKE ?".format(text)
+            query = "SELECT Verse FROM {0} WHERE Book = ? AND Scripture LIKE ?".format(text)
             t = (book, "%{0}%".format(searchString))
             self.cursor.execute(query, t)
             return len(self.cursor.fetchall())
@@ -465,14 +451,13 @@ input.addEventListener('keyup', function(event) {0}
 
         plainBibleList, formattedBibleList = self.getTwoBibleLists()
 
-        query = TextUtil.getQueryPrefix()
         formatedText = "<b>{1}</b> <span style='color: brown;' onmouseover='textName(\"{0}\")'>{0}</span><br><br>".format(text, config.thisTranslation["html_searchBible2"])
         if text in plainBibleList:
-            query += "SELECT Book, Chapter, Verse, Scripture FROM {0}".format(text)
+            query = "SELECT Book, Chapter, Verse, Scripture FROM {0}".format(text)
         elif text in formattedBibleList:
-            query += "SELECT Book, Chapter, Verse, Scripture FROM Verses"
+            query = "SELECT Book, Chapter, Verse, Scripture FROM Verses"
         query += " WHERE "
-        t = tuple()
+        t = ()
         if mode == "BASIC":
             if referenceOnly:
                 searchCommand = "SEARCHREFERENCE"
@@ -482,30 +467,27 @@ input.addEventListener('keyup', function(event) {0}
             t = ("%{0}%".format(searchString),)
             query += "(Scripture LIKE ?)"
         elif mode == "ADVANCED":
+            t = tuple()
             searchCommand = "ADVANCEDSEARCH"
             formatedText += "{0}:::<aa>{1}</aa>:::{2}".format(searchCommand, text, searchString)
             query += "({0})".format(searchString)
-        elif mode == "REGEX":
-            formatedText = "REGEXSEARCH:::<aa>{0}</aa>:::{1}".format(text, searchString)
-            t = (searchString,)
-            query += "(Scripture REGEXP ?)"
         else:
             query += " 1=1"
         if booksRange:
             query += " AND "
-            query += "Book in ({0})".format(BibleVerseParser(config.parserStandarisation).extractBookListAsString(booksRange))
+            query += "book in ({0})".format(BibleVerseParser(config.parserStandarisation).extractBookListAsString(booksRange))
             formatedText += ":::{0}".format(booksRange)
         query += " ORDER BY Book, Chapter, Verse"
         if text in plainBibleList:
             verses = self.getSearchVerses(query, t)
         elif text in formattedBibleList:
             verses = Bible(text).getSearchVerses(query, t)
-        # Old way to search fetched result with regular express here
-#        if mode == "REGEX":
-#            formatedText = "REGEXSEARCH:::<aa>{0}</aa>:::{1}".format(text, searchString)
-#            if booksRange:
-#                formatedText += ":::{0}".format(booksRange)
-#            verses = [(b, c, v, re.sub("({0})".format(searchString), r"<z>\1</z>", verseText, flags=0 if config.regexCaseSensitive else re.IGNORECASE)) for b, c, v, verseText in verses if re.search(searchString, verseText, flags=0 if config.regexCaseSensitive else re.IGNORECASE)]
+        # Search fetched result with regular express here
+        if mode == "REGEX":
+            formatedText = "REGEXSEARCH:::<aa>{0}</aa>:::{1}".format(text, searchString)
+            if booksRange:
+                formatedText += ":::{0}".format(booksRange)
+            verses = [(b, c, v, re.sub("({0})".format(searchString), r"<z>\1</z>", verseText, flags=0 if config.regexCaseSensitive else re.IGNORECASE)) for b, c, v, verseText in verses if re.search(searchString, verseText, flags=0 if config.regexCaseSensitive else re.IGNORECASE)]
         formatedText += "<p>x <b id='searchResultCount' style='color: brown;'>{0}</b> verse(s)</p><p>".format(len(verses))
         if referenceOnly:
             parser = BibleVerseParser(config.parserStandarisation)
@@ -527,17 +509,16 @@ input.addEventListener('keyup', function(event) {0}
                         divTag = "<div style='border: 1px solid gray; border-radius: 2px; margin: 5px; padding: 5px;'>"
                     formatedText += "{0}({1}{2}</ref>) {3}</div>".format(divTag, self.formVerseTag(b, c, v, favouriteBible), favouriteBible, favouriteBibleData.readTextVerse(b, c, v)[3])
             # add highlighting to search string with tags <z>...</z>
-            if mode == "REGEX":
-                formatedText = TextUtil.highlightSearchString(formatedText, searchString)
-            elif mode == "BASIC":
-                for eachString in searchString.split("%"):
-                    formatedText = TextUtil.highlightSearchString(formatedText, eachString)
+            if mode == "BASIC" and not searchString == "z":
+                for searchWord in searchString.split("%"):
+                    formatedText = re.sub("("+searchWord+")", r"<z>\1</z>", formatedText, flags=re.IGNORECASE)
             elif mode == "ADVANCED":
-                searchWords = [m for m in re.findall("LIKE ['\"]%(.*?)%['\"]", searchString, flags=0 if config.enableCaseSensitiveSearch else re.IGNORECASE)]
+                searchWords = [m for m in re.findall("LIKE ['\"]%(.*?)%['\"]", searchString, flags=re.IGNORECASE)]
                 searchWords = [m.split("%") for m in searchWords]
                 searchWords = [m2 for m1 in searchWords for m2 in m1]
-                for eachString in searchWords:
-                    formatedText = TextUtil.highlightSearchString(formatedText, eachString)
+                for searchword in searchWords:
+                    if not searchword == "z":
+                        formatedText = re.sub("("+searchword+")", r"<z>\1</z>", formatedText, flags=re.IGNORECASE)
             # fix highlighting
             formatedText = TextUtil.fixTextHighlighting(formatedText)
             formatedText += "</p>"
@@ -766,13 +747,12 @@ class Bible:
         self.cursor = None
         self.database = os.path.join(config.marvelData, "bibles", text+".bible")
         if os.path.exists(self.database):
-            self.connection = apsw.Connection(self.database)
-            self.connection.createscalarfunction("REGEXP", TextUtil.regexp)
+            self.connection = sqlite3.connect(self.database)
             self.cursor = self.connection.cursor()
 
     def __del__(self):
         if not self.connection is None:
-#            #self.cursor.execute("COMMIT")
+            self.connection.commit()
             self.connection.close()
 
     # Check if a verse is empty
@@ -1052,10 +1032,10 @@ class Bible:
         else:
             create = Bible.CREATE_VERSES_TABLE
             self.cursor.execute(create)
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
         insert = "INSERT INTO Verses (Book, Chapter, Verse, Scripture) VALUES (?, ?, ?, ?)"
         self.cursor.executemany(insert, verses)
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def readTextChapter(self, b, c):
         query = "SELECT Book, Chapter, Verse, Scripture FROM Verses WHERE Book=? AND Chapter=? ORDER BY Verse"
@@ -1200,8 +1180,7 @@ class Bible:
         return note
 
     def countSearchBook(self, book, searchString):
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT COUNT(Verse) FROM Verses WHERE Book = ? AND Scripture LIKE ?"
+        query = "SELECT COUNT(Verse) FROM Verses WHERE Book = ? AND Scripture LIKE ?"
         t = (book, "%{0}%".format(searchString))
         self.cursor.execute(query, t)
         return self.cursor.fetchone()[0]
@@ -1217,7 +1196,7 @@ class Bible:
             self.cursor.execute(update)
             create = 'CREATE INDEX Verses_Index ON Verses (Ref ASC)'
             self.cursor.execute(create)
-#            self.cursor.execute("COMMIT")
+            self.connection.commit()
 
     def checkTableExists(self, table):
         if self.cursor:
@@ -1266,12 +1245,12 @@ class Bible:
     def updateTitleAndFontInfo(self, bibleFullname, fontSize, fontName):
         sql = "UPDATE Details set Title = ?, FontSize = ?, FontName = ?"
         self.cursor.execute(sql, (bibleFullname, fontSize, fontName))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def updateLanguage(self, language):
         sql = "UPDATE Details set Language = ?"
         self.cursor.execute(sql, (language,))
-#        self.cursor.execute("COMMIT")
+        self.connection.commit()
 
     def deleteOldBibleInfo(self):
         query = "DELETE FROM Verses WHERE Book=0 AND Chapter=0 AND Verse=0"
@@ -1294,7 +1273,7 @@ class Bible:
             self.insertDetailsTable(self.text, self.text)
 
     def renameGlossToRef(self):
-        #description = self.bibleInfo()
+        description = self.bibleInfo()
         self.addMissingColumns()
 
         query = "SELECT * from Details"
@@ -1332,7 +1311,7 @@ class Bible:
         formattedBible = os.path.join(config.marvelData, "bibles", "{0}.bible".format(abbreviation))
         if os.path.isfile(formattedBible):
             os.remove(formattedBible)
-        connection = apsw.Connection(formattedBible)
+        connection = sqlite3.connect(formattedBible)
         cursor = connection.cursor()
 
         cursor.execute(Bible.CREATE_VERSES_TABLE)
@@ -1347,7 +1326,7 @@ class Bible:
         insert = "INSERT INTO Details VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         cursor.execute(insert, details)
 
-#        cursor.execute("COMMIT")
+        connection.commit()
 
 
 class ClauseData:
@@ -1362,7 +1341,7 @@ class ClauseONTData:
         self.testament = testament
         # connect images.sqlite
         self.database = os.path.join(config.marvelData, "data", "clause{0}.data".format(self.testament))
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -1383,7 +1362,7 @@ class MorphologySqlite:
     def __init__(self):
         # connect bibles.sqlite
         self.database = os.path.join(config.marvelData, "morphology.sqlite")
-        self.connection = apsw.Connection(self.database)
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
     def __del__(self):
@@ -1564,13 +1543,12 @@ class MorphologySqlite:
         return self.searchByMorphology(startBook, endBook, "gloss", word, morphologyList)
 
     def searchByMorphology(self, startBook, endBook, type, word, morphologyList):
-        #references = []
+        references = []
         morphology = ""
         for search in morphologyList:
-            morphology += "and morphology LIKE '%{0}%' ".format(search)
-        query = TextUtil.getQueryPrefix()
-        query += """
-        SELECT * FROM morphology WHERE {0} LIKE '%{1}%'
+            morphology += "and morphology like '%{0}%' ".format(search)
+        query = """
+        SELECT * FROM morphology WHERE {0} like '%{1}%'
         and book >= {2} and book <= {3}
         {4}
         order by Book, Chapter, Verse
@@ -1593,8 +1571,7 @@ class MorphologySqlite:
         return "<div style='direction: rtl;'>{0}</div>".format(verseText) if b < 40 else "<div>{0}</div>".format(verseText)
 
     def getLexemeData(self, lexicalEntry):
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT Lexeme FROM morphology WHERE LexicalEntry LIKE ?"
+        query = "SELECT Lexeme FROM morphology WHERE LexicalEntry LIKE ?"
         t = ("%{0},%".format(lexicalEntry),)
         self.cursor.execute(query, t)
         data = self.cursor.fetchone()
@@ -1613,22 +1590,19 @@ class MorphologySqlite:
         return html
 
     def etcbcLexemeNo2StrongNo(self, lexicalEntry):
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT DISTINCT LexicalEntry FROM morphology WHERE LexicalEntry LIKE ?"
+        query = "SELECT DISTINCT LexicalEntry FROM morphology WHERE LexicalEntry LIKE ?"
         t = ("{0},%".format(lexicalEntry),)
         self.cursor.execute(query, t)
         return [strongNo for entry in self.cursor for strongNo in entry[0].split(",") if strongNo.startswith("H")]
 
     def distinctMorphologyVerse(self, lexicalEntry):
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT DISTINCT Book, Chapter, Verse, WordID FROM morphology WHERE LexicalEntry LIKE ?"
+        query = "SELECT DISTINCT Book, Chapter, Verse, WordID FROM morphology WHERE LexicalEntry LIKE ?"
         t = ("%{0},%".format(lexicalEntry),)
         self.cursor.execute(query, t)
         return self.cursor.fetchall()
 
     def distinctMorphology(self, lexicalEntry, item="Interlinear"):
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT DISTINCT {0} FROM morphology WHERE LexicalEntry LIKE ?".format(item)
+        query = "SELECT DISTINCT {0} FROM morphology WHERE LexicalEntry LIKE ?".format(item)
         t = ("%{0},%".format(lexicalEntry),)
         self.cursor.execute(query, t)
         return list(set([self.simplifyTranslation(translation[0]) for translation in self.cursor if translation[0].strip()]))
@@ -1645,8 +1619,7 @@ class MorphologySqlite:
         #import time
         #start = time.time()
         formatedText = ""
-        query = TextUtil.getQueryPrefix()
-        query += "SELECT * FROM morphology WHERE "
+        query = "SELECT * FROM morphology WHERE "
         if mode == "LEMMA":
             formatedText += "<p>LEMMA:::{0}</p>".format(searchString)
             t = ("%{0},%".format(searchString),)

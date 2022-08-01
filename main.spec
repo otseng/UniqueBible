@@ -1,9 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-
-block_cipher = None
-
 data_files = [
+('lang','lang'),
 ('htmlResources/buttons', 'htmlResources/buttons'),
 ('htmlResources/css', 'htmlResources/css'),
 ('htmlResources/fonts', 'htmlResources/fonts'),
@@ -27,14 +25,18 @@ data_files = [
 ('notes','notes'),
 ('video','video'),
 ('workspace','workspace'),
+('thirdParty/dictionaries','thirdParty/dictionaries'),
 ('UniqueBibleAppVersion.txt','.'),
 ('latest_changes.txt','.'),
 ]
 
 hidden_imports = [
-'markdown','html5lib','htmldocx','python-docx','pillow','gTTS','markdownify','nltk','word-forms','lemmagen3',
-'chinese-english-lookup','textract','tabulate'
+'markdown','html5lib','htmldocx','python-docx','pillow','gTTS','markdownify','nltk','textract','tabulate'
+'chinese-english-lookup','word-forms','lemmagen3'
 ]
+
+block_cipher = None
+
 a = Analysis(
     ['main.py'],
     pathex=[],

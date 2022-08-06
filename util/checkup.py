@@ -372,6 +372,8 @@ def isNltkInstalled():
         return False
 
 def isWordformsInstalled():
+    if config.enableBinaryRunMode:
+        return False
     import ssl
     try:
         _create_unverified_https_context = ssl._create_unverified_context
@@ -410,6 +412,8 @@ def isPyluachInstalled():
         return False
 
 def isChineseEnglishLookupInstalled():
+    if config.enableBinaryRunMode:
+        return False
     try:
         from chinese_english_lookup import Dictionary
         config.cedict = Dictionary()
@@ -418,6 +422,8 @@ def isChineseEnglishLookupInstalled():
         return False
 
 def isLemmagen3Installed():
+    if config.enableBinaryRunMode:
+        return False
     # Note: It looks like that lemmagen3 is a better lemmatizer than using "word_forms.lemmatize" installed with word_forms package
     try:
         from lemmagen3 import Lemmatizer

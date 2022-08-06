@@ -19,6 +19,11 @@ class ConfigUtil:
         if not hasattr(config, "version") or current_version > config.version:
             config.version = current_version
 
+        # Determine if running in binary run mode or Python run mode
+        config.enableBinaryRunMode = False
+        if os.path.exists("enable_binary_run_mode"):
+            config.enableBinaryRunMode = True
+
         # Temporary configurations
         # Their values are not saved on exit.
         config.controlPanel = False
@@ -1128,7 +1133,10 @@ class ConfigUtil:
         config.help["menuLayout"] = """
         # Menu layout"""
         if not hasattr(config, "menuLayout"):
-            config.menuLayout = "material"
+            if config.enableBinaryRunMode:
+                config.menuLayout = "starter"
+            else:
+                config.menuLayout = "material"
         config.help["useLiteVerseParsing"] = """
         # Verse parsing method"""
         if not hasattr(config, "useLiteVerseParsing"):
@@ -1364,12 +1372,6 @@ class ConfigUtil:
                 pat = file.readline().strip()
                 if pat:
                     config.githubAccessToken = pat
-                    if config.developer:
-                        print(f"Using {patFile}")
-
-        config.enableBinaryRunMode = False
-        if os.path.exists("enable_binary_run_mode"):
-            config.enableBinaryRunMode = True
 
     # Save configurations on exit
     @staticmethod

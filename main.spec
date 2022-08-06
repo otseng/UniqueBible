@@ -25,6 +25,7 @@ data_files = [
 ('music','music'),
 ('notes','notes'),
 ('plugins','plugins'),
+('pyinstaller/enable_binary_run_mode',''),
 ('thirdParty/dictionaries','thirdParty/dictionaries'),
 ('video','video'),
 ('workspace','workspace'),
@@ -33,7 +34,6 @@ data_files = [
 ]
 
 hidden_imports = [
-'apsw','chinese-english-lookup','word-forms','lemmagen3',
 'markdown','html5lib','htmldocx','python-docx','pillow','gTTS','markdownify',
 'nltk','textract','tabulate',
 ]

@@ -1367,6 +1367,10 @@ class ConfigUtil:
                     if config.developer:
                         print(f"Using {patFile}")
 
+        config.enableBinaryRunMode = False
+        if os.path.exists("enable_binary_run_mode"):
+            config.enableBinaryRunMode = True
+
     # Save configurations on exit
     @staticmethod
     def save():

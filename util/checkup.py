@@ -671,11 +671,11 @@ optional = [
     ("haversine", "Calculate the distance between two points", isHaversineInstalled),
 ]
 if not config.enableBinaryRunMode:
-    optional.append([
+    optional += [
         ("word-forms", "Generate English Word Forms", isWordformsInstalled),
         ("lemmagen3", "Lemmatizer", isLemmagen3Installed),
         ("chinese-english-lookup", "Chinese-to-English word definition", isChineseEnglishLookupInstalled),
-    ])
+    ]
 if platform.system() == "Darwin":
     optional.append(("AudioConverter", "Convert Audio Files to MP3", isAudioConverterInstalled))
 for module, feature, isInstalled in optional:

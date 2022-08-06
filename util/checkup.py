@@ -632,9 +632,6 @@ optional = [
     ("markdown", "Convert Markdown to HTML", isMarkdownInstalled),
     #("paddleocr", "Multilingual OCR", isPaddleocrInstalled),
     ("nltk", "Natural Language Toolkit (NLTK)", isNltkInstalled),
-    ("word-forms", "Generate English Word Forms", isWordformsInstalled),
-    ("lemmagen3", "Lemmatizer", isLemmagen3Installed),
-    ("chinese-english-lookup", "Chinese-to-English word definition", isChineseEnglishLookupInstalled),
     ("textract", "Extract text from document", isTextractInstalled),
     ("tabulate", "Pretty-print tabular data", isTabulateInstalled),
     ("apsw", "Another Python SQLite Wrapper", isApswInstalled),
@@ -666,9 +663,6 @@ optional = [
     ("markdown", "Convert Markdown to HTML", isMarkdownInstalled),
     #("paddleocr", "Multilingual OCR", isPaddleocrInstalled),
     ("nltk", "Natural Language Toolkit (NLTK)", isNltkInstalled),
-    ("word-forms", "Generate English Word Forms", isWordformsInstalled),
-    ("lemmagen3", "Lemmatizer", isLemmagen3Installed),
-    ("chinese-english-lookup", "Chinese-to-English word definition", isChineseEnglishLookupInstalled),
     ("textract", "Extract text from document", isTextractInstalled),
     ("tabulate", "Pretty-print tabular data", isTabulateInstalled),
     ("apsw", "Another Python SQLite Wrapper", isApswInstalled),
@@ -676,6 +670,12 @@ optional = [
     ("gmplot", "Mark locations on Google Maps", isGmplotInstalled),
     ("haversine", "Calculate the distance between two points", isHaversineInstalled),
 ]
+if not config.enableBinaryRunMode:
+    optional.append([
+        ("word-forms", "Generate English Word Forms", isWordformsInstalled),
+        ("lemmagen3", "Lemmatizer", isLemmagen3Installed),
+        ("chinese-english-lookup", "Chinese-to-English word definition", isChineseEnglishLookupInstalled),
+    ])
 if platform.system() == "Darwin":
     optional.append(("AudioConverter", "Convert Audio Files to MP3", isAudioConverterInstalled))
 for module, feature, isInstalled in optional:

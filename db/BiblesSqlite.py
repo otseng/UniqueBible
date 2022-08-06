@@ -34,7 +34,8 @@ class BiblesSqlite:
         langDatabase = os.path.join(config.marvelData, "bibles_{0}.sqlite".format(language))
         self.database = langDatabase if language and os.path.isfile(langDatabase) else defaultDatabase
         self.connection = dbw.Connection(self.database)
-        self.connection.createscalarfunction("REGEXP", TextUtil.regexp)
+        if not config.enableBinaryRunMode:
+            self.connection.createscalarfunction("REGEXP", TextUtil.regexp)
         self.cursor = self.connection.cursor()
         self.marvelBibles = ("MOB", "MIB", "MAB", "MPB", "MTB", "LXX1", "LXX1i", "LXX2", "LXX2i")
         self.logger = logging.getLogger('uba')
@@ -767,7 +768,8 @@ class Bible:
         self.database = os.path.join(config.marvelData, "bibles", text+".bible")
         if os.path.exists(self.database):
             self.connection = dbw.Connection(self.database)
-            self.connection.createscalarfunction("REGEXP", TextUtil.regexp)
+            if not config.enableBinaryRunMode:
+                self.connection.createscalarfunction("REGEXP", TextUtil.regexp)
             self.cursor = self.connection.cursor()
 
     def __del__(self):

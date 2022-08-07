@@ -179,7 +179,7 @@ class ClassicMainWindow:
         for feature, action, shortcut in items:
             addMenuItem(subMenu, feature, self, action, shortcut)
         menu.addSeparator()
-        if not config.enableBinaryRunMode:
+        if not config.enableBinaryExecutionMode:
             addMenuItem(menu, "menu1_update", self, self.showUpdateAppWindow, None)
             menu.addSeparator()
 

@@ -275,7 +275,7 @@ class FocusMainWindow:
         for feature, action in items:
             addMenuItem(subMenu, feature, self, action)
         menu.addSeparator()
-        if not config.enableBinaryRunMode:
+        if not config.enableBinaryExecutionMode:
             addMenuItem(menu, "menu1_update", self, self.showUpdateAppWindow)
             menu.addSeparator()
         if hasattr(config, "cli"):

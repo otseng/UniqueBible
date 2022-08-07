@@ -47,7 +47,7 @@ class Starter:
         menu = addMenu(menuBar, "menu9_information")
         addMenuItem(menu, "latestChanges", self, self.showInfo)
         menu.addSeparator()
-        if not config.enableBinaryRunMode:
+        if not config.enableBinaryExecutionMode:
             addMenuItem(menu, "menu1_update", self, self.showUpdateAppWindow)
             menu.addSeparator()
         items = (

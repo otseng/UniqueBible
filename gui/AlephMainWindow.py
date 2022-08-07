@@ -229,7 +229,7 @@ class AlephMainWindow:
             menu1.addAction(
                 QAction(config.thisTranslation["menu_startup_macro"], self, triggered=self.setStartupMacro))
 
-        if not config.enableBinaryRunMode:
+        if not config.enableBinaryExecutionMode:
             menu1.addAction(
                 QAction(config.thisTranslation["menu1_update"], self, triggered=self.showUpdateAppWindow))
 

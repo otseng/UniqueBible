@@ -26,13 +26,13 @@ data_files = [
 ('notes','notes'),
 ('plugins','plugins'),
 ('pyinstaller/disabled_modules.txt','.'),
-('pyinstaller/enable_binary_run_mode','.'),
+('pyinstaller/enable_binary_execution_mode','.'),
+('pyinstaller/config.ini','.')
 ('thirdParty/dictionaries','thirdParty/dictionaries'),
 ('video','video'),
 ('workspace','workspace'),
 ('UniqueBibleAppVersion.txt','.'),
 ('latest_changes.txt','.'),
-('config.py','.')
 ]
 
 hidden_imports = [

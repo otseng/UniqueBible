@@ -6,10 +6,10 @@
 * Use Starter.py for layout
 * Disable code self-updating
 * Disable modules 'apsw','chinese-english-lookup','word-forms','lemmagen3'
+* Add config.ini support, instead of using config.py
 
 ## To-do
 
-* Add config.ini support
 * Add icon
 * Fix false positive for virus
 

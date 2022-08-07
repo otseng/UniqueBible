@@ -25,17 +25,22 @@ data_files = [
 ('music','music'),
 ('notes','notes'),
 ('plugins','plugins'),
-('pyinstaller/enable_binary_run_mode',''),
+('pyinstaller/disabled_modules.txt','.'),
+('pyinstaller/enable_binary_run_mode','.'),
 ('thirdParty/dictionaries','thirdParty/dictionaries'),
 ('video','video'),
 ('workspace','workspace'),
 ('UniqueBibleAppVersion.txt','.'),
 ('latest_changes.txt','.'),
+('config.py','.')
 ]
 
 hidden_imports = [
 'markdown','html5lib','htmldocx','python-docx','pillow','gTTS','markdownify',
-'nltk','textract','tabulate',
+'nltk','textract','tabulate','sqlite3'
+]
+
+excluded_modules = [
 ]
 
 block_cipher = None
@@ -49,7 +54,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=excluded_modules,
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -82,5 +87,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='UBA',
+    name='UBA'
 )

@@ -5,7 +5,12 @@
 * Add config.enableBinaryRunMode that is enabled when file "enable_binary_run_mode" exists in root
 * Use Starter.py for layout
 * Disable code self-updating
-* Disable modules 'chinese-english-lookup','word-forms','lemmagen3'
+* Disable modules 'apsw','chinese-english-lookup','word-forms','lemmagen3'
+
+## To-do
+
+* Add icon
+* Fix false positive for virus
 
 ## Code snippet
 

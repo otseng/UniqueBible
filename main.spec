@@ -27,7 +27,7 @@ data_files = [
 ('plugins','plugins'),
 ('pyinstaller/disabled_modules.txt','.'),
 ('pyinstaller/enable_binary_execution_mode','.'),
-('pyinstaller/config.ini','.')
+('pyinstaller/config.ini','.'),
 ('thirdParty/dictionaries','thirdParty/dictionaries'),
 ('video','video'),
 ('workspace','workspace'),

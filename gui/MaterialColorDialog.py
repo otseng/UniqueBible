@@ -176,7 +176,8 @@ class MaterialColorDialog(QDialog):
                 fileObj.write("{0} = {1}\n".format(name, pprint.pformat(value)))
 
     def setDefault(self):
-        self.parent.setTheme(config.theme)
+        self.parent.setColours()
+        self.saveColors()
         self.parent.setTheme(config.theme)
         self.setConfigColor()
 
@@ -250,6 +251,7 @@ class MaterialColorDialog(QDialog):
             else:
                 config.lightThemeTextColor = colorName
             if reload:
+                self.saveColors()
                 self.parent.reloadCurrentRecord(True)
                 self.parent.resetUI()
 
@@ -263,6 +265,7 @@ class MaterialColorDialog(QDialog):
             else:
                 config.lightThemeActiveVerseColor = colorName
             if reload:
+                self.saveColors()
                 self.parent.reloadCurrentRecord(True)
 
 #    def changeTextSelectionColor(self):

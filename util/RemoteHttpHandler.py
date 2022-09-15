@@ -515,6 +515,7 @@ class RemoteHttpHandler(SimpleHTTPRequestHandler):
             try:
                 view, content, *_ = self.textCommandParser.parser(self.command, "http")
             except Exception as e:
+                print(f"Exception: {e}")
                 content = "Error!"
             if tempDeveloper:
                 config.developer = False

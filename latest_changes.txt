@@ -1,3 +1,6 @@
+Changes in 31.75:
+* Added enableHttpRemoteErrorRedirection config flag
+
 Changes in 31.74:
 * Added "_comparison:::" command to open bible comparison menu.
     On http-server users can enter either _comparison::: or .comparison in command entry.

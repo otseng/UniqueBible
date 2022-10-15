@@ -6,6 +6,10 @@ from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
+from db.BiblesSqlite import BiblesSqlite
+from db.ToolsSqlite import Commentary, LexiconData, IndexesSqlite
+
+
 class ApiRequestHandler(SimpleHTTPRequestHandler):
     def list_directory(self, path):
         self.send_error(
@@ -76,8 +80,15 @@ class RemoteApiHandler(ApiRequestHandler):
                 self.processListCommand(cmd)
 
     def processListCommand(self, cmd):
-        self.jsonData['data'] = cmd[1]
+        # /list/bibles
         if cmd[1].lower() == "bibles":
-            pass
+            self.jsonData['data'] = [bible for bible in BiblesSqlite().getBibleList()]
+        elif cmd[1].lower() == "commentaries":
+            self.jsonData['data'] = [commentary for commentary in Commentary().getCommentaryList()]
+        elif cmd[1].lower() == "lexicons":
+            self.jsonData['data'] = [lexicon for lexicon in LexiconData().lexiconList]
+        elif cmd[1].lower() == "dictionaries":
+            self.jsonData['data'] = [dictionary[0] for dictionary in IndexesSqlite().dictionaryList]
+
 
 

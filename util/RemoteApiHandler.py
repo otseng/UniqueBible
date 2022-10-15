@@ -87,6 +87,8 @@ class RemoteApiHandler(ApiRequestHandler):
                 self.processBibleCommand(cmd)
 
     # /data/bible/abbreviations?lang=[eng,sc,tc]
+    # /data/bible/chapters
+    # /data/bible/verses
     def processDataCommand(self, cmd, query):
         if cmd[1].lower() == "bible":
             if cmd[2].lower() == "abbreviations":
@@ -97,6 +99,10 @@ class RemoteApiHandler(ApiRequestHandler):
                 for key, value in BibleBooks().abbrev[lang].items():
                     data.append({'i': key, 'a': value[0], 'n': value[1]})
                 self.jsonData['data'] = data
+            elif cmd[2].lower() == "chapters":
+                self.jsonData['data'] = BibleBooks.chapters
+            elif cmd[2].lower() == "verses":
+                self.jsonData['data'] = BibleBooks.verses
 
     # /list/bibles
     # /list/commentaries

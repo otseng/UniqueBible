@@ -1,26 +1,10 @@
-import hashlib
 import json
 import logging
-import os, re, config, pprint, glob
-import subprocess
-import urllib
+import config
 from http import HTTPStatus
 
-import requests
 from http.server import SimpleHTTPRequestHandler
-from time import gmtime
-from util.BibleBooks import BibleBooks
-from util.BibleVerseParser import BibleVerseParser
-from db.BiblesSqlite import BiblesSqlite, Bible
-from util.GitHubRepoInfo import GitHubRepoInfo
-from util.TextCommandParser import TextCommandParser
-from util.RemoteCliMainWindow import RemoteCliMainWindow
 from urllib.parse import urlparse, parse_qs
-from util.FileUtil import FileUtil
-from util.LanguageUtil import LanguageUtil
-from pathlib import Path
-from util.HtmlGeneratorUtil import HtmlGeneratorUtil
-
 
 class ApiRequestHandler(SimpleHTTPRequestHandler):
     def list_directory(self, path):

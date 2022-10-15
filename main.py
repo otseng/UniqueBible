@@ -356,7 +356,7 @@ def startApiServer():
     import socketserver
     from util.RemoteApiHandler import RemoteApiHandler
 
-    config.restartHttpServer = False
+    config.restartApiServer = False
     port = config.httpServerPort
     if (len(sys.argv) > 2):
         port = int(sys.argv[2])
@@ -378,7 +378,7 @@ if (len(sys.argv) > 1) and sys.argv[1] == "api-server":
     checkMigration()
     startApiServer()
     ConfigUtil.save()
-    if config.restartHttpServer:
+    if config.restartApiServer:
         subprocess.Popen("{0} {1} api-server".format(sys.executable, config.httpServerUbaFile), shell=True)
     exit(0)
 

@@ -10,7 +10,7 @@ from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from db.BiblesSqlite import BiblesSqlite
-from db.ToolsSqlite import Commentary, LexiconData, IndexesSqlite, Book
+from db.ToolsSqlite import Commentary, LexiconData, IndexesSqlite, Book, Lexicon
 from util.BibleBooks import BibleBooks
 from util.CatalogUtil import CatalogUtil
 
@@ -60,12 +60,8 @@ class RemoteApiHandler(ApiRequestHandler):
         self.send_header("Expires", "0")
         self.end_headers()
 
-    def send_error(self, code, message=None, explain=None):
-        self.jsonData = {'status': 'Error', 'message': message}
-        self.sendJsonData()
-
     def sendError(self, message):
-        self.send_error("", message)
+        self.jsonData = {'status': 'Error', 'message': message}
 
     def do_GET(self):
         try:
@@ -93,6 +89,10 @@ class RemoteApiHandler(ApiRequestHandler):
                 self.processBibleCommand(cmd)
             elif cmd[0].lower() == "book":
                 self.processBookCommand(cmd)
+            elif cmd[0].lower() == "commentary":
+                self.processCommentaryCommand(cmd)
+            elif cmd[0].lower() == "lexicon":
+                self.processLexiconCommand(cmd)
 
     # /data/bible/abbreviations?lang=[eng,sc,tc]
     # /data/bible/chapters
@@ -160,7 +160,19 @@ class RemoteApiHandler(ApiRequestHandler):
             chapter = cmd[2].replace("+", " ")
             self.jsonData['data'] = Book(module).getContentByChapter(chapter)
 
+    # /commentary/ABC/43/1
+    def processCommentaryCommand(self, cmd):
+        if len(cmd) < 4:
+            self.sendError("Invalid Commentary command")
+            return
+        self.jsonData['data'] = Commentary(cmd[1]).getRawContent(cmd[2], cmd[3])
 
+    # /lexicon/TBESG/G5
+    def processLexiconCommand(self, cmd):
+        if len(cmd) < 3:
+            self.sendError("Invalid Lexicon command")
+            return
+        self.jsonData['data'] = Lexicon(cmd[1]).getRawContent(cmd[2])
 
 
 

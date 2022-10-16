@@ -1,13 +1,18 @@
+import glob
 import json
 import logging
+import os
+from pathlib import Path
+
 import config
 from http import HTTPStatus
 
 from http.server import SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from db.BiblesSqlite import BiblesSqlite
-from db.ToolsSqlite import Commentary, LexiconData, IndexesSqlite
+from db.ToolsSqlite import Commentary, LexiconData, IndexesSqlite, Book
 from util.BibleBooks import BibleBooks
+from util.CatalogUtil import CatalogUtil
 
 
 class ApiRequestHandler(SimpleHTTPRequestHandler):
@@ -24,6 +29,7 @@ class RemoteApiHandler(ApiRequestHandler):
     def __init__(self, *args, **kwargs):
         self.logger = logging.getLogger('uba')
         config.internet = True
+        CatalogUtil.loadLocalCatalog()
         try:
             super().__init__(*args, directory="htmlResources", **kwargs)
         except Exception as ex:
@@ -85,6 +91,8 @@ class RemoteApiHandler(ApiRequestHandler):
                 self.processListCommand(cmd)
             elif cmd[0].lower() == "bible":
                 self.processBibleCommand(cmd)
+            elif cmd[0].lower() == "book":
+                self.processBookCommand(cmd)
 
     # /data/bible/abbreviations?lang=[eng,sc,tc]
     # /data/bible/chapters
@@ -108,6 +116,8 @@ class RemoteApiHandler(ApiRequestHandler):
     # /list/commentaries
     # /list/lexicons
     # /list/dictionaries
+    # /list/books
+    # /list/devotionals
     def processListCommand(self, cmd):
         if cmd[1].lower() == "bibles":
             self.jsonData['data'] = [bible for bible in BiblesSqlite().getBibleList()]
@@ -117,12 +127,16 @@ class RemoteApiHandler(ApiRequestHandler):
             self.jsonData['data'] = [lexicon for lexicon in LexiconData().lexiconList]
         elif cmd[1].lower() == "dictionaries":
             self.jsonData['data'] = [dictionary[0] for dictionary in IndexesSqlite().dictionaryList]
+        elif cmd[1].lower() == "books":
+            self.jsonData['data'] = [book for book in CatalogUtil.getBooks()]
+        elif cmd[1].lower() == "devotionals":
+            self.jsonData['data'] = [Path(devotional).stem for devotional in sorted(glob.glob(os.path.join(config.marvelData, "devotionals", "*.devotional")))]
 
     # /bible/KJV/43/3
     # /bible/KJV/44/3/16
     def processBibleCommand(self, cmd):
         if len(cmd) < 4:
-            self.sendError("Invalid command")
+            self.sendError("Invalid Bible command")
             return
         if len(cmd) == 4:
             verses = BiblesSqlite().readTextChapter(cmd[1], cmd[2], cmd[3])
@@ -133,6 +147,18 @@ class RemoteApiHandler(ApiRequestHandler):
             rows.append({'b': verse[0], 'c': verse[1], 'v': verse[2], 't': verse[3]})
         self.jsonData['data'] = rows
 
+    # /book/Hymn+Lyrics+-+English
+    # /book/Hymn+Lyrics+-+English/Amazing+Grace
+    def processBookCommand(self, cmd):
+        if len(cmd) < 2:
+            self.sendError("Invalid Book command")
+            return
+        module = cmd[1].replace("+", " ")
+        if len(cmd) == 2:
+            self.jsonData['data'] = [topic for topic in Book(module).getTopicList()]
+        else:
+            chapter = cmd[2].replace("+", " ")
+            self.jsonData['data'] = Book(module).getContentByChapter(chapter)
 
 
 

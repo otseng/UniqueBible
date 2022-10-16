@@ -753,6 +753,14 @@ class Commentary:
         else:
             return "INVALID_COMMAND_ENTERED"
 
+    def getRawContent(self, b, c):
+        if self.text in self.getCommentaryList():
+            query = "SELECT Scripture FROM Commentary WHERE Book=? AND Chapter=?"
+            self.cursor.execute(query, (b, c))
+            return self.cursor.fetchone()
+        else:
+            return ""
+
     def fixLinksInCommentary(self):
         query = "SELECT Book, Chapter, Scripture FROM Commentary ORDER BY Book, Chapter"
         self.cursor.execute(query)
@@ -912,6 +920,14 @@ class Lexicon:
         except Exception as ex:
             print(f"Cannot open {self.database}")
             print(ex)
+            return ""
+
+    def getRawContent(self, entry):
+        try:
+            query = "SELECT Definition FROM Lexicon WHERE Topic = ?"
+            self.cursor.execute(query, (entry,))
+            return self.cursor.fetchone()
+        except Exception as ex:
             return ""
 
     def getReverseContent(self, entry):

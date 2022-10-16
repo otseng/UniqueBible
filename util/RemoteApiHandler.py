@@ -10,6 +10,7 @@ from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from db.BiblesSqlite import BiblesSqlite
+from db.DevotionalSqlite import DevotionalSqlite
 from db.ToolsSqlite import Commentary, LexiconData, IndexesSqlite, Book, Lexicon
 from util.BibleBooks import BibleBooks
 from util.CatalogUtil import CatalogUtil
@@ -93,6 +94,8 @@ class RemoteApiHandler(ApiRequestHandler):
                 self.processCommentaryCommand(cmd)
             elif cmd[0].lower() == "lexicon":
                 self.processLexiconCommand(cmd)
+            elif cmd[0].lower() == "devotional":
+                self.processDevotionalCommand(cmd)
 
     # /data/bible/abbreviations?lang=[eng,sc,tc]
     # /data/bible/chapters
@@ -174,5 +177,12 @@ class RemoteApiHandler(ApiRequestHandler):
             return
         self.jsonData['data'] = Lexicon(cmd[1]).getRawContent(cmd[2])
 
+    # /devotional/Chambers+-+My+Utmost+For+His+Highest/12/25
+    def processDevotionalCommand(self, cmd):
+        if len(cmd) < 4:
+            self.sendError("Invalid Lexicon command")
+            return
+        devotional = cmd[1].replace("+", " ")
+        self.jsonData['data'] = DevotionalSqlite(devotional).getEntry(cmd[2], cmd[3])
 
 

@@ -96,6 +96,8 @@ class RemoteApiHandler(ApiRequestHandler):
                 self.processLexiconCommand(cmd)
             elif cmd[0].lower() == "devotional":
                 self.processDevotionalCommand(cmd)
+            elif cmd[0].lower() == "dictionary":
+                self.processDictionaryCommand(cmd)
 
     # /data/bible/abbreviations?lang=[eng,sc,tc]
     # /data/bible/chapters
@@ -184,5 +186,10 @@ class RemoteApiHandler(ApiRequestHandler):
             return
         devotional = cmd[1].replace("+", " ")
         self.jsonData['data'] = DevotionalSqlite(devotional).getEntry(cmd[2], cmd[3])
+
+    def processDictionaryCommand(self, cmd):
+        if len(cmd) < 2:
+            self.sendError("Invalid Dictionary command")
+            return
 
 

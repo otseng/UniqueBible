@@ -408,6 +408,15 @@ class DictionaryData:
             searchButton = "&ensp;<button class='ubaButton' onclick='document.title=\"_command:::SEARCHTOOL:::{0}:::\"'>search</button>".format(abb)
             return "<p><b>{0}</b> {1}</p>{2}".format(moduleName, searchButton, contentText)
 
+    def getRawContent(self, entry):
+        query = "SELECT content FROM Dictionary WHERE path = ?"
+        self.cursor.execute(query, (entry,))
+        content = self.cursor.fetchone()
+        if not content:
+            return "[not found]"
+        else:
+            return content[0]
+
 
 class EncyclopediaData:
 

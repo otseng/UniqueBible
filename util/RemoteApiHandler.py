@@ -11,7 +11,8 @@ from http.server import SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 from db.BiblesSqlite import BiblesSqlite
 from db.DevotionalSqlite import DevotionalSqlite
-from db.ToolsSqlite import Commentary, LexiconData, IndexesSqlite, Book, Lexicon
+from db.ToolsSqlite import Commentary, LexiconData, IndexesSqlite, Book, Lexicon, CrossReferenceSqlite, DictionaryData, \
+    SearchSqlite
 from util.BibleBooks import BibleBooks
 from util.CatalogUtil import CatalogUtil
 
@@ -82,22 +83,25 @@ class RemoteApiHandler(ApiRequestHandler):
             self.jsonData['query'] = query
         cmd = request[1:].split("/")
         if len(cmd) > 0:
-            if cmd[0].lower() == "data":
+            command = cmd[0].lower()
+            if command == "data":
                 self.processDataCommand(cmd, query)
-            elif cmd[0].lower() == "list":
+            elif command == "list":
                 self.processListCommand(cmd)
-            elif cmd[0].lower() == "bible":
+            elif command == "bible":
                 self.processBibleCommand(cmd)
-            elif cmd[0].lower() == "book":
+            elif command == "book":
                 self.processBookCommand(cmd)
-            elif cmd[0].lower() == "commentary":
+            elif command == "commentary":
                 self.processCommentaryCommand(cmd)
-            elif cmd[0].lower() == "lexicon":
+            elif command == "lexicon":
                 self.processLexiconCommand(cmd)
-            elif cmd[0].lower() == "devotional":
+            elif command == "devotional":
                 self.processDevotionalCommand(cmd)
-            elif cmd[0].lower() == "dictionary":
+            elif command == "dictionary":
                 self.processDictionaryCommand(cmd)
+            elif command == "crossreference":
+                self.processCrossReferenceCommand(cmd)
 
     # /data/bible/abbreviations?lang=[eng,sc,tc]
     # /data/bible/chapters
@@ -117,30 +121,14 @@ class RemoteApiHandler(ApiRequestHandler):
             elif cmd[2].lower() == "verses":
                 self.jsonData['data'] = BibleBooks.verses
 
-    # /list/bibles
-    # /list/commentaries
-    # /list/lexicons
-    # /list/dictionaries
-    # /list/books
-    # /list/devotionals
-    def processListCommand(self, cmd):
-        if cmd[1].lower() == "bibles":
-            self.jsonData['data'] = [bible for bible in BiblesSqlite().getBibleList()]
-        elif cmd[1].lower() == "commentaries":
-            self.jsonData['data'] = [commentary for commentary in Commentary().getCommentaryList()]
-        elif cmd[1].lower() == "lexicons":
-            self.jsonData['data'] = [lexicon for lexicon in LexiconData().lexiconList]
-        elif cmd[1].lower() == "dictionaries":
-            self.jsonData['data'] = [dictionary[0] for dictionary in IndexesSqlite().dictionaryList]
-        elif cmd[1].lower() == "books":
-            self.jsonData['data'] = [book for book in CatalogUtil.getBooks()]
-        elif cmd[1].lower() == "devotionals":
-            self.jsonData['data'] = [Path(devotional).stem for devotional in sorted(glob.glob(os.path.join(config.marvelData, "devotionals", "*.devotional")))]
-
+    # /bible
     # /bible/KJV/43/3
     # /bible/KJV/44/3/16
     def processBibleCommand(self, cmd):
-        if len(cmd) < 4:
+        if len(cmd) == 1:
+            self.jsonData['data'] = [bible for bible in BiblesSqlite().getBibleList()]
+            return
+        elif len(cmd) < 4:
             self.sendError("Invalid Bible command")
             return
         if len(cmd) == 4:
@@ -152,10 +140,14 @@ class RemoteApiHandler(ApiRequestHandler):
             rows.append({'b': verse[0], 'c': verse[1], 'v': verse[2], 't': verse[3]})
         self.jsonData['data'] = rows
 
+    # /book
     # /book/Hymn+Lyrics+-+English
     # /book/Hymn+Lyrics+-+English/Amazing+Grace
     def processBookCommand(self, cmd):
-        if len(cmd) < 2:
+        if len(cmd) == 1:
+            self.jsonData['data'] = [book for book in CatalogUtil.getBooks()]
+            return
+        elif len(cmd) < 2:
             self.sendError("Invalid Book command")
             return
         module = cmd[1].replace("+", " ")
@@ -167,29 +159,57 @@ class RemoteApiHandler(ApiRequestHandler):
 
     # /commentary/ABC/43/1
     def processCommentaryCommand(self, cmd):
-        if len(cmd) < 4:
+        if len(cmd) == 1:
+            self.jsonData['data'] = [commentary for commentary in Commentary().getCommentaryList()]
+            return
+        elif len(cmd) < 4:
             self.sendError("Invalid Commentary command")
             return
         self.jsonData['data'] = Commentary(cmd[1]).getRawContent(cmd[2], cmd[3])
 
+    # /lexicon
     # /lexicon/TBESG/G5
     def processLexiconCommand(self, cmd):
-        if len(cmd) < 3:
+        if len(cmd) == 1:
+            self.jsonData['data'] = [lexicon for lexicon in LexiconData().lexiconList]
+            return
+        elif len(cmd) < 3:
             self.sendError("Invalid Lexicon command")
             return
         self.jsonData['data'] = Lexicon(cmd[1]).getRawContent(cmd[2])
 
+    # /devotional
     # /devotional/Chambers+-+My+Utmost+For+His+Highest/12/25
     def processDevotionalCommand(self, cmd):
-        if len(cmd) < 4:
+        if len(cmd) == 1:
+            self.jsonData['data'] = [Path(devotional).stem for devotional in sorted(glob.glob(os.path.join(config.marvelData, "devotionals", "*.devotional")))]
+            return
+        elif len(cmd) < 4:
             self.sendError("Invalid Lexicon command")
             return
         devotional = cmd[1].replace("+", " ")
         self.jsonData['data'] = DevotionalSqlite(devotional).getEntry(cmd[2], cmd[3])
 
+    # /dictionary
+    # /dictionary/search/FAU/temple
+    # /dictionary/content/FAU3650
     def processDictionaryCommand(self, cmd):
-        if len(cmd) < 2:
+        if len(cmd) == 1:
+            self.jsonData['data'] = [dictionary[0] for dictionary in IndexesSqlite().dictionaryList]
+            return
+        elif len(cmd) < 3:
             self.sendError("Invalid Dictionary command")
             return
+        if cmd[1].lower() == "search":
+            self.jsonData['data'] = {'exact': SearchSqlite().getContent(cmd[2], cmd[3]),
+                                     'similar': SearchSqlite().getSimilarContent(cmd[2], cmd[3])}
+        elif cmd[1].lower() == "content":
+            self.jsonData['data'] = DictionaryData().getRawContent(cmd[2])
 
+    # /crossreference/1/1/1
+    def processCrossReferenceCommand(self, cmd):
+        if len(cmd) < 4:
+            self.sendError("Invalid Cross Reference command")
+            return
+        self.jsonData['data'] = CrossReferenceSqlite().getCrossReferenceList((cmd[1], cmd[2], cmd[3]))
 

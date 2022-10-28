@@ -2,22 +2,18 @@ import glob
 import os
 import re
 
-baseDir = ''
-
 if os.path.exists('./htmlResources'):
-    baseDir = './'
-elif os.path.exists( '../../htmlResources'):
-    baseDir = '../../'
+    pass
+elif os.path.exists('../../htmlResources'):
+    os.chdir('../../')
 else:
     print('Cannot find base dir')
     exit(1)
 
-os.chdir(baseDir)
-
-print('Base dir: ' + os.getcwd())
+print('Minimizing ' + os.getcwd())
 
 imagesUsed = []
-with open(baseDir + 'patches.txt') as f:
+with open('patches.txt') as f:
     lines = f.readlines()
 for line in lines:
     if "htmlResources/material/" in line and ".png" in line:
@@ -28,11 +24,15 @@ for line in lines:
 
 count = 0
 for filename in glob.iglob('htmlResources/material/**/**', recursive=True):
-    if "png" in filename and not os.path.isdir(filename):
+    if 'png' in filename and not os.path.isdir(filename):
         if filename not in imagesUsed:
             os.remove(filename)
-        else:
-            print("keeping " + filename)
+            print('removing ' + filename)
             count = count + 1
-            if count > 5:
-                exit();
+            # if count > 50000:
+            #     exit();
+        else:
+            pass
+            # print('keeping ' + filename)
+
+print('Done')

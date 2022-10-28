@@ -1,18 +1,16 @@
-INSTALLDIR='/Volumes/UBA_MAC_M1'
+INSTALLDIR='/Volumes/UBA_USB'
 
-DIR=`pwd`
-if [[ "$DIR" == "$HOME" ]]
+if [[ $# == 0 ]]
 then
-  DIR=$INSTALLDIR
+  echo "Need to specify portable python directory (3.10.8_m1 or 3.10.8_x86)"
+  exit
 fi
-  
-echo "Working dir: $DIR"
 
-if [ -d $DIR/UniqueBible ]
+if [[ ! -d "../$1" ]]
 then
-  cd $DIR/UniqueBible
-  ../3.10.8/bin/python uba.py
-  echo "Starting UBA..."
-else
-  echo "Could not find $DIR/UniqueBible"
+  echo "$1 does not exist"
+  exit
 fi
+
+../$1/bin/python uba.py
+echo "Starting UBA..."

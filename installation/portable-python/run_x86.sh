@@ -1,0 +1,21 @@
+INSTALLDIR='/Volumes/UBA_USB'
+
+DIR=`pwd`
+if [[ "$DIR" == "$HOME" ]]
+then
+  DIR=$INSTALLDIR
+fi
+
+echo "Working dir: $DIR"
+
+if [[ -d $DIR/UniqueBible ]]
+then
+  cd $DIR/UniqueBible
+fi
+
+if [[ -f run.sh ]]
+then
+  ./run.sh 3.10.8_x86
+else
+  echo "run.sh not found"
+fi

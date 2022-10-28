@@ -1,5 +1,3 @@
-INSTALLDIR='/Volumes/UBA_USB'
-
 if [[ $# == 0 ]]
 then
   echo "Need to specify portable python directory (3.10.8_m1 or 3.10.8_x86)"

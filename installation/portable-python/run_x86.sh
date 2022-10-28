@@ -6,8 +6,6 @@ then
   DIR=$INSTALLDIR
 fi
 
-echo "Working dir: $DIR"
-
 if [[ -d $DIR/UniqueBible ]]
 then
   cd $DIR/UniqueBible

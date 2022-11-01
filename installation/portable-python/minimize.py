@@ -3,6 +3,7 @@ import os
 import re
 
 deleteImages = True
+deleteEmptyDirs = True
 
 if os.path.exists('./htmlResources'):
     pass
@@ -37,5 +38,15 @@ if deleteImages:
             else:
                 pass
                 # print('keeping ' + filename)
+
+if deleteEmptyDirs:
+    for dirpath, _, _ in os.walk("htmlResources/material/", topdown=False):
+        if dirpath == "htmlResources/material/":
+            break
+        try:
+            os.rmdir(dirpath)
+            print("Deleted " + dirpath)
+        except OSError:
+            pass
 
 print('Done')

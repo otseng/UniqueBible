@@ -1,3 +1,7 @@
+Changes in 32.92:
+* Add files for portable python
+* Add more logging to Google drive backup
+
 Changes in 32.91:
 Terminal mode:
 * Now support swapping color brightness, by pressing "escape+s"

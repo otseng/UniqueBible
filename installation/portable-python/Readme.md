@@ -16,8 +16,7 @@ Download Portable Python:
 * Download [Portable Python 3.10.8](https://drive.google.com/drive/folders/12nyYAvh33ImFnU0_E1Nmv7RhQsOgMFYl)
 
 Minimize UBA:
-* In unzipped UBA folder, run `python3 minimize.py` to delete unused files (will delete over 84000 files)
-* Optionally run `find . -empty -type d -delete` to delete empty directories
+* In unzipped UBA folder, run `python minimize.py` to delete unused files (will delete over 84000 files)
 
 Configure:
 * Copy installation/portable-python/run*.sh to UBA root
@@ -44,7 +43,7 @@ Download Portable Python:
 * Download [WinPython 3.10.8](https://github.com/winpython/winpython/releases)
 
 Minimize UBA:
-* In unzipped UBA folder, run `python3 minimize.py` to delete unused files (will delete over 84000 files)
+* In unzipped UBA folder, run `python minimize.py` to delete unused files (will delete over 84000 files)
 * Zip the UBA folder
 
 Copy to stick:
@@ -57,4 +56,3 @@ Run UBA:
 * Execute `cd D:` to go to the USB stick
 * Execute `cd UniqueBible` to go into the UBA directory
 * Execute `python uba.py` to start UBA
-

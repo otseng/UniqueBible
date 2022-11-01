@@ -4,23 +4,28 @@ from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.shortcuts import confirm
 from prompt_toolkit import PromptSession
 from prompt_toolkit import prompt
-from prompt_toolkit.styles import Style
-from prompt_toolkit.shortcuts import clear, set_title
+from prompt_toolkit.styles import Attrs, Style, SwapLightAndDarkStyleTransformation
+from prompt_toolkit.shortcuts import clear, set_title, clear_title
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding import merge_key_bindings
 from util.prompt_shared_key_bindings import *
+from util.prompt_multiline_shared_key_bindings import *
 from util.PromptValidator import NumberValidator
-from util.get_path import GetPath
+from util.get_path_prompt import GetPath
+from util.FileUtil import FileUtil
 from prompt_toolkit import print_formatted_text, HTML
+from prompt_toolkit.filters import Condition
+from util.ConfigUtil import ConfigUtil
 #from prompt_toolkit.application.current import get_app
 #get_app().current_buffer.text = ""
 
 class TextEditor:
 
-    def __init__(self, parent=None, custom_save_file_method=None):
+    def __init__(self, parent=None, custom_save_file_method=None, working_directory=""):
         self.parent = parent
         self.filepath = ""
         self.custom_save_file_method = custom_save_file_method
+        self.wd = working_directory
         self.divider = "--------------------"
         self.promptStyle = Style.from_dict({
             # User input (default text).
@@ -37,6 +42,7 @@ class TextEditor:
             promptEntryColor=config.terminalCommandEntryColor2,
             subHeadingColor=config.terminalHeadingTextColor,
             itemColor=config.terminalResourceLinkColor,
+            workingDirectory=working_directory,
         )
 
     def prompt_continuation(self, width, line_number, wrap_count):
@@ -44,7 +50,7 @@ class TextEditor:
             return " " * (width - 3) + "-> "
         else:
             text = ("%i " % (line_number + 1)).rjust(width)
-            return HTML("<skyblue>%s</skyblue>") % text
+            return HTML("<ansicyan>%s</ansicyan>") % text
 
     def resetEditor(self):
         self.filepath = ""
@@ -74,7 +80,7 @@ class TextEditor:
             initiateEditor = False
             self.editorReload = ""
             text = self.startMultilineEditor(text, placeholder, editorStartupLine)
-            if self.editorReload == "e-t" and self.textSelection:
+            if self.editorReload == "c-t" and self.textSelection:
                 print(self.divider)
                 print(self.parent.googleTranslate(True, self.textSelection))
                 print(self.divider)
@@ -103,7 +109,7 @@ class TextEditor:
             elif self.editorReload == "e-c":
                 print(self.divider)
                 try:
-                    config.mainWindow.getContent(".system")
+                    config.mainWindow.system()
                 except:
                     pass
                 print(self.divider)
@@ -118,19 +124,27 @@ class TextEditor:
                 print(config.mainWindow.getContent(".menu"))
                 print(self.divider)
                 goBackEditor()
-            elif self.editorReload == "e-s" and self.textSelection:
+            elif self.editorReload == "e-t" and self.textSelection:
                 print(self.divider)
                 print(self.parent.tts(True, self.textSelection))
                 print(self.divider)
                 self.textSelection = ""
+            elif self.editorReload == "e-p":
+                config.textEditorPluginPause = False
+                config.textEditorPluginOutput = ""
+                self.plugins()
+                self.textSelection = ""
+                if config.textEditorPluginOutput:
+                    text = config.textEditorPluginOutput
+                    config.textEditorPluginOutput = ""
+                if config.textEditorPluginPause:
+                    goBackEditor()
             elif self.editorReload == "c-n":
                 if self.textModified and confirm("Save changes first?"):
                     self.saveFile()
                 self.resetEditor()
                 editorStartupLine = 1
                 text = ""
-            elif self.editorReload == "c-w":
-                pass
             elif self.editorReload == "c-p":
                 try:
                     exec(self.editor.app.current_buffer.text, globals())
@@ -144,6 +158,18 @@ class TextEditor:
                 editorStartupLine = 1
                 text = self.openFile(getTextOnly=True)
                 self.savedText = text
+            elif self.editorReload == "e-x":
+                if self.textModified and confirm("Save changes first?"):
+                    self.saveFile()
+                self.resetEditor()
+                editorStartupLine = 1
+                try:
+                    text = self.extractFile(getTextOnly=True)
+                    self.savedText = text
+                except:
+                    print("Errors!")
+                    print("Press 'ctrl+t' for to check supported formats.")
+                    goBackEditor()
             elif self.editorReload == "c-w":
                 self.saveFile()
             elif self.editorReload == "e-w":
@@ -156,7 +182,7 @@ class TextEditor:
                         editorStartupLine = int(lineNumber)
                     except:
                         pass
-            elif self.editorReload == "c-t":
+            elif self.editorReload == "e-h":
                 print_formatted_text(HTML(self.getEditorHelp()))
                 goBackEditor()
             elif self.editorReload == "c-f":
@@ -216,6 +242,10 @@ class TextEditor:
         # work out key bindings
         this_key_bindings = KeyBindings()
 
+        # swap color themes
+        @this_key_bindings.add("escape", "s")
+        def _(_):
+            ConfigUtil.swapTerminalColors()
         # find and replace
         @this_key_bindings.add("c-f")
         def _(event):
@@ -232,12 +262,12 @@ class TextEditor:
             self.editorReload = "c-g"
             buffer.validate_and_handle()
         # display tips
-        @this_key_bindings.add("c-t")
+        @this_key_bindings.add("escape", "h")
         def _(event):
             buffer = event.app.current_buffer
             self.editorCursorPosition = buffer.cursor_position
             self.oldChanges = self.editorTextChanges
-            self.editorReload = "c-t"
+            self.editorReload = "e-h"
             buffer.validate_and_handle()
         # undo text change
         @this_key_bindings.add("c-z")
@@ -265,6 +295,14 @@ class TextEditor:
             self.editorCursorPosition = buffer.cursor_position
             self.oldChanges = self.editorTextChanges
             self.editorReload = "c-o"
+            buffer.validate_and_handle()
+        # extract text from document
+        @this_key_bindings.add("escape", "x")
+        def _(event):
+            buffer = event.app.current_buffer
+            self.editorCursorPosition = buffer.cursor_position
+            self.oldChanges = self.editorTextChanges
+            self.editorReload = "e-x"
             buffer.validate_and_handle()
         # run as python script
         @this_key_bindings.add("c-p")
@@ -307,15 +345,16 @@ class TextEditor:
                 buffer.text = self.editorTextChanges[self.undoTextIndex]
                 buffer.cursor_position = cursor_position
         # run UBA commands
-        @this_key_bindings.add("escape", "r")
-        def _(event):
-            buffer = event.app.current_buffer
-            data = buffer.copy_selection()
-            self.textSelection = data.text
-            self.editorCursorPosition = buffer.cursor_position
-            self.oldChanges = self.editorTextChanges
-            self.editorReload = "e-r"
-            buffer.validate_and_handle()
+        if config.ubaIsRunning:
+            @this_key_bindings.add("escape", "r")
+            def _(event):
+                buffer = event.app.current_buffer
+                data = buffer.copy_selection()
+                self.textSelection = data.text
+                self.editorCursorPosition = buffer.cursor_position
+                self.oldChanges = self.editorTextChanges
+                self.editorReload = "e-r"
+                buffer.validate_and_handle()
         # run system console commands
         @this_key_bindings.add("escape", "c")
         def _(event):
@@ -327,26 +366,60 @@ class TextEditor:
             self.editorReload = "e-c"
             buffer.validate_and_handle()
         # run quick search on selected text
-        @this_key_bindings.add("escape", "f")
-        def _(event):
-            buffer = event.app.current_buffer
-            data = buffer.copy_selection()
-            self.textSelection = data.text
-            self.editorCursorPosition = buffer.cursor_position
-            self.oldChanges = self.editorTextChanges
-            self.editorReload = "e-f"
-            buffer.validate_and_handle()
+        if config.ubaIsRunning:
+            @this_key_bindings.add("escape", "f")
+            def _(event):
+                buffer = event.app.current_buffer
+                data = buffer.copy_selection()
+                self.textSelection = data.text
+                self.editorCursorPosition = buffer.cursor_position
+                self.oldChanges = self.editorTextChanges
+                self.editorReload = "e-f"
+                buffer.validate_and_handle()
         # run quick open on selected text
-        @this_key_bindings.add("escape", "o")
+        if config.ubaIsRunning:
+            @this_key_bindings.add("escape", "o")
+            def _(event):
+                buffer = event.app.current_buffer
+                data = buffer.copy_selection()
+                self.textSelection = data.text
+                self.editorCursorPosition = buffer.cursor_position
+                self.oldChanges = self.editorTextChanges
+                self.editorReload = "e-o"
+                buffer.validate_and_handle()
+        # translate text
+        @this_key_bindings.add("c-t")
         def _(event):
             buffer = event.app.current_buffer
             data = buffer.copy_selection()
             self.textSelection = data.text
             self.editorCursorPosition = buffer.cursor_position
             self.oldChanges = self.editorTextChanges
-            self.editorReload = "e-o"
+            self.editorReload = "c-t"
             buffer.validate_and_handle()
-        # translate text
+        # open UBA main menu
+        if config.ubaIsRunning:
+            @this_key_bindings.add("escape", "m")
+            def _(event):
+                buffer = event.app.current_buffer
+                data = buffer.copy_selection()
+                self.textSelection = data.text
+                self.editorCursorPosition = buffer.cursor_position
+                self.oldChanges = self.editorTextChanges
+                self.editorReload = "e-m"
+                buffer.validate_and_handle()
+        # run UBA default command
+        if config.ubaIsRunning:
+            @this_key_bindings.add("escape", "d")
+            def _(event):
+                buffer = event.app.current_buffer
+                data = buffer.copy_selection()
+                self.textSelection = data.text
+                self.editorCursorPosition = buffer.cursor_position
+                self.oldChanges = self.editorTextChanges
+                self.editorReload = "e-d"
+                buffer.validate_and_handle()
+        # text-to-speech
         @this_key_bindings.add("escape", "t")
         def _(event):
             buffer = event.app.current_buffer
@@ -356,35 +429,15 @@ class TextEditor:
             self.oldChanges = self.editorTextChanges
             self.editorReload = "e-t"
             buffer.validate_and_handle()
-        # open UBA main menu
-        @this_key_bindings.add("escape", "m")
+        # run text editor plugins
+        @this_key_bindings.add("escape", "p")
         def _(event):
             buffer = event.app.current_buffer
             data = buffer.copy_selection()
             self.textSelection = data.text
             self.editorCursorPosition = buffer.cursor_position
             self.oldChanges = self.editorTextChanges
-            self.editorReload = "e-m"
-            buffer.validate_and_handle()
-        # run UBA default command
-        @this_key_bindings.add("escape", "d")
-        def _(event):
-            buffer = event.app.current_buffer
-            data = buffer.copy_selection()
-            self.textSelection = data.text
-            self.editorCursorPosition = buffer.cursor_position
-            self.oldChanges = self.editorTextChanges
-            self.editorReload = "e-d"
-            buffer.validate_and_handle()
-        # text-to-speech
-        @this_key_bindings.add("escape", "s")
-        def _(event):
-            buffer = event.app.current_buffer
-            data = buffer.copy_selection()
-            self.textSelection = data.text
-            self.editorCursorPosition = buffer.cursor_position
-            self.oldChanges = self.editorTextChanges
-            self.editorReload = "e-s"
+            self.editorReload = "e-p"
             buffer.validate_and_handle()
 
         # return key_bindings
@@ -404,6 +457,10 @@ class TextEditor:
             #    lexer = PygmentsLexer(HtmlLexer)
             from prompt_toolkit.lexers import DynamicLexer, PygmentsLexer
             lexer = DynamicLexer(lambda: PygmentsLexer.from_filename(self.filepath))
+        else:
+            from prompt_toolkit.lexers import PygmentsLexer
+            from pygments.lexers.markup import MarkdownLexer
+            lexer = PygmentsLexer(MarkdownLexer)
 
         # define self.editor
         self.editor = PromptSession()
@@ -442,6 +499,7 @@ class TextEditor:
         # this_key_bindings = self.getKeyBindings()
         this_key_bindings = merge_key_bindings([
             prompt_shared_key_bindings,
+            prompt_multiline_shared_key_bindings,
             self.getKeyBindings(),
         ])
         # set title
@@ -451,15 +509,12 @@ class TextEditor:
         #print("Press 'Escape+Enter' when you finish editing!")
         # define style
         promptStyle = Style.from_dict({
-            # User input (default text).
-            #"": config.terminalCommandEntryColor2,
             # Prompt.
-            "indicator": config.terminalPromptIndicatorColor2,
+            "indicator": "ansicyan",
         })
         inputIndicator = [
             ("class:indicator", "   1 "),
         ]
-        bottom_toolbar = "[ctrl+q] quit [ctrl+t] tips [ctrl+b] go up [ctrl+y] go down"
         # multiline prompt
         userInput = self.editor.prompt(
             inputIndicator,
@@ -471,18 +526,45 @@ class TextEditor:
             key_bindings=this_key_bindings,
             pre_run=lambda: pre_run(editorStartupLine),
             mouse_support=True,
-            bottom_toolbar=bottom_toolbar,
+            bottom_toolbar=self.get_bottom_toolbar,
             lexer=lexer,
+            # check if file save every 5 seconds
+            refresh_interval=5.0,
+            # enable system prompt without auto-completion
+            # use escape+!
+            enable_system_prompt=True,
+            swap_light_and_dark_colors=Condition(lambda: config.terminalSwapColors),
         )
-        set_title("")
+        clear_title()
         return userInput
+
+    def get_bottom_toolbar(self):
+        unsavedNotice = "[ctrl+w] write changes " if self.textModified else ""
+        return f"{unsavedNotice}[escape+h] help [ctrl+q] quit [ctrl+b] go up [ctrl+y] go down"
+
+    def plugins(self):
+        pluginDir = os.path.join(self.wd, "plugins", "text_editor") if self.wd else os.path.join("plugins", "text_editor")
+        availablePlugins = FileUtil.fileNamesWithoutExtension(pluginDir, "py")
+        print(self.parent.divider)
+        self.parent.printOptionsDisplay(availablePlugins, "Plugins")
+        print(self.parent.divider)
+        print("Enter a number:")
+        userInput = self.simplePrompt(True)
+        if not userInput or userInput.lower() == config.terminal_cancel_action:
+            return self.parent.cancelAction()
+        try:
+            filepath = os.path.join("plugins", "text_editor", f"{availablePlugins[int(userInput)]}.py")
+            self.parent.execPythonFile(filepath)
+            return ""
+        except:
+            return self.parent.printInvalidOptionEntered()
 
     def simplePrompt(self, numberOnly=False, multiline=False, inputIndicator=""):
         if not inputIndicator:
             inputIndicator = self.inputIndicator
         if numberOnly:
             if multiline:
-                self.printMultineNote()
+                self.printMultilineNote()
             userInput = prompt(inputIndicator, style=self.promptStyle, validator=NumberValidator(), multiline=multiline).strip()
         else:
             userInput = prompt(inputIndicator, style=self.promptStyle, multiline=multiline).strip()
@@ -493,6 +575,7 @@ class TextEditor:
 
     def openFile(self, filepath="", getTextOnly=False):
         if not filepath:
+            print("Opening file ...")
             filepath = self.getPath.getFilePath(True)
         if os.path.isfile(filepath):
             text = self.getFileText(filepath)
@@ -513,6 +596,31 @@ class TextEditor:
             return text
         return ""
 
+    def extractFile(self, filepath="", getTextOnly=False):
+        if config.isTextractInstalled:
+            if not filepath:
+                print("Extracting text from file ...")
+                filepath = self.getPath.getFilePath(True)
+            if os.path.isfile(filepath):
+                text = self.extractFileText(filepath)
+                if getTextOnly:
+                    return text
+                else:
+                    # return True if file content is changed
+                    return self.multilineEditor(text)
+            else:
+                return "" if getTextOnly else False
+
+    def extractFileText(self, filepath):
+        if os.path.isfile(filepath):
+            import textract
+            text = text = textract.process(filepath).decode()
+            # to prevent corrupting original file, users need to specify a file path for saving
+            #self.filepath = filepath
+            self.savedText = text
+            return text
+        return ""
+
     def saveFile(self, saveAs=False):
         def failSavingFile():
             print("Failed to save file!")
@@ -523,6 +631,7 @@ class TextEditor:
             self.custom_save_file_method(text)
         else:
             if not self.filepath or saveAs:
+                print("Saving file ...")
                 filepath = self.getPath.getFilePath()
                 if not filepath:
                     return False
@@ -542,6 +651,7 @@ class TextEditor:
                 except:
                     return failSavingFile()
         self.savedText = text
+        self.textModified = False
         return True
 
     def getEditorHelp(self):
@@ -577,12 +687,24 @@ class TextEditor:
 
         Ctrl+T swap with previous char"""
 
+        ubaOnly1 = """<{0}>escape+f</{0}> quick <u>f</u>ind UBA resources for selected text
+<{0}>escape+o</{0}> quick <u>o</u>pen UBA resources with selected text
+""".format(config.terminalResourceLinkColor)
+
+        ubaOnly2 = """<{0}>escape+r</{0}> <u>r</u>un UBA commands
+<{0}>escape+m</{0}> open UBA <u>m</u>ain menu
+<{0}>escape+d</{0}> run UBA <u>d</u>efault command
+""".format(config.terminalResourceLinkColor)
+
         return """{0}
 <b># Key bindings:</b>
 
 <b># Essential</b>
+<{1}>escape+h</{1}> <u>h</u>elp
 <{1}>ctrl+q</{1}> <u>q</u>uit
-<{1}>ctrl+t</{1}> show <u>t</u>ips
+
+<b># Appearance</b>
+<{1}>escape+s</{1}> <u>s</u>wap between light and dark theme
 
 <b># Clipboard</b>
 <{1}>ctrl+c</{1}> <u>c</u>opy selected text
@@ -606,24 +728,21 @@ class TextEditor:
 
 <b># Text Selection</b>
 <{1}>ctrl+a</{1}> select <u>a</u>ll
-<{1}>escape+t</{1}> <u>t</u>ranslate selected text
-<{1}>escape+s</{1}> <u>s</u>ay selected text
-<{1}>escape+f</{1}> quick <u>f</u>ind UBA resources for selected text
-<{1}>escape+o</{1}> quick <u>o</u>pen UBA resources with selected text
-
+<{1}>ctrl+t</{1}> <u>t</u>ranslate selected text
+<{1}>escape+t</{1}> <u>t</u>ext-to-speech
+{2}
 <b># File I/O</b>
 <{1}>ctrl+n</{1}> <u>n</u>ew file
 <{1}>ctrl+o</{1}> <u>o</u>pen file
 <{1}>ctrl+w</{1}> <u>w</u>rite file [save]
 <{1}>escape+w</{1}> <u>w</u>rite file as [save as]
 
-<b># Commands</b>
+<b># Scripts and Commands</b>
 <{1}>ctrl+p</{1}> run as <u>p</u>ython script
-<{1}>escape+m</{1}> open UBA <u>m</u>ain menu
-<{1}>escape+d</{1}> run UBA <u>d</u>efault command
-<{1}>escape+r</{1}> <u>r</u>un UBA commands
-<{1}>escape+c</{1}> run system <u>c</u>oncole commands
-
+<{1}>escape+p</{1}> run text editor <u>p</u>lugins
+<{1}>escape+!</{1}> run system <u>c</u>oncole commands
+<{1}>escape+c</{1}> run system <u>c</u>oncole commands; with auto-completion
+{3}
 <b># Navigation</b>
 <{1}>home</{1}> jump to current line starting position
 <{1}>end</{1}> jump to current line <u>e</u>nding position
@@ -634,7 +753,9 @@ class TextEditor:
 
 <{1}>ctrl+g</{1}> <u>g</u>o to a spcific line
 <{1}>pageup</{1}> go up number of lines, defined by config.terminalEditorScrollLineCount
+on ChromeOS, use launcher+up
 <{1}>pagedown</{1}> go down number of lines, defined by config.terminalEditorScrollLineCount
+on ChromeOS, use launcher+down
 <{1}>ctrl+b</{1}> same as pageup
 <{1}>ctrl+y</{1}> same as pagedown
 
@@ -660,4 +781,8 @@ class TextEditor:
 <{1}>f9</{1}> go down 90 lines
 <{1}>f10</{1}> go down 100 lines
 
-{0}""".format(self.divider, config.terminalResourceLinkColor)
+<b># Import</b>
+<{1}>escape+x</{1}> e<u>x</u>tract from documents
+(available extensions include: .csv, .doc, .docx, .eml, .epub, .gif, .htm, .html, .jpeg, .jpg, .json, .log, .mp3, .msg, .odt, .ogg, .pdf, .png, .pptx, .ps, .psv, .rtf, .tab, .tff, .tif, .tiff, .tsv, .txt, .wav, .xls, .xlsx)
+
+{0}""".format(self.divider, config.terminalResourceLinkColor, ubaOnly1 if config.ubaIsRunning else "", ubaOnly2 if config.ubaIsRunning else "")

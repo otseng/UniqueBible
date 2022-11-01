@@ -1,3 +1,50 @@
+Changes in 32.91:
+Terminal mode:
+* Now support swapping color brightness, by pressing "escape+s"
+* Two common set of key bindings are now shared across different prompts.
+* prompt-toolkit is now a required denpency to run terminal mode.
+
+Changes in 32.90:
+* Fixed opening image on Android.
+
+Changes in 32.89:
+Terminal mode:
+* fixed UBA startup when previous command was invalid.
+* supports use of _htmlimage::: command to open image file.
+
+Changes in 32.88:
+* Added a simple cli file manager.
+
+Changes in 32.87:
+* Added traditional and simplified Chinese names to bible maps:
+    When abbreviations is set to "TC" or "SC", running map::: command, e.g. map:::Act 15:1-18:1, displays Chinese location names on Google maps.
+* Terminal mode text editor now have Markdown as default syntax highlighting when a filename is not specified or saved.
+
+Changes in 32.86:
+Terminal mode text-editor
+* Added code to run text-editor on its own as a standalone app, run:
+    > python3 text_editor.py
+  to check options, run:
+    > python3 text_editor.py -h
+* Added extract text from documents of various format with key binding "escape+x"
+* Now notify about unsaved changes.
+
+Changes in 32.85:
+* Fixed terminal text editor saving changes.
+
+Changes in 32.84:
+* Fixed opening terminal text editor help menu, by using "ctrl+t"
+
+Changes in 32.83:
+* Terminal text editor now supports running plugins:
+    - written in python
+    - stored plugins/text_editor/
+* Four simple text editor plugins are created for examples:
+    extract bible references from text selection.py
+    sort lines.py
+    change text selection to upper cases.py
+    change text selection to lower cases.py
+
 Changes in 32.82:
 Terminal mode:
 * Added support of running "ls" command in get file path prompt.
@@ -50,8 +97,9 @@ Terminal mode:
     ctrl+w write file [save]
     escape+w write file as [save as]
 
-    # Commands
+    # Scripts & Commands
     ctrl+p run as python script
+    escape+p run text editor <u>p</u>lugins
     escape+m open UBA main menu
     escape+d run UBA default command
     escape+r run UBA commands

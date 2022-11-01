@@ -10,8 +10,7 @@ With prompt_toolkit installed, however, you can use all features we will mention
 To install prompt_toolkit, run:
 > pip install prompt_toolkit
 
-Recommended:
-
+Features:
 * prompts for a file or folder path entry
 * option to define prompt indicator and text colors
 * option to check existence of the entered path
@@ -34,12 +33,15 @@ import platform, os, subprocess
 
 class GetPath:
 
-    def __init__(self, cancel_entry=".cancel", promptIndicatorColor="yellow", promptEntryColor="skyblue", subHeadingColor="cyan", itemColor="skyblue"):
+    def __init__(self, cancel_entry=".cancel", promptIndicatorColor="yellow", promptEntryColor="skyblue", subHeadingColor="cyan", itemColor="skyblue", workingDirectory="", ctrl_q_to_exit=False, ctrl_s_to_system=False):
         self.cancel_entry = cancel_entry
         self.promptIndicatorColor = promptIndicatorColor
         self.promptEntryColor = promptEntryColor
         self.subHeadingColor = subHeadingColor
         self.itemColor = itemColor
+        self.workingDirectory = workingDirectory
+        self.ctrl_q_to_exit = ctrl_q_to_exit
+        self.ctrl_s_to_system = ctrl_s_to_system
 
     def listDirectoryContent(self):
         dirs = []
@@ -75,7 +77,7 @@ class GetPath:
                 files = "<{0}>{1}</{0}>".format(self.itemColor, separator.join(files))
                 print_formatted_text(HTML("<b><{0}>Files</{0}></b>".format(self.subHeadingColor)))
                 print_formatted_text(HTML(files))
-        
+
         try:
             # when prompt-toolkit is installed
             printFormattedDirsFiles(display_dir_only=display_dir_only)
@@ -90,28 +92,34 @@ class GetPath:
             userInput = input(f"{message} (y/n)").strip()
             return True if userInput.lower() in ("y", "yes") else False
 
-    def getFilePath(self, check_isfile=False, empty_to_cancel=False, message=""):
+    def getFilePath(self, check_isfile=False, empty_to_cancel=False, list_content_on_directory_change=False, keep_startup_directory=True, message="", bottom_toolbar=""):
         if not message:
             message = "Enter a file path:"
-        return self.getPath(check_isfile=check_isfile, empty_to_cancel=empty_to_cancel, message=message)
+        return self.getPath(check_isfile=check_isfile, empty_to_cancel=empty_to_cancel, list_content_on_directory_change=list_content_on_directory_change, keep_startup_directory=keep_startup_directory, message=message, bottom_toolbar=bottom_toolbar)
 
-    def getFolderPath(self, check_isdir=False, display_dir_only=False, create_dirs_if_not_exist=False, empty_to_cancel=False, message=""):
+    def getFolderPath(self, check_isdir=False, display_dir_only=False, create_dirs_if_not_exist=False, empty_to_cancel=False, list_content_on_directory_change=False, keep_startup_directory=True, message="", bottom_toolbar=""):
         if not message:
             message = "Enter a directory path:"
-        return self.getPath(check_isdir=check_isdir, display_dir_only=display_dir_only, create_dirs_if_not_exist=create_dirs_if_not_exist, empty_to_cancel=empty_to_cancel, message=message)
+        return self.getPath(check_isdir=check_isdir, display_dir_only=display_dir_only, create_dirs_if_not_exist=create_dirs_if_not_exist, empty_to_cancel=empty_to_cancel, list_content_on_directory_change=list_content_on_directory_change, keep_startup_directory=keep_startup_directory, message=message, bottom_toolbar=bottom_toolbar)
 
-    def getPath(self, check_isfile=False, check_isdir=False, display_dir_only=False, create_dirs_if_not_exist=False, empty_to_cancel=False, message=""):
+    def getPath(self, check_isfile=False, check_isdir=False, display_dir_only=False, create_dirs_if_not_exist=False, empty_to_cancel=False, list_content_on_directory_change=False, keep_startup_directory=True, message="", bottom_toolbar=""):
         if not message:
             message = "Enter a path:"
         thisPath = os.getcwd()
 
-        def returnPath(path=""):
+        def returnPath(path="", keep_startup_directory=keep_startup_directory):
             if path:
                 fullpath = os.path.join(os.getcwd(), path)
                 if os.path.exists(fullpath):
                     path = fullpath
-            os.chdir(thisPath)
+            if keep_startup_directory:
+                os.chdir(thisPath)
             return path
+
+        def changeDirectory(path, list_content_on_directory_change=False):
+            os.chdir(path)
+            if list_content_on_directory_change:
+                self.displayDirectoryContent()
 
         promptEntry = True
         while promptEntry:
@@ -128,17 +136,26 @@ class GetPath:
                 from prompt_toolkit.styles import Style
                 from prompt_toolkit.application import run_in_terminal
 
-                if os.path.isdir(os.path.join(thisPath, "terminal_history")):
-                    filePathHistory = os.path.join(thisPath, "terminal_history", "get-path-prompt")
+                wd = self.workingDirectory if self.workingDirectory else thisPath
+                if os.path.isdir(os.path.join(wd, "terminal_history")):
+                    filePathHistory = os.path.join(wd, "terminal_history", "get-path-prompt")
                 else:
-                    filePathHistory = os.path.join(thisPath, "get-path-prompt")
+                    filePathHistory = os.path.join(wd, "get-path-prompt")
                 filePathSession = PromptSession(history=FileHistory(filePathHistory))
 
                 # key bindings
                 this_key_bindings = KeyBindings()
+                if self.ctrl_s_to_system:
+                    @this_key_bindings.add("c-s")
+                    def _(event):
+                        event.app.current_buffer.text = ".system"
+                        event.app.current_buffer.validate_and_handle()
                 @this_key_bindings.add("c-q")
                 def _(event):
-                    event.app.current_buffer.text = self.cancel_entry
+                    if self.ctrl_q_to_exit:
+                        event.app.current_buffer.text = ".quit"
+                    else:
+                        event.app.current_buffer.text = self.cancel_entry
                     event.app.current_buffer.validate_and_handle()
                 @this_key_bindings.add("c-l")
                 def _(_):
@@ -154,7 +171,8 @@ class GetPath:
                     # Prompt.
                     "indicator": self.promptIndicatorColor,
                 })
-                bottom_toolbar = "[cd [folder]] change dir; [ls]/[ctrl+l] list content; [ctrl+q] quit"
+                if not bottom_toolbar:
+                    bottom_toolbar = "[cd [folder]] change dir; [ls]/[ctrl+l] list content; [ctrl+q] quit"
                 userInput = filePathSession.prompt(
                     inputIndicator,
                     style=promptStyle,
@@ -178,8 +196,12 @@ class GetPath:
             if not userInput.startswith("cd ") and create_dirs_if_not_exist and not os.path.isdir(userInput):
                 os.makedirs(userInput, exist_ok=True)
 
-            if userInput.startswith("cd ") and os.path.isdir(userInput[3:]):
-                os.chdir(userInput[3:])
+            if userInput == ".quit":
+                return returnPath(".quit")
+            elif userInput == ".system":
+                return returnPath(".system")
+            elif userInput.startswith("cd ") and os.path.isdir(userInput[3:]):
+                changeDirectory(userInput[3:], list_content_on_directory_change)
                 userInput = ""
                 promptEntry = True
             elif (userInput == "ls" or userInput.startswith("ls ")) and not os.path.exists(userInput):
@@ -193,6 +215,12 @@ class GetPath:
                 return returnPath()
             elif not userInput and self.confirm_prompt("Try again?"):
                 promptEntry = True
+            elif check_isdir and check_isfile:
+                if not os.path.isdir(userInput) and not os.path.isfile(userInput) and self.confirm_prompt("No such file or directory! Try again?"):
+                    promptEntry = True
+                elif os.path.isdir(userInput) and not os.path.isfile(userInput):
+                    changeDirectory(userInput, list_content_on_directory_change)
+                    promptEntry = True
             elif userInput and check_isdir and not os.path.isdir(userInput):
                 if self.confirm_prompt("No such directory! Try again?"):
                     promptEntry = True

@@ -1,3 +1,4 @@
+import base64
 import glob
 import json
 import logging
@@ -48,6 +49,13 @@ class RemoteApiHandler(ApiRequestHandler):
         self.jsonData = {'status': 'Error', 'message': 'Unsupported method'}
         self.sendJsonData()
 
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header("Access-Control-Allow-Headers", '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.end_headers()
+
     def sendJsonData(self):
         data = json.dumps(self.jsonData)
         self.commonHeader()
@@ -57,10 +65,9 @@ class RemoteApiHandler(ApiRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "text/json")
         self.send_header("charset", "UTF-8")
-        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate"),
         self.send_header("Pragma", "no-cache"),
-        self.send_header("Expires", "0")
         self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Cache-Control", "max-age=604800, stale-while-revalidate=86400"),
         self.end_headers()
 
     def sendError(self, message):
@@ -75,6 +82,7 @@ class RemoteApiHandler(ApiRequestHandler):
         self.sendJsonData()
 
     def processRequest(self, request):
+        self.securityCheck()
         query = parse_qs(urlparse(request).query)
         self.jsonData = {'status': "OK"}
         if "?" in request:
@@ -121,6 +129,17 @@ class RemoteApiHandler(ApiRequestHandler):
                 self.jsonData['data'] = BibleBooks.chapters
             elif cmd[2].lower() == "verses":
                 self.jsonData['data'] = BibleBooks.verses
+
+    def securityCheck(self):
+        clients = {'ubaclient': {'secret': 'uniquebibleapp'}}
+        auth = self.headers['Authorization']
+        if auth:
+            basic, creds = auth.split()
+            clientId, clientSecret = base64.b64decode(creds).decode().split(':')
+            if clientId in clients.keys():
+                if clientSecret == clients[clientId]['secret']:
+                    return
+        raise Exception('Unauthorized')
 
     # /bible
     # /bible/KJV/43/3

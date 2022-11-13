@@ -29,6 +29,12 @@ class RemoteApiHandler(ApiRequestHandler):
 
     jsonData = {}
 
+    ONE_SEC = "1"
+    ONE_HOUR = "3600"
+    ONE_DAY = "86400"
+    ONE_MONTH = "2592000"
+    ONE_YEAR = "31536000"
+
     def __init__(self, *args, **kwargs):
         self.logger = logging.getLogger('uba')
         config.internet = True
@@ -67,7 +73,7 @@ class RemoteApiHandler(ApiRequestHandler):
         self.send_header("charset", "UTF-8")
         self.send_header("Pragma", "no-cache"),
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Cache-Control", "max-age=604800, stale-while-revalidate=86400"),
+        self.send_header("Cache-Control", "max-age=" + RemoteApiHandler.ONE_DAY + ", stale-while-revalidate=" + RemoteApiHandler.ONE_DAY),
         self.end_headers()
 
     def sendError(self, message):
@@ -175,7 +181,8 @@ class RemoteApiHandler(ApiRequestHandler):
             self.jsonData['data'] = [topic for topic in Book(module).getTopicList()]
         else:
             chapter = cmd[2].replace("+", " ")
-            self.jsonData['data'] = Book(module).getContentByChapter(chapter)
+            data = Book(module).getContentByChapter(chapter)
+            self.jsonData['data'] = data if data else ("[Not found]",)
 
     # /commentary/ABC/43/1
     def processCommentaryCommand(self, cmd):
@@ -185,7 +192,8 @@ class RemoteApiHandler(ApiRequestHandler):
         elif len(cmd) < 4:
             self.sendError("Invalid Commentary command")
             return
-        self.jsonData['data'] = Commentary(cmd[1]).getRawContent(cmd[2], cmd[3])
+        data = Commentary(cmd[1]).getRawContent(cmd[2], cmd[3])
+        self.jsonData['data'] = data if data else ("[Not found]",)
 
     # /lexicon
     # /lexicon/TBESG/G5
@@ -196,7 +204,8 @@ class RemoteApiHandler(ApiRequestHandler):
         elif len(cmd) < 3:
             self.sendError("Invalid Lexicon command")
             return
-        self.jsonData['data'] = Lexicon(cmd[1]).getRawContent(cmd[2])
+        data = Lexicon(cmd[1]).getRawContent(cmd[2])
+        self.jsonData['data'] = data if data else ("[Not found]",)
 
     # /devotional
     # /devotional/Chambers+-+My+Utmost+For+His+Highest/12/25

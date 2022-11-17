@@ -1644,10 +1644,7 @@ Escape+W open wordnet"""
     # use local http-server if it is running
     # otherwise, use public
     def web(self, command="", filterCommand=True):
-        server = "http://localhost:8080"
-        if not self.isUrlAlive(server):
-            server = ""
-        weblink = TextUtil.getWeblink(self.getCommand(command) if filterCommand else command, server=server)
+        weblink = self.textCommandParser.getWeblink(command, filterCommand)
         return self.getContent(f"_website:::{weblink}")
 
     def isBibleReference(self, text):
@@ -2240,7 +2237,7 @@ $SCRIPT_DIR/portable_python/{2}{7}_{3}.{4}.{5}/{3}.{4}.{5}/bin/python{3}.{4} uba
         locations = self.dialogs.getMultipleSelection(options=options, descriptions=descriptions, default_values=options, title="Customise Bible Map", text="Confirm locations below:")
         locations = list(set(locations))
         locations = self.textCommandParser.selectLocations(defaultChecklist=[i[2:] for i in locations])
-        html = self.textCommandParser.displayMap(locations)
+        html = self.textCommandParser.displayMap(locations, browser=True)
         filePath = os.path.join("htmlResources", "bible_map.html")
         fullFilePath = os.path.abspath(filePath)
         with open(fullFilePath, "w", encoding="utf-8") as fileObj:
@@ -3396,25 +3393,26 @@ $SCRIPT_DIR/portable_python/{2}{7}_{3}.{4}.{5}/{3}.{4}.{5}/bin/python{3}.{4} uba
             if config.terminalEnableClipboardMonitor:
                 # check English definition of selected word
                 selectedText = self.getclipboardtext()
-                if selectedText in HBN.entries:
-                    definition = HBN.entries[selectedText]
-                else:
-                    definition = self.getDefinition(selectedText)
-                    if not definition:
-                        lemma = config.lemmatizer.lemmatize(selectedText)
-                        if lemma == selectedText:
-                            lemma = ""
-                        else:
-                            lemma = f"{lemma} -"
-                        definition = self.getDefinition(lemma)
-                        if definition:
-                            definition = "{0}{1}".format(lemma, definition)
-                        elif config.isChineseEnglishLookupInstalled:
-                            definition = "{0}{1}".format(lemma, config.cedict.lookup(lemma))
-                self.print("Definition:")
-                self.print(definition)
-                self.print(self.divider)
-                self.extract(selectedText)
+                if selectedText:
+                    if selectedText in HBN.entries:
+                        definition = HBN.entries[selectedText]
+                    else:
+                        definition = self.getDefinition(selectedText)
+                        if not definition:
+                            lemma = config.lemmatizer.lemmatize(selectedText)
+                            if lemma == selectedText:
+                                lemma = ""
+                            else:
+                                lemma = f"{lemma} -"
+                            definition = self.getDefinition(lemma)
+                            if definition:
+                                definition = "{0}{1}".format(lemma, definition)
+                            elif config.isChineseEnglishLookupInstalled:
+                                definition = "{0}{1}".format(lemma, config.cedict.lookup(lemma))
+                    self.print("Definition:")
+                    self.print(definition)
+                    self.print(self.divider)
+                    self.extract(selectedText)
         except:
             pass
 

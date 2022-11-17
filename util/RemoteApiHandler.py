@@ -121,6 +121,7 @@ class RemoteApiHandler(ApiRequestHandler):
     # /data/bible/abbreviations?lang=[eng,sc,tc]
     # /data/bible/chapters
     # /data/bible/verses
+    # /data/bible/books/TRLIT
     def processDataCommand(self, cmd, query):
         if cmd[1].lower() == "bible":
             if cmd[2].lower() == "abbreviations":
@@ -135,6 +136,8 @@ class RemoteApiHandler(ApiRequestHandler):
                 self.jsonData['data'] = BibleBooks.chapters
             elif cmd[2].lower() == "verses":
                 self.jsonData['data'] = BibleBooks.verses
+            elif cmd[2].lower() == "books":
+                self.jsonData['data'] = [book for book in BiblesSqlite().getBookList(cmd[3])]
 
     def securityCheck(self):
         clients = {'ubaclient': {'secret': 'uniquebibleapp'}}

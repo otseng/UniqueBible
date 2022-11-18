@@ -184,6 +184,8 @@ class RemoteApiHandler(ApiRequestHandler):
             self.jsonData['data'] = [topic for topic in Book(module).getTopicList()]
         else:
             chapter = cmd[2].replace("+", " ")
+            chapter = chapter.replace("%3C", "<")
+            chapter = chapter.replace("%3E", ">")
             data = Book(module).getContentByChapter(chapter)
             self.jsonData['data'] = data if data else ("[Not found]",)
 

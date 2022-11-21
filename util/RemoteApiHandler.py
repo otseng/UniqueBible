@@ -38,6 +38,7 @@ class RemoteApiHandler(ApiRequestHandler):
     def __init__(self, *args, **kwargs):
         self.logger = logging.getLogger('uba')
         config.internet = True
+        config.showHebrewGreekWordAudioLinks = False
         CatalogUtil.loadLocalCatalog()
         try:
             super().__init__(*args, directory="htmlResources", **kwargs)
@@ -105,6 +106,8 @@ class RemoteApiHandler(ApiRequestHandler):
                 self.processListCommand(cmd)
             elif command == "bible":
                 self.processBibleCommand(cmd)
+            elif command == "compare":
+                self.processCompareCommand(cmd, query)
             elif command == "book":
                 self.processBookCommand(cmd)
             elif command == "commentary":
@@ -246,4 +249,15 @@ class RemoteApiHandler(ApiRequestHandler):
             self.sendError("Invalid Cross Reference command")
             return
         self.jsonData['data'] = CrossReferenceSqlite().getCrossReferenceList((cmd[1], cmd[2], cmd[3]))
+
+    # /compare/1/1/1?text=KJV&text=TRLIT&text=WEB
+    def processCompareCommand(self, cmd, query):
+        if len(cmd) < 4:
+            self.sendError("Invalid Compare command")
+            return
+        if query:
+            texts = query["text"]
+        else:
+            texts = ['KJV']
+        self.jsonData['data'] = BiblesSqlite().compareVerseRaw((cmd[1], cmd[2], cmd[3]), texts)
 

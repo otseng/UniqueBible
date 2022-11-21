@@ -10,11 +10,12 @@ from http import HTTPStatus
 
 from http.server import SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
-from db.BiblesSqlite import BiblesSqlite
+from db.BiblesSqlite import BiblesSqlite, Bible
 from db.DevotionalSqlite import DevotionalSqlite
 from db.ToolsSqlite import Commentary, LexiconData, IndexesSqlite, Book, Lexicon, CrossReferenceSqlite, DictionaryData, \
     SearchSqlite
 from util.BibleBooks import BibleBooks
+from util.BibleVerseParser import BibleVerseParser
 from util.CatalogUtil import CatalogUtil
 
 
@@ -244,13 +245,24 @@ class RemoteApiHandler(ApiRequestHandler):
             self.jsonData['data'] = DictionaryData().getRawContent(cmd[2])
 
     # /crossreference/1/1/1
+    # /crossreference/1/1/1/KJV
     def processCrossReferenceCommand(self, cmd):
         if len(cmd) < 4:
             self.sendError("Invalid Cross Reference command")
             return
-        self.jsonData['data'] = CrossReferenceSqlite().getCrossReferenceList((cmd[1], cmd[2], cmd[3]))
+        data = CrossReferenceSqlite().getCrossReferenceList((cmd[1], cmd[2], cmd[3]))
+        if len(cmd) == 4:
+            self.jsonData['data'] = data
+        else:
+            versesData = []
+            verses = BibleVerseParser(config.parserStandarisation).extractAllReferencesFast(data)
+            text = cmd[4]
+            for (b, c, v, *_) in verses:
+                record = Bible(text).readTextVerse(b, c, v)
+                versesData.append(record)
+            self.jsonData['data'] = versesData
 
-    # /compare/1/1/1?text=KJV&text=TRLIT&text=WEB
+        # /compare/1/1/1?text=KJV&text=TRLIT&text=WEB
     def processCompareCommand(self, cmd, query):
         if len(cmd) < 4:
             self.sendError("Invalid Compare command")

@@ -121,6 +121,10 @@ class RemoteApiHandler(ApiRequestHandler):
                 self.processDictionaryCommand(cmd)
             elif command == "crossreference":
                 self.processCrossReferenceCommand(cmd)
+            elif command == "crossreference":
+                self.processCrossReferenceCommand(cmd)
+            elif command == "search":
+                self.processSearchCommand(cmd, query)
 
     # /data/bible/abbreviations?lang=[eng,sc,tc]
     # /data/bible/chapters
@@ -262,7 +266,7 @@ class RemoteApiHandler(ApiRequestHandler):
                 versesData.append(record)
             self.jsonData['data'] = versesData
 
-        # /compare/1/1/1?text=KJV&text=TRLIT&text=WEB
+    # /compare/1/1/1?text=KJV&text=TRLIT&text=WEB
     def processCompareCommand(self, cmd, query):
         if len(cmd) < 4:
             self.sendError("Invalid Compare command")
@@ -272,4 +276,24 @@ class RemoteApiHandler(ApiRequestHandler):
         else:
             texts = ['KJV']
         self.jsonData['data'] = BiblesSqlite().compareVerseRaw((cmd[1], cmd[2], cmd[3]), texts)
+
+    # /search?searchText=faith
+    def processSearchCommand(self, cmd, query):
+        try:
+            searchText = query["searchText"][0]
+            type = query["type"][0] if "type" in query.keys() else "bible"
+            if type == "bible":
+                text = query["text"][0] if "text" in query.keys() else "KJV"
+                query = "SELECT Book, Chapter, Verse, Scripture FROM Verses "
+                query += "WHERE "
+                query += "(Scripture LIKE ?) "
+                query += "ORDER BY Book, Chapter, Verse "
+                query += "LIMIT 5000 "
+                t = ("%{0}%".format(searchText),)
+                verses = Bible(text).getSearchVerses(query, t)
+
+                self.jsonData['data'] = verses
+        except Exception as ex:
+            self.sendError("Invalid search command - " + ex)
+
 

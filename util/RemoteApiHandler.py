@@ -17,6 +17,7 @@ from db.ToolsSqlite import Commentary, LexiconData, IndexesSqlite, Book, Lexicon
 from util.BibleBooks import BibleBooks
 from util.BibleVerseParser import BibleVerseParser
 from util.CatalogUtil import CatalogUtil
+from util.LexicalData import LexicalData
 
 
 class ApiRequestHandler(SimpleHTTPRequestHandler):
@@ -130,6 +131,7 @@ class RemoteApiHandler(ApiRequestHandler):
     # /data/bible/chapters
     # /data/bible/verses
     # /data/bible/books/TRLIT
+    # /data/lex/H3068
     def processDataCommand(self, cmd, query):
         if cmd[1].lower() == "bible":
             if cmd[2].lower() == "abbreviations":
@@ -146,6 +148,8 @@ class RemoteApiHandler(ApiRequestHandler):
                 self.jsonData['data'] = BibleBooks.verses
             elif cmd[2].lower() == "books":
                 self.jsonData['data'] = [book for book in BiblesSqlite().getBookList(cmd[3])]
+        elif cmd[1].lower() == "lex":
+            self.jsonData['data'] = LexicalData.getLexicalDataRaw(cmd[2])
 
     def securityCheck(self):
         clients = {'ubaclient': {'secret': 'uniquebibleapp'}}
@@ -289,6 +293,10 @@ class RemoteApiHandler(ApiRequestHandler):
                 query += "(Scripture LIKE ?) "
                 query += "ORDER BY Book, Chapter, Verse "
                 query += "LIMIT 5000 "
+                if '"' in searchText:
+                    searchText = searchText.replace('"', '')
+                else:
+                    searchText = searchText.replace(" ", "%").replace("+", "%")
                 t = ("%{0}%".format(searchText),)
                 verses = Bible(text).getSearchVerses(query, t)
 

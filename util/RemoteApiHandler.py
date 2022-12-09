@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import re
+import urllib
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -44,7 +45,6 @@ class RemoteApiHandler(ApiRequestHandler):
         self.logger = logging.getLogger('uba')
         config.internet = True
         config.showHebrewGreekWordAudioLinks = False
-        CatalogUtil.loadLocalCatalog()
         try:
             super().__init__(*args, directory="htmlResources", **kwargs)
         except Exception as ex:
@@ -215,6 +215,7 @@ class RemoteApiHandler(ApiRequestHandler):
     # /book/Hymn+Lyrics+-+English
     # /book/Hymn+Lyrics+-+English/Amazing+Grace
     def processBookCommand(self, cmd):
+        CatalogUtil.loadLocalCatalog()
         if len(cmd) == 1:
             self.jsonData['data'] = [book for book in CatalogUtil.getBooks()]
             return
@@ -222,17 +223,20 @@ class RemoteApiHandler(ApiRequestHandler):
             self.sendError("Invalid Book command")
             return
         module = cmd[1].replace("+", " ")
+        module = urllib.parse.unquote(module)
         if len(cmd) == 2:
             self.jsonData['data'] = [topic for topic in Book(module).getTopicList()]
         else:
             chapter = cmd[2].replace("+", " ")
-            chapter = chapter.replace("%3C", "<")
-            chapter = chapter.replace("%3E", ">")
+            chapter = urllib.parse.unquote(chapter)
+            # chapter = chapter.replace("%3C", "<")
+            # chapter = chapter.replace("%3E", ">")
             data = Book(module).getContentByChapter(chapter)
             self.jsonData['data'] = data if data else ("[Not found]",)
 
     # /commentary/ABC/43/1
     def processCommentaryCommand(self, cmd):
+        config.commentariesFolder = os.path.join(config.marvelData, "commentaries")
         if len(cmd) == 1:
             self.jsonData['data'] = [commentary for commentary in Commentary().getCommentaryList()]
             return
@@ -245,6 +249,7 @@ class RemoteApiHandler(ApiRequestHandler):
     # /lexicon
     # /lexicon/TBESG/G5
     def processLexiconCommand(self, cmd):
+        CatalogUtil.loadLocalCatalog()
         if len(cmd) == 1:
             self.jsonData['data'] = [lexicon for lexicon in LexiconData().lexiconList]
             return

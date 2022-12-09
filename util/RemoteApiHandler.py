@@ -100,7 +100,7 @@ class RemoteApiHandler(ApiRequestHandler):
         if "?" in request:
             request = request.split("?")[0]
         self.jsonData['request'] = request
-        lang = "en"
+        config.marvelData = 'marvelData'
         if query:
             self.jsonData['query'] = query
             if "lang" in query.keys():
@@ -215,7 +215,7 @@ class RemoteApiHandler(ApiRequestHandler):
     # /book/Hymn+Lyrics+-+English
     # /book/Hymn+Lyrics+-+English/Amazing+Grace
     def processBookCommand(self, cmd):
-        CatalogUtil.loadLocalCatalog()
+        CatalogUtil.reloadLocalCatalog()
         if len(cmd) == 1:
             self.jsonData['data'] = [book for book in CatalogUtil.getBooks()]
             return
@@ -249,7 +249,7 @@ class RemoteApiHandler(ApiRequestHandler):
     # /lexicon
     # /lexicon/TBESG/G5
     def processLexiconCommand(self, cmd):
-        CatalogUtil.loadLocalCatalog()
+        CatalogUtil.reloadLocalCatalog()
         if len(cmd) == 1:
             self.jsonData['data'] = [lexicon for lexicon in LexiconData().lexiconList]
             return

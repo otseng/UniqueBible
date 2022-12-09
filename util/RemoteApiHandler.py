@@ -100,8 +100,13 @@ class RemoteApiHandler(ApiRequestHandler):
         if "?" in request:
             request = request.split("?")[0]
         self.jsonData['request'] = request
+        lang = "en"
         if query:
             self.jsonData['query'] = query
+            if "lang" in query.keys():
+                lang = query["lang"][0]
+                if os.path.exists('marvelData_' + lang):
+                    config.marvelData = 'marvelData_' + lang
         cmd = request[1:].split("/")
         if len(cmd) > 0:
             command = cmd[0].lower()
@@ -143,7 +148,7 @@ class RemoteApiHandler(ApiRequestHandler):
         if cmd[1].lower() == "bible":
             if cmd[2].lower() == "abbreviations":
                 lang = "eng"
-                if query:
+                if query and "lang" in query.keys():
                     lang = query["lang"][0]
                 data = []
                 for key, value in BibleBooks().abbrev[lang].items():

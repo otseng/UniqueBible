@@ -243,7 +243,8 @@ class RemoteApiHandler(ApiRequestHandler):
         elif len(cmd) < 4:
             self.sendError("Invalid Commentary command")
             return
-        data = Commentary(cmd[1]).getRawContent(cmd[2], cmd[3])
+        commentary = urllib.parse.unquote(cmd[1])
+        data = Commentary(commentary).getRawContent(cmd[2], cmd[3])
         self.jsonData['data'] = data if data else ("[Not found]",)
 
     # /lexicon

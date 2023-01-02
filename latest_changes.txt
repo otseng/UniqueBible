@@ -1,3 +1,6 @@
+Changes in 33.35:
+* Fix issue with commentary anchor
+
 Changes in 33.34:
 * terminal mode now accepts bible version entry
 

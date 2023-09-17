@@ -571,7 +571,6 @@ class ChatGPTAPI(QWidget):
 
     def predefinedContextBoxChanged(self, index):
         self.setUserInputFocus()
-        # self.userInput.setEnabled(True)
         config.chatGPTApiPredefinedContext = self.predefinedContextBox.currentText()
         desc = config.predefinedContexts[self.predefinedContextBox.currentText()]
         self.predefinedContextBox.setToolTip(desc)

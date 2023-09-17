@@ -425,6 +425,22 @@ class ChatGPTAPI(QWidget):
         promptLayout.addWidget(self.sendButton)
         promptLayout.addWidget(self.apiModels)
         layout000Rt.addLayout(promptLayout)
+
+        self.predefinedContextBox = QComboBox()
+        initialIndex = 0
+        index = 0
+        for key, value in config.predefinedContexts.items():
+            self.predefinedContextBox.addItem(key)
+            self.predefinedContextBox.setItemData(self.predefinedContextBox.count()-1, value, role=Qt.ToolTipRole)
+            if key == config.chatGPTApiPredefinedContext:
+                initialIndex = index
+            index += 1
+        self.predefinedContextBox.currentIndexChanged.connect(self.predefinedContextBoxChanged)
+        self.predefinedContextBox.setCurrentIndex(initialIndex)
+        predefinedSelectionLayout = QHBoxLayout()
+        predefinedSelectionLayout.addWidget(self.predefinedContextBox)
+        layout000Rt.addLayout(predefinedSelectionLayout)
+
         layout000Rt.addWidget(self.contentView)
         layout000Rt.addWidget(self.progressBar)
         self.progressBar.hide()
@@ -512,6 +528,13 @@ class ChatGPTAPI(QWidget):
         self.replaceInput.returnPressed.connect(self.replaceSelectedText)
 
         self.updateSearchToolTips()
+
+    def predefinedContextBoxChanged(self, index):
+        self.setUserInputFocus()
+        # self.userInput.setEnabled(True)
+        config.chatGPTApiPredefinedContext = self.predefinedContextBox.currentText()
+        desc = config.predefinedContexts[self.predefinedContextBox.currentText()]
+        self.predefinedContextBox.setToolTip(desc)
 
     def setFontSize(self, index=None):
         if index is not None:

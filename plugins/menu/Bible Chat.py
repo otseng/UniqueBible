@@ -1045,7 +1045,7 @@ Follow the following steps:
             self.multilineButtonClicked()
         if self.apiModel == 0:
             self.getResponse()
-        elif self.apiModel == 0:
+        elif self.apiModel == 1:
             self.getImage()
         elif self.apiModel == 2:
             if userInput:

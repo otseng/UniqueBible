@@ -2150,38 +2150,20 @@ class TextCommandParser:
         text = data[1]
         matches = re.findall(r" ([GH][0-9]*?) ", text)
 
-        highlightMapping = [(0, 0, "gray"),
-                            (1, 1, "red"),
-                            (2, 5, "orange"),
-                            (6, 10, "green"),
-                            (11, 10000, "white")]
+        highlightMapping = statisticsSqlite.loadHighlightMappingFile()
+
         for strongs in set(matches):
             frequency = statisticsSqlite.getFrequency(strongs)
             color = ""
             for map in highlightMapping:
-                if frequency >= map[0] and frequency <= map[1]:
-                    color = map[2]
+                if frequency >= int(map[0]) and frequency <= int(map[1]):
+                    if config.theme in ("dark", "night"):
+                        color = map[3]
+                    else:
+                        color = map[2]
             if color:
-                text = self.addHighlightTagToPreviousWord(text, strongs, color, frequency)
+                text = statisticsSqlite.addHighlightTagToPreviousWord(text, strongs, color, frequency)
         return (data[0], text, data[2])
-
-    def addHighlightTagToPreviousWord(self, text, searchWord, color, frequency):
-        searchWord = " " + searchWord + " "
-        startSearch = 0
-        while searchWord in text[startSearch:]:
-            end_ptr = text.find(searchWord, startSearch)
-            start_ptr = end_ptr - 1
-            while text[start_ptr] not in (' ', '>'):
-                start_ptr = start_ptr - 1
-                if start_ptr == 0:
-                    break
-            if start_ptr > 0:
-                start_ptr =start_ptr + 1
-            replaceWord = text[start_ptr:end_ptr].strip()
-            replace = '<span style="color: ' + color + '">' + replaceWord + ' <sub>' + str(frequency) + '</sub></span>'
-            text = text[:start_ptr] + replace + text[end_ptr:]
-            startSearch = end_ptr + len(replace)
-        return text
 
     # BIBLE:::
     def textBible(self, command, source):

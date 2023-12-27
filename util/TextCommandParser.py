@@ -4,6 +4,8 @@ import os, re, webbrowser, platform, zipfile, subprocess, config
 from prompt_toolkit.input import create_input
 from prompt_toolkit.keys import Keys
 from datetime import date
+
+from db.StatisticsSqlite import StatisticsSqlite
 from util.VlcUtil import VlcUtil
 from util.exlbl import allLocations, tc_location_names, sc_location_names
 from util.PluginEventHandler import PluginEventHandler
@@ -730,6 +732,12 @@ class TextCommandParser:
             # Feature - Open today's devotional entry
             # e.g. DEVOTIONAL:::Meyer
             """),
+            "highlightwordfrequency": (self.highlightWordFrequency, """
+            # [KEYWORD] HIGHLIGHTWORDFREQUENCY
+            # Feature - Highlights the words with Strongs numbers with the word frequency of a passage
+            # Usage - HIGHLIGHTWORDFREQUENCY:::[BIBLE_VERSION]:::[BIBLE_REFERENCE(S)]
+            # This will only highlight Bibles that contain Strongs numbers
+            """),
             #
             # Keywords starting with "_" are mainly internal commands for GUI operations
             # They are not recorded in history records.
@@ -1005,7 +1013,7 @@ class TextCommandParser:
                     command = command.strip()
                     if not command:
                         currentBibleReference = self.bcvToVerseReference(config.mainB, config.mainC, config.mainV)
-                        if keyword in ("bible", "study", "compare", "crossreference", "diff", "difference", "tske", "translation", "discourse", "words", "combo", "commentary", "index", "openversenote"):
+                        if keyword in ("bible", "study", "compare", "crossreference", "diff", "difference", "tske", "translation", "discourse", "words", "combo", "commentary", "index", "openversenote", "highlightwordfrequency"):
                             command = currentBibleReference
                             print(f"Running '{keyword}:::{command}' ...")
                         elif keyword in ("openbooknote",):
@@ -2131,6 +2139,49 @@ class TextCommandParser:
         if config.runMode == "terminal":
             config.terminalBibleParallels = False
             config.terminalBibleComparison = False
+
+    # HIGHLIGHTWORDFREQUENCY:::KJVx:::Matt 1
+    def highlightWordFrequency(self, command, source):
+        config.readFormattedBibles = False
+        statisticsSqlite = StatisticsSqlite()
+
+        data = self.textBible(command, source)
+
+        text = data[1]
+        matches = re.findall(r" ([GH][0-9]*?) ", text)
+
+        highlightMapping = [(0, 0, "gray"),
+                            (1, 1, "red"),
+                            (2, 5, "orange"),
+                            (6, 10, "green"),
+                            (11, 10000, "white")]
+        for strongs in set(matches):
+            frequency = statisticsSqlite.getFrequency(strongs)
+            color = ""
+            for map in highlightMapping:
+                if frequency >= map[0] and frequency <= map[1]:
+                    color = map[2]
+            if color:
+                text = self.addHighlightTagToPreviousWord(text, strongs, color, frequency)
+        return (data[0], text, data[2])
+
+    def addHighlightTagToPreviousWord(self, text, searchWord, color, frequency):
+        searchWord = " " + searchWord + " "
+        startSearch = 0
+        while searchWord in text[startSearch:]:
+            end_ptr = text.find(searchWord, startSearch)
+            start_ptr = end_ptr - 1
+            while text[start_ptr] not in (' ', '>'):
+                start_ptr = start_ptr - 1
+                if start_ptr == 0:
+                    break
+            if start_ptr > 0:
+                start_ptr =start_ptr + 1
+            replaceWord = text[start_ptr:end_ptr].strip()
+            replace = '<span style="color: ' + color + '">' + replaceWord + ' <sub>' + str(frequency) + '</sub></span>'
+            text = text[:start_ptr] + replace + text[end_ptr:]
+            startSearch = end_ptr + len(replace)
+        return text
 
     # BIBLE:::
     def textBible(self, command, source):

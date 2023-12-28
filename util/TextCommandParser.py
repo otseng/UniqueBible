@@ -732,10 +732,11 @@ class TextCommandParser:
             # Feature - Open today's devotional entry
             # e.g. DEVOTIONAL:::Meyer
             """),
-            "highlightwordfrequency": (self.highlightWordFrequency, """
-            # [KEYWORD] HIGHLIGHTWORDFREQUENCY
-            # Feature - Highlights the words with Strongs numbers with the word frequency of a passage
-            # Usage - HIGHLIGHTWORDFREQUENCY:::[BIBLE_VERSION]:::[BIBLE_REFERENCE(S)]
+            "displaywordfrequency": (self.displayWordFrequency, """
+            # [KEYWORD] DISPLAYWORDFREQUENCY
+            # Feature - Displays the word frequency for Bibles with Strongs numbers
+            # and highlights with different colors based on frequency
+            # Usage - DISPLAYWORDFREQUENCY:::[BIBLE_VERSION]:::[BIBLE_REFERENCE(S)]
             # This will only highlight Bibles that contain Strongs numbers
             """),
             #
@@ -1013,7 +1014,7 @@ class TextCommandParser:
                     command = command.strip()
                     if not command:
                         currentBibleReference = self.bcvToVerseReference(config.mainB, config.mainC, config.mainV)
-                        if keyword in ("bible", "study", "compare", "crossreference", "diff", "difference", "tske", "translation", "discourse", "words", "combo", "commentary", "index", "openversenote", "highlightwordfrequency"):
+                        if keyword in ("bible", "study", "compare", "crossreference", "diff", "difference", "tske", "translation", "discourse", "words", "combo", "commentary", "index", "openversenote", "displaywordfrequency"):
                             command = currentBibleReference
                             print(f"Running '{keyword}:::{command}' ...")
                         elif keyword in ("openbooknote",):
@@ -2140,17 +2141,23 @@ class TextCommandParser:
             config.terminalBibleParallels = False
             config.terminalBibleComparison = False
 
-    # HIGHLIGHTWORDFREQUENCY:::KJVx:::Matt 1
-    def highlightWordFrequency(self, command, source):
+    # DISPLAYWORDFREQUENCY:::KJVx:::Matt 1
+    # DISPLAYWORDFREQUENCY:::KJVx:::Matt 1:::custom
+    def displayWordFrequency(self, command, source):
+        customFile = "custom"
+        if command.count(":::") == 2:
+            texts, references, customFile = command.split(":::")
+        else:
+            texts, references = command.split(":::")
         config.readFormattedBibles = False
         statisticsSqlite = StatisticsWordsSqlite()
 
-        data = self.textBible(command, source)
+        data = self.textBible(f"{texts}:::{references}", source)
 
         text = data[1]
         matches = re.findall(r" ([GH][0-9]*?) ", text)
 
-        highlightMapping = statisticsSqlite.loadHighlightMappingFile()
+        highlightMapping = statisticsSqlite.loadHighlightMappingFile(customFile)
 
         for strongs in set(matches):
             frequency = statisticsSqlite.getFrequency(strongs)

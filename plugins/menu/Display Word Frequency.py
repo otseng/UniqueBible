@@ -16,4 +16,4 @@ if text[-1] not in ('+', '*', 'x'):
 
 book = BibleBooks.abbrev["eng"][str(config.mainB)][0]
 
-config.mainWindow.runTextCommand("HIGHLIGHTWORDFREQUENCY:::{0}:::{1} {2}".format(text, book, config.mainC))
+config.mainWindow.runTextCommand("DISPLAYWORDFREQUENCY:::{0}:::{1} {2}".format(text, book, config.mainC))

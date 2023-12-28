@@ -9,8 +9,7 @@ class StatisticsWordsSqlite:
 
     FILE_DIRECTORY = "statistics"
     FILE_NAME = "words.stats"
-    COLOR_MAPPING_FILE = "frequency_color_mapping.txt"
-    CUSTOM_COLOR_MAPPING_FILE = "frequency_color_mapping_custom.txt"
+    COLOR_MAPPING_FILE = "frequency_color_mapping"
     TABLE_NAME = "data"
     CREATE_TABLE = "CREATE TABLE IF NOT EXISTS {0} (Strongs NVARCHAR(6), Original NVARCHAR(50), Transliteration NVARCHAR(50), Frequency INT)".format(TABLE_NAME)
 
@@ -163,10 +162,12 @@ class StatisticsWordsSqlite:
             startSearch = end_ptr + len(replace)
         return text
 
-    def loadHighlightMappingFile(self):
-        mappingFilename = os.path.join(config.marvelData, self.FILE_DIRECTORY, self.CUSTOM_COLOR_MAPPING_FILE)
+    def loadHighlightMappingFile(self, customFile = "custom"):
+        filename = self.COLOR_MAPPING_FILE + "_" + customFile + ".txt"
+        mappingFilename = os.path.join(config.marvelData, self.FILE_DIRECTORY, filename)
         if not os.path.exists(mappingFilename):
-            mappingFilename = os.path.join(config.marvelData, self.FILE_DIRECTORY, self.COLOR_MAPPING_FILE)
+            filename = self.COLOR_MAPPING_FILE + ".txt"
+            mappingFilename = os.path.join(config.marvelData, self.FILE_DIRECTORY, filename)
 
         highlightMapping = []
         with open(mappingFilename) as f:

@@ -5,7 +5,7 @@ from prompt_toolkit.input import create_input
 from prompt_toolkit.keys import Keys
 from datetime import date
 
-from db.StatisticsSqlite import StatisticsSqlite
+from db.StatisticsWordsSqlite import StatisticsWordsSqlite
 from util.VlcUtil import VlcUtil
 from util.exlbl import allLocations, tc_location_names, sc_location_names
 from util.PluginEventHandler import PluginEventHandler
@@ -2143,7 +2143,7 @@ class TextCommandParser:
     # HIGHLIGHTWORDFREQUENCY:::KJVx:::Matt 1
     def highlightWordFrequency(self, command, source):
         config.readFormattedBibles = False
-        statisticsSqlite = StatisticsSqlite()
+        statisticsSqlite = StatisticsWordsSqlite()
 
         data = self.textBible(command, source)
 

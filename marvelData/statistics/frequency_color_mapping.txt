@@ -3,7 +3,6 @@
 # Mapping data:
 # start word frequency, end word frequency, light theme color, dark/night theme color
 
-0, 0, grey, grey
 1, 1, red, red
 2, 5, blue, orange
 6, 10, green, green

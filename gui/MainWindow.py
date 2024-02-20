@@ -1167,49 +1167,61 @@ config.mainWindow.audioPlayer.setAudioOutput(config.audioOutput)"""
 
     # install marvel data
     def installMarvelBibles(self):
-        items = [self.bibleInfo[bible][-1] for bible in self.bibleInfo.keys() if
-                 not os.path.isfile(os.path.join(*self.bibleInfo[bible][0])) or self.isNewerAvailable(
+        installAll = "Install ALL Bibles"
+        bibles = DatafileLocation.marvelBibles
+        if installAll in bibles:
+            del bibles[installAll]
+        items = [bible for bible in bibles.keys() if
+                 not os.path.isfile(os.path.join(os.getcwd(), *bibles[bible][0])) or self.isNewerAvailable(
                      self.bibleInfo[bible][0][-1])]
-        if not items:
+        if items:
+            bibles[installAll] = ""
+            items.append(installAll)
+        else:
             items = ["[All Installed]"]
         item, ok = QInputDialog.getItem(self, "UniqueBible",
                                         config.thisTranslation["menu8_bibles"], items, 0, False)
-        if ok and item and not item == "[All Installed]":
-            for key, value in self.bibleInfo.items():
-                if item == value[-1]:
-                    self.downloadHelper(self.bibleInfo[key])
-                    break
+        if ok and item and not item in ("[All Installed]", installAll):
+            self.downloadHelper(bibles[item])
+        elif item == installAll:
+            self.installAllMarvelFiles(bibles, installAll)
         self.reloadResources()
 
     def installMarvelCommentaries(self):
+        installAll = "Install ALL Commentaries"
         commentaries = DatafileLocation.marvelCommentaries
+        if installAll in commentaries:
+            del commentaries[installAll]
         items = [commentary for commentary in commentaries.keys() if
-                 not os.path.isfile(os.path.join(*commentaries[commentary][0]))]
+                 not os.path.isfile(os.path.join(os.getcwd(), *commentaries[commentary][0]))]
         if items:
-            commentaries["Install ALL Commentaries Listed Above"] = ""
-            items.append("Install ALL Commentaries Listed Above")
+            commentaries[installAll] = ""
+            items.append(installAll)
         else:
             items = ["[All Installed]"]
         item, ok = QInputDialog.getItem(self, "UniqueBible",
                                         config.thisTranslation["menu8_commentaries"], items, 0, False)
-        if ok and item and not item in ("[All Installed]", "Install ALL Commentaries Listed Above"):
+        if ok and item and not item in ("[All Installed]", installAll):
             self.downloadHelper(commentaries[item])
-        elif item == "Install ALL Commentaries Listed Above":
-            self.installAllMarvelCommentaries(commentaries)
+        elif item == installAll:
+            self.installAllMarvelFiles(commentaries, installAll)
+        self.reloadResources()
 
-    def installAllMarvelCommentaries(self, commentaries):
+    def installAllMarvelFiles(self, files, installAll):
         if config.isDownloading:
             self.displayMessage(config.thisTranslation["previousDownloadIncomplete"])
         else:
-            toBeInstalled = [commentary for commentary in commentaries.keys() if
-                             not commentary == "Install ALL Commentaries Listed Above" and not os.path.isfile(
-                                 os.path.join(*commentaries[commentary][0]))]
+            toBeInstalled = [file for file in files.keys() if
+                             not file == installAll and not os.path.isfile(
+                                 os.path.join(os.getcwd(), *files[file][0]))]
             self.displayMessage("{0}  {1}".format(config.thisTranslation["message_downloadAllFiles"],
                                                   config.thisTranslation["message_willBeNoticed"]))
-            for commentary in toBeInstalled:
-                databaseInfo = commentaries[commentary]
+            for file in toBeInstalled:
+                databaseInfo = files[file]
                 downloader = Downloader(self, databaseInfo)
+                print("Downloading " + file)
                 downloader.downloadFile(False)
+            print("Downloading complete")
             # self.displayMessage(config.thisTranslation["message_done"])
 
     def installMarvelDatasets(self):

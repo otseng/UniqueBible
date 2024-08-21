@@ -996,6 +996,7 @@ class TextCommandParser:
     def parser(self, textCommand, source="main"):
         commandList = self.splitCommand(textCommand)
         updateViewConfig, viewText, *_ = self.getViewConfig(source)
+        self.logger.debug("!!!0")
         if len(commandList) == 1:
             textCommand = textCommand.strip()
             if self.isDatabaseInstalled("bible"):
@@ -2193,6 +2194,7 @@ class TextCommandParser:
 
     # BIBLE:::
     def textBible(self, command, source):
+        self.logger.debug("!!!AA")
         if command.count(":::") == 0:
             if config.openBibleInMainViewOnly:
                 updateViewConfig, viewText, *_ = self.getViewConfig("main")

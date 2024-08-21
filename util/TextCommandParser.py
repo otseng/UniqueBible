@@ -1169,7 +1169,10 @@ class TextCommandParser:
         if keyword in self.databaseInfo():
             self.logger.debug("!!!!Y")
             fileItems = self.databaseInfo()[keyword][0]
+            self.logger.debug("!!!!Y1")
+            self.logger.debug(fileItems)
             self.logger.debug(*fileItems)
+            self.logger.debug("!!!!Y2")
             if os.path.isfile(os.path.join(*fileItems)):
                 return True
             else:

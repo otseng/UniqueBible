@@ -1165,8 +1165,11 @@ class TextCommandParser:
             return ""
 
     def isDatabaseInstalled(self, keyword):
+        self.logger.debug("!!!!X")
         if keyword in self.databaseInfo():
+            self.logger.debug("!!!!Y")
             fileItems = self.databaseInfo()[keyword][0]
+            self.logger.debug(*fileItems)
             if os.path.isfile(os.path.join(*fileItems)):
                 return True
             else:

@@ -1,6 +1,6 @@
 # coding=utf-8
 import glob, pprint, traceback, pydoc, threading, asyncio, shutil
-import os, re, webbrowser, platform, zipfile, subprocess, config
+import os, re, webbrowser, platform, zipfile, subprocess, config, logging
 from prompt_toolkit.input import create_input
 from prompt_toolkit.keys import Keys
 from datetime import date
@@ -63,6 +63,7 @@ class TextCommandParser:
 
     def __init__(self, parent):
         self.parent = parent
+        self.logger = logging.getLogger('uba')
         self.lastKeyword = None
         self.cliTtsProcess = None
         self.qtTtsEngine = None
@@ -2201,12 +2202,14 @@ class TextCommandParser:
         texts, references = self.splitCommand(command)
         texts = self.getConfirmedTexts(texts)
         marvelBibles = self.getMarvelBibles()
+        self.logger.debug("!!!A")
         if not texts:
             return self.invalidCommand()
         else:
             self.cancelBibleParallels()
             text = texts[0]
             if text in marvelBibles:
+                self.logger.debug("!!!B")
                 fileItems = marvelBibles[text][0]
                 if os.path.isfile(os.path.join(*fileItems)):
                     return self.textBibleVerseParser(references, text, source)
@@ -2215,6 +2218,7 @@ class TextCommandParser:
                     self.parent.downloadHelper(databaseInfo)
                     return ("", "", {})
             else:
+                self.logger.debug("!!!C")
                 return self.textBibleVerseParser(references, text, source)
 
     # TEXT:::

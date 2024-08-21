@@ -1012,6 +1012,7 @@ class TextCommandParser:
             if config.runMode == "terminal" and keyword in config.mainWindow.unsupportedCommands:
                 return ("study", f"{keyword}::: command is currently not supported in terminal mode.", {})
             if keyword in self.interpreters:
+                self.logger.debug("!!!1")
                 if self.isDatabaseInstalled(keyword):
                     command = command.strip()
                     if not command:
@@ -1028,14 +1029,19 @@ class TextCommandParser:
                         elif not keyword in ("_mastercontrol", "_paste", "_commentaries", "commentary2", "_comparison", "_menu", "import", "_setconfig", "openjournal", "editjournal", "searchjournal", "searchbooknote", "searchchapternote", "searchversenote", "_openbooknote", "_openchapternote", "_openversenote", "_editbooknote", "_editchapternote", "_editversenote", "_vnsc", "_vndc"):
                             return self.textWhatIs(keyword, source)
                     self.lastKeyword = keyword
+                    self.logger.debug("!!!2")
                     return self.interpreters[keyword][0](command, source)
                 else:
+                    self.logger.debug("!!!3")
                     return self.databaseNotInstalled(keyword)
             else:
+                self.logger.debug("!!!4")
                 if self.isDatabaseInstalled("bible"):
+                    self.logger.debug("!!!5")
                     self.lastKeyword = "bible"
                     return self.textBibleVerseParser(textCommand, viewText, source)
                 else:
+                    self.logger.debug("!!!6")
                     return self.databaseNotInstalled("bible")
 
     # check if a particular database is installed

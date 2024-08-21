@@ -2212,13 +2212,14 @@ class TextCommandParser:
                 self.logger.debug("!!!B")
                 fileItems = marvelBibles[text][0]
                 if os.path.isfile(os.path.join(*fileItems)):
+                    self.logger.debug("!!!C")
                     return self.textBibleVerseParser(references, text, source)
                 else:
+                    self.logger.debug("!!!D")
                     databaseInfo = marvelBibles[text]
                     self.parent.downloadHelper(databaseInfo)
                     return ("", "", {})
             else:
-                self.logger.debug("!!!C")
                 return self.textBibleVerseParser(references, text, source)
 
     # TEXT:::

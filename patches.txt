@@ -1396,7 +1396,6 @@
 (35.31, "file", "util/RemoteApiHandler.py")
 (35.31, "file", "util/RemoteHttpHandler.py")
 (35.31, "file", "util/TextCommandParser.py")
-(35.31, "file", "util/LexicalData.py")
 (35.31, "file", ".gitignore")
 (35.31, "file", "UniqueBibleAppVersion.txt")
 (35.31, "file", "latest_changes.txt")

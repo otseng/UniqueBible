@@ -996,7 +996,6 @@ class TextCommandParser:
     def parser(self, textCommand, source="main"):
         commandList = self.splitCommand(textCommand)
         updateViewConfig, viewText, *_ = self.getViewConfig(source)
-        self.logger.debug("!!!0")
         if len(commandList) == 1:
             textCommand = textCommand.strip()
             if self.isDatabaseInstalled("bible"):
@@ -1012,7 +1011,6 @@ class TextCommandParser:
             if config.runMode == "terminal" and keyword in config.mainWindow.unsupportedCommands:
                 return ("study", f"{keyword}::: command is currently not supported in terminal mode.", {})
             if keyword in self.interpreters:
-                self.logger.debug("!!!1")
                 if self.isDatabaseInstalled(keyword):
                     command = command.strip()
                     if not command:
@@ -1029,19 +1027,14 @@ class TextCommandParser:
                         elif not keyword in ("_mastercontrol", "_paste", "_commentaries", "commentary2", "_comparison", "_menu", "import", "_setconfig", "openjournal", "editjournal", "searchjournal", "searchbooknote", "searchchapternote", "searchversenote", "_openbooknote", "_openchapternote", "_openversenote", "_editbooknote", "_editchapternote", "_editversenote", "_vnsc", "_vndc"):
                             return self.textWhatIs(keyword, source)
                     self.lastKeyword = keyword
-                    self.logger.debug("!!!2")
                     return self.interpreters[keyword][0](command, source)
                 else:
-                    self.logger.debug("!!!3")
                     return self.databaseNotInstalled(keyword)
             else:
-                self.logger.debug("!!!4")
                 if self.isDatabaseInstalled("bible"):
-                    self.logger.debug("!!!5")
                     self.lastKeyword = "bible"
                     return self.textBibleVerseParser(textCommand, viewText, source)
                 else:
-                    self.logger.debug("!!!6")
                     return self.databaseNotInstalled("bible")
 
     # check if a particular database is installed
@@ -1165,14 +1158,8 @@ class TextCommandParser:
             return ""
 
     def isDatabaseInstalled(self, keyword):
-        self.logger.debug("!!!!X")
         if keyword in self.databaseInfo():
-            self.logger.debug("!!!!Y")
             fileItems = self.databaseInfo()[keyword][0]
-            self.logger.debug("!!!!Y1")
-            self.logger.debug(fileItems)
-            self.logger.debug(*fileItems)
-            self.logger.debug("!!!!Y2")
             if os.path.isfile(os.path.join(*fileItems)):
                 return True
             else:
@@ -2206,7 +2193,6 @@ class TextCommandParser:
 
     # BIBLE:::
     def textBible(self, command, source):
-        self.logger.debug("!!!AA")
         if command.count(":::") == 0:
             if config.openBibleInMainViewOnly:
                 updateViewConfig, viewText, *_ = self.getViewConfig("main")
@@ -2216,20 +2202,16 @@ class TextCommandParser:
         texts, references = self.splitCommand(command)
         texts = self.getConfirmedTexts(texts)
         marvelBibles = self.getMarvelBibles()
-        self.logger.debug("!!!A")
         if not texts:
             return self.invalidCommand()
         else:
             self.cancelBibleParallels()
             text = texts[0]
             if text in marvelBibles:
-                self.logger.debug("!!!B")
                 fileItems = marvelBibles[text][0]
                 if os.path.isfile(os.path.join(*fileItems)):
-                    self.logger.debug("!!!C")
                     return self.textBibleVerseParser(references, text, source)
                 else:
-                    self.logger.debug("!!!D")
                     databaseInfo = marvelBibles[text]
                     self.parent.downloadHelper(databaseInfo)
                     return ("", "", {})

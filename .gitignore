@@ -120,3 +120,4 @@ google-cloud-key.json
 audio/*.onnx
 audio/*.json
 *.out
+*.pid

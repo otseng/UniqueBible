@@ -1,1 +1,2 @@
-print("testing")
+def test_dummy():
+    pass

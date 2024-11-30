@@ -1781,6 +1781,11 @@ class ConfigUtil:
         """,
         False)
 
+        setConfig("overrideCompareToUseAllTexts", """
+        # Override verse comparison to compare all Bible texts instead of favourite texts
+        """,
+        False)
+
         patFile = os.path.join("secrets", "github", "pat.txt")
         if os.path.exists(patFile):
             with open(patFile) as file:

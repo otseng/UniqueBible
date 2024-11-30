@@ -2673,7 +2673,10 @@ class TextCommandParser:
     # COMPARE:::
     def textCompare(self, command, source):
         if command.count(":::") == 0:
-            confirmedTexts = self.getAllFavouriteBibles()
+            if config.overrideCompareToUseAllTexts:
+                confirmedTexts = ["ALL"]
+            else:
+                confirmedTexts = self.getAllFavouriteBibles()
             verseList = self.extractAllVerses(command)
         else:
             texts, references = self.splitCommand(command)
@@ -2689,9 +2692,11 @@ class TextCommandParser:
             config.mainCssBibleFontStyle = ""
             texts = confirmedTexts
             if confirmedTexts == ["ALL"]:
-                #plainBibleList, formattedBibleList = biblesSqlite.getTwoBibleLists()
-                #texts = set(plainBibleList + formattedBibleList)
-                texts = self.getAllFavouriteBibles()
+                if config.overrideCompareToUseAllTexts:
+                    plainBibleList, formattedBibleList = biblesSqlite.getTwoBibleLists()
+                    texts = set(plainBibleList + formattedBibleList)
+                else:
+                    texts = self.getAllFavouriteBibles()
             for text in texts:
                 (fontFile, fontSize, css) = Bible(text).getFontInfo()
                 config.mainCssBibleFontStyle += css

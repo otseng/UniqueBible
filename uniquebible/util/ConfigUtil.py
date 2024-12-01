@@ -167,7 +167,7 @@ class ConfigUtil:
         # Check installed and latest versions on startup.""",
         True)
 
-        # UBA Web API
+        # UBA Web API (work with GUI)
         setConfig("uniquebible_api_endpoint", """
         # UBA Web API server API endpoint""",
         "https://bible.gospelchurch.uk/html")
@@ -176,6 +176,18 @@ class ConfigUtil:
         10)
         setConfig("uniquebible_api_private", """
         # UBA Web API server API key to access private data""",
+        "")
+
+        # UBA Web API (work with API client mode on console)
+        # Start of api-client mode setting
+        setConfig("web_api_endpoint", """
+        # UniqueBible App web API endpoint.""",
+        "https://bible.gospelchurch.uk/plain")
+        setConfig("web_api_timeout", """
+        # UniqueBible App web API timeout.""",
+        10)
+        setConfig("web_api_private", """
+        # UniqueBible App web API private key.""",
         "")
 
         # start of groq chat setting
@@ -193,6 +205,10 @@ class ConfigUtil:
         # config.mistralApi_llmTemperature
         # config.mistralApi_chat_model
         # config.mistralApi_chat_model_max_tokens
+        # config.grokApi_key
+        # config.grokApi_llmTemperature
+        # config.grokApi_chat_model
+        # config.grokApi_chat_model_max_tokens
         # config.openaiApi_key
         # config.openaiApi_llmTemperature
         # config.openaiApi_chat_model
@@ -270,6 +286,19 @@ class ConfigUtil:
         setConfig("groqApi_llmTemperature", """
         # Groq Chat Temperature""",
         0.3) # 0.2-0.8 is good to use
+        setConfig("grokApi_key", """
+        # Grok X AI API Keys""",
+        "")
+        setConfig("grokApi_chat_model", """
+        # Grok X AI Chat Model""",
+        "grok-beta")
+        setConfig("grokApi_chat_model_max_tokens", """
+        # Grok X AI Chat Maximum Output Tokens""",
+        127999) # maximum 127999, greater than this value causes errors
+        setConfig("grokApi_llmTemperature", """
+        # Grok X AI Chat Temperature""",
+        0.3)
+        # mistral
         setConfig("mistralApi_key", """
         # Mistral AI API Keys""",
         "")
@@ -312,17 +341,6 @@ class ConfigUtil:
         # `BIBLE:::` is always the default command when no command keyword is specified.
         # When there is no bible reference found in the entry, after trying with the default command, the original command will be prefixed with the value of `config.secondDefaultCommand` and executed with it.""",
         "REGEXSEARCH:::")
-
-        # Start of api-client mode setting
-        setConfig("web_api_endpoint", """
-        # UniqueBible App web API endpoint.""",
-        "https://bible.gospelchurch.uk/plain")
-        setConfig("web_api_timeout", """
-        # UniqueBible App web API timeout.""",
-        10)
-        setConfig("web_api_private", """
-        # UniqueBible App web API private key.""",
-        "")
 
         # Start of terminal mode setting
         setConfig("terminalWrapWords", """

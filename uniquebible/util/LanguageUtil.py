@@ -1,19 +1,19 @@
 import glob, importlib, locale, sys
+import os
+
 from uniquebible import config
 from os import path
 from uniquebible.util.Languages import Languages
 from uniquebible.util.Translator import Translator
 from uniquebible.util.FileUtil import FileUtil
 
-# config.updateModules("Ibmwatson", True)
-
 
 class LanguageUtil:
 
     @staticmethod
     def getCodesSupportedLanguages():
-        files = sorted(glob.glob("lang/language_*.py"))
-        return [file[14:-3] for file in files]
+        files = sorted(glob.glob("uniquebible/lang/language_*.py"))
+        return [file[26:-3] for file in files]
 
     @staticmethod
     def getNamesSupportedLanguages():
@@ -68,7 +68,7 @@ class LanguageUtil:
 
     @staticmethod
     def createNewLanguageFile(lang, force=False):
-        filename = "lang/language_" + lang + ".py"
+        filename = "uniquebible/lang/language_" + lang + ".py"
         if not force and path.exists(filename):
             print(filename + " already exists")
         else:
@@ -233,5 +233,5 @@ if __name__ == "__main__":
         except Exception as e:
             print("Error executing: " + str(e))
     else:
-        # printCodesSupportedLanguages()
+        os.chdir("/Users/otseng/dev/UniqueBible_otseng/")
         addLanguageStringToAllFiles("overrideCompareToUseAllTexts", "Override verse comparison to compare all Bible texts instead of favourite texts")

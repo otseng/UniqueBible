@@ -146,8 +146,7 @@ class ConfigFlagsWindow(QDialog):
             ("refreshWindowsAfterSavingNote", config.refreshWindowsAfterSavingNote, self.refreshWindowsAfterSavingNoteChanged, True, config.thisTranslation["refreshWindowsAfterSavingNote"]),
             ("limitWorkspaceFilenameLength", config.limitWorkspaceFilenameLength, self.limitWorkspaceFilenameLengthChanged, True, config.thisTranslation["limitWorkspaceFilenameLength"]),
             ("enableHttpRemoteErrorRedirection", config.enableHttpRemoteErrorRedirection, self.enableHttpRemoteErrorRedirection, False, config.thisTranslation["enableHttpRemoteErrorRedirection"]),
-            ("overrideCompareToUseAllTexts", config.overrideCompareToUseAllTexts,
-             self.overrideCompareToUseAllTexts, False, "Override verse comparison to compare all Bible texts instead of favourite texts"),
+            ("overrideCompareToUseAllTexts", config.overrideCompareToUseAllTexts, self.overrideCompareToUseAllTexts, False,  config.thisTranslation["overrideCompareToUseAllTexts"]),
         ]
         if ("OfflineTts" in config.enabled):
             options += [

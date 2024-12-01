@@ -1166,7 +1166,7 @@ class WebEngineView(QWebEngineView):
     # Translate selected words into user-defined language
     def translateTextIntoUserLanguage(self, text, userLanguage="en"):
         translator = Translator()
-        translation = translator.translate(text, None, userLanguage)
+        translation = translator.translate(text, "auto", userLanguage)
         self.openPopover(html=translation)
 
     # TEXT-TO-SPEECH feature

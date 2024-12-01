@@ -2552,7 +2552,7 @@ class TextCommandParser:
         return ("", "", {})
 
     # TRANSLATE:::
-    # e.g. TRANSLATE:::神, TRANSLATE:::dios
+    # e.g. TRANSLATE:::神, TRANSLATE:::dios, TRANSLATE:::en-zh:::jesus christ
     def translateText(self, command, source):
         translator = Translator()
         languages = Languages().code
@@ -2579,7 +2579,6 @@ class TextCommandParser:
                     fromLanguage = "en"
                 if not toLanguage in Translator.toLanguageCodes:
                     toLanguage = "en"
-        # translate here
         translation = translator.translate(text, fromLanguage, toLanguage)
         if self.parent is not None:
             self.parent.displayMessage(translation)

@@ -12,8 +12,8 @@ class LanguageUtil:
 
     @staticmethod
     def getCodesSupportedLanguages():
-        files = sorted(glob.glob("uniquebible/lang/language_*.py"))
-        return [file[26:-3] for file in files]
+        files = sorted(os.path.basename(file) for file in glob.glob(config.packageDir + "/lang/language_*.py"))
+        return [file[9:-3] for file in files]
 
     @staticmethod
     def getNamesSupportedLanguages():
@@ -233,5 +233,4 @@ if __name__ == "__main__":
         except Exception as e:
             print("Error executing: " + str(e))
     else:
-        os.chdir("/Users/otseng/dev/UniqueBible_otseng/")
         addLanguageStringToAllFiles("overrideCompareToUseAllTexts", "Override verse comparison to compare all Bible texts instead of favourite texts")

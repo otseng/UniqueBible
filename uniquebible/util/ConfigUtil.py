@@ -1786,6 +1786,16 @@ class ConfigUtil:
         """,
         False)
 
+        setConfig("translate_api_url", """
+        # Translation service API URL
+        """,
+        "https://libretranslate.com")
+
+        setConfig("translate_api_key", """
+        # Translation service API key
+        """,
+          "")
+
         patFile = os.path.join("secrets", "github", "pat.txt")
         if os.path.exists(patFile):
             with open(patFile) as file:

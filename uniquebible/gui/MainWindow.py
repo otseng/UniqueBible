@@ -1156,10 +1156,6 @@ config.mainWindow.audioPlayer.setAudioOutput(config.audioOutput)"""
     def installMarvelBibles(self):
         installAll = "Install ALL Bibles"
         bibles = DatafileLocation.marvelBibles
-        for bible in bibles.keys():
-            file = os.path.join(os.getcwd(), *bibles[bible][0])
-            newerFlag =  self.isNewerAvailable(self.bibleInfo[bible][0][-1])
-            pass
         items = [bible for bible in bibles.keys() if
                  not os.path.isfile(os.path.join(os.getcwd(), *bibles[bible][0])) or self.isNewerAvailable(
                      self.bibleInfo[bible][0][-1])]

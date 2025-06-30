@@ -44,7 +44,6 @@ class JEPDSqlite:
         verse = ''
         start = ''
         end = ''
-        print(f">>> {line}")
         if "-" not in line:
             values = line.split(":")
             chapter = values[0]
@@ -53,13 +52,22 @@ class JEPDSqlite:
         else:
             values = line.split("-")
             passageStart = values[0]
-            passageEnd = values[1]
-            if ":" not in passageEnd:
+            verseEnd = values[1]
+            if ":" not in verseEnd:
                 values = passageStart.split(":")
                 chapter = values[0]
-                verse = values[1]
-                print(line)
-                print(f"{book} {chapter} {verse} {start} {end} {source}")
+                verseStart = values[1]
+                for verse in range(int(verseStart), int(verseEnd)+1):
+                    # self.insertMapping(book, chapter, verse, start, end, source)
+                    pass
+            else:
+                # 2:4.6 - 2:25.99
+                # 21:1.1-21:1.6
+                # 46:5.5-46:5.99
+                print(f">>> {line}")
+                values = line.split("-")
+                passageStart = values[0]
+                passageEnd = values[1]
 
     def loadData(self):
         data = JEPDData.jepd

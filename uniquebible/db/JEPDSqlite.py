@@ -1,7 +1,7 @@
 import os, apsw, re
 from uniquebible import config
-from uniquebible.util.BibleVerseParser import BibleVerseParser
 import JEPDData
+from uniquebible.util.BibleBooks import BibleBooks
 
 class JEPDSqlite:
 
@@ -34,15 +34,21 @@ class JEPDSqlite:
         delete = "DELETE FROM Mapping"
         self.cursor.execute(delete)
 
-    def insertMapping(self, b, c, v, start, end, source):
-        print(f"Inserting {b},{c},{v},{start},{end},{source}")
-        # insert = "INSERT INTO Mapping (Book, Chapter, Verse, Start, End, Source) VALUES (?, ?, ?, ?, ?, ?)"
-        # self.cursor.execute(insert, (b, c, v, start, end, source))
+    def getVerse(self, b, c, v):
+        query = "SELECT Book, Chapter, Verse, Start, End, Source FROM Mapping WHERE Book=? AND Chapter=? AND Verse=? ORDER BY Start"
+        self.cursor.execute(query, (b, c, v))
+        return self.cursor.fetchall()
+
+    def insertMapping(self, b, c, v, start, end, source, printLine=False):
+        if printLine:
+            print(f"Inserting {b},{c},{v},{start},{end},{source}")
+        insert = "INSERT INTO Mapping (Book, Chapter, Verse, Start, End, Source) VALUES (?, ?, ?, ?, ?, ?)"
+        self.cursor.execute(insert, (b, c, v, start, end, source))
 
     def processLine(self, book, line, source):
         start = ''
         end = ''
-        print(f">>>>> {line}")
+        # print(f">>>>> {line}")
         if "-" not in line:
             # 31:49
             values = line.split(":")
@@ -67,32 +73,50 @@ class JEPDSqlite:
                     passageEnd = values[1]
                     values = passageStart.split(":")
                     chapterStart = int(values[0])
-                    values = values[1].split(".")
-                    verseStart = int(values[0])
-                    chunkStart = int(values[1])
-                    values = passageEnd.split(":")
-                    values = values[1].split(".")
-                    verseEnd = int(values[0])
-                    chunkEnd = int(values[1])
-                    if verseStart == verseEnd:
-                        # 21:1.1-21:1.6
-                        # 46:5.5-46:5.99
-                        self.insertMapping(book, chapterStart, verseStart, chunkStart, chunkEnd, source)
+                    if "." not in values[1]:
+                        verseStart = int(values[1])
+                        values = passageEnd.split(":")
+                        chapterEnd = int(values[0])
+                        verseEnd = int(values[1])
+                        if chapterStart == chapterEnd:
+                            # 41:1-41:45
+                            for verse in range(int(verseStart), int(verseEnd) + 1):
+                                self.insertMapping(book, chapterStart, verse, start, end, source)
+                        else:
+                            # 12:1-26:15
+                            for chapter in range(chapterStart, chapterEnd):
+                                verseCount = BibleBooks.verses[int(book)][chapter]
+                                for verse in range(1, verseCount):
+                                    self.insertMapping(book, chapter, verse, '', '', source)
+                            for verse in range(1, verseEnd+1):
+                                self.insertMapping(book, chapterEnd, verse, '', '', source)
                     else:
-                        # 12:1.1-12:4.9
-                        # 2:4.6 - 2:25.99
-                        if chunkStart == 1:
-                            self.insertMapping(book, chapterStart, verseStart, '', '', source)
+                        values = values[1].split(".")
+                        verseStart = int(values[0])
+                        chunkStart = int(values[1])
+                        values = passageEnd.split(":")
+                        values = values[1].split(".")
+                        verseEnd = int(values[0])
+                        chunkEnd = int(values[1])
+                        if verseStart == verseEnd:
+                            # 21:1.1-21:1.6
+                            # 46:5.5-46:5.99
+                            self.insertMapping(book, chapterStart, verseStart, chunkStart, chunkEnd, source)
                         else:
-                            self.insertMapping(book, chapterStart, verseStart, chunkStart, 99, source)
-                        for verse in range(verseStart+1, verseEnd):
-                            self.insertMapping(book, chapterStart, verse, '', '', source)
-                        if chunkEnd == 99:
-                            self.insertMapping(book, chapterStart, verseEnd, '', '', source)
-                        else:
-                            self.insertMapping(book, chapterStart, verseEnd, 1, chunkEnd, source)
-                except:
-                    print("!!!!!!!!!!!")
+                            # 12:1.1-12:4.9
+                            # 2:4.6 - 2:25.99
+                            if chunkStart == 1:
+                                self.insertMapping(book, chapterStart, verseStart, '', '', source)
+                            else:
+                                self.insertMapping(book, chapterStart, verseStart, chunkStart, 99, source)
+                            for verse in range(verseStart+1, verseEnd):
+                                self.insertMapping(book, chapterStart, verse, '', '', source)
+                            if chunkEnd == 99:
+                                self.insertMapping(book, chapterStart, verseEnd, '', '', source)
+                            else:
+                                self.insertMapping(book, chapterStart, verseEnd, 1, chunkEnd, source)
+                except Exception as ex:
+                    print(ex)
                     print(f"Cannot process {line}")
 
 
@@ -111,6 +135,10 @@ class JEPDSqlite:
 
 if __name__ == "__main__":
     jepd = JEPDSqlite()
-    jepd.deleteAll()
-    jepd.loadData()
 
+    # jepd.deleteAll()
+    # jepd.loadData()
+
+    data = [(5, 34, 7), (5, 12, 1), (5, 26, 15), (4, 16, 27), (1, 2, 4)]
+    for test in data:
+        print(jepd.getVerse(*test))

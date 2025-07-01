@@ -35,39 +35,66 @@ class JEPDSqlite:
         self.cursor.execute(delete)
 
     def insertMapping(self, b, c, v, start, end, source):
-        print(f"Inserting {b}, {c}, {v}, {start}, {end}, {source}")
+        print(f"Inserting {b},{c},{v},{start},{end},{source}")
         # insert = "INSERT INTO Mapping (Book, Chapter, Verse, Start, End, Source) VALUES (?, ?, ?, ?, ?, ?)"
         # self.cursor.execute(insert, (b, c, v, start, end, source))
 
     def processLine(self, book, line, source):
-        chapter = ''
-        verse = ''
         start = ''
         end = ''
+        print(f">>>>> {line}")
         if "-" not in line:
+            # 31:49
             values = line.split(":")
-            chapter = values[0]
-            verse = values[1]
-            # self.insertMapping(book, chapter, verse, start, end, source)
+            chapter = int(values[0])
+            verse = int(values[1])
+            self.insertMapping(book, chapter, verse, start, end, source)
         else:
             values = line.split("-")
             passageStart = values[0]
             verseEnd = values[1]
             if ":" not in verseEnd:
+                # 50:1-11
                 values = passageStart.split(":")
-                chapter = values[0]
+                chapter = int(values[0])
                 verseStart = values[1]
                 for verse in range(int(verseStart), int(verseEnd)+1):
-                    # self.insertMapping(book, chapter, verse, start, end, source)
-                    pass
+                    self.insertMapping(book, chapter, verse, start, end, source)
             else:
-                # 2:4.6 - 2:25.99
-                # 21:1.1-21:1.6
-                # 46:5.5-46:5.99
-                print(f">>> {line}")
-                values = line.split("-")
-                passageStart = values[0]
-                passageEnd = values[1]
+                try:
+                    values = line.split("-")
+                    passageStart = values[0]
+                    passageEnd = values[1]
+                    values = passageStart.split(":")
+                    chapterStart = int(values[0])
+                    values = values[1].split(".")
+                    verseStart = int(values[0])
+                    chunkStart = int(values[1])
+                    values = passageEnd.split(":")
+                    values = values[1].split(".")
+                    verseEnd = int(values[0])
+                    chunkEnd = int(values[1])
+                    if verseStart == verseEnd:
+                        # 21:1.1-21:1.6
+                        # 46:5.5-46:5.99
+                        self.insertMapping(book, chapterStart, verseStart, chunkStart, chunkEnd, source)
+                    else:
+                        # 12:1.1-12:4.9
+                        # 2:4.6 - 2:25.99
+                        if chunkStart == 1:
+                            self.insertMapping(book, chapterStart, verseStart, '', '', source)
+                        else:
+                            self.insertMapping(book, chapterStart, verseStart, chunkStart, 99, source)
+                        for verse in range(verseStart+1, verseEnd):
+                            self.insertMapping(book, chapterStart, verse, '', '', source)
+                        if chunkEnd == 99:
+                            self.insertMapping(book, chapterStart, verseEnd, '', '', source)
+                        else:
+                            self.insertMapping(book, chapterStart, verseEnd, 1, chunkEnd, source)
+                except:
+                    print("!!!!!!!!!!!")
+                    print(f"Cannot process {line}")
+
 
     def loadData(self):
         data = JEPDData.jepd

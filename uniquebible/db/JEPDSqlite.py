@@ -1,11 +1,12 @@
 import os, apsw, re
 from uniquebible import config
-import JEPDData
+from uniquebible.db import JEPDData
 from uniquebible.util.BibleBooks import BibleBooks
 
 class JEPDSqlite:
 
     CREATE_MAPPING_TABLE = "CREATE TABLE IF NOT EXISTS Mapping (Book INT, Chapter INT, Verse INT, Start INT, End INT, Source NVARCHAR(5))"
+    CREATE_VERSES_TABLE = "CREATE TABLE IF NOT EXISTS Verses (Book INT, Chapter INT, Verse INT, Start INT, End INT, Source NVARCHAR(5), Bible NVARCHAR(20), Scripture TEXT)"
 
     def __init__(self):
         self.filename = os.path.join(config.marvelData, "JEPD.sqlite")
@@ -13,6 +14,8 @@ class JEPDSqlite:
         self.cursor = self.connection.cursor()
         if not self.checkTableExists("Mapping"):
             self.createMappingTable()
+        if not self.checkTableExists("Verses"):
+            self.createVersesTable()
 
     def __del__(self):
         try:
@@ -23,6 +26,9 @@ class JEPDSqlite:
     def createMappingTable(self):
         self.cursor.execute(JEPDSqlite.CREATE_MAPPING_TABLE)
 
+    def createVersesTable(self):
+        self.cursor.execute(JEPDSqlite.CREATE_VERSES_TABLE)
+
     def checkTableExists(self, tablename):
         self.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{tablename}'")
         if self.cursor.fetchone():
@@ -30,11 +36,15 @@ class JEPDSqlite:
         else:
             return False
 
-    def deleteAll(self):
-        delete = "DELETE FROM Mapping"
+    def deleteAll(self, table):
+        delete = f"DELETE FROM {table}"
         self.cursor.execute(delete)
 
-    def getVerse(self, b, c, v):
+    def deleteBibleFromVerses(self, bible):
+        delete = f"DELETE FROM Verses where Bible=?"
+        self.cursor.execute(delete, (bible,))
+
+    def getMapping(self, b, c, v):
         query = "SELECT Book, Chapter, Verse, Start, End, Source FROM Mapping WHERE Book=? AND Chapter=? AND Verse=? ORDER BY Start"
         self.cursor.execute(query, (b, c, v))
         return self.cursor.fetchall()
@@ -42,8 +52,21 @@ class JEPDSqlite:
     def insertMapping(self, b, c, v, start, end, source, printLine=False):
         if printLine:
             print(f"Inserting {b},{c},{v},{start},{end},{source}")
-        insert = "INSERT INTO Mapping (Book, Chapter, Verse, Start, End, Source) VALUES (?, ?, ?, ?, ?, ?)"
-        self.cursor.execute(insert, (b, c, v, start, end, source))
+        else:
+            insert = "INSERT INTO Mapping (Book, Chapter, Verse, Start, End, Source) VALUES (?, ?, ?, ?, ?, ?)"
+            self.cursor.execute(insert, (b, c, v, start, end, source))
+
+    def getVerses(self, b, c, v, bible):
+        query = "SELECT Book, Chapter, Verse, Start, End, Source, Scripture FROM Verses WHERE Book=? AND Chapter=? AND Verse=? AND Bible=? ORDER BY Start"
+        self.cursor.execute(query, (b, c, v, bible))
+        return self.cursor.fetchall()
+
+    def insertVerse(self, b, c, v, start, end, source, bible, scripture, printLine=False):
+        if printLine:
+            print(f"Inserting {b},{c},{v},{start},{end},{source},{bible},{scripture}")
+        else:
+            insert = "INSERT INTO Verses (Book, Chapter, Verse, Start, End, Source, Bible, Scripture) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            self.cursor.execute(insert, (b, c, v, start, end, source, bible, scripture))
 
     def processLine(self, book, line, source):
         start = ''
@@ -120,7 +143,7 @@ class JEPDSqlite:
                     print(f"Cannot process {line}")
 
 
-    def loadData(self):
+    def loadMappingData(self):
         data = JEPDData.jepd
 
         for book, bookData in data.items():
@@ -136,9 +159,11 @@ class JEPDSqlite:
 if __name__ == "__main__":
     jepd = JEPDSqlite()
 
-    # jepd.deleteAll()
-    # jepd.loadData()
+    # Step 1 - Create the mapping database
+    jepd.deleteAll("Mapping")
+    jepd.loadMappingData()
 
-    data = [(5, 34, 7), (5, 12, 1), (5, 26, 15), (4, 16, 27), (1, 2, 4)]
-    for test in data:
-        print(jepd.getVerse(*test))
+    # Test 1 - Check the mapping data
+    # data = [(5, 34, 7), (5, 12, 1), (5, 26, 15), (4, 16, 27), (1, 2, 4)]
+    # for test in data:
+    #     print(jepd.getMapping(*test))

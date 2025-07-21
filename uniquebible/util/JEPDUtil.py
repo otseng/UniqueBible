@@ -1,5 +1,6 @@
 import sqlite3, re, platform
 from uniquebible.db.JEPDSqlite import JEPDSqlite
+from uniquebible.util.AGBsubheadings import agbSubheadings
 from uniquebible.util.BibleBooks import BibleBooks
 
 
@@ -170,13 +171,57 @@ class JEPDUtil:
                     chapterData += "<br><br>\n"
                 self.insert_chapter(cursor, b, c, chapterData)
 
+    def create_jepd_bible(self):
+        # Step 1 - Create mapping database
+        # self.JEPDSqlite.create_mapping_database()
+
+        # Step 2 - Create the raw KJV data from the mapping data
+        # self.JPEDSqlite.deleteBibleFromVerses("KJV")
+        # self.create_bible_mapping("KJV")
+
+        # Step 3 - Create the JEPD bible from the raw data
+        self.create_bible_tables(self.cursorJEPDKJV)
+        self.create_bible_from_jped_data(self.cursorJEPDKJV, "KJV")
+
+    def create_headings_authors_doc(self):
+        count = 0
+        # for b in range(1, 6):
+        #     book = BibleBooks.abbrev["eng"][str(b)][1]
+        #     chapters = BibleBooks.chapters[b]
+        #     for c in range(1, chapters + 1):
+        #         verses = BibleBooks.verses[b][c]
+        #         for v in range(1, verses + 1):
+        #             headingKey = f"{b}.{c}.{v}"
+        #             if headingKey in agbSubheadings:
+        #                 heading = agbSubheadings[headingKey]
+        keys = list(agbSubheadings.keys())
+        for index, (key, heading) in enumerate(agbSubheadings.items()):
+            if key.startswith("6."):
+                break
+            nextKey = keys[index+1]
+            b1, c1, v1 = key.split(".")
+            b2, c2, v2 = nextKey.split(".")
+            endVerse = int(v2) - 1
+            if c1 != c2:
+                endVerse = BibleBooks.verses[int(b1)][int(c1)]
+            print(f"{key} - {heading} - {endVerse}")
+            sourceData = self.get_sources_for_verses(b1, c1, v1, endVerse)
+            for sIndex, (sKey, sValue) in enumerate(sourceData.items()):
+                print(f"{sKey}: {sValue}")
+
+    def get_sources_for_verses(self, b, c, vStart, vEnd):
+        sourceData = {}
+        for v in range(int(vStart), int(vEnd)+1):
+            verses = self.JPEDSqlite.getMapping(b, c, v)
+            for verse in verses:
+                source = verse[5]
+                if source not in sourceData.keys():
+                    sourceData[source] = 1
+                else:
+                    sourceData[source] += 1
+        return sourceData
+
 if __name__ == "__main__":
+
     jepd = JEPDUtil()
-
-    # Step 2 - Create the raw KJV data from the mapping data
-    # jepd.JPEDSqlite.deleteBibleFromVerses("KJV")
-    # jepd.create_bible_mapping("KJV")
-
-    # Step 3 - Create the JEPD bible from the raw data
-    jepd.create_bible_tables(jepd.cursorJEPDKJV)
-    jepd.create_bible_from_jped_data(jepd.cursorJEPDKJV, "KJV")
+    jepd.create_headings_authors_doc()

@@ -156,14 +156,15 @@ class JEPDSqlite:
                             line = line[0:-1]
                         self.processLine(book, line, source)
 
+    def create_mapping_database(self):
+        self.deleteAll("Mapping")
+        self.loadMappingData()
+
+    def test_mapping_database(self):
+        data = [(5, 34, 7), (5, 12, 1), (5, 26, 15), (4, 16, 27), (1, 2, 4)]
+        for test in data:
+            print(self.getMapping(*test))
+
 if __name__ == "__main__":
-    jepd = JEPDSqlite()
 
-    # Step 1 - Create the mapping database
-    jepd.deleteAll("Mapping")
-    jepd.loadMappingData()
-
-    # Test 1 - Check the mapping data
-    # data = [(5, 34, 7), (5, 12, 1), (5, 26, 15), (4, 16, 27), (1, 2, 4)]
-    # for test in data:
-    #     print(jepd.getMapping(*test))
+    pass

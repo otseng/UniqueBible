@@ -195,6 +195,8 @@ class JEPDUtil:
         #             if headingKey in agbSubheadings:
         #                 heading = agbSubheadings[headingKey]
         keys = list(agbSubheadings.keys())
+        currentBook = 0
+        baseUrl = "https://simple.uniquebibleapp.com/bible/JEPD/"
         for index, (key, heading) in enumerate(agbSubheadings.items()):
             if key.startswith("6."):
                 break
@@ -204,10 +206,18 @@ class JEPDUtil:
             endVerse = int(v2) - 1
             if c1 != c2:
                 endVerse = BibleBooks.verses[int(b1)][int(c1)]
-            print(f"{key} - {heading} - {endVerse}")
+            if currentBook != int(b1):
+                currentBook = int(b1)
+                print(BibleBooks.abbrev["eng"][b1][1])
+            url = baseUrl + BibleBooks.abbrev["eng"][b1][1] + "/" + c1 + "#v" + c1 + "_" + v1
+            print(BibleBooks.abbrev["eng"][b1][1] + " " + c1 + ":" + v1)
+            print(f"{url}")
+            print(f"{heading}")
             sourceData = self.get_sources_for_verses(b1, c1, v1, endVerse)
             for sIndex, (sKey, sValue) in enumerate(sourceData.items()):
-                print(f"{sKey}: {sValue}")
+                delimiter = ", " if sIndex < len(sourceData) - 1 else ""
+                print(f"{sKey}: {sValue}", end=delimiter)
+            print("\n")
 
     def get_sources_for_verses(self, b, c, vStart, vEnd):
         sourceData = {}

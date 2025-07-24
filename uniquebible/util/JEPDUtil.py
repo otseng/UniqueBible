@@ -8,8 +8,6 @@ class JEPDUtil:
 
     def __init__(self):
         self.home = '/Users/otseng'
-        if platform.system() == "Linux":
-            self.home = '/home/oliver'
         self.KJVx = self.home + '/UniqueBible/marvelData/bibles/KJVx.bible'
         self.connectionKJVx = sqlite3.connect(self.KJVx)
         self.cursorKJVx = self.connectionKJVx.cursor()
@@ -183,17 +181,47 @@ class JEPDUtil:
         self.create_bible_tables(self.cursorJEPDKJV)
         self.create_bible_from_jped_data(self.cursorJEPDKJV, "KJV")
 
-    def create_headings_authors_doc(self):
-        count = 0
-        # for b in range(1, 6):
-        #     book = BibleBooks.abbrev["eng"][str(b)][1]
-        #     chapters = BibleBooks.chapters[b]
-        #     for c in range(1, chapters + 1):
-        #         verses = BibleBooks.verses[b][c]
-        #         for v in range(1, verses + 1):
-        #             headingKey = f"{b}.{c}.{v}"
-        #             if headingKey in agbSubheadings:
-        #                 heading = agbSubheadings[headingKey]
+    def jepd_styles(self):
+        return '''
+        <style>
+        .jepd_J {
+            color: goldenrod;
+        }
+        .jepd_E {
+            color: lightgreen;
+        }
+        .jepd_P {
+            color: violet;
+        }
+        .jepd_R {
+            color: red;
+        }
+        .jepd_Dtr1 {
+            color: peru;
+        }
+        .jepd_Dtr2 {
+            color: tan;
+        }
+        .jepd_Dtn {
+            color: slategray;
+        }
+        </style>
+        '''
+
+    def table_of_contents(self):
+        return '''
+        <ol>
+        <li><a href="#Genesis">Genesis</a>
+        <li><a href="#Exodus">Exodus</a>
+        <li><a href="#Leviticus">Leviticus</a>
+        <li><a href="#Numbers">Numbers</a>
+        <li><a href="#Deuteronomy">Deuteronomy</a>
+        </ol>
+        '''
+    def create_jepd_headings_with_sources(self, type="html"):
+        content = self.jepd_styles()
+        content += self.table_of_contents()
+
         keys = list(agbSubheadings.keys())
         currentBook = 0
         baseUrl = "https://simple.uniquebibleapp.com/bible/JEPD/"
@@ -204,20 +232,34 @@ class JEPDUtil:
             b1, c1, v1 = key.split(".")
             b2, c2, v2 = nextKey.split(".")
             endVerse = int(v2) - 1
+            book = BibleBooks.abbrev["eng"][b1][1]
             if c1 != c2:
                 endVerse = BibleBooks.verses[int(b1)][int(c1)]
             if currentBook != int(b1):
                 currentBook = int(b1)
-                print(BibleBooks.abbrev["eng"][b1][1])
+                if type == "html":
+                    content += f"<h2><a name='{book}'>{book}</a></h2>\n"
+                else:
+                    content += BibleBooks.abbrev["eng"][b1][1] + "\n"
             url = baseUrl + BibleBooks.abbrev["eng"][b1][1] + "/" + c1 + "#v" + c1 + "_" + v1
-            print(BibleBooks.abbrev["eng"][b1][1] + " " + c1 + ":" + v1)
-            print(f"{url}")
-            print(f"{heading}")
+            if type == "html":
+                content += f"<a href='{url}'>{book} {c1}:{v1}</a><br>\n"
+            else:
+                content += BibleBooks.abbrev["eng"][b1][1] + " " + c1 + ":" + v1 + "\n"
+            if type == "html":
+                content += f"{heading}<br>\n"
+            else:
+                content += f"{url}\n"
+                content += f"{heading}\n"
             sourceData = self.get_sources_for_verses(b1, c1, v1, endVerse)
             for sIndex, (sKey, sValue) in enumerate(sourceData.items()):
                 delimiter = ", " if sIndex < len(sourceData) - 1 else ""
-                print(f"{sKey}: {sValue}", end=delimiter)
-            print("\n")
+                if type == "html":
+                    content += f"<span class='jepd_{sKey}'>{sKey}: {sValue}{delimiter}</span>"
+                else:
+                    content += f"{sKey}: {sValue}{delimiter}"
+            content += "<br>\n<br>\n" if type == "html" else "\n\n"
+        return content
 
     def get_sources_for_verses(self, b, c, vStart, vEnd):
         sourceData = {}
@@ -234,4 +276,5 @@ class JEPDUtil:
 if __name__ == "__main__":
 
     jepd = JEPDUtil()
-    jepd.create_headings_authors_doc()
+    content = jepd.create_jepd_headings_with_sources()
+    print(content)

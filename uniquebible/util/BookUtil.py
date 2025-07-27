@@ -1,6 +1,7 @@
 
-import os, sqlite3, re, platform
-import sys
+import sqlite3, re
+from uniquebible.db import JEPDData
+from uniquebible.util.BibleBooks import BibleBooks
 
 from uniquebible.util.JEPDUtil import JEPDUtil
 
@@ -9,7 +10,6 @@ class BookUtil:
 
     def __init__(self):
         self.home = '/Users/otseng'
-
 
     def set_book_name(self, book_name):
         file = self.home + '/UniqueBible/marvelData/books/' + book_name + '.book'
@@ -54,11 +54,47 @@ class BookUtil:
         html = re.sub("\[(.+?)\]\(.+?\/[hH](\d+)\.md\)", "<a target='_blank' href=\"https://www.blueletterbible.org/lexicon/H\\2\">\\1</a>", html)
         return html
 
-    def process_jepd_headings_with_sources(self):
-        chapter = "Headings with Sources"
+    def process_jepd_books_and_sources(self):
+        chapter = "Books and sources"
         self.delete_entry(chapter)
         jepd = JEPDUtil()
-        content = jepd.create_jepd_headings_with_sources()
+        baseUrl = "https://simple.uniquebibleapp.com/bible/JEPD/"
+        content = ""
+        content += jepd.jepd_styles()
+        content += jepd.table_of_contents()
+        data = JEPDData.jepd
+        for book, bookData in data.items():
+            bookName = BibleBooks.abbrev["eng"][book][1]
+            content += "<table>\n<tr><td colspan=10 style='text-align: center;'>\n"
+            content += f"<h2><a name='{bookName}'>{bookName}</a></h2>\n"
+            content += "</td></tr>\n"
+            content += "<tr>"
+            for source, info in bookData.items():
+                content += f"<td style='text-align: center;'><span class='jepd_{source}'>{source}</span></td>\n"
+            content += "</tr><tr>\n"
+            for source, info in bookData.items():
+                content += "<td valign='top'>"
+                lines = info.splitlines()
+                for line in lines:
+                    line = line.replace(",", "").strip()
+                    if (line):
+                        if line[-1] == ".":
+                            line = line[0:-1]
+                        match = re.match(f"\d*:\d*", line)
+                        verse = match.group()
+                        c, v = verse.split(":")
+                        url = baseUrl + BibleBooks.abbrev["eng"][book][1] + f"/{c}#{c}_{v}"
+                        content += f"<a href='{url}'>{line}</a><br>\n"
+                content += "</td>"
+            content += "</tr>"
+            content += "</table>"
+        self.insert_chapter(chapter, content)
+
+    def process_jepd_headings_and_sources(self):
+        chapter = "Headings and sources"
+        self.delete_entry(chapter)
+        jepd = JEPDUtil()
+        content = jepd.create_jepd_headings_and_sources()
         self.insert_chapter(chapter, content)
 
 if __name__ == "__main__":
@@ -69,7 +105,8 @@ if __name__ == "__main__":
     bookUtil.drop_tables()
     bookUtil.create_tables()
 
-    bookUtil.process_jepd_headings_with_sources()
+    bookUtil.process_jepd_books_and_sources()
+    bookUtil.process_jepd_headings_and_sources()
 
     print("Done")
 

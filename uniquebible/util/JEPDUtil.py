@@ -218,7 +218,7 @@ class JEPDUtil:
         <li><a href="#Deuteronomy">Deuteronomy</a>
         </ol>
         '''
-    def create_jepd_headings_with_sources(self, type="html"):
+    def create_jepd_headings_and_sources(self, type="html"):
         content = self.jepd_styles()
         content += self.table_of_contents()
 

@@ -102,11 +102,11 @@ if __name__ == "__main__":
 
     bookUtil = BookUtil()
     bookUtil.set_book_name('JEPD')
-    bookUtil.drop_tables()
-    bookUtil.create_tables()
+    # bookUtil.drop_tables()
+    # bookUtil.create_tables()
 
-    bookUtil.process_jepd_books_and_sources()
-    bookUtil.process_jepd_headings_and_sources()
+    # bookUtil.process_jepd_books_and_sources()
+    # bookUtil.process_jepd_headings_and_sources()
 
     print("Done")
 

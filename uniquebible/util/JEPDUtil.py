@@ -273,8 +273,31 @@ class JEPDUtil:
                     sourceData[source] += 1
         return sourceData
 
+
+    def export_file_for_source(self, source):
+        count = 0
+        with open("/Users/otseng/Downloads/JEPD_" + source + ".txt", "w") as f:
+            for b in range(1, 6):
+                book = BibleBooks.abbrev["eng"][str(b)][1]
+                chapters = BibleBooks.chapters[b]
+                for c in range(1, chapters+1):
+                    f.write(f"{book} {c}\n\n")
+                    verses = BibleBooks.verses[b][c]
+                    for v in range(1, verses+1):
+                        sections = jepd.JPEDSqlite.getVerses(b, c, v, "KJV")
+                        if sections:
+                            for section in sections:
+                                if section[5] == source:
+                                    line = section[6]
+                                    line = self.delete_strongs(line)
+                                    f.write(line + "\n")
+                    f.write("\n")
+
 if __name__ == "__main__":
 
     jepd = JEPDUtil()
-    content = jepd.create_jepd_headings_with_sources()
-    print(content)
+    # content = jepd.create_jepd_headings_with_sources()
+    # print(content)
+    jepd.export_file_for_source("E")
+
+    print("Done")

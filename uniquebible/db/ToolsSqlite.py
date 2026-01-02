@@ -791,7 +791,7 @@ class Commentary:
             return ""
 
     def getRawContentVerse(self, b, c, v):
-        if self.text in self.getCommentaryList() or self.text == "AIC":
+        if self.text in ["AIC"]:
             query = "SELECT Content FROM Commentary WHERE Book=? AND Chapter=? and Verse=?"
             self.cursor.execute(query, (b, c, v))
             data = self.cursor.fetchone()

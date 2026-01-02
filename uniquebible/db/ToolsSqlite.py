@@ -574,7 +574,7 @@ class Commentary:
             config.commentariesFolder = os.path.join(config.marvelData, "commentaries")
         if text:
             self.text = text
-            if self.text in self.getCommentaryList() or self.text == "AIC":
+            if self.text in self.getCommentaryList() or self.text in ["AIC"]:
                 self.database = os.path.join(config.commentariesFolder, "c{0}.commentary".format(text))
                 self.connection = apsw.Connection(self.database)
                 self.cursor = self.connection.cursor()

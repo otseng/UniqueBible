@@ -10,7 +10,7 @@ except:
 from typing import Union
 from openai import OpenAI
 from openai import AzureOpenAI
-from mistralai import Mistral
+from mistralai.client import Mistral
 import cohere
 try:
     from google import genai

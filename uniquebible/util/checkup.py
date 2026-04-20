@@ -385,7 +385,7 @@ def isGroqInstalled():
 
 def isMistralInstalled():
     try:
-        from mistralai import Mistral
+        from mistralai.client import Mistral
         return True
     except:
         return False

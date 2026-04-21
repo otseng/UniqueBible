@@ -34,6 +34,7 @@ def main():
     # Do NOT use sys.executable directly
     python = os.path.basename(sys.executable)
     mainFile = os.path.join(wd, "main.py")
+    print(mainFile)
     #major, minor, micro, *_ = sys.version_info
     cpu = ""
     if thisOS == "Darwin":
@@ -141,10 +142,12 @@ Name=Unique Bible App
         if python.endswith(".exe"):
             python = python[:-4]
         # Run main.py
-        mainPy = "main.py {0}".format(initialCommand) if initialCommand else "main.py"
+        mainPy = "{0} {1}".format(mainFile, initialCommand) if initialCommand else mainFile
         if enableCli:
+            print("enableCli")
             exec("from uniquebible.main import *", globals())
         else:
+            print(f"{python} {mainPy}")
             subprocess.Popen("{0} {1}".format(python, mainPy), shell=True)
     else:
         # Run main.py

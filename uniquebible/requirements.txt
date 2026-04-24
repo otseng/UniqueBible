@@ -11,3 +11,9 @@ groq
 packaging
 haversine
 xonsh[full]
+pyside6
+pydub
+numpy
+github
+PyGithub
+mammoth

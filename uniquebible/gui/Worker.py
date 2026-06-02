@@ -8,7 +8,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 from uniquebible.util.VlcUtil import VlcUtil
 from openai import OpenAI, AzureOpenAI
-from mistralai.client import Mistral
+from mistralai.sdk import Mistral
 from groq import Groq
 
 

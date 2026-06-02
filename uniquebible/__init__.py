@@ -124,7 +124,7 @@ else:
 # AI Features
 
 from openai import OpenAI, AzureOpenAI
-from mistralai.client import Mistral
+from mistralai.sdk import Mistral
 from groq import Groq
 from typing import Optional
 from opencc import OpenCC

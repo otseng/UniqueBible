@@ -8,7 +8,7 @@ UniqueBible is a cross-platform, offline Bible application with integrated high-
 
 ## Development Setup
 
-Python 3.8+ required.
+Python 3.8+ required (upper bound <3.13 per `setup.py`).
 
 ```bash
 # Install in development mode (registers console scripts)
@@ -21,6 +21,8 @@ pytest tests/test_uba.py::test_uba
 ```
 
 Dependencies are listed in `uniquebible/requirements.txt`. Main dependencies include PySide6 (Qt), prompt_toolkit, openai, groq, mistralai, apsw, and gdown.
+
+No linting or formatting tools (e.g., ruff, black, pre-commit) are currently configured in this repository.
 
 ## Running the Application
 
@@ -48,17 +50,26 @@ Shell helper scripts for server management are in `uniquebible/http-server.sh`, 
 
 ## High-Level Architecture
 
-### Startup Flow
+### Entry Points and Startup Flow
 
-`uniquebible/uba.py` determines the run mode from `sys.argv`, then either exec-imports `uniquebible.main` directly (for CLI modes) or spawns it in a subprocess (for GUI mode on some platforms). `uniquebible/main.py` performs the actual startup sequence:
+`uniquebible/uba.py` is the outer entry point. It determines the run mode from `sys.argv`, creates desktop shortcuts on first run, and then delegates to `uniquebible/main.py` (either via exec-import for CLI modes or subprocess for GUI on some platforms).
+
+`uniquebible/main.py` performs the actual startup sequence:
 
 1. Import `uniquebible.config` and call `ConfigUtil.setup()` to initialize the global configuration.
 2. Import `uniquebible.util.checkup` to validate dependencies and auto-download initial databases if missing.
-3. Branch to either `uniquebible.startup.guiQt` (GUI modes) or `uniquebible.startup.nonGui` (terminal, HTTP, API, SSH, telnet, macro execution).
+3. Set `config.noQt = True` for all headless modes (terminal, HTTP, API, SSH, telnet) so Qt is never imported.
+4. Branch to either `uniquebible.startup.guiQt` (GUI modes) or `uniquebible.startup.nonGui` (terminal, HTTP, API, SSH, telnet, macro execution).
+
+Both GUI and non-GUI branches import `uniquebible.startup.share`, which sets up logging (`uba.log`), cleans temp files, and runs startup plugins via `runStartupPlugins()`.
 
 ### Configuration System
 
-Configuration is stored as module-level attributes in `uniquebible/config.py`. It is not a dictionary or class instance; code accesses settings via `import config` and reads or mutates `config.foo` directly. `ConfigUtil.setup()` populates defaults at runtime, and `ConfigUtil.save()` persists changes back to the file. Be careful when modifying config values—changes are global and often immediate.
+Configuration is stored as module-level attributes in `uniquebible/config.py`. It is not a dictionary or class instance; code accesses settings via `import config` and reads or mutates `config.foo` directly.
+
+`ConfigUtil.setup()` populates defaults at runtime using dynamic `exec()` calls, so config attributes are created on the module if they don't already exist. `ConfigUtil.save()` persists changes back to the file. Be careful when modifying config values—changes are global and often immediate.
+
+Note: `setup.py` intentionally empties `config.py` during package builds (`open(..., "w").close()`), but in development the repository file is used directly.
 
 ### Command Dispatch
 
@@ -66,7 +77,7 @@ The application is built around a text-command architecture. `uniquebible/util/T
 
 ### GUI Architecture
 
-GUI mode uses Qt via PySide6 (with qtpy as a fallback). The main window class in `uniquebible/gui/MainWindow.py` is the base, but the actual layout/menu implementation is selected at runtime via `config.menuLayout`. Built-in layout variants live in:
+GUI mode uses Qt via PySide6 (with qtpy as a fallback). `uniquebible/startup/guiQt.py` imports `uniquebible.gui.Styles` first (for theme setup), then `uniquebible.gui.MainWindow`. The actual layout/menu implementation is selected at runtime via `config.menuLayout`. Built-in layout variants live in:
 - `AlephMainWindow.py`
 - `ClassicMainWindow.py`
 - `FocusMainWindow.py`
